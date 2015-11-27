@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('token', 'name', 'links',)
+        fields = ('token', 'userName', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -21,8 +21,8 @@ class FriendsSerializer(serializers.ModelSerializer):
     links = serializers.SerializerMethodField()
 
     class Meta:
-        model = Friend
-        fields = ('user', 'friend', 'links',)
+        model = Friendship
+        fields = ('userOne', 'userTwo', 'muted', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -36,7 +36,7 @@ class QuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Query
-        fields = ('user_id', 'timestamp', 'links',)
+        fields = ('user', 'timestamp', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -51,7 +51,7 @@ class ThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Thing
-        fields = ('type', 'links',)
+        fields = ('thingType', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -61,17 +61,17 @@ class ThingSerializer(serializers.ModelSerializer):
         }
 
 
-class RecommendSerializer(serializers.ModelSerializer):
+class RecommendationSerializer(serializers.ModelSerializer):
     links = serializers.SerializerMethodField()
 
     class Meta:
-        model = Recommend
-        fields = ('thing_id', 'comments', 'timestamp', 'user_id', 'links',)
+        model = Recommendation
+        fields = ('thing', 'user', 'comments', 'timestamp', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
         return {
-            'self': reverse('recommend-detail',
+            'self': reverse('recommendation-detail',
                             kwargs={'pk': obj.pk}, request=request),
         }
 
@@ -80,12 +80,72 @@ class TextSerializer(serializers.ModelSerializer):
     links = serializers.SerializerMethodField()
 
     class Meta:
-        model = Text
-        fields = ('text', 'thing_id', 'links',)
+        model = TextThing
+        fields = ('thing', 'content', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
         return {
             'self': reverse('text-detail',
+                            kwargs={'pk': obj.pk}, request=request),
+        }
+
+
+class PromptSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Prompt
+        fields = ('user', 'query', 'links',)
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('prompt-detail',
+                            kwargs={'pk': obj.pk}, request=request),
+        }
+
+
+class RecommendationTagSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecommendationTag
+        fields = ('recommendation', 'tag', 'lemma', 'links',)
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('recommendationTag-detail',
+                            kwargs={'pk': obj.pk}, request=request),
+        }
+
+
+class QueryTagSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = QueryTag
+        fields = ('query', 'tag', 'links',)
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('queryTag-detail',
+                            kwargs={'pk': obj.pk}, request=request),
+        }
+
+
+class PinSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Pin
+        fields = ('thing', 'query', 'links',)
+
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('pin-detail',
                             kwargs={'pk': obj.pk}, request=request),
         }
