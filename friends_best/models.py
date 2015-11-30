@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class User(models.Model):
     userName = models.CharField(max_length=50, unique=True)
-    token = models.IntegerField(default=-1)
+    token = models.CharField(max_length=60, default="1")
 
     def __str__(self):
         return self.userName
@@ -15,6 +15,9 @@ class Friendship(models.Model):
     userOne = models.ForeignKey(User, related_name='userOne_set')
     userTwo = models.ForeignKey(User, related_name='userTwo_set')
     muted = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = (("userOne", "userTwo"),)
 
     def save(self, *args, **kwargs):
         if self.userOne != self.userTwo:
@@ -42,21 +45,21 @@ class Thing(models.Model):
     thingType = models.CharField(max_length=15, choices=THING_TYPE_CHOICES, default=TEXT)
 
     def __str__(self):
-        return self.thingType
+        return "%s - %s" % (self.pk, self.thingType)
 
 
 class TextThing(models.Model):
     thing = models.OneToOneField(Thing, primary_key=True)
-    content = models.CharField(max_length=200, unique=True)
+    description = models.TextField(max_length=200, unique=True)
 
     def __str__(self):
-        return self.content
+        return "thingID:%s, content:%s" % (self.thing.primary_key, self.description)
 
 
 class Recommendation(models.Model):
     thing = models.ForeignKey(Thing)
     user = models.ForeignKey(User)
-    comments = models.CharField(max_length=500)
+    comments = models.TextField(max_length=500)
     timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -75,9 +78,14 @@ class RecommendationTag(models.Model):
     recommendation = models.ForeignKey(Recommendation)
     tag = models.CharField(max_length=25)
     lemma = models.CharField(max_length=25)
-
+    
+    def save(self, *args, **kwargs):
+        if not self.lemma:
+            self.lemma = self.tag
+        super(RecommendationTag, self).save(*args, **kwargs)
+        
     def __str__(self):
-        return "recommendation:%s, tag:%s)" % (self.recommendation, self.tag)
+        return "tag:%s, recommendation:%s)" % (self.tag, self.recommendation)
 
 
 class QueryTag(models.Model):
