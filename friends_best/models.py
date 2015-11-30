@@ -6,6 +6,7 @@ from django.utils import timezone
 class User(models.Model):
     userName = models.CharField(max_length=50, unique=True)
     token = models.CharField(max_length=60, default="1")
+    facebookUserId = models.CharField(max_length=60, default="facebook1")
 
     def __str__(self):
         return self.userName
