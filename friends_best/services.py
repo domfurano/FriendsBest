@@ -25,29 +25,37 @@ def submitQuery(userId, *tags):
         qt = QueryTag(query=q1, tag=t)
         qt.save()
 
-    # TODO: generate prompts
+    return q1.id
 
+
+def getQuerySolutions(queryId):
     # find all relevant recommendations (with any matching tags)
     # TODO: configure solutions according to friendships
+    q1 = Query.objects.get(id=queryId)
+    tags = QueryTag.objects.filter(query=q1)
     things = []
     for t in tags:
         things.append(RecommendationTag.objects.filter(tag=t).recommendation.thing)
 
-    things = set(things)
+    things = set(things)  # put in a set to eliminate duplicates
 
-    # compile solutions (each solution is a thing as well as the user and comments of each associated recommendation)
+    # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
     solutions = []
     for thing in things:
-        content = TextThing.objects.filter(thing_id=thing.id)[0].content
+        description = TextThing.objects.filter(thing_id=thing.id)[0].description
         recommendations = Recommendation.objects.filter(thing=thing)
-        users = []
-        comments = []
+        dictionary = {}
         for recommendation in recommendations:
-            users.append(recommendation.user)
-            comments.append(recommendation.comments)
-        solutions.append(Solution(content, users, comments))
+            userName = recommendation.user.userName
+            comments = recommendation.comments
+            dictionary[userName] = comments
+        solutions.append(Solution(description, dictionary))
 
     return solutions
+
+
+def getQueryHistory(userId):
+    return Query.objects.filter(user=User.objects.get(id=userId))
 
 
 def createUser(userName):
@@ -64,23 +72,40 @@ def createFriendship(userOneId, userTwoId):
     f2.save()
 
 
-def createRecommendation(userId, content, comments, *tags):
+def createRecommendation(userId, description, comments, *tags):
 
     if tags.count == 0:
         return "recommendation must include at least one tag"
 
     # if a thing with same content doesn't already exist, create a new thing (and corresponding textthing)
     # otherwise get the existing thing
-    if TextThing.objects.filter(content=content).count() == 0:
+    if TextThing.objects.filter(description=description).count() == 0:
         thing = Thing()
         thing.save()
-        text = TextThing(thing=thing, content=content)
+        text = TextThing(thing=thing, description=cdescription)
         text.save()
     else:
-        thing = TextThing.objects.filter(content=content)[0].thing
+        thing = TextThing.objects.filter(description=description)[0].thing
 
     recommendation = Recommendation(thing=thing, user=User.objects.get(userId), comments=comments)
     recommendation.save()
+
+    # create the recommendationTags
+    for tag in tags:
+        rTag = RecommendationTag(recommendation=recommendation, tag=tag)
+        rTag.save()
+
+    return recommendation.id
+
+
+# for class demo tag cloud
+def getRecommendationTagCounts():
+    tags = RecommendationTag.objects.values('tag')
+    tagSet = set(tags)  # put in a set to eliminate duplicates
+    dictionary = {}
+    for tag in tagSet:
+        dictionary[tag] = RecommendationTag.objects.filter(tag=tag).count()
+    return dictionary
 
 
 def createPin():
@@ -92,9 +117,8 @@ def createPrompt():
 
 
 class Solution:
-    def __init__(self, content, *users, *comments):
-        self.content = content
-        self.users = users
-        self.comments = comments
+    def __init__(self, description, **userComments):
+        self.description = description
+        self.userComments = userComments
 
 
