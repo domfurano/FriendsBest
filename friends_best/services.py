@@ -32,11 +32,14 @@ def getQuerySolutions(queryId):
     # find all relevant recommendations (with any matching tags)
     # TODO: configure solutions according to friendships
     q1 = Query.objects.get(id=queryId)
-    tags = QueryTag.objects.filter(query=q1)
+    queryTags = QueryTag.objects.filter(query=q1)
+    recommendationTags = []
     things = []
-    for t in tags:
-        things.append(RecommendationTag.objects.filter(tag=t).recommendation.thing)
-
+    for qt in queryTags:
+        recommendationTags.extend(RecommendationTag.objects.filter(tag=qt.tag))
+    recommendationTags = set(recommendationTags)  # put in a set to eliminate duplicates
+    for rt in recommendationTags:
+        things.append(rt.recommendation.thing)
     things = set(things)  # put in a set to eliminate duplicates
 
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
@@ -49,7 +52,7 @@ def getQuerySolutions(queryId):
             userName = recommendation.user.userName
             comments = recommendation.comments
             dictionary[userName] = comments
-        solutions.append(Solution(description, dictionary))
+        solutions.append(Solution(description=description, userComments=dictionary))
 
     return solutions
 
@@ -59,7 +62,7 @@ def getQueryHistory(userId):
 
 
 def createUser(userName):
-    user = User(userName)
+    user = User(userName=userName)
     user.save()
 
 
@@ -87,7 +90,7 @@ def createRecommendation(userId, description, comments, *tags):
     else:
         thing = TextThing.objects.filter(description=description)[0].thing
 
-    recommendation = Recommendation(thing=thing, user=User.objects.get(userId), comments=comments)
+    recommendation = Recommendation(thing=thing, user=User.objects.get(id=userId), comments=comments)
     recommendation.save()
 
     # create the recommendationTags
@@ -106,6 +109,13 @@ def getRecommendationTagCounts():
     for tag in tagSet:
         dictionary[tag] = RecommendationTag.objects.filter(tag=tag).count()
     return dictionary
+    
+    
+def createTextThing(description):
+    thing = Thing()
+    thing.save()
+    text = TextThing(thing=thing1, description=description)
+    text.save()
 
 
 def createPin():
