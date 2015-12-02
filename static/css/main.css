@@ -78,6 +78,10 @@
 		margin-bottom: 0;
 	}
 	
+	.newrecommendation .form-group {
+		margin-top: 10px;
+	}
+	
 	.container {
 		padding: 0;
 	}
@@ -100,12 +104,27 @@
 		margin-right: auto;
 	}
 	
+	.swipable { }
+	
 	.prompt {
 		height: 100%;
 		min-height: 300px;
 		background-color: #abb4ba;
+		background: -moz-linear-gradient(top, #d7dbdd 0%, #abb4ba 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, #d7dbdd 0%, #abb4ba 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, #d7dbdd 0%, #abb4ba 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 		-webkit-border-radius: 8px;
-		box-shadow: 1px 2px 3px #2e333d;
+		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
+		-webkit-transform: translateZ(0);
+	}
+	
+	.loadmore {
+		height: 100%;
+		min-height: 300px;
+		background-color: #e8edef;
+		-webkit-border-radius: 8px;
+		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
+		-webkit-transform: translateZ(0);
 	}
 	
 	.prompt .item {
@@ -150,6 +169,10 @@
 		transform: translateY(-50%);
 		font-size: 30px;
 		font-weight: 600;
+	}
+	
+	.row.light {
+		font-weight: 400;
 	}
 	
 	.row.foot {

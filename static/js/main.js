@@ -2,6 +2,7 @@ require.config({
   paths: {
     jquery: 'vendor/jquery.min',
     'jquery.ui': 'vendor/jquery-ui.min',
+    'jquery.mobile': 'vendor/jquery.mobile.min',
     'jquery.ui.tp': 'vendor/jquery.ui.touch-punch.min',
     bootstrap: 'vendor/bootstrap',
     tokenfield: 'vendor/bootstrap-tokenfield',

@@ -3,17 +3,21 @@ define([
   'underscore',
   'backbone',
   'text!templates/recommend/back.html',
-], function($, _, Backbone, backHTML){
+  'text!templates/recommend/form.html',
+], function($, _, Backbone, backHTML, formHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
 
     render: function(){
       
-      console.log("render search history")
+      console.log("render new recommendation")
       
       var backTemplate = _.template( backHTML, {} );
       this.$el.append(backTemplate);
+      
+      var formTemplate = _.template( formHTML, {} );
+      this.$el.append(formTemplate);
  
     },
     

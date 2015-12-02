@@ -55,10 +55,13 @@ define([
 		Backbone.history.start();
 		
 		console.log("router.js")
+		
+		
+		return app_router
 	};
   
 	return {
-		initialize: initialize
+		initialize: initialize,
 	};
   
 });

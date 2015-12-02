@@ -19,7 +19,7 @@ define([
 	});
 	
 	// Start routing
-	Router.initialize();
+	this.router = Router.initialize();
 	
   };
 
