@@ -5,7 +5,7 @@ from friends_best.views import *
 router = DefaultRouter()
 router.register(r'user', UserViewSet)
 router.register(r'friend', FriendViewSet)
-router.register(r'query', QueryViewSet)
+router.register(r'query', QueryViewSet, base_name='api')
 router.register(r'thing', ThingViewSet)
 router.register(r'textThing', TextThingViewSet)
 router.register(r'recommend', RecommendationViewSet)

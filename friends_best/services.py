@@ -1,18 +1,16 @@
+from logging import warning, error
 from .models import User
 from .models import Friendship
 from .models import Query
 from .models import Thing
 from .models import TextThing
 from .models import Recommendation
-from .models import Prompt
 from .models import RecommendationTag
 from .models import QueryTag
-from .models import Pin
 
 
 def submitQuery(userId, *tags):
-
-    if tags.count == 0:
+    if type(tags) != list and tags.count == 0:
         return "query must include at least one tag"
 
     # create a query
@@ -82,7 +80,7 @@ def createRecommendation(userId, description, comments, *tags):
     if TextThing.objects.filter(description=description).count() == 0:
         thing = Thing()
         thing.save()
-        text = TextThing(thing=thing, description=cdescription)
+        text = TextThing(thing=thing, description=description)
         text.save()
     else:
         thing = TextThing.objects.filter(description=description)[0].thing
