@@ -1,9 +1,13 @@
 from rest_framework import viewsets
+from rest_framework.decorators import detail_route
+from rest_framework import status
+from rest_framework.response import Response
+
 from friends_best.serializers import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.order_by('userName')
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
@@ -13,8 +17,18 @@ class FriendViewSet(viewsets.ModelViewSet):
 
 
 class QueryViewSet(viewsets.ModelViewSet):
-    queryset = Query.objects.order_by('user')
+    queryset = Query.objects.order_by('id')
     serializer_class = QuerySerializer
+
+    #
+    # def create(self, request):
+    #     if True:
+    #         return Response(request, status.HTTP_400_BAD_REQUEST)
+    #     query_id = QuerySerializer(request.body)
+    #
+    #     if query_id is not None:
+    #         return Response({"queryId": query_id}, status.HTTP_201_CREATED)
+    #     return Response(status.HTTP_400_BAD_REQUEST)
 
 
 class ThingViewSet(viewsets.ModelViewSet):
@@ -44,17 +58,10 @@ class RecommendationTagViewSet(viewsets.ModelViewSet):
 
 class QueryTagViewSet(viewsets.ModelViewSet):
     queryset = QueryTag.objects.order_by('query')
-    serializer_class = QueryViewSet
+    serializer_class = QueryTagSerializer
 
 
 class PinViewSet(viewsets.ModelViewSet):
     queryset = Pin.objects.order_by('thing')
     serializer_class = PinSerializer
-
-
-
-
-
-
-
 
