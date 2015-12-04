@@ -24,9 +24,9 @@ SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'Hovercraft' in os.environ['Production']:
-    DEBUG = True
-else:
     DEBUG = False
+else:
+    DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
