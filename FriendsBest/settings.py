@@ -23,9 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'Hovercraft' in os.environ(['Production']):
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -102,10 +106,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/app/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
 
-if "STATIC_ROOT" in os.environ:
-    STATIC_ROOT = os.environ["STATIC_ROOT"]
+STATIC_URL = '/app/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'friends_best/static/friends_best/static'),
+)

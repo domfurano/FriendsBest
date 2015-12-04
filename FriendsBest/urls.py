@@ -24,4 +24,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls))
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns.append(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
