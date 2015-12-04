@@ -107,9 +107,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATIC_URL = '/app/'
+STATIC_URL = 'app'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'friends_best/static/friends_best/static'),
