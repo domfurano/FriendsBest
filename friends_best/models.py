@@ -54,7 +54,7 @@ class TextThing(models.Model):
     description = models.TextField(max_length=200, unique=True)
 
     def __str__(self):
-        return "thingID:%s, content:%s" % (self.thing.primary_key, self.description)
+        return "thingID:%s, content:%s" % (self.thing.pk, self.description)
 
 
 class Recommendation(models.Model):
