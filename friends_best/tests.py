@@ -1,8 +1,36 @@
 from django.test import TestCase
-from .models import *
+from rest_framework.test import APITestCase
+from rest_framework.test import APIRequestFactory
+from rest_framework import status
+
 from .services import *
+from .views import QueryViewSet
+
 
 # Create your tests here.
+class POSTQueryTest(APITestCase):
+    def test_create_query(self):
+        """
+        Ensure we can create a new account object.
+        """
+        user_url = 'api/user'
+        data = {}
+        url = 'query/'
+        data = {"user": "1","tags": ["work", "you", "POS"]}
+        response = self.client.post(url, data, format='json')
+
+        factory = APIRequestFactory()
+        view = QueryViewSet.as_view({'post': 'create'})
+        request = factory.get('/api/query/1')
+        view_response = view(request, pk='1')
+        view_response.render()  # Cannot access `response.content` without this.
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Query.objects.count(), 1)
+        self.assertEqual(Query.objects.get().name, 'DabApps')
+        self.assertEqual(view_response.content, '{"username": "lauren", "id": 4}')
+
+
 class CreateFriendshipTest(TestCase):
     def setUp(self):
         u1 = createUser("Amy Adams")

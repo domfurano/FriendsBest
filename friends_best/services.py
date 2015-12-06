@@ -10,6 +10,10 @@ from .models import QueryTag
 
 
 def submitQuery(userId, *tags):
+    warning(userId)
+    warning(tags)
+    warning(type(tags))
+
     if type(tags) != list and tags.count == 0:
         return "query must include at least one tag"
 
@@ -74,8 +78,7 @@ def createFriendship(userOneId, userTwoId):
 
 
 def createRecommendation(userId, description, comments, *tags):
-
-    if tags.count == 0:
+    if len(tags) == 0:
         return "recommendation must include at least one tag"
 
     # if a thing with same content doesn't already exist, create a new thing (and corresponding textthing)
@@ -95,7 +98,6 @@ def createRecommendation(userId, description, comments, *tags):
     for tag in tags:
         rTag = RecommendationTag(recommendation=recommendation, tag=tag)
         rTag.save()
-
     return recommendation.id
 
 
@@ -110,9 +112,8 @@ def getRecommendationTagCounts():
     
     
 def createTextThing(description):
-    thing = Thing()
-    thing.save()
-    text = TextThing(thing=thing1, description=description)
+    thing = Thing.objects.all().first()
+    text = TextThing(thing=thing, description=description)
     text.save()
 
 

@@ -1,13 +1,13 @@
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route
 from rest_framework import status
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from friends_best.serializers import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
 
 
@@ -20,15 +20,12 @@ class QueryViewSet(viewsets.ModelViewSet):
     queryset = Query.objects.order_by('id')
     serializer_class = QuerySerializer
 
-    #
-    # def create(self, request):
-    #     if True:
-    #         return Response(request, status.HTTP_400_BAD_REQUEST)
-    #     query_id = QuerySerializer(request.body)
-    #
-    #     if query_id is not None:
-    #         return Response({"queryId": query_id}, status.HTTP_201_CREATED)
-    #     return Response(status.HTTP_400_BAD_REQUEST)
+    def create(self, request):
+        query_id = QuerySerializer(request)
+
+        if query_id:
+            return Response({"queryId": query_id}, status.HTTP_201_CREATED)
+        return Response(status.HTTP_400_BAD_REQUEST)
 
 
 class ThingViewSet(viewsets.ModelViewSet):
@@ -39,6 +36,13 @@ class ThingViewSet(viewsets.ModelViewSet):
 class RecommendationViewSet(viewsets.ModelViewSet):
     queryset = Recommendation.objects.order_by('user')
     serializer_class = RecommendationSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = RecommendationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"recommendationId": serializer.data}, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class TextThingViewSet(viewsets.ModelViewSet):
