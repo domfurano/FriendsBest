@@ -55,6 +55,13 @@ class QueryTagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class TextThingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TextThing
+        fields = '__all__'
+
+
 class RecommendationSerializer(serializers.Serializer):
     user = serializers.CharField(max_length=50)
     description = serializers.CharField(max_length=200)
@@ -64,13 +71,13 @@ class RecommendationSerializer(serializers.Serializer):
     def to_internal_value(self, data):
         return data
 
-    # data - Recommendation object
+    # data -Recommendation object
     def to_representation(self, data):
-        warning('to_rep data : {0}\ntype : {1}'.format(data, type(data)))
         rec_tags = RecommendationTag.objects.filter(recommendation=data).values('tag')
         text_thing = TextThing.objects.filter(thing=data.thing).get()
 
         json_rep = {
+            'id': data.id,
             'user': data.user.userName,
             'description': text_thing.description,
             'comments': data.comments,
@@ -79,19 +86,17 @@ class RecommendationSerializer(serializers.Serializer):
         return json_rep
 
     def create(self, validated_data):
-        warning('created {}'.format(validated_data))
         user = validated_data.get('user')
         desc = validated_data.get('description')
         comments = validated_data.get('comments')
         tags = validated_data.get('tags')
         rec_id = createRecommendation(user, desc, comments, *tags)
-        validated_data['recommendationId'] = rec_id
-        warning("Recommendation: {}".format(validated_data))
-        return validated_data
+        recommendation = Recommendation.objects.filter(id=rec_id).get()
+        warning('create {}'.format(recommendation))
+        return recommendation
 
-
+    # Return - validated data in a dictionary
     def validate(self, data):
-        warning('validate {}'.format(data))
         if 'user' not in data:
             raise serializers.ValidationError("user is missing")
         elif 'description' not in data:
@@ -110,6 +115,7 @@ class RecommendationSerializer(serializers.Serializer):
 
     class Meta:
         model = Recommendation
+        fields = ('id', 'user', 'description', 'comments', 'tags',)
 
 
 class QuerySerializer(serializers.ModelSerializer):
@@ -127,13 +133,6 @@ class QuerySerializer(serializers.ModelSerializer):
     def to_representation(self, query):
         user = query.user_id
         return getQueryHistory(user)
-
-
-class TextThingSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TextThing
-        fields = '__all__'
 
 
 class PinSerializer(serializers.ModelSerializer):
