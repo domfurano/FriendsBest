@@ -65,6 +65,52 @@
 		width: 100%;
 	}
 	
+	section.list {
+		bottom: 0;
+		padding: 0;
+		overflow-x: scroll;
+	}
+	
+	section.list::-webkit-scrollbar { 
+	    display: none; 
+	}
+	
+	.listcontainer {
+		overflow: scroll;
+	}
+	
+	.list a {
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	.list a:hover {
+		color: inherit;
+	}
+	
+	.list .item {
+		margin-top: 10px;
+		background-color: #fff;
+		padding: 10px 10px 10px 8px;
+		box-shadow: 1px 1px 2px rgba(45, 50, 61, 0.50);
+		-webkit-border-radius: 3px;
+	}
+	
+	.list .item div {
+		padding: 0;
+	}
+	
+	.list .item .tags span {
+		background-color: #e8edef;
+		padding: 4px 6px;
+		-webkit-border-radius: 3px;
+		border: 1px solid #abb4ba;
+	}
+	
+	.list .item .count {
+		text-align: right;
+	}
+	
 	footer {
 	  position: absolute;
 	  top: 0;

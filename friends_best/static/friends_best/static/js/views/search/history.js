@@ -2,15 +2,33 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'collections/queries',
   'text!templates/search/back.html',
-], function($, _, Backbone, backHTML){
+  'text!templates/search/item.html',
+], function($, _, Backbone, QueriesCollection, backHTML, itemHTML){
 
-  var HomeView = Backbone.View.extend({
+require.config({
+    urlArgs: "bust=" + (new Date()).getTime()
+});
+
+  var HistoryView = Backbone.View.extend({
     el: $(".view"),
+
+	initialize: function() {
+		console.log("init HistoryView")
+	},
 
     render: function(){
       
-      console.log("render search history")
+      that = this;
+      
+      this.collection = new QueriesCollection();
+      
+      this.collection.fetch({success: function(collection, response, options){
+			// Render the collection
+			itemTemplate = _.template(itemHTML);
+			that.$el.append(itemTemplate({collection: that.collection.toJSON()}));
+      }});
       
       var backTemplate = _.template( backHTML, {} );
       this.$el.append(backTemplate);
@@ -23,6 +41,6 @@ define([
 
   });
 
-  return HomeView;
+  return HistoryView;
   
 });
