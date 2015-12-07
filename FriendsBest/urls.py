@@ -18,13 +18,11 @@ from django.contrib import admin
 from friends_best.urls import router
 from django.views.generic.base import RedirectView
 from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls))
 ]
 
 if settings.DEBUG:
-    urlpatterns.append(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+    urlpatterns.append(url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'))

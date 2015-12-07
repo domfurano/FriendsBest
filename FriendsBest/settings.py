@@ -15,7 +15,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -23,14 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'Hovercraft' in os.environ['Production']:
+if 'Production' in os.environ:
     DEBUG = False
+    ALLOWED_HOSTS = ['www.friendsbest.net']
 else:
     DEBUG = True
-
-
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -88,7 +84,6 @@ DATABASES = {
     }
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -106,11 +101,50 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-if not DEBUG:
-    STATIC_ROOT = os.path.join(BASE_DIR, '/var/www/FriendsBest')
-
-STATIC_URL = 'app/'
+if DEBUG:
+    STATIC_ROOT = 'static/'
+    STATIC_URL = '/app/'
+else:
+    STATIC_URL = '/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    )
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'friends_best/static/friends_best/static'),
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
