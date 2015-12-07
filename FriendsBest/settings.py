@@ -24,9 +24,10 @@ SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'Production' in os.environ:
     DEBUG = False
-    ALLOWED_HOSTS = ['www.friendsbest.net']
 else:
     DEBUG = True
+
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
