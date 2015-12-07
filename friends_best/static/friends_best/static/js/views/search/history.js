@@ -32,6 +32,12 @@ require.config({
       
       var backTemplate = _.template( backHTML, {} );
       this.$el.append(backTemplate);
+      
+      $(".back-button").click(function() {
+	      console.log("going back");
+	      parent.history.go(-1);
+	      return false;
+      });
  
     },
     
