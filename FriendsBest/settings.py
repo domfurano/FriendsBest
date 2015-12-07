@@ -15,7 +15,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -23,10 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'Production' in os.environ:
+    DEBUG = False
+else:
+    DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -101,5 +102,50 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/app/'
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+if DEBUG:
+    STATIC_ROOT = 'static/'
+    STATIC_URL = '/app/'
+else:
+    STATIC_URL = '/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    )
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'friends_best/static/friends_best/static'),
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
