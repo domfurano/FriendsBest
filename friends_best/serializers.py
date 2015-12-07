@@ -49,10 +49,21 @@ class RecommendationTagSerializer(serializers.ModelSerializer):
 
 
 class QueryTagSerializer(serializers.ModelSerializer):
-    
+
+    def to_representation(self, instance):
+        query_dict = dict()
+        tag_list = QueryTag.objects.all().values('query', 'tag')
+        for tag in tag_list:
+            qid = tag['query']
+            if qid in query_dict:
+                query_dict[qid].append(tag['tag'])
+            else:
+                query_dict[qid] = [tag['tag']]
+        return query_dict
+
     class Meta:
         model = QueryTag
-        fields = '__all__'
+        fields = ('query', 'tag',)
 
 
 class TextThingSerializer(serializers.ModelSerializer):
@@ -76,14 +87,14 @@ class RecommendationSerializer(serializers.Serializer):
         rec_tags = RecommendationTag.objects.filter(recommendation=data).values('tag')
         text_thing = TextThing.objects.filter(thing=data.thing).get()
 
-        json_rep = {
+        recommendation_json = {
             'id': data.id,
             'user': data.user.userName,
             'description': text_thing.description,
             'comments': data.comments,
             'tags': [rt['tag'] for rt in rec_tags]
         }
-        return json_rep
+        return recommendation_json
 
     def create(self, validated_data):
         user = validated_data.get('user')
@@ -91,9 +102,7 @@ class RecommendationSerializer(serializers.Serializer):
         comments = validated_data.get('comments')
         tags = validated_data.get('tags')
         rec_id = createRecommendation(user, desc, comments, *tags)
-        recommendation = Recommendation.objects.filter(id=rec_id).get()
-        warning('create {}'.format(recommendation))
-        return recommendation
+        return Recommendation.objects.filter(id=rec_id).get()
 
     # Return - validated data in a dictionary
     def validate(self, data):
@@ -119,20 +128,43 @@ class RecommendationSerializer(serializers.Serializer):
 
 
 class QuerySerializer(serializers.ModelSerializer):
+    user = UserSerializer
+    tags = QueryTagSerializer(many=True)
+    comment = serializers.CharField(max_length=500)
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, query):
+        solution = getQuerySolutions(query.id)
+        user = query.user.userName
+        solution_json = dict()
+        for sol in solution:
+            user_name = sol.userComments['userComments']
+            solution_json[sol.description] = user_name
+        return solution_json
+
+    def create(self, validated_data):
+        user = validated_data.get('user')
+        tags = validated_data.get('tags')
+        qid = submitQuery(user, *tags)
+        return Query.objects.filter(id=qid).get()
+
+    def validate(self, data):
+        if 'user' not in data:
+            raise serializers.ValidationError('No user provided')
+        elif 'tags' not in data:
+            raise serializers.ValidationError('No tags provided')
+
+        user = User.objects.filter(id=data['user'])
+        if not user.exists():
+            raise serializers.ValidationError('User does not exist')
+
+        return data
 
     class Meta:
         model = Query
-
-    def to_internal_value(self, data):
-        query = json.loads(data)
-
-        if 'user' in query and 'tags' in query:
-            return submitQuery(query['user'], query['tags'])
-        return None
-
-    def to_representation(self, query):
-        user = query.user_id
-        return getQueryHistory(user)
+        fields = ('id', 'tags', 'user', 'comment', )
 
 
 class PinSerializer(serializers.ModelSerializer):

@@ -19,11 +19,17 @@ class QueryViewSet(viewsets.ModelViewSet):
     queryset = Query.objects.order_by('id')
     serializer_class = QuerySerializer
 
-    def create(self, request):
-        query_id = QuerySerializer(request)
+    def list(self, request, *args, **kwargs):
+        query_tags = QueryTag.objects.all()
+        serializer = QueryTagSerializer(query_tags)
+        return Response(serializer.data)
 
-        if query_id:
-            return Response({"queryId": query_id}, status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = QuerySerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"queryId": serializer.data}, status.HTTP_201_CREATED)
         return Response(status.HTTP_400_BAD_REQUEST)
 
 

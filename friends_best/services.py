@@ -10,11 +10,7 @@ from .models import QueryTag
 
 
 def submitQuery(userId, *tags):
-    warning(userId)
-    warning(tags)
-    warning(type(tags))
-
-    if type(tags) != list and tags.count == 0:
+    if tags.count == 0:
         return "query must include at least one tag"
 
     # create a query
