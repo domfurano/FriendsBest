@@ -99,7 +99,7 @@ def createRecommendation(userId, description, comments, *tags):
 
 # for class demo tag cloud
 def getRecommendationTagCounts():
-    tags = RecommendationTag.objects.values('tag')
+    tags = RecommendationTag.objects.values_list("tag", flat=True)
     tagSet = set(tags)  # put in a set to eliminate duplicates
     dictionary = {}
     for tag in tagSet:
@@ -122,7 +122,7 @@ def createPrompt():
 
 
 class Solution:
-    def __init__(self, description, **userComments):
+    def __init__(self, description, userComments):
         self.description = description
         self.userComments = userComments
 
