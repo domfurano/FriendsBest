@@ -172,18 +172,40 @@ class GetQuerySolutionsTest(TestCase):
         s1 = s[0]
         self.assertEqual(s1.description, "solid gold car")
         c1 = s1.userComments
-        c1 = c1["userComments"]
         self.assertEqual(len(c1.keys()), 2)
         self.assertEqual(c1["Amy Adams"], "best car ever")
         self.assertEqual(c1["Bilbo Baggins"], "better than pipe weed")
         s2 = s[1]
         self.assertEqual(s2.description, "shiny pocketwatch")
         c2 = s2.userComments
-        c2 = c2["userComments"]
         self.assertEqual(len(c2.keys()), 1)
         self.assertEqual(c2["Bilbo Baggins"], "a marvelous watch")
 
 
+class GetRecommendationTagCountTest(TestCase):
+    def setUp(self):
+        u1 = createUser("Amy Adams")
+        comments = "whatever"
+        tags = ["a", "b", "c"]
+        createRecommendation(u1, "apple", comments, *tags)
+        tags = ["d", "e", "f"]
+        createRecommendation(u1, "apple", comments, *tags)
+        tags = ["a", "f", "g"]
+        createRecommendation(u1, "orange", comments, *tags)
+        tags = ["b", "b", "c"]
+        createRecommendation(u1, "banana", comments, *tags)
+
+    def test1(self):
+        tc = getRecommendationTagCounts()
+        self.assertEqual(len(tc.keys()), 7)
+        self.assertEqual(tc["a"], 2)
+        self.assertEqual(tc["b"], 3)
+        self.assertEqual(tc["c"], 2)
+        self.assertEqual(tc["d"], 1)
+        self.assertEqual(tc["e"], 1)
+        self.assertEqual(tc["f"], 2)
+        self.assertEqual(tc["g"], 1)
+        
 
 
 
