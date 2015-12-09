@@ -25,10 +25,11 @@ class QueryViewSet(viewsets.ModelViewSet):
         for tag in tag_list:
             qid = tag['query']
             tag_value = tag['tag']
+            timestamp = Query.objects.filter(id=qid).get().timestamp
             if qid in query_dict:
                 query_dict[qid]['tags'].append(tag_value)
             else:
-                query_dict[qid] = {'id': qid, 'tags':[tag_value]}
+                query_dict[qid] = {'id': qid, 'tags':[tag_value], 'timestamp':timestamp}
         print(query_dict)
         query_list = list(query_dict.values())
         return Response(query_list)
