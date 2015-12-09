@@ -139,21 +139,29 @@ class QuerySerializer(serializers.ModelSerializer):
 
     def to_representation(self, query):
         solutions = getQuerySolutions(query.id)
-        solutionjson = {
+        solution_collection = {
             'queryId':query.id,
             'tags':solutions['tags'],
-            'solutions':{
-                'recommendations': []
-            }
+            'solutions': []
         }
-        warning(solutions)
+        lookup = {}
+        lookup_index = 0
+        warning('Length = {}'.format(len(solutions['solutions'])))
         for sol in solutions['solutions']:
             name = sol.description
             username = sol.userComments['name']
             comment = sol.userComments['comment']
-            solutionjson['solutions']['name'] = name
-            solutionjson['solutions']['recommendations'].append({'name': username, 'comment': comment})
-        return solutionjson
+            if name in lookup:
+                index = lookup[name]
+                solution_collection['solutions'][index]['recommendations']\
+                    .append({'name': username, 'comment': comment})
+            else:
+                lookup[name] = lookup_index
+                solution_collection['solutions'].append({'name': name, 'recommendations': []})
+                solution_collection['solutions'][lookup_index]['recommendations']\
+                    .append({'name': username, 'comment': comment})
+                lookup_index += 1
+        return solution_collection
 
     def create(self, validated_data):
         user = validated_data.get('user')
