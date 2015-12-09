@@ -6,7 +6,8 @@ define([
   'views/home/main',
   'views/search/history',
   'views/recommend/add',
-], function($, _, Backbone, HomeView, HistoryView, RecommendView){
+  'views/search/results',
+], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView){
 	
 	var AppRouter = Backbone.Router.extend({
 	    routes: {
@@ -45,7 +46,7 @@ define([
 		});
 		
 		app_router.on('route:search', function(queryid){
-			console.log("search for " + queryid)
+			this.render(new ResultsView());
 		});
 		
 		app_router.on('route:recommend', function(){
