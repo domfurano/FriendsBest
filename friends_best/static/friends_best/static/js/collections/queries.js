@@ -5,17 +5,13 @@ define([
 ], function(_, Backbone, QueryModel){
   
 	var QueriesCollection = Backbone.Collection.extend({
-		url: '/api/query',
+		url: '/fb/api/query',
 		model: QueryModel,
 		defaults: {
-			tags: [],
+			tags: []
 		},
-		parse: function(response, options){
-			data = [];
-			_.each(response, function(value, key, list) {
-				data.push({id: key, tags: value});
-			});
-			return data;
+		comparator: function(model) {
+		  return -model.get("id"); // Note the minus!
 		}
 	});
 	

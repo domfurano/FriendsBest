@@ -20,8 +20,8 @@ from django.views.generic.base import RedirectView
 from django.conf import settings
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/', include(router.urls))
+    url(r'^fb/admin/', include(admin.site.urls)),
+    url(r'^fb/api/', include(router.urls))
 ]
 
 if settings.DEBUG:
