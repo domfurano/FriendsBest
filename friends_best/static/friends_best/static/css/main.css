@@ -103,10 +103,11 @@
 	}
 	
 	.list .item .tags span {
-		background-color: #e8edef;
 		padding: 4px 6px;
+		margin-right: 3px;
 		-webkit-border-radius: 3px;
-		border: 1px solid #abb4ba;
+		border: 1px solid #d9d9d9;
+		background-color: #ededed;
 	}
 	
 	.list .item .count {
