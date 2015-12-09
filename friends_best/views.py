@@ -20,9 +20,20 @@ class QueryViewSet(viewsets.ModelViewSet):
     serializer_class = QuerySerializer
 
     def list(self, request, *args, **kwargs):
-        query_tags = QueryTag.objects.all()
-        serializer = QueryTagSerializer(query_tags)
-        return Response(serializer.data)
+        query_dict = dict()
+        tag_list = QueryTag.objects.all().values('query', 'tag',)
+        for tag in tag_list:
+            qid = tag['query']
+            tag_value = tag['tag']
+            print(tag)
+            print(query_dict)
+            if qid in query_dict:
+                query_dict[qid]['tags'].append(tag_value)
+            else:
+                query_dict[qid] = {'id': qid, 'tags':[tag_value]}
+        print(query_dict)
+        query_list = list(query_dict.values())
+        return Response(query_list)
 
     def create(self, request, *args, **kwargs):
         serializer = QuerySerializer(data=request.data)

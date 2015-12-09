@@ -33,15 +33,17 @@ def getQuerySolutions(queryId):
     queryTags = QueryTag.objects.filter(query=q1)
     recommendationTags = []
     things = []
+    tags = set()
     for qt in queryTags:
         recommendationTags.extend(RecommendationTag.objects.filter(tag=qt.tag))
     recommendationTags = set(recommendationTags)  # put in a set to eliminate duplicates
     for rt in recommendationTags:
         things.append(rt.recommendation.thing)
+        tags.add(rt.tag)
     things = set(things)  # put in a set to eliminate duplicates
 
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
-    solutions = []
+    solutions = {'tags': tags, 'solutions': []}
     for thing in things:
         description = TextThing.objects.filter(thing_id=thing.id)[0].description
         recommendations = Recommendation.objects.filter(thing=thing)
@@ -49,8 +51,9 @@ def getQuerySolutions(queryId):
         for recommendation in recommendations:
             userName = recommendation.user.userName
             comments = recommendation.comments
-            dictionary[userName] = comments
-        solutions.append(Solution(description=description, userComments=dictionary))
+            dictionary['name'] = userName
+            dictionary['comment'] = comments
+        solutions['solutions'].append(Solution(description=description, userComments=dictionary))
 
     return solutions
 

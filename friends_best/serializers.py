@@ -51,15 +51,17 @@ class RecommendationTagSerializer(serializers.ModelSerializer):
 class QueryTagSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
+        warning('this works')
         query_dict = dict()
-        tag_list = QueryTag.objects.all().values('query', 'tag')
+        tag_list = QueryTag.objects.all().values('query', 'tag',)
         for tag in tag_list:
             qid = tag['query']
             if qid in query_dict:
-                query_dict[qid].append(tag['tag'])
+                query_dict[qid]['tags'].append(tag['tag'])
             else:
-                query_dict[qid] = [tag['tag']]
-        return query_dict
+                query_dict[qid] = {'id': qid, 'tags': [tag['tag']]}
+        query_serialized = json.dumps(list(query_dict.values()))
+        return query_serialized
 
     class Meta:
         model = QueryTag
@@ -136,13 +138,21 @@ class QuerySerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, query):
-        solution = getQuerySolutions(query.id)
-        user = query.user.userName
-        solution_json = dict()
-        for sol in solution:
-            user_name = sol.userComments['userComments']
-            solution_json[sol.description] = user_name
-        return solution_json
+        solutions = getQuerySolutions(query.id)
+        solutionjson = {
+            'tags':solutions['tags'],
+            'solutions':{
+                'recommendations': []
+            }
+        }
+        warning(solutions)
+        for sol in solutions['solutions']:
+            name = sol.description
+            username = sol.userComments['name']
+            comment = sol.userComments['comment']
+            solutionjson['solutions']['name'] = name
+            solutionjson['solutions']['recommendations'].append({'name': username, 'comment': comment})
+        return solutionjson
 
     def create(self, validated_data):
         user = validated_data.get('user')
