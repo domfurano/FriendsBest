@@ -36,10 +36,10 @@ def getQuerySolutions(queryId):
     tags = set()
     for qt in queryTags:
         recommendationTags.extend(RecommendationTag.objects.filter(tag=qt.tag))
+        tags.add(qt.tag)
     recommendationTags = set(recommendationTags)  # put in a set to eliminate duplicates
     for rt in recommendationTags:
         things.append(rt.recommendation.thing)
-        tags.add(rt.tag)
     things = set(things)  # put in a set to eliminate duplicates
 
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)

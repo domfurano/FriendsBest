@@ -25,8 +25,6 @@ class QueryViewSet(viewsets.ModelViewSet):
         for tag in tag_list:
             qid = tag['query']
             tag_value = tag['tag']
-            print(tag)
-            print(query_dict)
             if qid in query_dict:
                 query_dict[qid]['tags'].append(tag_value)
             else:
@@ -40,7 +38,9 @@ class QueryViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({"queryId": serializer.data}, status.HTTP_201_CREATED)
+            data = serializer.data
+            queryid = data.pop('queryId', None)
+            return Response({queryid: data}, status.HTTP_201_CREATED)
         return Response(status.HTTP_400_BAD_REQUEST)
 
 
