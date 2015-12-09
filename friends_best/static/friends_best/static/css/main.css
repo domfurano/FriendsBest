@@ -32,12 +32,12 @@
 	  font-size: 13px;
 	}
 	
-	header.searchhistory {
+	header.history {
 		background-color: #abb4ba;
 		color: #ffffff;
 	}
 	
-	header.searchhistory i {
+	header.history i {
 		color: #ffffff;
 		text-shadow: none;
 	}
@@ -50,6 +50,9 @@
 	header.recommend i {
 		color: #ffffff;
 		text-shadow: none;
+	}
+	
+	header.results {
 	}
 	
 	header .title {
@@ -95,7 +98,7 @@
 		background-color: #fff;
 		padding: 10px 10px 10px 8px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
-		-webkit-border-radius: 3px;
+		-webkit-border-radius: 5px;
 	}
 	
 	.list .item div {
@@ -103,13 +106,43 @@
 	}
 	
 	.list .item .tags span {
-		background-color: #e8edef;
 		padding: 4px 6px;
+		margin-right: 3px;
 		-webkit-border-radius: 3px;
-		border: 1px solid #abb4ba;
+		border: 1px solid #d9d9d9;
+		background-color: #ededed;
+	}
+	
+	.list .item .name {
+		font-size: 30px;
+		line-height: 30px;
 	}
 	
 	.list .item .count {
+		text-align: right;
+	}
+	
+	.list .solution {
+		margin-bottom: 10px;
+		background-color: #ededed;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		-webkit-border-radius: 5px;
+	}
+	
+	.list .solution div {
+		padding: 0;
+	}
+	
+	.list .solution .name {
+		font-size: 18px;
+		padding-top: 3px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	
+	.list .solution .dots {
 		text-align: right;
 	}
 	
@@ -124,6 +157,18 @@
 	
 	.form-group {
 		margin-bottom: 0;
+	}
+	
+	.form-group.submit {
+		text-align: right;
+	}
+	
+	.form-group.submit i {
+		cursor: pointer;
+	}
+	
+	.form-control.noresize {
+	  resize: none; 
 	}
 	
 	.newrecommendation .form-group {

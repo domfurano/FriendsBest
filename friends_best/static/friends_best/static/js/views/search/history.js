@@ -3,9 +3,9 @@ define([
   'underscore',
   'backbone',
   'collections/queries',
-  'text!templates/search/back.html',
-  'text!templates/search/item.html',
-], function($, _, Backbone, QueriesCollection, backHTML, itemHTML){
+  'text!templates/search/history/back.html',
+  'text!templates/search/history/items.html',
+], function($, _, Backbone, QueriesCollection, backHTML, itemsHTML){
 
 require.config({
     urlArgs: "bust=" + (new Date()).getTime()
@@ -20,24 +20,22 @@ require.config({
 
     render: function(){
       
-      that = this;
+		that = this;
+		
+		var backTemplate = _.template( backHTML, {} );
+		this.$el.append(backTemplate);
+		$(".back-button").click(function() {
+			console.log("going back");
+			parent.history.go(-1);
+			return false;
+		});
       
-      this.collection = new QueriesCollection();
-      
-      this.collection.fetch({success: function(collection, response, options){
+		this.collection = new QueriesCollection();
+		this.collection.fetch({success: function(collection, response, options){
 			// Render the collection
-			itemTemplate = _.template(itemHTML);
-			that.$el.append(itemTemplate({collection: that.collection.toJSON()}));
-      }});
-      
-      var backTemplate = _.template( backHTML, {} );
-      this.$el.append(backTemplate);
-      
-      $(".back-button").click(function() {
-	      console.log("going back");
-	      parent.history.go(-1);
-	      return false;
-      });
+			itemsTemplate = _.template(itemsHTML);
+			that.$el.append(itemsTemplate({collection: that.collection.toJSON()}));
+		}});
  
     },
     

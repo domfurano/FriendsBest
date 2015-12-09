@@ -6,7 +6,7 @@ define([
   'text!templates/recommend/form.html',
 ], function($, _, Backbone, backHTML, formHTML){
 
-  var HomeView = Backbone.View.extend({
+  var RecommendView = Backbone.View.extend({
     el: $(".view"),
 
     render: function(){
@@ -16,8 +16,10 @@ define([
       var backTemplate = _.template( backHTML, {} );
       this.$el.append(backTemplate);
       
-      var formTemplate = _.template( formHTML, {} );
-      this.$el.append(formTemplate);
+      var formTemplate = _.template( formHTML );
+      this.$el.append(formTemplate({tags: this.tags}));
+ 
+	  $('#tags').tokenfield({delimiter : ' '});
  
     },
     
@@ -27,6 +29,6 @@ define([
 
   });
 
-  return HomeView;
+  return RecommendView;
   
 });

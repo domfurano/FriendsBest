@@ -3,10 +3,11 @@ define([
   'underscore',
   'backbone',
   'app',
+  'views/recommend/add',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html'
-], function($, _, Backbone, App, searchHTML, promptHTML, menuHTML){
+], function($, _, Backbone, App, Recommend, searchHTML, promptHTML, menuHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -62,7 +63,10 @@ define([
 				} else if(ui.position.left > distance) {
 					ui.helper.animate({left: "+=600"}, 200, function() {
 						require(['app'],function(App){
-							App.router.navigate('recommend', {trigger: true});
+							r = new Recommend()
+							r.tags = ui.helper.children(".topic").html();
+							App.router.navigate('recommend');
+							App.router.render(r);
 						});
 					});
 				}
