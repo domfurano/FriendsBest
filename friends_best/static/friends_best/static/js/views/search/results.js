@@ -40,6 +40,9 @@ define([
 			// Load tags into the search field
 			$("#tags").val(model.get("tags").join(" ")).tokenfield({delimiter : ' '});
 			
+			// Empty the list
+			list.html("");
+			
 			var solutions = []
 			itemTemplate = _.template(itemHTML);
 			_.each(model.get("solutions"), function(solution) {
@@ -50,13 +53,13 @@ define([
 				list.append(itemTemplate(solution));
 			});
 			
-			// Send solutions to template
+			if(model.get("solutions").length == 0) {
+				list.append("<div class='container text'>No results</div>")
+			}
+			
+			// TODO Send solutions to view when pressed
 
 		}});
-
-			// Render the collection
-			//solutionsTemplate = _.template(solutionsHTML);
-			//that.$el.append(solutionsTemplate({collection: that.collection.toJSON()}));
  
     },
     

@@ -122,6 +122,10 @@
 		text-align: right;
 	}
 	
+	.list .text {
+		text-align: center;
+	}
+	
 	.list .solution {
 		margin-bottom: 10px;
 		background-color: #dedede;
@@ -166,6 +170,8 @@
 	
 	.form-group.submit {
 		text-align: right;
+		padding-left: 0;
+		padding-right: 0;
 	}
 	
 	.form-group.submit i {
@@ -247,8 +253,14 @@
 		padding-top: 20px;
 	}
 	
-	.search {
-		padding-left: 10px;
+	.mainsearch .history, .mainsearch .submit {
+		padding-top: 4px;
+		cursor: pointer;
+	}
+	
+	.mainsearch .search {
+		padding-left: 0;
+		padding-right: 0;
 	}
 	
 	.row.head {

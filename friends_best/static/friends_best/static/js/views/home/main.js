@@ -4,11 +4,12 @@ define([
   'backbone',
   'app',
   'views/recommend/add',
+  'views/search/results',
   'models/query',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html'
-], function($, _, Backbone, App, Recommend, QueryModel, searchHTML, promptHTML, menuHTML){
+], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, searchHTML, promptHTML, menuHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -21,16 +22,11 @@ define([
 		var promptTemplate = _.template(promptHTML);
 		
 		prompts = 	_.shuffle([
-						{item : "Yoga Pants", user: "Paul Hanson"},
-						{item : "Fast Food", user: "Ray Phillips"},
-						{item : "Hoverboards", user: "Dominic Furano"},
-						{item : "Vacuums", user: "Umair Naveed"},
-						{item : "Reverse Engineering", user: "Jim de St. Germain"},
-						{item : "Guy Birthday Present"},
-						{item : "UofU CS Elective"},
-						{item : "Snowshoes"},
-						{item : "Italian Restaurant"},
-						{item : "Science Fiction Novel"},
+						{item : "Wireless Mouse", user: "Jim de St. Germain"},
+						{item : "Gym"},
+						{item : "Coffee Shop"},
+						{item : "Sushi Restaurant"},
+						{item : "Fantasy Novel"},
 					]);
 		
 		_.each(prompts, function(prompt) {
@@ -40,7 +36,7 @@ define([
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
-		$('#search-field').tokenfield({delimiter : ' ', inputType: 'search'});
+		$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
 		
 		$('#search-field-tokenfield').keypress(function (e) {
 		  if (e.which == 13) {
@@ -49,17 +45,33 @@ define([
 		  }
 		});
 		
+		$(".submit").click(function() {
+			$('form#query').submit();
+		    return false;
+		});
+		
 		$('form#query').submit(function() {
-			// Get tags
-			var tags = $('#search-field').val().toLowerCase().split(' ');
+			
+			var tags = $('#search-field').tokenfield('getTokensList').split(' ');
+			
+			if(tags.length == 0) return false;
+			
 			// create query
 			var query = new QueryModel({user: 2, tags: tags});
 			// save query
-			query.save({success: function(model, response, options) {
-				var id = model.get("id");
-				// route to id
-				console.log(id);
-			}});
+			query.save(null, {
+				success: function(model, response, options) {
+					var id = model.get("id");
+					var number = model.get("solutions").length;
+					// route to id
+					console.log("we have a new query, " + id + ", and got " + number + " solutions.");
+					require(['app'],function(App){
+						App.router.navigate('search/'+id, {trigger: true});
+					});
+				},
+				error: function() {
+					console.log("error saving model");
+				}});
 			return false;
 		});
 		

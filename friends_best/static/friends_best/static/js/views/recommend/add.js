@@ -20,7 +20,7 @@ define([
       var formTemplate = _.template( formHTML );
       this.$el.append(formTemplate({tags: this.tags}));
  
-	  $('#tags').tokenfield({delimiter : ' '});
+	  $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
 	  
 	  $('.submit').click(function() {
 
