@@ -4,10 +4,11 @@ define([
   'backbone',
   'app',
   'views/recommend/add',
+  'models/query',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html'
-], function($, _, Backbone, App, Recommend, searchHTML, promptHTML, menuHTML){
+], function($, _, Backbone, App, Recommend, QueryModel, searchHTML, promptHTML, menuHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -41,11 +42,15 @@ define([
       
 		$('#search-field').tokenfield({delimiter : ' '});
 		
+		$('#query').submit(function() {
+			alert();
+		});
+		
+		// Prompts
 		$('.swipable').each( function(index, item) {
 			d = Math.random() * 3 - 1.5;
 			$(item).css({'transform': 'rotate('+d+'deg)'});
 		});
-		
 		
 		distance = 30;
 		$('.swipable').draggable({

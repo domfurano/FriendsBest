@@ -10,8 +10,9 @@ define([
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
 
-	initialize: function() {
-		console.log("init ResultsView")
+	initialize: function(options) {
+		console.log("init ResultsView");
+		this.id = options.id;
 	},
 
     render: function() {
@@ -28,15 +29,20 @@ define([
 		
 		itemsTemplate = _.template(itemsHTML);
 		that.$el.append(itemsTemplate());
-/*
       
-		this.collection = new ResultsCollection();
-		this.collection.fetch({success: function(collection, response, options){
-			// Render the collection
-			solutionsTemplate = _.template(solutionsHTML);
-			that.$el.append(solutionsTemplate({collection: that.collection.toJSON()}));
+		this.model = new QueryModel();
+		this.model.set({"id": this.id});
+		this.model.fetch({success: function(model, response, options){
+
+			$("#tags").val(model.get("tags").join(" ")).tokenfield({delimiter : ' '});
+			
+
+			console.log();
 		}});
-*/
+
+			// Render the collection
+			//solutionsTemplate = _.template(solutionsHTML);
+			//that.$el.append(solutionsTemplate({collection: that.collection.toJSON()}));
  
     },
     

@@ -46,7 +46,7 @@ define([
 		});
 		
 		app_router.on('route:search', function(queryid){
-			this.render(new ResultsView());
+			this.render(new ResultsView({id: queryid}));
 		});
 		
 		app_router.on('route:recommend', function(){
