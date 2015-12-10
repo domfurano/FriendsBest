@@ -40,10 +40,27 @@ define([
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
-		$('#search-field').tokenfield({delimiter : ' '});
+		$('#search-field').tokenfield({delimiter : ' ', inputType: 'search'});
 		
-		$('#query').submit(function() {
-			alert();
+		$('#search-field-tokenfield').keypress(function (e) {
+		  if (e.which == 13) {
+		    $('form#query').submit();
+		    return false;
+		  }
+		});
+		
+		$('form#query').submit(function() {
+			// Get tags
+			var tags = $('#search-field').val().toLowerCase().split(' ');
+			// create query
+			var query = new QueryModel({user: 2, tags: tags});
+			// save query
+			query.save({success: function(model, response, options) {
+				var id = model.get("id");
+				// route to id
+				console.log(id);
+			}});
+			return false;
 		});
 		
 		// Prompts

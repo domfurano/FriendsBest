@@ -5,7 +5,8 @@ define([
   'models/query',
   'text!templates/search/results/back.html',
   'text!templates/search/results/items.html',
-], function($, _, Backbone, QueryModel, backHTML, itemsHTML){
+  'text!templates/search/results/item.html',
+], function($, _, Backbone, QueryModel, backHTML, itemsHTML, itemHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -29,15 +30,28 @@ define([
 		
 		itemsTemplate = _.template(itemsHTML);
 		that.$el.append(itemsTemplate());
+		
+		var list = that.$el.find(".listcontainer");
       
 		this.model = new QueryModel();
 		this.model.set({"id": this.id});
 		this.model.fetch({success: function(model, response, options){
 
+			// Load tags into the search field
 			$("#tags").val(model.get("tags").join(" ")).tokenfield({delimiter : ' '});
 			
+			var solutions = []
+			itemTemplate = _.template(itemHTML);
+			_.each(model.get("solutions"), function(solution) {
+				solution = {name: solution.name.split("\n")[0].trim(),
+								longname: solution.name,
+								recommendations: solution.recommendations};
+				solutions.push(solution);
+				list.append(itemTemplate(solution));
+			});
+			
+			// Send solutions to template
 
-			console.log();
 		}});
 
 			// Render the collection

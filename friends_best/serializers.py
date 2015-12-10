@@ -140,7 +140,7 @@ class QuerySerializer(serializers.ModelSerializer):
     def to_representation(self, query):
         solutions = getQuerySolutions(query.id)
         solution_collection = {
-            'queryId':query.id,
+            'id':query.id,
             'tags':solutions['tags'],
             'solutions': []
         }

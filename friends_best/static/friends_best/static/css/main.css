@@ -7,7 +7,7 @@
 	    position: absolute;
         overflow: hidden;
 		
-		font-family: "proxima-nova-condensed";
+		font-family: "proxima-nova-condensed", helvetica, sans-serif;
 		height: 100%;
 		width: 100%;
 		
@@ -124,7 +124,7 @@
 	
 	.list .solution {
 		margin-bottom: 10px;
-		background-color: #ededed;
+		background-color: #dedede;
 		padding: 10px 10px 8px 15px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
@@ -144,6 +144,11 @@
 	
 	.list .solution .dots {
 		text-align: right;
+		padding-top: 4px;
+	}
+	
+	.back-button {
+		cursor: pointer;
 	}
 	
 	footer {
