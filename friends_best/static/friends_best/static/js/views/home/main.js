@@ -26,7 +26,7 @@ define([
 						{item : "Gym", user: "Dominic Furano"},
 						{item : "Coffee Shop", user: "Ray Phillips"},
 						{item : "Sushi Restaurant", user: "Umair Naveed"},
-						{item : "Fantasy Novel", "Paul Hanson"},
+						{item : "Fantasy Novel", user: "Paul Hanson"},
 					]);
 		
 		_.each(prompts, function(prompt) {
