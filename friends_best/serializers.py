@@ -146,21 +146,22 @@ class QuerySerializer(serializers.ModelSerializer):
         }
         lookup = {}
         lookup_index = 0
-        warning('Length = {}'.format(len(solutions['solutions'])))
         for sol in solutions['solutions']:
             name = sol.description
-            username = sol.userComments['name']
-            comment = sol.userComments['comment']
-            if name in lookup:
-                index = lookup[name]
-                solution_collection['solutions'][index]['recommendations']\
-                    .append({'name': username, 'comment': comment})
-            else:
-                lookup[name] = lookup_index
-                solution_collection['solutions'].append({'name': name, 'recommendations': []})
-                solution_collection['solutions'][lookup_index]['recommendations']\
-                    .append({'name': username, 'comment': comment})
-                lookup_index += 1
+            recommendations = [rec for rec in sol.userComments]
+            solution_collection['solutions'].append({'name': name, 'recommendation': recommendations})
+            # username = sol.userComments['name']
+            # comment = sol.userComments['comment']
+            # if name in lookup:
+            #     index = lookup[name]
+            #     solution_collection['solutions'];['userComments'][index]['recommendations']\
+            #         .append({'name': username, 'comment': comment})
+            # else:
+            #     lookup[name] = lookup_index
+            #     solution_collection['solutions']['userComments'].append({'name': name, 'recommendations': []})
+            #     solution_collection['solutions']['userComments'][lookup_index]['recommendations']\
+            #         .append({'name': username, 'comment': comment})
+            #     lookup_index += 1
         return solution_collection
 
     def create(self, validated_data):

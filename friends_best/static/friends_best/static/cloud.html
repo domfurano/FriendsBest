@@ -1,0 +1,36 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <title>FriendsBest - Word Cloud</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="bower_components/jqcloud2/dist/jqcloud.min.js"></script>
+        <link rel="stylesheet" href="css/jquery-ui.min.css">
+        <link rel="stylesheet" href="bower_components/jqcloud2/dist/jqcloud.min.css">
+        <script>
+            $(document).ready(function(){
+                $.get("http://127.0.0.1:8000/fb/api/recommendationtag/", function() {
+                }).done(function(data){
+                   $('.tagCloud').jQCloud(data);
+                  console.log(data);
+                });
+               var words = [
+                 {text: "Lorem", weight: 13},
+                 {text: "Ipsum", weight: 10.5},
+                 {text: "Dolor", weight: 9.4},
+                 {text: "Sit", weight: 8},
+                 {text: "Amet", weight: 6.2},
+                 {text: "Consectetur", weight: 5},
+                 {text: "Adipiscing", weight: 5}];
+               $('.tagCloud').jQCloud(words);
+              });
+        </script>
+    </head>
+    <body>
+    <div class="tagCloud">
+    </div>
+    </body>
+</html>
