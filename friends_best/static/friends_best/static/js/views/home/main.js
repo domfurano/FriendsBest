@@ -23,10 +23,10 @@ define([
 		
 		prompts = 	_.shuffle([
 						{item : "Wireless Mouse", user: "Jim de St. Germain"},
-						{item : "Gym"},
-						{item : "Coffee Shop"},
-						{item : "Sushi Restaurant"},
-						{item : "Fantasy Novel"},
+						{item : "Gym", user: "Dominic Furano"},
+						{item : "Coffee Shop", user: "Ray Phillips"},
+						{item : "Sushi Restaurant", user: "Umair Naveed"},
+						{item : "Fantasy Novel", "Paul Hanson"},
 					]);
 		
 		_.each(prompts, function(prompt) {
