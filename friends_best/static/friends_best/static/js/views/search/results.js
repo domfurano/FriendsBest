@@ -3,10 +3,11 @@ define([
   'underscore',
   'backbone',
   'models/query',
+  'views/solution/details',
   'text!templates/search/results/back.html',
   'text!templates/search/results/items.html',
   'text!templates/search/results/item.html',
-], function($, _, Backbone, QueryModel, backHTML, itemsHTML, itemHTML){
+], function($, _, Backbone, QueryModel, SolutionView, backHTML, itemsHTML, itemHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -45,19 +46,35 @@ define([
 			
 			var solutions = []
 			itemTemplate = _.template(itemHTML);
-			_.each(model.get("solutions"), function(solution) {
-				solution = {name: solution.name.split("\n")[0].trim(),
-								longname: solution.name,
-								recommendations: solution.recommendations};
-				solutions.push(solution);
-				list.append(itemTemplate(solution));
+			_.each(model.get("solutions"), function(solution, index) {
+				s = {
+								id: index,
+								name: solution.name.split("\n")[0].trim(),
+								longname: solution.name.split("\n").join("<br>"),
+								recommendations: solution.recommendations
+							};
+				solutions.push(s);
+				list.append(itemTemplate(s));
+			});
+			
+			$(".solution").click(function() {
+				index = $(this).attr("id");
+				
+				// Create a view with the solution at the index.
+				solution = solutions[index];
+				
+				console.log(solution);
+				
+				require(['app'],function(App){
+							App.router.render(new SolutionView({solution: solution}));
+							App.router.navigate('search/' + this.id + '/' + index);
+						});
+				
 			});
 			
 			if(model.get("solutions").length == 0) {
 				list.append("<div class='container text'>No results</div>")
 			}
-			
-			// TODO Send solutions to view when pressed
 
 		}});
  
