@@ -1,17 +1,17 @@
-<header>
-	<form class="form-horizontal container">
+<header class="mainsearch">
+	<form class="form-horizontal container" id="query">
 		<div class="form-group">
-			<div class="col-xs-2 col-md-2">
-				<a href="#search" >
-					<span class="fa-stack fa-lg history-button">
-						<i class="fa fa-history fa-stack-2x" style="color:#abb4ba"></i>
-						<i class="fa fa-circle fa-stack-1x" style="color:#e93929; display:none;"></i>
-					</span>
-				</a>
-			</div>
-			<div class="col-xs-10 col-md-10 search">
+			<a href="#search">
+				<div class="col-xs-2 col-md-2 history">
+					<i class="fa fa-history fa-2x" style="color:#abb4ba"></i>
+				</div>
+			</a>
+			<div class="col-xs-8 col-md-8 search">
 				<label for="search-field" class="sr-only">Search Tags</label>
-				<input id="search-field" type="text" class="form-control">
+				<input id="search-field" type="search" class="form-control">
+			</div>
+			<div class="col-xs-2 col-md-2 submit">
+				<i class="fa fa-search fa-2x" style="color:#abb4ba"></i>
 			</div>
 		</div>
 	</form>

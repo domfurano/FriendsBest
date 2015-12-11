@@ -40,8 +40,7 @@ class QueryViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             data = serializer.data
-            queryid = data.pop('queryId', None)
-            return Response({queryid: data}, status.HTTP_201_CREATED)
+            return Response(data, status.HTTP_201_CREATED)
         return Response(status.HTTP_400_BAD_REQUEST)
 
 

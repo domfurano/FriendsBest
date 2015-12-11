@@ -7,7 +7,7 @@
 	    position: absolute;
         overflow: hidden;
 		
-		font-family: "proxima-nova-condensed";
+		font-family: "proxima-nova-condensed", helvetica, sans-serif;
 		height: 100%;
 		width: 100%;
 		
@@ -122,9 +122,13 @@
 		text-align: right;
 	}
 	
+	.list .text {
+		text-align: center;
+	}
+	
 	.list .solution {
 		margin-bottom: 10px;
-		background-color: #ededed;
+		background-color: #dedede;
 		padding: 10px 10px 8px 15px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
@@ -144,6 +148,11 @@
 	
 	.list .solution .dots {
 		text-align: right;
+		padding-top: 4px;
+	}
+	
+	.back-button {
+		cursor: pointer;
 	}
 	
 	footer {
@@ -161,6 +170,8 @@
 	
 	.form-group.submit {
 		text-align: right;
+		padding-left: 0;
+		padding-right: 0;
 	}
 	
 	.form-group.submit i {
@@ -242,8 +253,14 @@
 		padding-top: 20px;
 	}
 	
-	.search {
-		padding-left: 10px;
+	.mainsearch .history, .mainsearch .submit {
+		padding-top: 4px;
+		cursor: pointer;
+	}
+	
+	.mainsearch .search {
+		padding-left: 0;
+		padding-right: 0;
 	}
 	
 	.row.head {

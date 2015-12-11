@@ -503,7 +503,10 @@
 
           // Create token
           if (this.$input.is(document.activeElement) && this.$input.val().length || this.$input.data('edit')) {
-            return this.createTokensFromInput(e, this.$input.data('edit'));
+            // Ray Phillips edited this
+            // return this.createTokensFromInput(e, this.$input.data('edit'));
+            // so that return would trigger a form submission 
+            this.createTokensFromInput(e, this.$input.data('edit'));
           }
 
           // Edit token
