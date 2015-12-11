@@ -37,7 +37,7 @@ define([
 		list.html("");
 		
 		commentTemplate = _.template(commentHTML);
-		_.each(this.solutions.recommendations, function(recommendation, index) {
+		_.each(this.solution.recommendation, function(recommendation, index) {
 			r = { name: recommendation.name.trim(),
 				  comment: recommendation.comment.split("\n").join("<br>")};
 			list.append(commentTemplate(r));

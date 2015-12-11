@@ -58,8 +58,16 @@
 	header.solution {
 		height: 120px;
 		background-color: #666;
-		font-size: 18px;
 		color: #fff;
+	}
+	
+	header.solution i {
+		color: #ffffff;
+		text-shadow: none;
+	}
+	
+	header.solution .details {
+		font-size: 18px;
 	}
 	
 	header .title {
@@ -79,6 +87,10 @@
 		bottom: 0;
 		padding: 0;
 		overflow-x: scroll;
+	}
+	
+	section.lower {
+		top:120px;
 	}
 	
 	section.list::-webkit-scrollbar { 

@@ -34,6 +34,8 @@ define([
 		
 		var list = that.$el.find(".listcontainer");
       
+		var id = this.id;
+      
 		this.model = new QueryModel();
 		this.model.set({"id": this.id});
 		this.model.fetch({success: function(model, response, options){
@@ -51,7 +53,7 @@ define([
 								id: index,
 								name: solution.name.split("\n")[0].trim(),
 								longname: solution.name.split("\n").join("<br>"),
-								recommendations: solution.recommendations
+								recommendation: solution.recommendation
 							};
 				solutions.push(s);
 				list.append(itemTemplate(s));
@@ -63,11 +65,9 @@ define([
 				// Create a view with the solution at the index.
 				solution = solutions[index];
 				
-				console.log(solution);
-				
 				require(['app'],function(App){
 							App.router.render(new SolutionView({solution: solution}));
-							App.router.navigate('search/' + this.id + '/' + index);
+							App.router.navigate('search/' + id + '/' + index);
 						});
 				
 			});

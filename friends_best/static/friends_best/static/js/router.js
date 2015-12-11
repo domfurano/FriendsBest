@@ -13,12 +13,14 @@ define([
 	    routes: {
 			"": 					"main",				// #
 			"search/:queryid":		"search",			// #search/id
+			"search/:queryid/:sid":		"search",			// #search/id
 			"search":				"searchhistory",	// #search
 			"recommend":			"recommend"			// #recommend
 		},
 		render: function(view) {
 			// Close the current view
 	        if (this.currentView) {
+		        console.log("remove exisiting view");
 	            this.currentView.remove();
 	        }
 	
@@ -55,6 +57,7 @@ define([
 		Backbone.history.start();
 		
 		console.log("router.js")
+		
 		
 		return app_router
 	};
