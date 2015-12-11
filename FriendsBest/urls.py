@@ -19,10 +19,14 @@ from friends_best.urls import router
 from django.views.generic.base import RedirectView
 from django.conf import settings
 
-urlpatterns = [
-    url(r'^fb/admin/', include(admin.site.urls)),
-    url(r'^fb/api/', include(router.urls))
-]
-
 if settings.DEBUG:
-    urlpatterns.append(url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'))
+    urlpatterns = [
+        url(r'^fb/admin/', include(admin.site.urls)),
+        url(r'^fb/api/', include(router.urls))
+        url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index')
+    ]
+else:
+    urlpatterns = [
+        url(r'^admin/', include(admin.site.urls)),
+        url(r'^api/', include(router.urls))
+    ]
