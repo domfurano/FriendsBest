@@ -115,7 +115,8 @@ def getRecommendationTagCounts():
     
     
 def createTextThing(description):
-    thing = Thing.objects.all().first()
+    thing = Thing()
+    thing.save()
     text = TextThing(thing=thing, description=description)
     text.save()
 
