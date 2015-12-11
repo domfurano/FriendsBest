@@ -68,6 +68,8 @@ def createUser(userName):
     user = User(userName=userName)
     user.save()
 
+    return user.id
+
 
 def createFriendship(userOneId, userTwoId):
     u1 = User.objects.get(id=userOneId)
