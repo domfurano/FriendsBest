@@ -7,10 +7,6 @@ define([
   'text!templates/search/history/items.html',
 ], function($, _, Backbone, QueriesCollection, backHTML, itemsHTML){
 
-require.config({
-    urlArgs: "bust=" + (new Date()).getTime()
-});
-
   var HistoryView = Backbone.View.extend({
     el: $(".view"),
 

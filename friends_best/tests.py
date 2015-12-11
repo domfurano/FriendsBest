@@ -182,6 +182,77 @@ class GetQuerySolutionsTest(TestCase):
         self.assertEqual(c2["Bilbo Baggins"], "a marvelous watch")
 
 
+# make sure the method returns  all solutions
+class GetQuerySolutionsTest2(TestCase):
+    def setUp(self):
+        # create things
+        description1 = "1 cool thing"
+        description2 = "2 cool thing"
+        description3 = "3 cool thing"
+        description4 = "4 cool thing"
+        description5 = "5 cool thing"
+        description6 = "6 cool thing"
+        description7 = "7 cool thing"
+        description8 = "8 cool thing"
+        description9 = "9 cool thing"
+        description10 = "10 cool thing"
+        description11 = "11 cool thing"
+        description12 = "12 cool thing"
+        description13 = "13 cool thing"
+        description14 = "14 cool thing"
+        description15 = "15 cool thing"
+        createTextThing(description1)
+        createTextThing(description2)
+        createTextThing(description3)
+        createTextThing(description4)
+        createTextThing(description5)
+        createTextThing(description6)
+        createTextThing(description7)
+        createTextThing(description8)
+        createTextThing(description9)
+        createTextThing(description10)
+        createTextThing(description11)
+        createTextThing(description12)
+        createTextThing(description13)
+        createTextThing(description14)
+        createTextThing(description15)
+        # create recommendations
+        u1 = createUser("Amy Adams")
+        u2 = createUser("Bob Barker")
+        u3 = createUser("Cindy Crawford")
+        u4 = createUser("Donald Dock")
+        u5 = createUser("Eve Evans")
+        comments = "whatever"
+        tags = ["totally", "cool", "thing"]
+        createRecommendation(u1, description1, comments, *tags)
+        createRecommendation(u2, description2, comments, *tags)
+        createRecommendation(u3, description3, comments, *tags)
+        createRecommendation(u4, description4, comments, *tags)
+        createRecommendation(u5, description5, comments, *tags)
+        createRecommendation(u1, description6, comments, *tags)
+        createRecommendation(u2, description7, comments, *tags)
+        createRecommendation(u3, description8, comments, *tags)
+        createRecommendation(u4, description9, comments, *tags)
+        createRecommendation(u5, description10, comments, *tags)
+        createRecommendation(u1, description11, comments, *tags)
+        createRecommendation(u2, description12, comments, *tags)
+        createRecommendation(u3, description13, comments, *tags)
+        createRecommendation(u4, description14, comments, *tags)
+        createRecommendation(u5, description15, comments, *tags)
+        # create query
+        u6 = createUser("Fred Foley")
+        qTags = ["cool"]
+        submitQuery(u6, *qTags)
+
+    def test1(self):
+        self.assertEqual(User.objects.count(), 6)
+        self.assertEqual(Thing.objects.count(), 15)
+        self.assertEqual(TextThing.objects.count(), 15)
+        self.assertEqual(RecommendationTag.objects.count(), 45)
+        s = getQuerySolutions(1)
+        self.assertEqual(len(s), 15)
+
+
 class GetRecommendationTagCountTest(TestCase):
     def setUp(self):
         u1 = createUser("Amy Adams")
@@ -206,6 +277,5 @@ class GetRecommendationTagCountTest(TestCase):
         self.assertEqual(tc["f"], 2)
         self.assertEqual(tc["g"], 1)
         
-
 
 
