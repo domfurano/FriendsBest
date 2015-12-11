@@ -76,6 +76,10 @@ class RecommendationTagViewSet(viewsets.ModelViewSet):
     queryset = RecommendationTag.objects.order_by('recommendation')
     serializer_class = RecommendationTagSerializer
 
+    def list(self, request, *args, **kwargs):
+        data = getRecommendationTagCounts()
+        return Response(data)
+
 
 class QueryTagViewSet(viewsets.ModelViewSet):
     queryset = QueryTag.objects.order_by('query')

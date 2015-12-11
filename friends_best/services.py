@@ -104,10 +104,11 @@ def createRecommendation(userId, description, comments, *tags):
 def getRecommendationTagCounts():
     tags = RecommendationTag.objects.values_list("tag", flat=True)
     tagSet = set(tags)  # put in a set to eliminate duplicates
-    dictionary = {}
+    tag_count_list = []
     for tag in tagSet:
-        dictionary[tag] = RecommendationTag.objects.filter(tag=tag).count()
-    return dictionary
+        count = RecommendationTag.objects.filter(tag=tag).count()
+        tag_count_list.append({'text': tag, 'weight': count})
+    return tag_count_list
     
     
 def createTextThing(description):
