@@ -5,11 +5,13 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="refresh" content="20">
         <title>FriendsBest - Word Cloud</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="bower_components/jqcloud2/dist/jqcloud.min.js"></script>
         <link rel="stylesheet" href="css/jquery-ui.min.css">
         <link rel="stylesheet" href="bower_components/jqcloud2/dist/jqcloud.min.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
         <script>
             $(document).ready(function(){
                 $.get("http://127.0.0.1:8000/fb/api/recommendationtag/", function() {
@@ -17,20 +19,17 @@
                    $('.tagCloud').jQCloud(data);
                   console.log(data);
                 });
-               var words = [
-                 {text: "Lorem", weight: 13},
-                 {text: "Ipsum", weight: 10.5},
-                 {text: "Dolor", weight: 9.4},
-                 {text: "Sit", weight: 8},
-                 {text: "Amet", weight: 6.2},
-                 {text: "Consectetur", weight: 5},
-                 {text: "Adipiscing", weight: 5}];
-               $('.tagCloud').jQCloud(words);
               });
         </script>
+        <style>
+         .tagCloud {
+            height:100vh;
+            width:100vh;
+         }
+       </style>
     </head>
     <body>
-    <div class="tagCloud">
-    </div>
+       <div class="tagCloud col-md-10 col-lg-10 col-sm-10">
+       </div>
     </body>
 </html>
