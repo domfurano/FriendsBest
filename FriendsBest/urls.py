@@ -22,7 +22,7 @@ from django.conf import settings
 if settings.DEBUG:
     urlpatterns = [
         url(r'^fb/admin/', include(admin.site.urls)),
-        url(r'^fb/api/', include(router.urls))
+        url(r'^fb/api/', include(router.urls)),
         url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index')
     ]
 else:
