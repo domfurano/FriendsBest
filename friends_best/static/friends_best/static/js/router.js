@@ -13,7 +13,7 @@ define([
 	    routes: {
 			"": 					"main",				// #
 			"search/:queryid":		"search",			// #search/id
-			"search":				"searchhistory",	// #search/id
+			"search":				"searchhistory",	// #search
 			"recommend":			"recommend"			// #recommend
 		},
 		render: function(view) {

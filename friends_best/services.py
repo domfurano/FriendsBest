@@ -47,13 +47,15 @@ def getQuerySolutions(queryId):
     for thing in things:
         description = TextThing.objects.filter(thing_id=thing.id)[0].description
         recommendations = Recommendation.objects.filter(thing=thing)
-        dictionary = {}
+        userComments = []
         for recommendation in recommendations:
             userName = recommendation.user.userName
             comments = recommendation.comments
+            dictionary = {}
             dictionary['name'] = userName
             dictionary['comment'] = comments
-        solutionsWithQueryTags['solutions'].append(Solution(description=description, userComments=dictionary))
+            userComments.append(dictionary)
+        solutionsWithQueryTags['solutions'].append(Solution(description=description, userComments=userComments))
 
     return solutionsWithQueryTags
 

@@ -55,6 +55,13 @@
 	header.results {
 	}
 	
+	header.solution {
+		height: 120px;
+		background-color: #666;
+		font-size: 18px;
+		color: #fff;
+	}
+	
 	header .title {
 		text-align: center;
 		font-size: 24px;
