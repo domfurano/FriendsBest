@@ -8,13 +8,13 @@
         <meta http-equiv="refresh" content="20">
         <title>FriendsBest - Word Cloud</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="bower_components/jqcloud2/dist/jqcloud.min.js"></script>
+        <script src="bower_components/jqcloud2/src/jqcloud.js"></script>
         <link rel="stylesheet" href="css/jquery-ui.min.css">
-        <link rel="stylesheet" href="bower_components/jqcloud2/dist/jqcloud.min.css">
+        <link rel="stylesheet" href="bower_components/jqcloud2/src/jqcloud.css">
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <script>
             $(document).ready(function(){
-                $.get("http://127.0.0.1:8000/fb/api/recommendationtag/", function() {
+                $.get("/fb/api/recommendationtag/", function() {
                 }).done(function(data){
                    $('.tagCloud').jQCloud(data);
                   console.log(data);
