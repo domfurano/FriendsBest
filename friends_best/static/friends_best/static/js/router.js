@@ -19,7 +19,6 @@ define([
 		render: function(view) {
 			// Close the current view
 	        if (this.currentView) {
-		        console.log("remove exisiting view");
 	            this.currentView.remove();
 	        }
 	
@@ -56,7 +55,6 @@ define([
 		Backbone.history.start();
 		
 		console.log("router.js")
-		
 		
 		return app_router
 	};

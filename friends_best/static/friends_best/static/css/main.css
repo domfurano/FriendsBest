@@ -158,6 +158,20 @@
 		padding-top: 4px;
 	}
 	
+	.list .comment {
+		margin-bottom: 10px;
+		background-color: #fff;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		-webkit-border-radius: 5px;
+	}
+	
+	.list .comment div {
+		padding: 0;
+		font-size: 14px;
+		color: #000;
+	}
+	
 	.back-button {
 		cursor: pointer;
 	}
