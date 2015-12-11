@@ -6,7 +6,7 @@ define([
   'text!templates/search/results/solution/back.html',
   'text!templates/search/results/solution/comments.html',
   'text!templates/search/results/solution/comment.html',
-], function($, _, Backbone, QueryModel, backHTML, commentsHTML, comment){
+], function($, _, Backbone, QueryModel, backHTML, commentsHTML, commentHTML){
 
   var SolutionView = Backbone.View.extend({
     el: $(".view"),
@@ -27,12 +27,22 @@ define([
 			return false;
 		});
 		
-/*
 		commentsTemplate = _.template(commentsHTML);
-		that.$el.append(commentsTemplate());
+		that.$el.append(commentsTemplate(this.solution));
 		
+
+		
+		// Empty the list
 		var list = that.$el.find(".listcontainer");
-*/
+		list.html("");
+		
+		commentTemplate = _.template(commentHTML);
+		_.each(this.solutions.recommendations, function(recommendation, index) {
+			r = { name: recommendation.name.trim(),
+				  comment: recommendation.comment.split("\n").join("<br>")};
+			list.append(commentTemplate(r));
+		});
+
       
     },
     
