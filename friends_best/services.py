@@ -68,6 +68,8 @@ def createUser(userName):
     user = User(userName=userName)
     user.save()
 
+    return user.id
+
 
 def createFriendship(userOneId, userTwoId):
     u1 = User.objects.get(id=userOneId)
@@ -114,7 +116,8 @@ def getRecommendationTagCounts():
     
     
 def createTextThing(description):
-    thing = Thing.objects.all().first()
+    thing = Thing()
+    thing.save()
     text = TextThing(thing=thing, description=description)
     text.save()
 
