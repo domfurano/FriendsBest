@@ -52,10 +52,12 @@ define([
 		
 		$('form#query').submit(function() {
 			
-			var tags = $('#search-field').tokenfield('getTokensList').split(' ');
+			var tags = $('#search-field').tokenfield('getTokensList').toLowerCase().split(' ');
 			
 			if(tags.length == 0) return false;
 			if(tags.length == 1 && tags[0] == "") return false;
+			
+			tags = _.map(tags, String.toLowerCase);
 			
 			// create query
 			var query = new QueryModel({user: 2, tags: tags});
