@@ -55,6 +55,7 @@ define([
 			var tags = $('#search-field').tokenfield('getTokensList').split(' ');
 			
 			if(tags.length == 0) return false;
+			if(tags.length == 1 && tags[0] == "") return false;
 			
 			// create query
 			var query = new QueryModel({user: 2, tags: tags});
