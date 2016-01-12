@@ -84,7 +84,7 @@ class RecommendationSerializer(serializers.Serializer):
     def to_internal_value(self, data):
         return data
 
-    # data -Recommendation object
+    # data -Recommendation object new comment
     def to_representation(self, data):
         rec_tags = RecommendationTag.objects.filter(recommendation=data).values('tag')
         text_thing = TextThing.objects.filter(thing=data.thing).get()
