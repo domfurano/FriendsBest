@@ -7,15 +7,17 @@ define([
   'views/search/history',
   'views/recommend/add',
   'views/search/results',
-], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView){
+  'views/home/login',
+], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView, LoginView){
 	
 	var AppRouter = Backbone.Router.extend({
 	    routes: {
 			"": 					"main",				// #
 			"search/:queryid":		"search",			// #search/id
-			"search/:queryid/:sid":		"search",			// #search/id
+			"search/:queryid/:sid":	"search",			// #search/id
 			"search":				"searchhistory",	// #search
-			"recommend":			"recommend"			// #recommend
+			"recommend":			"recommend",		// #recommend
+			"login":				"login"				// #login
 		},
 		render: function(view) {
 			// Close the current view
@@ -54,12 +56,30 @@ define([
 			this.render(new RecommendView());
 		});
 		
-		Backbone.history.start();
+		app_router.on('route:login', function(){
+			this.render(new LoginView());
+		});
 		
-		console.log("router.js")
+		// Check login status
+		FB.getLoginStatus(function(response) {
+			console.log(response);
+			
+			// Start routing
+			Backbone.history.start();
+			
+			// Navigate to login if not authorized
+			if(response.status === "connected") {
+				// Logged in
+			} else {
+				console.log("not authorized.");
+				app_router.navigate("login", {trigger: true});
+			}
+			
+		}, true);
 		
+		console.log("router.js");
 		
-		return app_router
+		return app_router;
 	};
   
 	return {

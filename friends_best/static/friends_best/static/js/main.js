@@ -8,7 +8,8 @@ require.config({
     tokenfield: 'vendor/bootstrap-tokenfield',
     underscore: 'vendor/underscore',
     backbone: 'vendor/backbone',
-    templates: '../templates'
+    templates: '../templates',
+    'facebook': '//connect.facebook.net/en_US/sdk'
   },
   shim: {
 	  'jquery.ui.tp': {
@@ -16,6 +17,12 @@ require.config({
 	  },
 	  tokenfield: {
 		  deps: ['jquery', 'bootstrap'],
+	  },
+	  'facebook' : {
+	      exports: 'FB'
+	  },
+	  'app' : {
+		  exports: 'APP'
 	  }
   }
 });

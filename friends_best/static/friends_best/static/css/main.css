@@ -325,5 +325,19 @@
 		right: 15px;
 	}
 	
+	.fb-login-button {
+		background-color: #3b5998;
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 8px;
+		font-size: 22px;
+	}
+	
+	.fb-login-button i {
+		text-shadow: none;
+		font-size: 22px;
+		margin-right: 10px; 
+	}
+	
 	@media (min-width: 320px) { .container { max-width: 320px; } }
 	@media (max-width: 320px) { .container { max-width: 280px; } }

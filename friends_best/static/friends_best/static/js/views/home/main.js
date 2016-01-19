@@ -109,6 +109,15 @@ define([
 				}
 			}
 		});
+		
+		// Logout (TEMP)
+		// fblo_1519942364964737
+		// fblo_1519942364964737
+		$("#facebookCircleIcon").click(function() {
+			FB.logout(function() {
+				location.reload();
+			});
+		});
  
     },
     

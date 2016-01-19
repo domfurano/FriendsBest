@@ -4,10 +4,12 @@ define([
   'underscore',
   'backbone',
   'router',
+  'views/home/login',
+  'fb',
   'tokenfield',
   'jquery.ui',
   'jquery.ui.tp'
-], function($, _, Backbone, Router){
+], function($, _, Backbone, Router, LoginView){
   
   var initialize = function(){
 	
@@ -18,7 +20,7 @@ define([
          if (!$('.scrollable').has($(e.target)).length) e.preventDefault();
 	});
 	
-	// Start routing
+	// Route to correct page.
 	this.router = Router.initialize();
 	
   };
