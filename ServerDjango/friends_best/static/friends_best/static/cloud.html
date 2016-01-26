@@ -1,0 +1,35 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="refresh" content="20">
+        <title>FriendsBest - Word Cloud</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="bower_components/jqcloud2/src/jqcloud.js"></script>
+        <link rel="stylesheet" href="css/jquery-ui.min.css">
+        <link rel="stylesheet" href="bower_components/jqcloud2/src/jqcloud.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script>
+            $(document).ready(function(){
+                $.get("/fb/api/recommendationtag/", function() {
+                }).done(function(data){
+                   $('.tagCloud').jQCloud(data);
+                  console.log(data);
+                });
+              });
+        </script>
+        <style>
+         .tagCloud {
+            height:100vh;
+            width:100vh;
+         }
+       </style>
+    </head>
+    <body>
+       <div class="tagCloud col-md-10 col-lg-10 col-sm-10">
+       </div>
+    </body>
+</html>

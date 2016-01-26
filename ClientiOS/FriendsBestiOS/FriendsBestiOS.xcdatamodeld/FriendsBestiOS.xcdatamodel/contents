@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15C50" minimumToolsVersion="Automatic">
+    <entity name="Query" representedClassName="QueryHistory" syncable="YES">
+        <attribute name="id" attributeType="Integer 64" syncable="YES"/>
+        <attribute name="timestamp" attributeType="Date" syncable="YES"/>
+        <relationship name="tag" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="query" inverseEntity="Tag" syncable="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="queryHistory" inverseEntity="User" syncable="YES"/>
+    </entity>
+    <entity name="Tag" representedClassName="Tag" syncable="YES">
+        <attribute name="tag" attributeType="String" syncable="YES"/>
+        <relationship name="query" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Query" inverseName="tag" inverseEntity="Query" syncable="YES"/>
+    </entity>
+    <entity name="User" representedClassName="User" syncable="YES">
+        <relationship name="queryHistory" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Query" inverseName="user" inverseEntity="Query" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Query" positionX="-54" positionY="-9" width="128" height="103"/>
+        <element name="Tag" positionX="144" positionY="71" width="128" height="73"/>
+        <element name="User" positionX="-56" positionY="-135" width="128" height="58"/>
+    </elements>
+</model>
