@@ -24,8 +24,12 @@ class NetworkDAO {
     /* Singleton instance */
     static let instance: NetworkDAO = NetworkDAO()
     
-    /* Instance members */
+    /* Instance members */    
+    #if DEBUG
+    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
+    #else
     private let friendsBestAPIurl: NSURL! = NSURL(string: "https://www.friendsbest.net/fb/api/")
+    #endif
     
     /* Delegation */
     weak var queriesFetchedDelegate: QueriesFetchedDelegate? = nil
@@ -105,7 +109,7 @@ class NetworkDAO {
                     let timestampString: String? = validQueryDict["timestamp"] as? String
                     
                     guard let validTags = tags, let validId = id, let validTimestampString = timestampString,
-                        let validTimestamp: NSDate = NetworkDAO.convertTimestampStringToNSDate(validTimestampString) else {
+                        let validTimestamp: NSDate = self!.convertTimestampStringToNSDate(validTimestampString) else {
                             NSLog("Error - FriendsBest API - getQueries() - Invalid JSON")
                             return
                     }
@@ -224,17 +228,99 @@ class NetworkDAO {
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
-                if let validError = error {
-                    NSLog("Error - FriendsBest API - postNewQuery() - \(validError.localizedDescription)")
+                if let error = error {
+                    NSLog("Error - FriendsBest API - postNewQuery() - \(error.localizedDescription)")
                     return
                 }
+                
+                guard let data = data else {
+                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid data")
+                    return
+                }
+                
+                guard let queryDict = self!.getNSDictionaryFromJSONdata(data, funcName: "getQuery()") else {
+                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON")
+                    return
+                }
+                
+                guard let id: Int = queryDict["id"] as? Int else {
+                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON: id not in dictionary")
+                    return
+                }
+                
+                guard let tags: [String] = queryDict["tags"] as? [String] else {
+                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON: tags not in dictionary")
+                    return
+                }
+                
+                guard let solutionsArray: [NSDictionary] = queryDict["solutions"] as? [NSDictionary] else {
+                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON: solutions not in dictionary")
+                    return
+                }
+                
+                guard let solutions: [Solution] = self!.parseSolutions(solutionsArray, funcName: "postNewQuery") else {
+                    return
+                }
+                
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self?.querySolutionsFetchedDelegate?.querySolutionsFetched(forQueryID: id, solutions: solutions)
+                })
+                
                 print(response!)
-                print(data!)
+                print(data)
             }).resume()
         
     }
     
-    private static func convertTimestampStringToNSDate(timestampString: String) -> NSDate? {
+    private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> [Solution]? {
+        var solutions: [Solution] = []
+        
+        for solutionDict in solutionsArray {
+            guard let validSolutionDict: NSDictionary = solutionDict else {
+                NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON object")
+                return nil
+            }
+            
+            let solutionName: String? = validSolutionDict["name"] as? String
+            let recommendationArray: [NSDictionary]? = validSolutionDict["recommendation"] as? [NSDictionary]
+            
+            guard let validSolutionName = solutionName, let validRecommendationArray = recommendationArray else {
+                NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
+                return nil
+            }
+            
+            var recommendations: [Recommendation] = []
+            
+            for recommendation: NSDictionary in validRecommendationArray {
+                let comment: String? = recommendation["comment"] as? String
+                let userName: String? = recommendation["name"] as? String
+                
+                guard let validComment = comment, validUserName = userName else {
+                    NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
+                    return nil
+                }
+                
+                let newRecommendation: Recommendation = Recommendation(userName: validUserName, comment: validComment)
+                recommendations.append(newRecommendation)
+            }
+            
+            solutions.append(Solution(name: validSolutionName, recommendations: recommendations))
+        }
+        
+        return solutions
+    }
+    
+    private func getNSDictionaryFromJSONdata(data: NSData, funcName: String) -> NSDictionary? {
+        var queryDict: NSDictionary? = nil
+        do {
+            queryDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
+        } catch {
+            NSLog("Error - FriendsBest API - \(funcName) - Unable to parse JSON - \(error)")
+        }
+        return queryDict
+    }
+    
+    private func convertTimestampStringToNSDate(timestampString: String) -> NSDate? {
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         return formatter.dateFromString(timestampString)

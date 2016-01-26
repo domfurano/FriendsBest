@@ -481,6 +481,7 @@
 				);
 				INFOPLIST_FILE = FriendsBestiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
