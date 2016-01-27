@@ -1,15 +1,15 @@
 from django.db import models
 import datetime
 from django.utils import timezone
+from django.contrib.auth.models import User
 
-
-class User(models.Model):
-    userName = models.CharField(max_length=50, unique=True)
-    token = models.CharField(max_length=60, default="1")
-    facebookUserId = models.CharField(max_length=60, default="facebook1")
-
-    def __str__(self):
-        return self.userName
+# class User(models.Model):
+#     userName = models.CharField(max_length=50, unique=True)
+#     token = models.CharField(max_length=60, default="1")
+#     facebookUserId = models.CharField(max_length=60, default="facebook1")
+# 
+#     def __str__(self):
+#         return self.userName
 
 
 class Friendship(models.Model):
@@ -28,14 +28,6 @@ class Friendship(models.Model):
 
     def __str__(self):
         return "%s -> %s " % (self.userOne, self.userTwo)
-
-
-class Query(models.Model):
-    user = models.ForeignKey(User)
-    timestamp = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return "%s at %s" % (self.user, self.timestamp)
 
 
 class Thing(models.Model):
@@ -67,14 +59,6 @@ class Recommendation(models.Model):
         return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
 
 
-class Prompt(models.Model):
-    user = models.ForeignKey(User)
-    query = models.ForeignKey(Query)  # we can get the user's id from the query
-
-    def __str__(self):
-        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
-
-
 class RecommendationTag(models.Model):
     recommendation = models.ForeignKey(Recommendation)
     tag = models.CharField(max_length=25)
@@ -90,11 +74,30 @@ class RecommendationTag(models.Model):
 
 
 class QueryTag(models.Model):
-    query = models.ForeignKey(Query)
     tag = models.CharField(max_length=20)
 
     def __str__(self):
-        return "tag:%s, query:%s" % (self.tag, self.query)
+        return "tag:%s" % (self.tag)
+        
+class Query(models.Model):
+    user = models.ForeignKey(User)
+    tags = models.ManyToManyField(QueryTag)
+    timestamp = models.DateTimeField(default=timezone.now)
+    tagstring = models.TextField()
+    taghash = models.TextField()
+    
+    def __str__(self):
+        return "%s at %s" % (self.user, self.timestamp)
+        
+    class Meta:
+        unique_together = (("user", "taghash"),)
+        
+class Prompt(models.Model):
+    user = models.ForeignKey(User)
+    query = models.ForeignKey(Query)  # we can get the user's id from the query
+
+    def __str__(self):
+        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
 
 
 class Pin(models.Model):

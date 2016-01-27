@@ -1,70 +1,80 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.request import Request
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.models import SocialAccount
 
 from friends_best.serializers import *
-
+from friends_best.services import *
+from friends_best.permissions import IsOwner
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
-
+    
+class CurrentUserView(APIView):
+	def get(self, request):
+		user = request.user
+		accounts = SocialAccount.objects.get(user=user)
+		serializer = UserSerializer(user)
+		return Response(serializer.data)
+    
+class CurrentSocialUserView(APIView):
+	def get(self, request):
+		user = request.user
+		accounts = SocialAccount.objects.get(user=user)
+		serializer = UserSocialSerializer(accounts)
+		return Response(serializer.data)
 
 class FriendViewSet(viewsets.ModelViewSet):
     queryset = Friendship.objects.order_by('userOne')
     serializer_class = FriendsSerializer
 
-
 class QueryViewSet(viewsets.ModelViewSet):
-    queryset = Query.objects.order_by('id')
+    queryset = Query.objects.order_by('timestamp')
     serializer_class = QuerySerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
 
-    def list(self, request, *args, **kwargs):
-        query_dict = dict()
-        tag_list = QueryTag.objects.all().values('query', 'tag',)
-        for tag in tag_list:
-            qid = tag['query']
-            tag_value = tag['tag']
-            timestamp = Query.objects.filter(id=qid).get().timestamp
-            if qid in query_dict:
-                query_dict[qid]['tags'].append(tag_value)
-            else:
-                query_dict[qid] = {'id': qid, 'tags':[tag_value], 'timestamp':timestamp}
-        print(query_dict)
-        query_list = list(query_dict.values())
-        return Response(query_list)
+    def list(self, request):
+         history = getQueryHistory(request.user.id)
+         serializer = QuerySerializer(history, many=True)
+         # Remove solutions?
+         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        serializer = QuerySerializer(data=request.data)
-
+        data = request.data
+        data["user"] = request.user.id
+        serializer = QuerySerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             data = serializer.data
             return Response(data, status.HTTP_201_CREATED)
-        return Response(status.HTTP_400_BAD_REQUEST)
-
+        return Response(data, status.HTTP_400_BAD_REQUEST)
 
 class ThingViewSet(viewsets.ModelViewSet):
     queryset = Thing.objects.order_by('thingType')
     serializer_class = ThingSerializer
-
 
 class RecommendationViewSet(viewsets.ModelViewSet):
     queryset = Recommendation.objects.order_by('user')
     serializer_class = RecommendationSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = RecommendationSerializer(data=request.data)
+        data = request.data
+        data["user"] = request.user.id
+        serializer = RecommendationSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response({"recommendationId": serializer.data}, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
     serializer_class = TextSerializer
-
 
 class PromptViewSet(viewsets.ModelViewSet):
     queryset = Prompt.objects.order_by('user')
@@ -88,4 +98,7 @@ class QueryTagViewSet(viewsets.ModelViewSet):
 class PinViewSet(viewsets.ModelViewSet):
     queryset = Pin.objects.order_by('thing')
     serializer_class = PinSerializer
+    
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter    
 

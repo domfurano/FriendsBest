@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User
 from .models import Friendship
 from .models import Query
 from .models import Thing
@@ -13,7 +12,6 @@ from .models import QueryTag
 from .models import Pin
 
 
-admin.site.register(User)
 admin.site.register(Friendship)
 # admin.site.register(Query)
 # admin.site.register(Thing)
@@ -25,16 +23,16 @@ admin.site.register(QueryTag)
 admin.site.register(Pin)
 
 
-class QueryTagInline(admin.TabularInline):
-    model = QueryTag
-    extra = 5
+# class QueryTagInline(admin.TabularInline):
+#     model = QueryTag
+#     extra = 5
 
 
 class QueryAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['user']}),
     ]
-    inlines = [QueryTagInline]
+#     inlines = [QueryTagInline]
 admin.site.register(Query, QueryAdmin)
 
 class RecommendationTagAdmin(admin.ModelAdmin):
