@@ -48,19 +48,7 @@ class TextThing(models.Model):
     def __str__(self):
         return "thingID:%s, content:%s" % (self.thing.pk, self.description)
 
-
-class Recommendation(models.Model):
-    thing = models.ForeignKey(Thing)
-    user = models.ForeignKey(User)
-    comments = models.TextField(max_length=500)
-    timestamp = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
-
-
 class RecommendationTag(models.Model):
-    recommendation = models.ForeignKey(Recommendation)
     tag = models.CharField(max_length=25)
     lemma = models.CharField(max_length=25)
     
@@ -71,6 +59,17 @@ class RecommendationTag(models.Model):
         
     def __str__(self):
         return "tag:%s, recommendation:%s)" % (self.tag, self.recommendation)
+
+class Recommendation(models.Model):
+    thing = models.ForeignKey(Thing)
+    user = models.ForeignKey(User)
+    comments = models.TextField()
+    tags = models.ManyToManyField(RecommendationTag)
+    timestamp = models.DateTimeField(default=timezone.now)
+    tagstring = models.TextField()
+
+    def __str__(self):
+        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
 
 
 class QueryTag(models.Model):
