@@ -11,6 +11,8 @@ from .models import QueryTag
 from django.utils import timezone
 
 
+baseFacebookURL = 'https://graph.facebook.com/v2.5'
+
 def submitQuery(userId, *tags):
     if tags.count == 0:
         return "query must include at least one tag"
@@ -36,6 +38,8 @@ def submitQuery(userId, *tags):
     
     return q1
 
+import requests
+import json
 
 def getQuerySolutions(queryId):
     # find all relevant recommendations (with any matching tags)
@@ -84,6 +88,30 @@ def createUser(userName):
     user.save()
 
     return user.id
+
+
+def getTokenByUserId(userId):
+    user = User.objects.get(id=userId)
+    return user.token
+
+
+def getAllFriendsByUserId(userId):
+    user = User.objects.get(id=userId)
+    facebookUserId = user.facebookUserId
+
+    r = requests.get(baseFacebookURL + "/" + facebookUserId + "/friends")
+    if r.status_code != "200":
+        return "error: failed to get user's friends"
+
+    jsonDict = json.loads(r.text)  # convert json response to dictionary
+    allFriends = []
+    for friend in jsonDict['data'].items:
+        d = {}
+        d['firstName'] = friend['first_name']
+        d['lastName'] = friend['last_name']
+        # d['picture'] = friend['picture']
+        allFriends.append(d)
+    return allFriends
 
 
 def createFriendship(userOneId, userTwoId):
@@ -148,6 +176,6 @@ def createPrompt():
 class Solution:
     def __init__(self, description, userComments):
         self.description = description
-        self.userComments = userComments
+        self.userComments = userComments  # a list of dictionaries (keys: 'name' and 'comment')
 
 
