@@ -18,6 +18,10 @@ protocol QuerySolutionsFetchedDelegate: class {
     func querySolutionsFetched(forQueryID queryID: Int, solutions: [Solution])
 }
 
+protocol NewQueryFetchedDelegate: class {
+    func newQueryFetched(query: Query)
+}
+
 
 class NetworkDAO {
     
@@ -34,6 +38,7 @@ class NetworkDAO {
     /* Delegation */
     weak var queriesFetchedDelegate: QueriesFetchedDelegate? = nil
     weak var querySolutionsFetchedDelegate: QuerySolutionsFetchedDelegate? = nil
+    weak var newQueryFetchedDelegate: NewQueryFetchedDelegate? = nil
     
     /* Private constructor */
     private init() { }
@@ -210,10 +215,12 @@ class NetworkDAO {
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        let json = ["tags": queryTags, "user": 1]
+        
         let jsonData: NSData
         
         do {
-            jsonData = try NSJSONSerialization.dataWithJSONObject(queryTags, options: NSJSONWritingOptions())
+            jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
         } catch {
             NSLog("Error - FriendsBest API - postNewQuery() - Couldn't convert tags to JSON")
             return
@@ -238,7 +245,7 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let queryDict = self!.getNSDictionaryFromJSONdata(data, funcName: "getQuery()") else {
+                guard let queryDict = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
                     NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON")
                     return
                 }
@@ -262,12 +269,13 @@ class NetworkDAO {
                     return
                 }
                 
-                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-                    self?.querySolutionsFetchedDelegate?.querySolutionsFetched(forQueryID: id, solutions: solutions)
-                })
+                // TODO: THIS API SHOULD RETURN A TIMESTAMP!
+                let newQuery: Query = Query(tags: tags, ID: id, timestamp: NSDate())
+                newQuery.solutions = solutions
                 
-                print(response!)
-                print(data)
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self?.newQueryFetchedDelegate?.newQueryFetched(newQuery)
+                })
             }).resume()
         
     }

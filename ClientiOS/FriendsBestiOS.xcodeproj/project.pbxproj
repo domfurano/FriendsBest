@@ -10,7 +10,7 @@
 		CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */; };
 		CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */; };
 		CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */; };
-		CE3967221C4DA82D00F1BB71 /* QueryResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* QueryResultsViewController.swift */; };
+		CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */; };
 		CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE64683D1C459FB0002F73A0 /* AppDelegate.swift */; };
 		CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468411C459FB0002F73A0 /* Main.storyboard */; };
 		CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6468441C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld */; };
@@ -18,6 +18,24 @@
 		CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468491C459FB0002F73A0 /* LaunchScreen.storyboard */; };
 		CE6468561C459FB0002F73A0 /* FriendsBestiOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468551C459FB0002F73A0 /* FriendsBestiOSTests.swift */; };
 		CE6468611C459FB0002F73A0 /* FriendsBestiOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468601C459FB0002F73A0 /* FriendsBestiOSUITests.swift */; };
+		CE67F1B21C59156A001056C3 /* ExtraStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE67F1B11C59156A001056C3 /* ExtraStuff.swift */; };
+		CE9287A71C582197009A580F /* NewRecommendationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9287A61C582197009A580F /* NewRecommendationViewController.swift */; };
+		CE9287A91C582C0C009A580F /* NewRecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9287A81C582C0C009A580F /* NewRecommendationView.swift */; };
+		CE92887E1C588862009A580F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE92887D1C588862009A580F /* CoreText.framework */; };
+		CE9288961C588BAE009A580F /* FAKFontAwesome.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9288811C588BAE009A580F /* FAKFontAwesome.m */; };
+		CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9288831C588BAE009A580F /* FAKFoundationIcons.m */; };
+		CE9288981C588BAE009A580F /* FAKIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9288851C588BAE009A580F /* FAKIcon.m */; };
+		CE9288991C588BAE009A580F /* FAKIonIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9288871C588BAE009A580F /* FAKIonIcons.m */; };
+		CE92889A1C588BAE009A580F /* FAKMaterialIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9288891C588BAE009A580F /* FAKMaterialIcons.m */; };
+		CE92889B1C588BAE009A580F /* FAKOcticons.m in Sources */ = {isa = PBXBuildFile; fileRef = CE92888B1C588BAE009A580F /* FAKOcticons.m */; };
+		CE92889C1C588BAE009A580F /* FAKZocial.m in Sources */ = {isa = PBXBuildFile; fileRef = CE92888D1C588BAE009A580F /* FAKZocial.m */; };
+		CE92889D1C588BAE009A580F /* FontAwesome.otf in Resources */ = {isa = PBXBuildFile; fileRef = CE92888E1C588BAE009A580F /* FontAwesome.otf */; };
+		CE92889E1C588BAE009A580F /* FontAwesomeKit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = CE9288901C588BAE009A580F /* FontAwesomeKit.podspec */; };
+		CE92889F1C588BAE009A580F /* foundation-icons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288911C588BAE009A580F /* foundation-icons.ttf */; };
+		CE9288A01C588BAE009A580F /* ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288921C588BAE009A580F /* ionicons.ttf */; };
+		CE9288A11C588BAE009A580F /* Material-Design-Iconic-Font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288931C588BAE009A580F /* Material-Design-Iconic-Font.ttf */; };
+		CE9288A21C588BAE009A580F /* octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288941C588BAE009A580F /* octicons.ttf */; };
+		CE9288A31C588BAE009A580F /* zocial-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288951C588BAE009A580F /* zocial-regular-webfont.ttf */; };
 		CEB593621C5171BE00F6AE6C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */; };
 		CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2801C4C1DB50062B38F /* DataModel.swift */; };
 		CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2821C4C4B450062B38F /* DataController.swift */; };
@@ -46,7 +64,7 @@
 		CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkDAO.swift; sourceTree = "<group>"; };
 		CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryHistoryViewController.swift; sourceTree = "<group>"; };
 		CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionDetailViewController.swift; sourceTree = "<group>"; };
-		CE3967211C4DA82D00F1BB71 /* QueryResultsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryResultsViewController.swift; sourceTree = "<group>"; };
+		CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionsViewController.swift; sourceTree = "<group>"; };
 		CE64683A1C459FB0002F73A0 /* FriendsBestiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendsBestiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE64683D1C459FB0002F73A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE6468421C459FB0002F73A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -60,6 +78,33 @@
 		CE64685C1C459FB0002F73A0 /* FriendsBestiOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FriendsBestiOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE6468601C459FB0002F73A0 /* FriendsBestiOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsBestiOSUITests.swift; sourceTree = "<group>"; };
 		CE6468621C459FB0002F73A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE67F1B01C589176001056C3 /* FontAwesome-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FontAwesome-Header.h"; sourceTree = "<group>"; };
+		CE67F1B11C59156A001056C3 /* ExtraStuff.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtraStuff.swift; sourceTree = "<group>"; };
+		CE9287A61C582197009A580F /* NewRecommendationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationViewController.swift; sourceTree = "<group>"; };
+		CE9287A81C582C0C009A580F /* NewRecommendationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationView.swift; sourceTree = "<group>"; };
+		CE92887D1C588862009A580F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		CE9288801C588BAE009A580F /* FAKFontAwesome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKFontAwesome.h; sourceTree = "<group>"; };
+		CE9288811C588BAE009A580F /* FAKFontAwesome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKFontAwesome.m; sourceTree = "<group>"; };
+		CE9288821C588BAE009A580F /* FAKFoundationIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKFoundationIcons.h; sourceTree = "<group>"; };
+		CE9288831C588BAE009A580F /* FAKFoundationIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKFoundationIcons.m; sourceTree = "<group>"; };
+		CE9288841C588BAE009A580F /* FAKIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKIcon.h; sourceTree = "<group>"; };
+		CE9288851C588BAE009A580F /* FAKIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKIcon.m; sourceTree = "<group>"; };
+		CE9288861C588BAE009A580F /* FAKIonIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKIonIcons.h; sourceTree = "<group>"; };
+		CE9288871C588BAE009A580F /* FAKIonIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKIonIcons.m; sourceTree = "<group>"; };
+		CE9288881C588BAE009A580F /* FAKMaterialIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKMaterialIcons.h; sourceTree = "<group>"; };
+		CE9288891C588BAE009A580F /* FAKMaterialIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKMaterialIcons.m; sourceTree = "<group>"; };
+		CE92888A1C588BAE009A580F /* FAKOcticons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKOcticons.h; sourceTree = "<group>"; };
+		CE92888B1C588BAE009A580F /* FAKOcticons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKOcticons.m; sourceTree = "<group>"; };
+		CE92888C1C588BAE009A580F /* FAKZocial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAKZocial.h; sourceTree = "<group>"; };
+		CE92888D1C588BAE009A580F /* FAKZocial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAKZocial.m; sourceTree = "<group>"; };
+		CE92888E1C588BAE009A580F /* FontAwesome.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.otf; sourceTree = "<group>"; };
+		CE92888F1C588BAE009A580F /* FontAwesomeKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontAwesomeKit.h; sourceTree = "<group>"; };
+		CE9288901C588BAE009A580F /* FontAwesomeKit.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FontAwesomeKit.podspec; sourceTree = "<group>"; };
+		CE9288911C588BAE009A580F /* foundation-icons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "foundation-icons.ttf"; sourceTree = "<group>"; };
+		CE9288921C588BAE009A580F /* ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ionicons.ttf; sourceTree = "<group>"; };
+		CE9288931C588BAE009A580F /* Material-Design-Iconic-Font.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Material-Design-Iconic-Font.ttf"; sourceTree = "<group>"; };
+		CE9288941C588BAE009A580F /* octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = octicons.ttf; sourceTree = "<group>"; };
+		CE9288951C588BAE009A580F /* zocial-regular-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zocial-regular-webfont.ttf"; sourceTree = "<group>"; };
 		CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		CEBAA2801C4C1DB50062B38F /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		CEBAA2821C4C4B450062B38F /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
@@ -72,6 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE92887E1C588862009A580F /* CoreText.framework in Frameworks */,
 				CEB593621C5171BE00F6AE6C /* FBSDKCoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +145,7 @@
 				CEBAA2801C4C1DB50062B38F /* DataModel.swift */,
 				CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */,
 				CEBAA2821C4C4B450062B38F /* DataController.swift */,
+				CE67F1B11C59156A001056C3 /* ExtraStuff.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -108,8 +155,9 @@
 			children = (
 				CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */,
 				CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */,
-				CE3967211C4DA82D00F1BB71 /* QueryResultsViewController.swift */,
+				CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */,
 				CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */,
+				CE9287A61C582197009A580F /* NewRecommendationViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -146,6 +194,8 @@
 		CE64683C1C459FB0002F73A0 /* FriendsBestiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CE67F1B01C589176001056C3 /* FontAwesome-Header.h */,
+				CE92887F1C588BAE009A580F /* FontAwesomeKit */,
 				CE64683D1C459FB0002F73A0 /* AppDelegate.swift */,
 				CE22F3BC1C481C2B00AD2BFB /* View */,
 				CE22F3B91C45F14900AD2BFB /* Controller */,
@@ -181,13 +231,44 @@
 			isa = PBXGroup;
 			children = (
 				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
+				CE9287A81C582C0C009A580F /* NewRecommendationView.swift */,
 			);
 			name = Main;
+			sourceTree = "<group>";
+		};
+		CE92887F1C588BAE009A580F /* FontAwesomeKit */ = {
+			isa = PBXGroup;
+			children = (
+				CE9288801C588BAE009A580F /* FAKFontAwesome.h */,
+				CE9288811C588BAE009A580F /* FAKFontAwesome.m */,
+				CE9288821C588BAE009A580F /* FAKFoundationIcons.h */,
+				CE9288831C588BAE009A580F /* FAKFoundationIcons.m */,
+				CE9288841C588BAE009A580F /* FAKIcon.h */,
+				CE9288851C588BAE009A580F /* FAKIcon.m */,
+				CE9288861C588BAE009A580F /* FAKIonIcons.h */,
+				CE9288871C588BAE009A580F /* FAKIonIcons.m */,
+				CE9288881C588BAE009A580F /* FAKMaterialIcons.h */,
+				CE9288891C588BAE009A580F /* FAKMaterialIcons.m */,
+				CE92888A1C588BAE009A580F /* FAKOcticons.h */,
+				CE92888B1C588BAE009A580F /* FAKOcticons.m */,
+				CE92888C1C588BAE009A580F /* FAKZocial.h */,
+				CE92888D1C588BAE009A580F /* FAKZocial.m */,
+				CE92888E1C588BAE009A580F /* FontAwesome.otf */,
+				CE92888F1C588BAE009A580F /* FontAwesomeKit.h */,
+				CE9288901C588BAE009A580F /* FontAwesomeKit.podspec */,
+				CE9288911C588BAE009A580F /* foundation-icons.ttf */,
+				CE9288921C588BAE009A580F /* ionicons.ttf */,
+				CE9288931C588BAE009A580F /* Material-Design-Iconic-Font.ttf */,
+				CE9288941C588BAE009A580F /* octicons.ttf */,
+				CE9288951C588BAE009A580F /* zocial-regular-webfont.ttf */,
+			);
+			path = FontAwesomeKit;
 			sourceTree = "<group>";
 		};
 		CEB593601C51715E00F6AE6C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE92887D1C588862009A580F /* CoreText.framework */,
 				CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */,
 			);
 			name = Frameworks;
@@ -299,7 +380,14 @@
 			files = (
 				CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */,
 				CE6468481C459FB0002F73A0 /* Assets.xcassets in Resources */,
+				CE92889D1C588BAE009A580F /* FontAwesome.otf in Resources */,
 				CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */,
+				CE9288A01C588BAE009A580F /* ionicons.ttf in Resources */,
+				CE92889F1C588BAE009A580F /* foundation-icons.ttf in Resources */,
+				CE92889E1C588BAE009A580F /* FontAwesomeKit.podspec in Resources */,
+				CE9288A31C588BAE009A580F /* zocial-regular-webfont.ttf in Resources */,
+				CE9288A21C588BAE009A580F /* octicons.ttf in Resources */,
+				CE9288A11C588BAE009A580F /* Material-Design-Iconic-Font.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,16 +412,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE9287A91C582C0C009A580F /* NewRecommendationView.swift in Sources */,
+				CE9287A71C582197009A580F /* NewRecommendationViewController.swift in Sources */,
+				CE92889B1C588BAE009A580F /* FAKOcticons.m in Sources */,
 				CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */,
-				CE3967221C4DA82D00F1BB71 /* QueryResultsViewController.swift in Sources */,
+				CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */,
 				CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */,
 				CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */,
+				CE67F1B21C59156A001056C3 /* ExtraStuff.swift in Sources */,
+				CE92889C1C588BAE009A580F /* FAKZocial.m in Sources */,
 				CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */,
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
+				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,
 				CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */,
 				CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */,
+				CE9288981C588BAE009A580F /* FAKIcon.m in Sources */,
+				CE9288991C588BAE009A580F /* FAKIonIcons.m in Sources */,
+				CE9288961C588BAE009A580F /* FAKFontAwesome.m in Sources */,
 				CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */,
 				CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */,
+				CE92889A1C588BAE009A580F /* FAKMaterialIcons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +526,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -466,6 +565,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -484,6 +584,7 @@
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "FriendsBestiOS/FontAwesome-Header.h";
 			};
 			name = Debug;
 		};
@@ -499,6 +600,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "FriendsBestiOS/FontAwesome-Header.h";
 			};
 			name = Release;
 		};

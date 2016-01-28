@@ -56,8 +56,7 @@ class QueryHistoryViewController: UITableViewController, QueryHistoryUpdatedDele
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let query: Query = User.instance.queryHistory.queries[indexPath.row]
-        let queryTitle: String = query.tags.joinWithSeparator(" ")
-        navigationController?.pushViewController(QueryResultsViewController(title: queryTitle, queryID: query.ID), animated: true)
+        navigationController?.pushViewController(SolutionsViewController(tags: query.tags), animated: true)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {

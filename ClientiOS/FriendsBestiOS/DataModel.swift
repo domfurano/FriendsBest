@@ -17,7 +17,7 @@ protocol QuerySolutionsUpdatedDelegate: class {
 }
 
 
-class User: QueriesFetchedDelegate, QuerySolutionsFetchedDelegate {
+class User: QueriesFetchedDelegate, QuerySolutionsFetchedDelegate, NewQueryFetchedDelegate {
 
     /* Singleton instance */
     static let instance: User = User()
@@ -34,6 +34,7 @@ class User: QueriesFetchedDelegate, QuerySolutionsFetchedDelegate {
         // Delegate assignment
         NetworkDAO.instance.queriesFetchedDelegate = self
         NetworkDAO.instance.querySolutionsFetchedDelegate = self
+        NetworkDAO.instance.newQueryFetchedDelegate = self
     }
     
     /* Delegate implementations */
@@ -50,6 +51,11 @@ class User: QueriesFetchedDelegate, QuerySolutionsFetchedDelegate {
             }
         }
         querySolutionsUpdatedDelegate?.querySolutionsUpdated(forQueryID: queryID)
+    }
+    
+    func newQueryFetched(query: Query) {
+        self.queryHistory._queries.append(query)
+        querySolutionsUpdatedDelegate?.querySolutionsUpdated(forQueryID: query.ID)
     }
 }
 
@@ -77,12 +83,41 @@ class QueryHistory {
     }
     
     func getQueryByID(ID: Int) -> Query? {
-        for query in self.queries {
+        for query in self._queries {
             if query.ID == ID {
                 return query
             }
         }
         return nil
+    }
+    
+    func getQueryFromTags(tags: [String]) -> Query? {
+        for query in self._queries {
+            if tagsEqual(query.tags, tag2: tags) {
+                return query
+            }
+        }
+        return nil
+    }
+    
+    private func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
+        if (tag1.count != tag2.count) {
+            return false
+        }
+        
+        var tagsEqual: Bool = true
+        for tag1_tag in tag1 {
+            var tagFound: Bool = false
+            for tag2_tag in tag2 {
+                if tag1_tag == tag2_tag {
+                    tagFound = true
+                    break
+                }
+            }
+            tagsEqual = tagsEqual && tagFound
+        }
+        
+        return tagsEqual
     }
 }
 

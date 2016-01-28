@@ -22,14 +22,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let navigationController: UINavigationController = UINavigationController(rootViewController: MainScreenViewController())
         
-        navigationController.navigationBar.barTintColor = UIColor.grayColor()//UIColor(red: 0.161, green: 0.322, blue: 0.427, alpha: 1.0)
+        navigationController.navigationBar.barTintColor = UIColor.grayColor()
         navigationController.navigationBar.tintColor = UIColor.whiteColor()
         navigationController.navigationBar.titleTextAttributes = [
-            NSFontAttributeName: UIFont(name: "Helvetica", size: 20)!,
+            NSFontAttributeName: UIFont(name: "Helvetica", size: 18)!,
             NSForegroundColorAttributeName: UIColor.whiteColor()
         ]
         
-        navigationController.toolbar.barTintColor = UIColor(red: 0.161, green: 0.322, blue: 0.427, alpha: 1.0)
+        navigationController.toolbar.barTintColor = UIColor.grayColor()
         navigationController.toolbar.tintColor = UIColor.whiteColor()
         
         window?.rootViewController = navigationController
