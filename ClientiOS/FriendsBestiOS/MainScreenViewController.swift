@@ -23,7 +23,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         navigationController?.navigationBarHidden = false
         let historyIcon: FAKFontAwesome = FAKFontAwesome.historyIconWithSize(22)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: historyIcon.imageWithSize(CGSize(width: 20, height: 20)), style: .Plain, target: self, action: Selector("queryHistoryButtonClicked"))
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Refresh, target: self, action: "queryHistoryButtonClicked")
         navigationController?.navigationBar.barTintColor = UIColor.grayColor()
         
         searchController = UISearchController(searchResultsController:  nil)
@@ -34,7 +33,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.dimsBackgroundDuringPresentation = true
         navigationItem.titleView = searchController.searchBar
-//        definesPresentationContext = true
+        definesPresentationContext = true
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -83,15 +82,19 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     private func setToolbarItems() {
         let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         
-        let settingsButton: UIBarButtonItem = UIBarButtonItem.init(title: "\u{2699}", style: UIBarButtonItemStyle.Plain, target: self, action: Selector("settingsButtonPressed"))
+        let fa_cog: FAKFontAwesome = FAKFontAwesome.cogIconWithSize(22)
+        let fa_cog_image: UIImage = fa_cog.imageWithSize(CGSize(width: 22, height: 22))
+        let settingsButton: UIBarButtonItem = UIBarButtonItem(image: fa_cog_image, style: .Plain, target: self, action: Selector("settingsButtonPressed"))
         
-        let profileButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Bookmarks, target: self, action: Selector("profileButtonPressed"))
+        let fa_circle: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(22)
+        let fa_circle_image: UIImage = fa_circle.imageWithSize(CGSize(width: 22, height: 22))
+        let profileButton: UIBarButtonItem = UIBarButtonItem(image: fa_circle_image, style: .Plain, target: self, action: Selector("profileButtonPressed"))
+        profileButton.tintColor = .colorFromHex(0x3b5998)
         
         let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
-        fa_plus_square.addAttribute("NSForegroundColorAttributeName", value: UIColor.colorFromHex(0x59c939))
         let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
-        
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("newRecommendationButtonPressed"))
+        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
 
         self.toolbarItems = [settingsButton, flexibleSpace, profileButton, flexibleSpace, newRecommendationButton]
     }

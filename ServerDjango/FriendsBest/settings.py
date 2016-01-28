@@ -102,6 +102,7 @@ USE_TZ = True
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
@@ -112,15 +113,16 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
             },
         'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-            'formatter': 'simple'
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'error.log'),
+            'formatter': 'simple',
+            'maxBytes': 5
             },
         },
     'loggers': {
@@ -129,6 +131,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
             },
+        'friends_best': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            }
         }
     }
 

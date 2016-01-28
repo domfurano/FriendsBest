@@ -280,6 +280,81 @@ class NetworkDAO {
         
     }
     
+    func postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
+        let queryString: String = "recommend/"
+        let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        let json = ["user": 1, "description": description, "comments" : comments, "tags": recommendationTags, ]
+        
+        let jsonData: NSData
+        
+        do {
+            jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
+        } catch {
+            NSLog("Error - FriendsBest API - postNewRecommendation() - Couldn't convert tags to JSON")
+            return
+        }
+        
+        request.HTTPMethod = "POST"
+        request.HTTPBody = jsonData
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        session.dataTaskWithRequest(request,
+            completionHandler: {
+                [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+                
+                if let error = error {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let response = response else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - No response")
+                    return
+                }
+                
+                guard let data = data else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - Invalid data")
+                    return
+                }
+                
+                guard let recommendationDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - Invalid JSON")
+                    return
+                }
+                
+                guard let recommendationIdDict: NSDictionary = recommendationDict["recommendationId"] as? NSDictionary else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - recommendationId not in JSON dictionary")
+                    return
+                }
+                
+                guard let description: String = recommendationIdDict["description"] as? String else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - decription not in JSON dictionary")
+                    return
+                }
+                
+                guard let tags: [String] = recommendationIdDict["tags"] as? [String] else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - tags not in JSON dictionary")
+                    return
+                }
+                
+                guard let comments: String = recommendationIdDict["comments"] as? String else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - comments not in JSON dictionary")
+                    return
+                }
+                
+                guard let id: Int = recommendationIdDict["id"] as? Int else {
+                    NSLog("Error - FriendsBest API - postNewRecommendation() - id not in JSON dictionary")
+                    return
+                }
+                
+                // Do something?
+
+        }).resume()
+    }
+    
     private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> [Solution]? {
         var solutions: [Solution] = []
         

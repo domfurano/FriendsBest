@@ -187,10 +187,24 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
             options: NSLayoutFormatOptions(), metrics: nil, views: views))
     }
     
+    func createNewRecommendationButtonPressed() {
+        if let description = titleField.text, let tags = tagsField.text {
+            let comments = commentsField.text == nil ? "" : commentsField.text!
+            let tags = tags.characters.split{ $0 == " " }.map(String.init)
+            NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
+            navigationController?.popViewControllerAnimated(true)
+        } else {
+            // Show the user an error.
+        }
+    }
+    
     private func setToolbarItems() {
         let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: Selector("newRecommendationButtonPressed"))
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
+        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
+        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
         
         self.toolbarItems = [flexibleSpace, newRecommendationButton]
     }

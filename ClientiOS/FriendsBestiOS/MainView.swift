@@ -14,7 +14,7 @@ class MainView: UIView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
 
-        CGContextSetFillColorWithColor(context, UIColor.lightGrayColor().CGColor)
+        CGContextSetFillColorWithColor(context, UIColor.colorFromHex(0xe8edef).CGColor)
         CGContextFillRect(context, bounds)
     }
 }
