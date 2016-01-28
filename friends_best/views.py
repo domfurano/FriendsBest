@@ -10,7 +10,7 @@ from allauth.socialaccount.models import SocialAccount
 
 from friends_best.serializers import *
 from friends_best.services import *
-from friends_best.permissions import IsOwner
+from friends_best.permissions import *
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.order_by('userName')
@@ -62,6 +62,7 @@ class ThingViewSet(viewsets.ModelViewSet):
 class RecommendationViewSet(viewsets.ModelViewSet):
     queryset = Recommendation.objects.order_by('user')
     serializer_class = RecommendationSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly)
 
     def create(self, request, *args, **kwargs):
         data = request.data

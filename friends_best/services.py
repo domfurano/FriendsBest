@@ -141,9 +141,11 @@ def createRecommendation(userId, description, comments, *tags):
     recommendation.save()
 
     # create the recommendationTags
-    for tag in tags:
-        rTag = RecommendationTag(recommendation=recommendation, tag=tag)
-        rTag.save()
+    for t in tags:
+         rt = RecommendationTag(tag=t.lower())
+         rt.save()
+         recommendation.tags.add(rt)
+         
     return recommendation.id
 
 

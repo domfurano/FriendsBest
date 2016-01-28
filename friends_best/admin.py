@@ -35,30 +35,30 @@ class QueryAdmin(admin.ModelAdmin):
 #     inlines = [QueryTagInline]
 admin.site.register(Query, QueryAdmin)
 
-class RecommendationTagAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['recommendation']}),
-        (None, {'fields': ['tag']}),
-    ]
-admin.site.register(RecommendationTag, RecommendationTagAdmin)
+# class RecommendationTagAdmin(admin.ModelAdmin):
+#     fieldsets = [
+#         (None, {'fields': ['recommendation']}),
+#         (None, {'fields': ['tag']}),
+#     ]
+# admin.site.register(RecommendationTag, RecommendationTagAdmin)
 
 
-class RecommendationTagInline(admin.TabularInline):
-    model = RecommendationTag
-    extra = 5
-    fields = ('tag',)
-
-
-class RecommendationAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['thing']}),
-        (None, {'fields': ['user']}),
-        (None, {'fields': ['comments']}),
-        (None, {'fields': ['timestamp']}),
-    ]
-    inlines = [RecommendationTagInline]
-    list_display = ('thing', 'user', 'comments', 'timestamp')
-admin.site.register(Recommendation, RecommendationAdmin)
+# class RecommendationTagInline(admin.TabularInline):
+#     model = RecommendationTag
+#     extra = 5
+#     fields = ('tag',)
+# 
+# 
+# class RecommendationAdmin(admin.ModelAdmin):
+#     fieldsets = [
+#         (None, {'fields': ['thing']}),
+#         (None, {'fields': ['user']}),
+#         (None, {'fields': ['comments']}),
+#         (None, {'fields': ['timestamp']}),
+#     ]
+#     inlines = [RecommendationTagInline]
+#     list_display = ('thing', 'user', 'comments', 'timestamp')
+# admin.site.register(Recommendation, RecommendationAdmin)
 
 
 class TextThingAdmin(admin.ModelAdmin):
