@@ -246,7 +246,6 @@ class NetworkDAO {
                 }
                 
                 guard let queryDict = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
-                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON")
                     return
                 }
                 
@@ -315,13 +314,19 @@ class NetworkDAO {
                     return
                 }
                 
+                if let response = response as? NSHTTPURLResponse {
+                    if response.statusCode != 201 {
+                        NSLog("Error - FriendsBest API - postNewRecommendation() - Status code not 201")
+                        return
+                    }
+                }
+                
                 guard let data = data else {
                     NSLog("Error - FriendsBest API - postNewRecommendation() - Invalid data")
                     return
                 }
                 
-                guard let recommendationDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
-                    NSLog("Error - FriendsBest API - postNewRecommendation() - Invalid JSON")
+                guard let recommendationDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
                     return
                 }
                 
