@@ -4,12 +4,24 @@ from rest_framework import serializers
 
 from friends_best.models import *
 from friends_best.services import *
+from django.contrib.auth.models import User
+from allauth.socialaccount.models import SocialAccount
+
+
+import hashlib # For SHA-256 Encoding
+import base64
 
 
 class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
+        fields = '__all__'
+
+class UserSocialSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = SocialAccount
         fields = '__all__'
 
 
@@ -91,7 +103,7 @@ class RecommendationSerializer(serializers.Serializer):
 
         recommendation_json = {
             'id': data.id,
-            'user': data.user.userName,
+            'user': data.user.first_name,
             'description': text_thing.description,
             'comments': data.comments,
             'tags': [rt['tag'] for rt in rec_tags]
@@ -132,7 +144,6 @@ class RecommendationSerializer(serializers.Serializer):
 class QuerySerializer(serializers.ModelSerializer):
     user = UserSerializer
     tags = QueryTagSerializer(many=True)
-    comment = serializers.CharField(max_length=500)
 
     def to_internal_value(self, data):
         return data
@@ -142,33 +153,26 @@ class QuerySerializer(serializers.ModelSerializer):
         solution_collection = {
             'id':query.id,
             'tags':solutions['tags'],
-            'solutions': []
+            'tagstring':query.tagstring,
+            'solutions': [],
+            'timestamp': query.timestamp,
+            'taghash': query.taghash
         }
-        lookup = {}
-        lookup_index = 0
         for sol in solutions['solutions']:
             name = sol.description
             recommendations = [rec for rec in sol.userComments]
             solution_collection['solutions'].append({'name': name, 'recommendation': recommendations})
-            # username = sol.userComments['name']
-            # comment = sol.userComments['comment']
-            # if name in lookup:
-            #     index = lookup[name]
-            #     solution_collection['solutions'];['userComments'][index]['recommendations']\
-            #         .append({'name': username, 'comment': comment})
-            # else:
-            #     lookup[name] = lookup_index
-            #     solution_collection['solutions']['userComments'].append({'name': name, 'recommendations': []})
-            #     solution_collection['solutions']['userComments'][lookup_index]['recommendations']\
-            #         .append({'name': username, 'comment': comment})
-            #     lookup_index += 1
         return solution_collection
 
-    def create(self, validated_data):
+    def create(self, validated_data):    
         user = validated_data.get('user')
         tags = validated_data.get('tags')
-        qid = submitQuery(user, *tags)
-        return Query.objects.filter(id=qid).get()
+        q = submitQuery(user, *tags)
+        return q
+        
+    def update(self, instance, validated_data):
+	    return
+    
 
     def validate(self, data):
         if 'user' not in data:
@@ -184,7 +188,7 @@ class QuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Query
-        fields = ('id', 'tags', 'user', 'comment', )
+        fields = ('id', 'tags', 'tagstring', 'user', 'timestamp', )
 
 
 class PinSerializer(serializers.ModelSerializer):
