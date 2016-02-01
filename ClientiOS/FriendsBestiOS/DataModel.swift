@@ -104,7 +104,6 @@ class QueryHistory {
         if (tag1.count != tag2.count) {
             return false
         }
-        
         var tagsEqual: Bool = true
         for tag1_tag in tag1 {
             var tagFound: Bool = false
@@ -115,8 +114,7 @@ class QueryHistory {
                 }
             }
             tagsEqual = tagsEqual && tagFound
-        }
-        
+        }        
         return tagsEqual
     }
 }

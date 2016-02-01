@@ -22,6 +22,10 @@ protocol NewQueryFetchedDelegate: class {
     func newQueryFetched(query: Query)
 }
 
+protocol NetworkDAODelegate: class {
+    
+}
+
 
 class NetworkDAO {
     
@@ -39,6 +43,7 @@ class NetworkDAO {
     weak var queriesFetchedDelegate: QueriesFetchedDelegate? = nil
     weak var querySolutionsFetchedDelegate: QuerySolutionsFetchedDelegate? = nil
     weak var newQueryFetchedDelegate: NewQueryFetchedDelegate? = nil
+    weak var networkDAODelegate: NetworkDAODelegate? = nil
     
     /* Private constructor */
     private init() { }
@@ -46,7 +51,6 @@ class NetworkDAO {
     
     func testAPIconnection() {
         let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-        
         session.dataTaskWithURL(friendsBestAPIurl,
             completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 // Closure does not execute on the main thread.
@@ -57,9 +61,9 @@ class NetworkDAO {
                     return
                 }
                 
-                if let validData = data {
+                if let data = data {
                     do {
-                        try NSJSONSerialization.JSONObjectWithData(validData, options: NSJSONReadingOptions())
+                        try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
                         NSLog("API connection successful")
                     } catch _ {
                         NSLog("API error. Unable to parse JSON.")
@@ -70,26 +74,31 @@ class NetworkDAO {
     
     func getQueries() {
         let queryString: String = "query/"
-        let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        let queryURL: NSURL? = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
-        session.dataTaskWithURL(queryURL,
+        guard let validQueryURL = queryURL else {
+            NSLog("Error - FriendsBest API - getQueries() - Bad query URL")
+            return
+        }
+        
+        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        session.dataTaskWithURL(validQueryURL,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
-                if let validError = error {
-                    NSLog("Error - FriendsBest API - getQueries() - \(validError.localizedDescription)")
+                if let error = error {
+                    NSLog("Error - FriendsBest API - getQueries() - \(error)")
                     return
                 }
                 
-                guard let validData = data else {
+                guard let data = data else {
                     NSLog("Error - FriendsBest API - getQuery() - Invalid data")
                     return
                 }
                 
                 let queriesArray: NSArray?
                 do {
-                    queriesArray = try NSJSONSerialization.JSONObjectWithData(validData, options: NSJSONReadingOptions()) as? NSArray
+                    queriesArray = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSArray
                 } catch {
                     NSLog("Error - FriendsBest API - getQueries() - Unable to parse JSON - \(error)")
                     return
@@ -138,19 +147,19 @@ class NetworkDAO {
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
-                if let validError = error {
-                    NSLog("Error - FriendsBest API - getQuery() - \(validError.localizedDescription)")
+                if let error = error {
+                    NSLog("Error - FriendsBest API - getQuery() - \(error)")
                     return
                 }
                 
-                guard let validData = data else {
+                guard let data = data else {
                     NSLog("Error - FriendsBest API - getQuery() - Invalid data")
                     return
                 }
                 
                 let queryDict: NSDictionary?
                 do {
-                    queryDict = try NSJSONSerialization.JSONObjectWithData(validData, options: NSJSONReadingOptions()) as? NSDictionary
+                    queryDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
                 } catch {
                     NSLog("Error - FriendsBest API - getQuery() - Unable to parse JSON - \(error)")
                     return
@@ -245,7 +254,7 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let queryDict = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
+                guard let queryDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
                     return
                 }
                 
