@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.utils.timezone
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -16,6 +18,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('muted', models.BooleanField(default=False)),
+                ('userOne', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='userOne_set')),
+                ('userTwo', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='userTwo_set')),
             ],
         ),
         migrations.CreateModel(
@@ -35,6 +39,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('timestamp', models.DateTimeField(default=django.utils.timezone.now)),
+                ('tagstring', models.TextField()),
+                ('taghash', models.BigIntegerField()),
             ],
         ),
         migrations.CreateModel(
@@ -42,7 +48,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('tag', models.CharField(max_length=20)),
-                ('query', models.ForeignKey(to='friends_best.Query')),
             ],
         ),
         migrations.CreateModel(
@@ -66,23 +71,14 @@ class Migration(migrations.Migration):
             name='Thing',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thingType', models.CharField(choices=[('TEXT', 'Text')], max_length=15, default='TEXT')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='User',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('userName', models.CharField(unique=True, max_length=50)),
-                ('token', models.CharField(max_length=60, default='1')),
-                ('facebookUserId', models.CharField(max_length=60, default='facebook1')),
+                ('thingType', models.CharField(default='TEXT', max_length=15, choices=[('TEXT', 'Text')])),
             ],
         ),
         migrations.CreateModel(
             name='TextThing',
             fields=[
                 ('thing', models.OneToOneField(to='friends_best.Thing', primary_key=True, serialize=False)),
-                ('description', models.TextField(unique=True, max_length=200)),
+                ('description', models.TextField(max_length=200, unique=True)),
             ],
         ),
         migrations.AddField(
@@ -93,12 +89,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recommendation',
             name='user',
-            field=models.ForeignKey(to='friends_best.User'),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AddField(
+            model_name='query',
+            name='tags',
+            field=models.ManyToManyField(to='friends_best.QueryTag'),
         ),
         migrations.AddField(
             model_name='query',
             name='user',
-            field=models.ForeignKey(to='friends_best.User'),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='prompt',
@@ -108,7 +109,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='prompt',
             name='user',
-            field=models.ForeignKey(to='friends_best.User'),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='pin',
@@ -120,15 +121,9 @@ class Migration(migrations.Migration):
             name='thing',
             field=models.ForeignKey(to='friends_best.Thing'),
         ),
-        migrations.AddField(
-            model_name='friendship',
-            name='userOne',
-            field=models.ForeignKey(related_name='userOne_set', to='friends_best.User'),
-        ),
-        migrations.AddField(
-            model_name='friendship',
-            name='userTwo',
-            field=models.ForeignKey(related_name='userTwo_set', to='friends_best.User'),
+        migrations.AlterUniqueTogether(
+            name='query',
+            unique_together=set([('user', 'taghash')]),
         ),
         migrations.AlterUniqueTogether(
             name='friendship',

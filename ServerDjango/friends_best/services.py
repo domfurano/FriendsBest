@@ -1,5 +1,6 @@
 from logging import warning, error
-from .models import User
+## from .models import User
+from django.contrib.auth.models import User
 from .models import Friendship
 from .models import Query
 from .models import Thing
@@ -7,30 +8,41 @@ from .models import TextThing
 from .models import Recommendation
 from .models import RecommendationTag
 from .models import QueryTag
+from django.utils import timezone
 
 
 def submitQuery(userId, *tags):
     if tags.count == 0:
         return "query must include at least one tag"
 
+    # create hash of tags and ordered string
+    taghash = ' '.join(sorted(set(tags)))
+    tagstring = ' '.join(tags)
+
     # create a query
     u1 = User.objects.get(id=userId)
-    q1 = Query(user=u1)
-    q1.save()
+    q1, created = Query.objects.get_or_create(user=u1, taghash=taghash)
+    
+    q1.tagstring=tagstring
+    q1.timestamp=timezone.now()
 
     # create query tags
     for t in tags:
-        qt = QueryTag(query=q1, tag=t)
-        qt.save()
-
-    return q1.id
+         qt = QueryTag(tag=t.lower())
+         qt.save()
+         q1.tags.add(qt)
+    
+    q1.save()
+    
+    return q1
 
 
 def getQuerySolutions(queryId):
     # find all relevant recommendations (with any matching tags)
     # TODO: configure solutions according to friendships
     q1 = Query.objects.get(id=queryId)
-    queryTags = QueryTag.objects.filter(query=q1)
+    #queryTags = QueryTag.objects.filter(query=q1)
+    queryTags = q1.tags.all()
     recommendationTags = []
     things = []
     tags = set()
@@ -49,10 +61,11 @@ def getQuerySolutions(queryId):
         recommendations = Recommendation.objects.filter(thing=thing)
         userComments = []
         for recommendation in recommendations:
-            userName = recommendation.user.userName
+            firstName = recommendation.user.first_name
+            lastName = recommendation.user.last_name
             comments = recommendation.comments
             dictionary = {}
-            dictionary['name'] = userName
+            dictionary['name'] = firstName + " " + lastName
             dictionary['comment'] = comments
             userComments.append(dictionary)
         solutionsWithQueryTags['solutions'].append(Solution(description=description, userComments=userComments))
@@ -61,8 +74,10 @@ def getQuerySolutions(queryId):
 
 
 def getQueryHistory(userId):
-    return Query.objects.filter(user=User.objects.get(id=userId))
-
+    return Query.objects.filter(user=User.objects.get(id=userId)).prefetch_related('tags').all()
+    
+def getQuery(userId, queryId):
+    return Query.objects.filter(user=User.objects.get(id=userId), id=queryId).prefetch_related('tags')
 
 def createUser(userName):
     user = User(userName=userName)
@@ -98,9 +113,11 @@ def createRecommendation(userId, description, comments, *tags):
     recommendation.save()
 
     # create the recommendationTags
-    for tag in tags:
-        rTag = RecommendationTag(recommendation=recommendation, tag=tag)
-        rTag.save()
+    for t in tags:
+         rt = RecommendationTag(tag=t.lower())
+         rt.save()
+         recommendation.tags.add(rt)
+         
     return recommendation.id
 
 
