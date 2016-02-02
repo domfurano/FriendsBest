@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SolutionsViewController: UITableViewController, QuerySolutionsUpdatedDelegate {
+class SolutionsViewController: UITableViewController {
     
 //    var TITLE: String?
     var queryID: Int?
@@ -29,7 +29,15 @@ class SolutionsViewController: UITableViewController, QuerySolutionsUpdatedDeleg
         tableView.dataSource = self
         tableView.delegate = self
         
-        User.instance.querySolutionsUpdatedDelegate = self
+        User.instance.querySolutionsUpdatedClosure = {
+            [weak self] (queryID: Int) -> Void in
+            
+            if self?.queryID == nil {
+                self?.queryID = queryID
+            }
+            
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewDidLoad() {        
@@ -41,14 +49,6 @@ class SolutionsViewController: UITableViewController, QuerySolutionsUpdatedDeleg
         if self.queryID != nil {
             NetworkDAO.instance.getQuerySolutions(self.queryID!)
         }
-    }
-    
-    func querySolutionsUpdated(forQueryID queryID: Int) {
-        if self.queryID == nil {
-            self.queryID = queryID
-        }
-        
-        tableView.reloadData()
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

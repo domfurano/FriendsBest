@@ -10,20 +10,10 @@ import Foundation
 import CoreData
 
 
-protocol QueriesFetchedDelegate: class {
-    func queriesFetched(queries: QueryHistory)
-}
-
-protocol QuerySolutionsFetchedDelegate: class {
-    func querySolutionsFetched(forQueryID queryID: Int, solutions: [Solution])
-}
-
-protocol NewQueryFetchedDelegate: class {
-    func newQueryFetched(query: Query)
-}
-
 protocol NetworkDAODelegate: class {
-    
+    func queriesFetched()
+    func querySolutionsFetched(forQueryID queryID: Int)
+    func newQueryFetched(queryID: Int)
 }
 
 
@@ -40,9 +30,6 @@ class NetworkDAO {
     #endif
     
     /* Delegation */
-    weak var queriesFetchedDelegate: QueriesFetchedDelegate? = nil
-    weak var querySolutionsFetchedDelegate: QuerySolutionsFetchedDelegate? = nil
-    weak var newQueryFetchedDelegate: NewQueryFetchedDelegate? = nil
     weak var networkDAODelegate: NetworkDAODelegate? = nil
     
     /* Private constructor */
@@ -57,7 +44,7 @@ class NetworkDAO {
                 // NSLog(NSThread.isMainThread().description)
                 
                 if error != nil {
-                    NSLog("API error.")
+                    NSLog("API error: \(error)")
                     return
                 }
                 
@@ -91,28 +78,17 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let data = data else {
-                    NSLog("Error - FriendsBest API - getQuery() - Invalid data")
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
                     return
                 }
                 
-                let queriesArray: NSArray?
-                do {
-                    queriesArray = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSArray
-                } catch {
-                    NSLog("Error - FriendsBest API - getQueries() - Unable to parse JSON - \(error)")
+                guard let queriesArray: NSArray = NetworkDAO.getNSArrayFromJSONdata(data, funcName: "getQueries") else {
                     return
                 }
                 
-                guard let validQueriesArray: NSArray = queriesArray else {
-                    NSLog("Error - FriendsBest API - getQueries() - Invalid JSON")
-                    return
-                }
+                var queries: [Query] = []
                 
-                // TODO: decouple this from the data model
-                let queryHistory: QueryHistory = QueryHistory()
-                
-                for queryDict in validQueriesArray {
+                for queryDict in queriesArray {
                     guard let validQueryDict: NSDictionary = queryDict as? NSDictionary else {
                         NSLog("Error - FriendsBest API - getQueries - Invalid JSON object")
                         return
@@ -128,11 +104,15 @@ class NetworkDAO {
                             return
                     }
                     
-                    queryHistory.queries.append(Query(tags: validTags, ID: validId, timestamp: validTimestamp))
+                    queries.append(Query(tags: validTags, ID: validId, timestamp: validTimestamp))
+                }
+                
+                for query in queries {
+                    User.instance.queryHistory.appendQuery(query)
                 }
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-                    self?.queriesFetchedDelegate?.queriesFetched(queryHistory)
+                    self?.networkDAODelegate?.queriesFetched()
                 })
                 
             }).resume()
@@ -148,41 +128,28 @@ class NetworkDAO {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
                 if let error = error {
-                    NSLog("Error - FriendsBest API - getQuery() - \(error)")
+                    NSLog("Error - FriendsBest API - getQuerySolutions() - \(error)")
                     return
                 }
                 
-                guard let data = data else {
-                    NSLog("Error - FriendsBest API - getQuery() - Invalid data")
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQuerySolutions") {
                     return
                 }
                 
-                let queryDict: NSDictionary?
-                do {
-                    queryDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
-                } catch {
-                    NSLog("Error - FriendsBest API - getQuery() - Unable to parse JSON - \(error)")
+                guard let validQueryDict = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "getQuerySolutions") else {
                     return
                 }
                 
-                guard let validQueryDict = queryDict else {
-                    NSLog("Error - FriendsBest API - getQuery() - Invalid JSON")
+                guard let solutionsDict = validQueryDict["solutions"] as? [NSDictionary] else {
+                    NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
                     return
                 }
                 
-                let solutionsDict: [NSDictionary]? = validQueryDict["solutions"] as? [NSDictionary]
-                
-                guard let validSolutionsDict = solutionsDict else {
-                    NSLog("Error - FriendsBest API - getQuery() - Invalid JSON")
-                    return
-                }
-                
-                // ToDo: decouple this from the data model.
                 var solutions: [Solution] = []
                 
-                for solutionDict in validSolutionsDict {
+                for solutionDict in solutionsDict {
                     guard let validSolutionDict: NSDictionary = solutionDict else {
-                        NSLog("Error - FriendsBest API - getQuery() - Invalid JSON object")
+                        NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON object")
                         return
                     }
                     
@@ -190,7 +157,7 @@ class NetworkDAO {
                     let recommendationArray: [NSDictionary]? = validSolutionDict["recommendation"] as? [NSDictionary]
                     
                     guard let validSolutionName = solutionName, let validRecommendationArray = recommendationArray else {
-                        NSLog("Error - FriendsBest API - getQuery() - Invalid JSON")
+                        NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
                         return
                     }
                     
@@ -201,7 +168,7 @@ class NetworkDAO {
                         let userName: String? = recommendation["name"] as? String
                         
                         guard let validComment = comment, validUserName = userName else {
-                            NSLog("Error - FriendsBest API - getQuery() - Invalid JSON")
+                            NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
                             return
                         }
                         
@@ -212,8 +179,15 @@ class NetworkDAO {
                     solutions.append(Solution(name: validSolutionName, recommendations: recommendations))
                 }
                 
+                for query in User.instance.queryHistory.queries {
+                    if query.ID == queryID {
+                        query.solutions = solutions
+                        break
+                    }
+                }
+                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-                    self?.querySolutionsFetchedDelegate?.querySolutionsFetched(forQueryID: queryID, solutions: solutions)
+                    self?.networkDAODelegate?.querySolutionsFetched(forQueryID: queryID)
                 })
                 
             }).resume()
@@ -223,18 +197,16 @@ class NetworkDAO {
         let queryString: String = "query/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
         let json = ["tags": queryTags, "user": 1]
-        
         let jsonData: NSData
-        
         do {
             jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
         } catch {
             NSLog("Error - FriendsBest API - postNewQuery() - Couldn't convert tags to JSON")
             return
         }
-        
         request.HTTPMethod = "POST"
         request.HTTPBody = jsonData
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -249,12 +221,11 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let data = data else {
-                    NSLog("Error - FriendsBest API - postNewQuery() - Invalid data")
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewQuery") {
                     return
                 }
                 
-                guard let queryDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
+                guard let queryDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
                     return
                 }
                 
@@ -279,10 +250,11 @@ class NetworkDAO {
                 
                 // TODO: THIS API SHOULD RETURN A TIMESTAMP!
                 let newQuery: Query = Query(tags: tags, ID: id, timestamp: NSDate())
-                newQuery.solutions = solutions
+                newQuery.solutions = solutions                
+                User.instance.queryHistory.appendQuery(newQuery)
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-                    self?.newQueryFetchedDelegate?.newQueryFetched(newQuery)
+                    self?.networkDAODelegate?.newQueryFetched(newQuery.ID)
                 })
             }).resume()
         
@@ -292,18 +264,16 @@ class NetworkDAO {
         let queryString: String = "recommend/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
         let json = ["user": 1, "description": description, "comments" : comments, "tags": recommendationTags, ]
-        
         let jsonData: NSData
-        
         do {
             jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
         } catch {
             NSLog("Error - FriendsBest API - postNewRecommendation() - Couldn't convert tags to JSON")
             return
         }
-        
         request.HTTPMethod = "POST"
         request.HTTPBody = jsonData
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -318,24 +288,11 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let response = response else {
-                    NSLog("Error - FriendsBest API - postNewRecommendation() - No response")
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewRecommendation") {
                     return
                 }
                 
-                if let response = response as? NSHTTPURLResponse {
-                    if response.statusCode != 201 {
-                        NSLog("Error - FriendsBest API - postNewRecommendation() - Status code not 201")
-                        return
-                    }
-                }
-                
-                guard let data = data else {
-                    NSLog("Error - FriendsBest API - postNewRecommendation() - Invalid data")
-                    return
-                }
-                
-                guard let recommendationDict: NSDictionary = self!.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
+                guard let recommendationDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
                     return
                 }
                 
@@ -364,7 +321,7 @@ class NetworkDAO {
                     return
                 }
                 
-                // Do something?
+                // TODO: Do something?
 
         }).resume()
     }
@@ -407,14 +364,55 @@ class NetworkDAO {
         return solutions
     }
     
-    private func getNSDictionaryFromJSONdata(data: NSData, funcName: String) -> NSDictionary? {
-        var queryDict: NSDictionary? = nil
+    private static func responseHasExpectedStatusCode(response: NSURLResponse?, expectedStatusCode statusCode: Int, funcName: String) -> Bool {
+        guard let response = response else {
+            NSLog("Error - FriendsBest API - \(funcName)() - No response")
+            return false
+        }
+        
+        if let response = response as? NSHTTPURLResponse {
+            if response.statusCode == statusCode {
+                return true
+            } else {
+                NSLog("Error - FriendsBest API - \(funcName)() - Status code \(response.statusCode) not expected \(statusCode)")
+            }
+        }
+        
+        return false
+    }
+    
+    private static func getNSDictionaryFromJSONdata(data: NSData?, funcName: String) -> NSDictionary? {
+        var dict: NSDictionary? = nil
+        
+        guard let data = data else {
+            NSLog("Error - FriendsBest API - \(funcName)() - No data")
+            return dict
+        }
+
         do {
-            queryDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
+            dict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
         } catch {
             NSLog("Error - FriendsBest API - \(funcName) - Unable to parse JSON - \(error)")
         }
-        return queryDict
+        
+        return dict
+    }
+    
+    private static func getNSArrayFromJSONdata(data: NSData?, funcName: String) -> NSArray? {
+        var array: NSArray? = nil
+        
+        guard let data = data else {
+            NSLog("Error - FriendsBest API - \(funcName)() - No data")
+            return array
+        }
+        
+        do {
+            array = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSArray
+        } catch {
+            NSLog("Error - FriendsBest API - \(funcName) - Unable to parse JSON - \(error)")
+        }
+        
+        return array
     }
     
     private func convertTimestampStringToNSDate(timestampString: String) -> NSDate? {

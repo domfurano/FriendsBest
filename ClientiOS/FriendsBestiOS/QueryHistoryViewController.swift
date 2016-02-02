@@ -8,7 +8,7 @@
 
 import UIKit
 
-class QueryHistoryViewController: UITableViewController, QueryHistoryUpdatedDelegate {
+class QueryHistoryViewController: UITableViewController {
     
     override func loadView() {
         view = UITableView(frame: CGRectZero, style: UITableViewStyle.Grouped)
@@ -27,7 +27,10 @@ class QueryHistoryViewController: UITableViewController, QueryHistoryUpdatedDele
         tableView.dataSource = self
         tableView.delegate = self
         
-        User.instance.queryHistoryUpdatedDelegate = self
+        User.instance.queryHistoryUpdatedClosure = {
+            [weak self] in
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -35,11 +38,6 @@ class QueryHistoryViewController: UITableViewController, QueryHistoryUpdatedDele
         navigationController?.toolbarHidden = true
         
         NetworkDAO.instance.getQueries()
-    }
-    
-    /* Delegate implementations */
-    func queryHistoryUpdated() {
-        tableView.reloadData()
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

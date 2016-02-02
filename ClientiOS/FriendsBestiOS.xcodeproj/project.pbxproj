@@ -18,7 +18,7 @@
 		CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468491C459FB0002F73A0 /* LaunchScreen.storyboard */; };
 		CE6468561C459FB0002F73A0 /* FriendsBestiOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468551C459FB0002F73A0 /* FriendsBestiOSTests.swift */; };
 		CE6468611C459FB0002F73A0 /* FriendsBestiOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468601C459FB0002F73A0 /* FriendsBestiOSUITests.swift */; };
-		CE67F1B21C59156A001056C3 /* ExtraStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE67F1B11C59156A001056C3 /* ExtraStuff.swift */; };
+		CE67F1B21C59156A001056C3 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE67F1B11C59156A001056C3 /* Extensions.swift */; };
 		CE9287A71C582197009A580F /* NewRecommendationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9287A61C582197009A580F /* NewRecommendationViewController.swift */; };
 		CE9287A91C582C0C009A580F /* NewRecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9287A81C582C0C009A580F /* NewRecommendationView.swift */; };
 		CE92887E1C588862009A580F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE92887D1C588862009A580F /* CoreText.framework */; };
@@ -36,6 +36,9 @@
 		CE9288A11C588BAE009A580F /* Material-Design-Iconic-Font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288931C588BAE009A580F /* Material-Design-Iconic-Font.ttf */; };
 		CE9288A21C588BAE009A580F /* octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288941C588BAE009A580F /* octicons.ttf */; };
 		CE9288A31C588BAE009A580F /* zocial-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9288951C588BAE009A580F /* zocial-regular-webfont.ttf */; };
+		CE9F33611C604B3C0018DBC0 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9F33601C604B3C0018DBC0 /* FBSDKLoginKit.framework */; };
+		CE9F33631C604B7B0018DBC0 /* FacebookLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9F33621C604B7B0018DBC0 /* FacebookLoginViewController.swift */; };
+		CE9F33671C60624B0018DBC0 /* FacebookLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */; };
 		CEB593621C5171BE00F6AE6C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */; };
 		CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2801C4C1DB50062B38F /* DataModel.swift */; };
 		CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2821C4C4B450062B38F /* DataController.swift */; };
@@ -79,7 +82,7 @@
 		CE6468601C459FB0002F73A0 /* FriendsBestiOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsBestiOSUITests.swift; sourceTree = "<group>"; };
 		CE6468621C459FB0002F73A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE67F1B01C589176001056C3 /* FontAwesome-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FontAwesome-Header.h"; sourceTree = "<group>"; };
-		CE67F1B11C59156A001056C3 /* ExtraStuff.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtraStuff.swift; sourceTree = "<group>"; };
+		CE67F1B11C59156A001056C3 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CE9287A61C582197009A580F /* NewRecommendationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationViewController.swift; sourceTree = "<group>"; };
 		CE9287A81C582C0C009A580F /* NewRecommendationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationView.swift; sourceTree = "<group>"; };
 		CE92887D1C588862009A580F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -105,6 +108,9 @@
 		CE9288931C588BAE009A580F /* Material-Design-Iconic-Font.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Material-Design-Iconic-Font.ttf"; sourceTree = "<group>"; };
 		CE9288941C588BAE009A580F /* octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = octicons.ttf; sourceTree = "<group>"; };
 		CE9288951C588BAE009A580F /* zocial-regular-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zocial-regular-webfont.ttf"; sourceTree = "<group>"; };
+		CE9F33601C604B3C0018DBC0 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		CE9F33621C604B7B0018DBC0 /* FacebookLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookLoginViewController.swift; sourceTree = "<group>"; };
+		CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookLoginView.swift; sourceTree = "<group>"; };
 		CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		CEBAA2801C4C1DB50062B38F /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		CEBAA2821C4C4B450062B38F /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
@@ -119,6 +125,7 @@
 			files = (
 				CE92887E1C588862009A580F /* CoreText.framework in Frameworks */,
 				CEB593621C5171BE00F6AE6C /* FBSDKCoreKit.framework in Frameworks */,
+				CE9F33611C604B3C0018DBC0 /* FBSDKLoginKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +152,7 @@
 				CEBAA2801C4C1DB50062B38F /* DataModel.swift */,
 				CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */,
 				CEBAA2821C4C4B450062B38F /* DataController.swift */,
-				CE67F1B11C59156A001056C3 /* ExtraStuff.swift */,
+				CE67F1B11C59156A001056C3 /* Extensions.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -158,6 +165,7 @@
 				CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */,
 				CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */,
 				CE9287A61C582197009A580F /* NewRecommendationViewController.swift */,
+				CE9F33621C604B7B0018DBC0 /* FacebookLoginViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -232,6 +240,7 @@
 			children = (
 				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
 				CE9287A81C582C0C009A580F /* NewRecommendationView.swift */,
+				CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */,
 			);
 			name = Main;
 			sourceTree = "<group>";
@@ -268,6 +277,7 @@
 		CEB593601C51715E00F6AE6C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE9F33601C604B3C0018DBC0 /* FBSDKLoginKit.framework */,
 				CE92887D1C588862009A580F /* CoreText.framework */,
 				CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */,
 			);
@@ -419,7 +429,8 @@
 				CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */,
 				CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */,
 				CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */,
-				CE67F1B21C59156A001056C3 /* ExtraStuff.swift in Sources */,
+				CE67F1B21C59156A001056C3 /* Extensions.swift in Sources */,
+				CE9F33631C604B7B0018DBC0 /* FacebookLoginViewController.swift in Sources */,
 				CE92889C1C588BAE009A580F /* FAKZocial.m in Sources */,
 				CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */,
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
@@ -431,6 +442,7 @@
 				CE9288961C588BAE009A580F /* FAKFontAwesome.m in Sources */,
 				CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */,
 				CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */,
+				CE9F33671C60624B0018DBC0 /* FacebookLoginView.swift in Sources */,
 				CE92889A1C588BAE009A580F /* FAKMaterialIcons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate {
     
+    let userDefaults: NSUserDefaults = NSUserDefaults()
     var searchController: UISearchController!
 
     
@@ -20,7 +23,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func viewDidLoad() {
         /* Navigation bar */
-        navigationController?.navigationBarHidden = false
         let historyIcon: FAKFontAwesome = FAKFontAwesome.historyIconWithSize(22)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: historyIcon.imageWithSize(CGSize(width: 20, height: 20)), style: .Plain, target: self, action: Selector("queryHistoryButtonClicked"))
         navigationController?.navigationBar.barTintColor = UIColor.grayColor()
@@ -34,10 +36,20 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         searchController.dimsBackgroundDuringPresentation = true
         navigationItem.titleView = searchController.searchBar
         definesPresentationContext = true
+        
+        /* Facebook */
+        if FBSDKAccessToken.currentAccessToken() == nil {
+            navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
+        } else {
+            print(FBSDKAccessToken.currentAccessToken().tokenString)
+//            userDefaults.setObject(FBSDKAccessToken.currentAccessToken(), forKey: "fb_access_token")
+            // TODO: Key exchange and login with FriendsBest server
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
         /* Toolbar */
+        navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         setToolbarItems()
     }
@@ -46,6 +58,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Navigation bar */
     
     func queryHistoryButtonClicked() {
+//        navigationController?.presentViewController(QueryHistoryViewController(), animated: true, completion: nil)
         navigationController?.pushViewController(QueryHistoryViewController(), animated: true)
     }
     

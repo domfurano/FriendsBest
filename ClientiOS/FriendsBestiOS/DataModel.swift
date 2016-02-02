@@ -8,69 +8,58 @@
 
 import Foundation
 
-protocol QueryHistoryUpdatedDelegate: class {
-    func queryHistoryUpdated()
-}
 
-protocol QuerySolutionsUpdatedDelegate: class {
-    func querySolutionsUpdated(forQueryID queryID: Int)
-}
-
-
-class User: QueriesFetchedDelegate, QuerySolutionsFetchedDelegate, NewQueryFetchedDelegate {
-
+class User: NetworkDAODelegate {
+    
     /* Singleton instance */
     static let instance: User = User()
     
+    
     /* Member variables */
-    var queryHistory: QueryHistory = QueryHistory()
+    private(set) var queryHistory: QueryHistory = QueryHistory()
+    
     
     /* Delegation */
-    weak var queryHistoryUpdatedDelegate: QueryHistoryUpdatedDelegate? = nil
-    weak var querySolutionsUpdatedDelegate: QuerySolutionsUpdatedDelegate? = nil
+    var queryHistoryUpdatedClosure: () -> Void = {}
+    var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
+    
     
     /* Private constructor */
     private init() {
         // Delegate assignment
-        NetworkDAO.instance.queriesFetchedDelegate = self
-        NetworkDAO.instance.querySolutionsFetchedDelegate = self
-        NetworkDAO.instance.newQueryFetchedDelegate = self
+        NetworkDAO.instance.networkDAODelegate = self
     }
+    
     
     /* Delegate implementations */
-    func queriesFetched(queryHistory: QueryHistory) {
-        self.queryHistory = queryHistory
-        queryHistoryUpdatedDelegate?.queryHistoryUpdated()
+    func queriesFetched() {
+        queryHistoryUpdatedClosure()
     }
     
-    func querySolutionsFetched(forQueryID queryID: Int, solutions: [Solution]) {
-        for query in self.queryHistory.queries {
-            if query.ID == queryID {
-                query.solutions = solutions
-                break
-            }
-        }
-        querySolutionsUpdatedDelegate?.querySolutionsUpdated(forQueryID: queryID)
+    func querySolutionsFetched(forQueryID queryID: Int) {
+        querySolutionsUpdatedClosure(queryID: queryID)
     }
     
-    func newQueryFetched(query: Query) {
-        self.queryHistory._queries.append(query)
-        querySolutionsUpdatedDelegate?.querySolutionsUpdated(forQueryID: query.ID)
+    func newQueryFetched(queryID: Int) {
+        querySolutionsUpdatedClosure(queryID: queryID)
+    }
+    
+    
+    /* Serialization */
+    private func serialize() {
+        
     }
 }
 
 
 class QueryHistory {
-    private var _queries: [Query]
+    private var _queries: Set<Query>
     
     var queries: [Query] {
         get {
             return self._queries.sort({
                 return $0.timestamp.compare($1.timestamp) == NSComparisonResult.OrderedDescending
             })
-        }
-        set(queries) {
-            self._queries = queries
         }
     }
     
@@ -79,7 +68,11 @@ class QueryHistory {
     }
     
     init(queries: [Query]) {
-        self._queries = queries
+        self._queries = Set(queries)
+    }
+    
+    func appendQuery(query: Query) {
+        self._queries.insert(query)
     }
     
     func getQueryByID(ID: Int) -> Query? {
@@ -114,17 +107,23 @@ class QueryHistory {
                 }
             }
             tagsEqual = tagsEqual && tagFound
-        }        
+        }
         return tagsEqual
     }
 }
 
 
-class Query {
-    var tags: [String]
-    var ID: Int
-    var timestamp: NSDate
+class Query: Hashable, Equatable {
+    private(set) var tags: [String]
+    private(set) var ID: Int
+    private(set) var timestamp: NSDate
     var solutions: [Solution]?
+    
+    var hashValue: Int {
+        get {
+            return self.ID
+        }
+    }
     
     init(tags: [String], ID: Int, timestamp: NSDate) {
         self.tags = tags
@@ -133,10 +132,14 @@ class Query {
     }
 }
 
+func ==(lhs: Query, rhs: Query) -> Bool {
+    return lhs.ID == rhs.ID
+}
+
 
 class Solution {
-    var name: String
-    var recommendations: [Recommendation]
+    private(set) var name: String
+    private(set) var recommendations: [Recommendation]
     
     init(name: String, recommendations: [Recommendation]) {
         self.name = name
@@ -146,8 +149,8 @@ class Solution {
 
 
 class Recommendation {
-    var userName: String
-    var comment: String
+    private(set) var userName: String
+    private(set) var comment: String
     
     init(userName: String, comment: String) {
         self.userName = userName
