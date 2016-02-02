@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import FBSDKLoginKit
 
 
 protocol NetworkDAODelegate: class {
@@ -29,6 +30,8 @@ class NetworkDAO {
     private let friendsBestAPIurl: NSURL! = NSURL(string: "https://www.friendsbest.net/fb/api/")
     #endif
     
+    private var friendsBestToken: String? = nil
+    
     /* Delegation */
     weak var networkDAODelegate: NetworkDAODelegate? = nil
     
@@ -37,7 +40,16 @@ class NetworkDAO {
     
     
     func testAPIconnection() {
-        let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
         session.dataTaskWithURL(friendsBestAPIurl,
             completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 // Closure does not execute on the main thread.
@@ -60,6 +72,16 @@ class NetworkDAO {
     }
     
     func getQueries() {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
         let queryString: String = "query/"
         let queryURL: NSURL? = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
@@ -68,7 +90,6 @@ class NetworkDAO {
             return
         }
         
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         session.dataTaskWithURL(validQueryURL,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
@@ -119,9 +140,18 @@ class NetworkDAO {
     }
     
     func getQuerySolutions(queryID: Int) {
-        let queryString: String = "query/\(queryID)"
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        let queryString: String = "query/\(queryID)/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         
         session.dataTaskWithURL(queryURL,
             completionHandler: {
@@ -194,9 +224,18 @@ class NetworkDAO {
     }
     
     func postNewQuery(queryTags: [String]) {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
         let queryString: String = "query/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
         let json = ["tags": queryTags, "user": 1]
@@ -261,9 +300,18 @@ class NetworkDAO {
     }
     
     func postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
         let queryString: String = "recommend/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
         let json = ["user": 1, "description": description, "comments" : comments, "tags": recommendationTags, ]
@@ -324,6 +372,51 @@ class NetworkDAO {
                 // TODO: Do something?
 
         }).resume()
+    }
+    
+    func postFacebookTokenAndAuthenticate() {
+        let queryString: String = "facebook/"
+        let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+        
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        let json = ["access_token": FBSDKAccessToken.currentAccessToken().tokenString]
+        let jsonData: NSData
+        do {
+            jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
+        } catch {
+            NSLog("Error - FriendsBest API - postFacebookToken() - Couldn't convert tags to JSON")
+            return
+        }
+        request.HTTPMethod = "POST"
+        request.HTTPBody = jsonData
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        session.dataTaskWithRequest(request,
+            completionHandler: {
+                [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+                
+                if let error = error {
+                    NSLog("Error - FriendsBest API - postFacebookToken() - \(error.localizedDescription)")
+                    return
+                }
+                
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "postFacebookToken") {
+                    return
+                }
+                
+                guard let keyDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postFacebookToken") else {
+                    return
+                }
+                
+                guard let key: NSString = keyDict["key"] as? NSString else {
+                    NSLog("Error - FriendsBest API - postFacebookToken() - key not in JSON dictionary")
+                    return
+                }
+                
+                self?.friendsBestToken = "Token " + (key as String)
+            }).resume()
     }
     
     private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> [Solution]? {

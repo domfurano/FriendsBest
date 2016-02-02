@@ -28,7 +28,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         // TODO: Deal with declined permissons
-        if error == nil {
+        if error == nil && FBSDKAccessToken.currentAccessToken() != nil {
             navigationController?.popViewControllerAnimated(true)
         }
     }
