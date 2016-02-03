@@ -64,14 +64,29 @@ define([
 		FB.getLoginStatus(function(response) {
 			console.log(response);
 			
-			// Start routing
-			Backbone.history.start();
+			
 			
 			// Navigate to login if not authorized
 			if(response.status === "connected") {
 				// Logged in
+				// Submit the token to API
+				
+				$.post("/fb/api/facebook/", {'access_token' : response.authResponse.accessToken}, function(data) {
+					token = data.key;
+					
+					Backbone.$.ajaxSetup({
+					    headers: { 'Authorization' :'Token ' + token }
+					});
+					
+					// Start routing
+					Backbone.history.start();
+					
+				});
+				
 			} else {
 				console.log("not authorized.");
+				// Start routing
+				Backbone.history.start();
 				app_router.navigate("login", {trigger: true});
 			}
 			

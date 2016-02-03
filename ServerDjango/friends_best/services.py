@@ -6,10 +6,15 @@ from .models import Query
 from .models import Thing
 from .models import TextThing
 from .models import Recommendation
-from .models import RecommendationTag
-from .models import QueryTag
+# from .models import RecommendationTag
+# from .models import QueryTag
+from .models import Tag
 from django.utils import timezone
 
+from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialToken
+
+import sys
 
 def submitQuery(userId, *tags):
     if tags.count == 0:
@@ -28,8 +33,7 @@ def submitQuery(userId, *tags):
 
     # create query tags
     for t in tags:
-         qt = QueryTag(tag=t.lower())
-         qt.save()
+         qt, created = Tag.objects.get_or_create(tag=t.lower())
          q1.tags.add(qt)
     
     q1.save()
@@ -37,25 +41,28 @@ def submitQuery(userId, *tags):
     return q1
 
 
-def getQuerySolutions(queryId):
-    # find all relevant recommendations (with any matching tags)
-    # TODO: configure solutions according to friendships
-    q1 = Query.objects.get(id=queryId)
-    #queryTags = QueryTag.objects.filter(query=q1)
-    queryTags = q1.tags.all()
-    recommendationTags = []
+def userTest(user):
+	
+	account = SocialAccount.objects.filter(user=user).first()
+	token = SocialToken.objects.filter(account=account).first()
+	
+	print(account.uid)
+	print(token.token)
+
+
+def getQuerySolutions(query):
+
+    tags = query.tags.all()
+    
+    recommendations = Recommendation.objects.filter(tags__in=tags).all()
+
     things = []
-    tags = set()
-    for qt in queryTags:
-        recommendationTags.extend(RecommendationTag.objects.filter(tag=qt.tag))
-        tags.add(qt.tag)
-    recommendationTags = set(recommendationTags)  # put in a set to eliminate duplicates
-    for rt in recommendationTags:
-        things.append(rt.recommendation.thing)
+    for recommendation in recommendations:
+        things.append(recommendation.thing)
     things = set(things)  # put in a set to eliminate duplicates
 
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
-    solutionsWithQueryTags = {'tags': tags, 'solutions': []}
+    solutionsWithQueryTags = {'tags': [tag.tag for tag in tags], 'solutions': [], 'count': len(recommendations)}
     for thing in things:
         description = TextThing.objects.filter(thing_id=thing.id)[0].description
         recommendations = Recommendation.objects.filter(thing=thing)
@@ -114,9 +121,8 @@ def createRecommendation(userId, description, comments, *tags):
 
     # create the recommendationTags
     for t in tags:
-         rt = RecommendationTag(tag=t.lower())
-         rt.save()
-         recommendation.tags.add(rt)
+        newtag, created = Tag.objects.get_or_create(tag=t.lower())
+        recommendation.tags.add(newtag)
          
     return recommendation.id
 
@@ -127,7 +133,7 @@ def getRecommendationTagCounts():
     tagSet = set(tags)  # put in a set to eliminate duplicates
     tag_count_list = []
     for tag in tagSet:
-        count = RecommendationTag.objects.filter(tag=tag).count()
+        count = Tag.objects.filter(tag=tag).count()
         tag_count_list.append({'text': tag, 'weight': count})
     return tag_count_list
     

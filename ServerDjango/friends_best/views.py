@@ -40,6 +40,7 @@ class QueryViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def list(self, request):
+         userTest(request.user)
          history = getQueryHistory(request.user.id)
          serializer = QuerySerializer(history, many=True)
          # Remove solutions?
@@ -83,8 +84,8 @@ class PromptViewSet(viewsets.ModelViewSet):
 
 
 class RecommendationTagViewSet(viewsets.ModelViewSet):
-    queryset = RecommendationTag.objects.order_by('recommendation')
-    serializer_class = RecommendationTagSerializer
+    queryset = Tag.objects.order_by('recommendation')
+    serializer_class = TagSerializer
 
     def list(self, request, *args, **kwargs):
         data = getRecommendationTagCounts()
@@ -92,8 +93,8 @@ class RecommendationTagViewSet(viewsets.ModelViewSet):
 
 
 class QueryTagViewSet(viewsets.ModelViewSet):
-    queryset = QueryTag.objects.order_by('query')
-    serializer_class = QueryTagSerializer
+    queryset = Tag.objects.order_by('query')
+    serializer_class = TagSerializer
 
 
 class PinViewSet(viewsets.ModelViewSet):

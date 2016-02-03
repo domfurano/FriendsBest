@@ -7,8 +7,9 @@ from .models import Thing
 from .models import TextThing
 from .models import Recommendation
 from .models import Prompt
-from .models import RecommendationTag
-from .models import QueryTag
+# from .models import RecommendationTag
+# from .models import QueryTag
+from .models import Tag
 from .models import Pin
 
 
@@ -19,7 +20,7 @@ admin.site.register(Friendship)
 # admin.site.register(Recommendation)
 admin.site.register(Prompt)
 # admin.site.register(RecommendationTag)
-admin.site.register(QueryTag)
+admin.site.register(Tag)
 admin.site.register(Pin)
 
 

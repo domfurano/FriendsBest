@@ -48,39 +48,32 @@ class TextThing(models.Model):
     def __str__(self):
         return "thingID:%s, content:%s" % (self.thing.pk, self.description)
 
-class RecommendationTag(models.Model):
-    tag = models.CharField(max_length=25)
-    lemma = models.CharField(max_length=25)
+class Tag(models.Model):
+    tag = models.CharField(max_length=25, unique=True)
+    lemma = models.CharField(max_length=25, unique=True)
     
     def save(self, *args, **kwargs):
         if not self.lemma:
             self.lemma = self.tag
-        super(RecommendationTag, self).save(*args, **kwargs)
+        super(Tag, self).save(*args, **kwargs)
         
     def __str__(self):
-        return "tag:%s, recommendation:%s)" % (self.tag, self.recommendation)
+        return "%s" % (self.tag)
 
 class Recommendation(models.Model):
     thing = models.ForeignKey(Thing)
     user = models.ForeignKey(User)
     comments = models.TextField()
-    tags = models.ManyToManyField(RecommendationTag)
+    tags = models.ManyToManyField(Tag)
     timestamp = models.DateTimeField(default=timezone.now)
     tagstring = models.TextField()
 
     def __str__(self):
         return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
-
-
-class QueryTag(models.Model):
-    tag = models.CharField(max_length=20)
-
-    def __str__(self):
-        return "tag:%s" % (self.tag)
         
 class Query(models.Model):
     user = models.ForeignKey(User)
-    tags = models.ManyToManyField(QueryTag)
+    tags = models.ManyToManyField(Tag)
     timestamp = models.DateTimeField(default=timezone.now)
     tagstring = models.TextField()
     taghash = models.TextField()
