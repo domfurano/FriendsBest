@@ -35,12 +35,11 @@ class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendsSerializer
 
 class QueryViewSet(viewsets.ModelViewSet):
-    queryset = Query.objects.order_by('timestamp')
+    queryset = Query.objects.order_by('timestamp').all()
     serializer_class = QuerySerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def list(self, request):
-         userTest(request.user)
          history = getQueryHistory(request.user.id)
          serializer = QuerySerializer(history, many=True)
          # Remove solutions?
@@ -51,7 +50,7 @@ class QueryViewSet(viewsets.ModelViewSet):
         data["user"] = request.user.id
         serializer = QuerySerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             data = serializer.data
             return Response(data, status.HTTP_201_CREATED)
         return Response(data, status.HTTP_400_BAD_REQUEST)
@@ -70,7 +69,7 @@ class RecommendationViewSet(viewsets.ModelViewSet):
         data["user"] = request.user.id
         serializer = RecommendationSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response({"recommendationId": serializer.data}, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 

@@ -76,7 +76,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('query', 'tag',)
+        fields = ('tag',)
 
 
 class TextThingSerializer(serializers.ModelSerializer):
@@ -141,7 +141,7 @@ class RecommendationSerializer(serializers.Serializer):
 
 
 class QuerySerializer(serializers.ModelSerializer):
-    user = UserSerializer
+    #user = UserSerializer
     tags = TagSerializer(many=True)
 
     def to_internal_value(self, data):
@@ -187,7 +187,7 @@ class QuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Query
-        fields = ('id', 'tags', 'tagstring', 'user', 'timestamp', )
+        fields = ('id', 'tags', )
 
 
 class PinSerializer(serializers.ModelSerializer):

@@ -93,7 +93,7 @@ def submitQuery(user, *tags):
         p = Prompt(user=friendUser, query=q1)
         p.save()
     
-    return q1.timestamp
+    return q1
 
 
 def getQuerySolutions(query):
