@@ -2,8 +2,8 @@ import json
 
 from rest_framework import serializers
 
-from friends_best.models import *
-from friends_best.services import *
+from ServerDjango.friends_best.models import *
+from ServerDjango.friends_best.services import *
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
 
@@ -13,27 +13,27 @@ import base64
 
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = User
         fields = '__all__'
 
 class UserSocialSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = SocialAccount
         fields = '__all__'
 
 
 class FriendsSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Friendship
         fields = '__all__'
 
-    
+
 class ThingSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Thing
         fields = '__all__'
@@ -47,12 +47,12 @@ class TextSerializer(serializers.ModelSerializer):
 
 
 class PromptSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Prompt
         fields = '__all__'
 
-    
+
 # class RecommendationTagSerializer(serializers.ModelSerializer):
 # 
 #     class Meta:
@@ -163,15 +163,15 @@ class QuerySerializer(serializers.ModelSerializer):
             solution_collection['solutions'].append({'name': name, 'recommendation': recommendations})
         return solution_collection
 
-    def create(self, validated_data):    
+    def create(self, validated_data):
         user = validated_data.get('user')
         tags = validated_data.get('tags')
         q = submitQuery(user, *tags)
         return q
-        
+
     def update(self, instance, validated_data):
-	    return
-    
+        return
+
 
     def validate(self, data):
         if 'user' not in data:
@@ -191,7 +191,7 @@ class QuerySerializer(serializers.ModelSerializer):
 
 
 class PinSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Pin
         fields = '__all__'

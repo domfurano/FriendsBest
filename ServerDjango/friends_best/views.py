@@ -8,27 +8,28 @@ from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
 
-from friends_best.serializers import *
-from friends_best.services import *
-from friends_best.permissions import *
+from ServerDjango.friends_best.serializers import *
+from ServerDjango.friends_best.services import *
+from ServerDjango.friends_best.permissions import *
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
-    
+
 class CurrentUserView(APIView):
-	def get(self, request):
-		user = request.user
-		accounts = SocialAccount.objects.get(user=user)
-		serializer = UserSerializer(user)
-		return Response(serializer.data)
-    
+    def get(self, request):
+        user = request.user
+        accounts = SocialAccount.objects.get(user=user)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
 class CurrentSocialUserView(APIView):
-	def get(self, request):
-		user = request.user
-		accounts = SocialAccount.objects.get(user=user)
-		serializer = UserSocialSerializer(accounts)
-		return Response(serializer.data)
+    def get(self, request):
+        user = request.user
+        accounts = SocialAccount.objects.get(user=user)
+        serializer = UserSocialSerializer(accounts)
+        return Response(serializer.data)
 
 class FriendViewSet(viewsets.ModelViewSet):
     queryset = Friendship.objects.order_by('userOne')
@@ -40,11 +41,11 @@ class QueryViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def list(self, request):
-         userTest(request.user)
-         history = getQueryHistory(request.user.id)
-         serializer = QuerySerializer(history, many=True)
-         # Remove solutions?
-         return Response(serializer.data)
+        userTest(request.user)
+        history = getQueryHistory(request.user.id)
+        serializer = QuerySerializer(history, many=True)
+        # Remove solutions?
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -83,13 +84,13 @@ class PromptViewSet(viewsets.ModelViewSet):
     serializer_class = PromptSerializer
 
 
-class RecommendationTagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.order_by('recommendation')
-    serializer_class = TagSerializer
+#class RecommendationTagViewSet(viewsets.ModelViewSet):
+#    queryset = Tag.objects.order_by('recommendation')
+#    serializer_class = TagSerializer
 
-    def list(self, request, *args, **kwargs):
-        data = getRecommendationTagCounts()
-        return Response(data)
+#    def list(self, request, *args, **kwargs):
+#        data = getRecommendationTagCounts()
+#        return Response(data)
 
 
 class QueryTagViewSet(viewsets.ModelViewSet):
@@ -100,7 +101,7 @@ class QueryTagViewSet(viewsets.ModelViewSet):
 class PinViewSet(viewsets.ModelViewSet):
     queryset = Pin.objects.order_by('thing')
     serializer_class = PinSerializer
-    
+
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter    
 
