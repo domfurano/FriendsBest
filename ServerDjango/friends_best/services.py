@@ -23,15 +23,15 @@ import json
 _baseFacebookURL = 'https://graph.facebook.com/v2.5'
 
 # paul's app:
-_appId = "106243083075609"
-_appSecret = "fb3095e2871ce3f42f43163b0a903c23"
+#_appId = "106243083075609"
+#_appSecret = "fb3095e2871ce3f42f43163b0a903c23"
 # my user id: 10208457124655040
 # long term token : CAABgoKU6ABkBACYatShqKKOIizPUp1E33IwIypcUDjuVyaOAWrA4ZAHZAWPWfqQ7eNIqTTkAA7vx6DM73MC5Q2ajmFSZBHuWQs0P1oMZBvYtZAyMuKibaOZA1jZBChtzPekFu0cuEBlsP413hGZCZBGtRHQ2jiOZBx2BWhiL0ZC0pBNUNaxaOO4g7dm
 
 # TODO: enable these variables (and disable Paul's) before checkin
 # ray's app:
-# _appId = "1519942364964737"
-# _appSecret = "9346ae3c5b2c50801237589b238b0688"
+_appId = "1519942364964737"
+_appSecret = "9346ae3c5b2c50801237589b238b0688"
 
 _genericAccessToken = _appId + "|" + _appSecret
 
@@ -48,6 +48,7 @@ def getUserFacebookToken(user):
     account = SocialAccount.objects.filter(user=user).first()
     token = SocialToken.objects.filter(account=account).first()
     return token.token
+
 
 def getAllPrompts(user):
     prompts = Prompt.objects.filter(user=user)
