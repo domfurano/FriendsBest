@@ -70,3 +70,12 @@ target/
 .DS_Store
 /build
 /captures
+
+# Emacs
+*~
+*#
+
+# XCode
+*.xcuserstate
+*.xcbkptlist
+xcuserdata/

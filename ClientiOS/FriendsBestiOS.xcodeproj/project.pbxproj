@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE0368701C617ECD006333DA /* NetworkQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03686F1C617ECD006333DA /* NetworkQueue.swift */; };
 		CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */; };
 		CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */; };
 		CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */; };
 		CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */; };
+		CE53AE951C62F04000008F4A /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53AE941C62F04000008F4A /* Timer.swift */; };
 		CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE64683D1C459FB0002F73A0 /* AppDelegate.swift */; };
 		CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468411C459FB0002F73A0 /* Main.storyboard */; };
 		CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6468441C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld */; };
@@ -64,10 +66,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CE03686F1C617ECD006333DA /* NetworkQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkQueue.swift; sourceTree = "<group>"; };
 		CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkDAO.swift; sourceTree = "<group>"; };
 		CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryHistoryViewController.swift; sourceTree = "<group>"; };
 		CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionDetailViewController.swift; sourceTree = "<group>"; };
 		CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionsViewController.swift; sourceTree = "<group>"; };
+		CE53AE941C62F04000008F4A /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		CE64683A1C459FB0002F73A0 /* FriendsBestiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendsBestiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE64683D1C459FB0002F73A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE6468421C459FB0002F73A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -153,6 +157,8 @@
 				CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */,
 				CEBAA2821C4C4B450062B38F /* DataController.swift */,
 				CE67F1B11C59156A001056C3 /* Extensions.swift */,
+				CE03686F1C617ECD006333DA /* NetworkQueue.swift */,
+				CE53AE941C62F04000008F4A /* Timer.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -427,6 +433,7 @@
 				CE92889B1C588BAE009A580F /* FAKOcticons.m in Sources */,
 				CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */,
 				CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */,
+				CE0368701C617ECD006333DA /* NetworkQueue.swift in Sources */,
 				CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */,
 				CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */,
 				CE67F1B21C59156A001056C3 /* Extensions.swift in Sources */,
@@ -436,6 +443,7 @@
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
 				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,
 				CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */,
+				CE53AE951C62F04000008F4A /* Timer.swift in Sources */,
 				CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */,
 				CE9288981C588BAE009A580F /* FAKIcon.m in Sources */,
 				CE9288991C588BAE009A580F /* FAKIonIcons.m in Sources */,
