@@ -53,19 +53,18 @@ class PromptSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     
-class RecommendationTagSerializer(serializers.ModelSerializer):
+# class RecommendationTagSerializer(serializers.ModelSerializer):
+# 
+#     class Meta:
+#         model = RecommendationTag
+#         fields = '__all__'
 
-    class Meta:
-        model = RecommendationTag
-        fields = '__all__'
 
-
-class QueryTagSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
-        warning('this works')
         query_dict = dict()
-        tag_list = QueryTag.objects.all().values('query', 'tag',)
+        tag_list = Tag.objects.all().values('query', 'tag',)
         for tag in tag_list:
             qid = tag['query']
             if qid in query_dict:
@@ -76,7 +75,7 @@ class QueryTagSerializer(serializers.ModelSerializer):
         return query_serialized
 
     class Meta:
-        model = QueryTag
+        model = Tag
         fields = ('query', 'tag',)
 
 
@@ -91,22 +90,22 @@ class RecommendationSerializer(serializers.Serializer):
     user = serializers.CharField(max_length=50)
     description = serializers.CharField(max_length=200)
     comments = serializers.CharField(max_length=500)
-    tags = RecommendationTagSerializer(many=True)
+    tags = TagSerializer(many=True)
 
     def to_internal_value(self, data):
         return data
 
     # data -Recommendation object new comment
-    def to_representation(self, data):
-        rec_tags = RecommendationTag.objects.filter(recommendation=data).values('tag')
-        text_thing = TextThing.objects.filter(thing=data.thing).get()
+    def to_representation(self, recommendation):
+        rec_tags = recommendation.tags.all()
+        text_thing = TextThing.objects.filter(thing=recommendation.thing).get()
 
         recommendation_json = {
-            'id': data.id,
-            'user': data.user.first_name,
+            'id': recommendation.id,
+            'user': recommendation.user.first_name,
             'description': text_thing.description,
-            'comments': data.comments,
-            'tags': [rt['tag'] for rt in rec_tags]
+            'comments': recommendation.comments,
+            'tags': [rt.tag for rt in rec_tags]
         }
         return recommendation_json
 
@@ -143,20 +142,20 @@ class RecommendationSerializer(serializers.Serializer):
 
 class QuerySerializer(serializers.ModelSerializer):
     user = UserSerializer
-    tags = QueryTagSerializer(many=True)
+    tags = TagSerializer(many=True)
 
     def to_internal_value(self, data):
         return data
 
     def to_representation(self, query):
-        solutions = getQuerySolutions(query.id)
+        solutions = getQuerySolutions(query)
         solution_collection = {
             'id':query.id,
             'tags':solutions['tags'],
             'tagstring':query.tagstring,
             'solutions': [],
             'timestamp': query.timestamp,
-            'taghash': query.taghash
+            'taghash': query.taghash,
         }
         for sol in solutions['solutions']:
             name = sol.description

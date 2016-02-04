@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import django.utils.timezone
 from django.conf import settings
+import django.utils.timezone
 
 
 class Migration(migrations.Migration):
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Friendship',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
                 ('muted', models.BooleanField(default=False)),
                 ('userOne', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='userOne_set')),
                 ('userTwo', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='userTwo_set')),
@@ -25,61 +25,59 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Pin',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
             ],
         ),
         migrations.CreateModel(
             name='Prompt',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
             ],
         ),
         migrations.CreateModel(
             name='Query',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
                 ('timestamp', models.DateTimeField(default=django.utils.timezone.now)),
                 ('tagstring', models.TextField()),
-                ('taghash', models.BigIntegerField()),
-            ],
-        ),
-        migrations.CreateModel(
-            name='QueryTag',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tag', models.CharField(max_length=20)),
+                ('taghash', models.TextField()),
             ],
         ),
         migrations.CreateModel(
             name='Recommendation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comments', models.TextField(max_length=500)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('comments', models.TextField()),
                 ('timestamp', models.DateTimeField(default=django.utils.timezone.now)),
+                ('tagstring', models.TextField()),
             ],
         ),
         migrations.CreateModel(
-            name='RecommendationTag',
+            name='Tag',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tag', models.CharField(max_length=25)),
-                ('lemma', models.CharField(max_length=25)),
-                ('recommendation', models.ForeignKey(to='friends_best.Recommendation')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('tag', models.CharField(unique=True, max_length=25)),
+                ('lemma', models.CharField(unique=True, max_length=25)),
             ],
         ),
         migrations.CreateModel(
             name='Thing',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('thingType', models.CharField(default='TEXT', max_length=15, choices=[('TEXT', 'Text')])),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('thingType', models.CharField(choices=[('TEXT', 'Text')], max_length=15, default='TEXT')),
             ],
         ),
         migrations.CreateModel(
             name='TextThing',
             fields=[
-                ('thing', models.OneToOneField(to='friends_best.Thing', primary_key=True, serialize=False)),
-                ('description', models.TextField(max_length=200, unique=True)),
+                ('thing', models.OneToOneField(to='friends_best.Thing', serialize=False, primary_key=True)),
+                ('description', models.TextField(unique=True, max_length=200)),
             ],
+        ),
+        migrations.AddField(
+            model_name='recommendation',
+            name='tags',
+            field=models.ManyToManyField(to='friends_best.Tag'),
         ),
         migrations.AddField(
             model_name='recommendation',
@@ -94,7 +92,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='query',
             name='tags',
-            field=models.ManyToManyField(to='friends_best.QueryTag'),
+            field=models.ManyToManyField(to='friends_best.Tag'),
         ),
         migrations.AddField(
             model_name='query',
