@@ -31,8 +31,8 @@ if settings.DEBUG:
     ]
 else:
     urlpatterns = [
-        url(r'^fb/admin/', include(admin.site.urls)),
-        url(r'^fb/api/', include(router.urls)),
-        url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-        url(r'^fb/api/me/$', CurrentUserView.as_view())
+        url(r'^admin/', include(admin.site.urls)),
+        url(r'^api/', include(router.urls)),
+        url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
+        url(r'^api/me/$', CurrentUserView.as_view())
     ]
