@@ -46,6 +46,7 @@
 		CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2821C4C4B450062B38F /* DataController.swift */; };
 		CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */; };
 		CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2861C4C5BDB0062B38F /* MainView.swift */; };
+		CEFF55C51C63CC3A0020B364 /* NetworkTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,6 +121,7 @@
 		CEBAA2821C4C4B450062B38F /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
 		CEBAA2861C4C5BDB0062B38F /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,10 +157,11 @@
 			children = (
 				CEBAA2801C4C1DB50062B38F /* DataModel.swift */,
 				CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */,
-				CEBAA2821C4C4B450062B38F /* DataController.swift */,
-				CE67F1B11C59156A001056C3 /* Extensions.swift */,
+				CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */,
 				CE03686F1C617ECD006333DA /* NetworkQueue.swift */,
 				CE53AE941C62F04000008F4A /* Timer.swift */,
+				CEBAA2821C4C4B450062B38F /* DataController.swift */,
+				CE67F1B11C59156A001056C3 /* Extensions.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -439,6 +442,7 @@
 				CE67F1B21C59156A001056C3 /* Extensions.swift in Sources */,
 				CE9F33631C604B7B0018DBC0 /* FacebookLoginViewController.swift in Sources */,
 				CE92889C1C588BAE009A580F /* FAKZocial.m in Sources */,
+				CEFF55C51C63CC3A0020B364 /* NetworkTask.swift in Sources */,
 				CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */,
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
 				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,

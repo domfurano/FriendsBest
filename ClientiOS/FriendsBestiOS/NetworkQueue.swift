@@ -12,32 +12,43 @@ class NetworkQueue {
     
     static let instance: NetworkQueue = NetworkQueue()
     
-    private var queue: [NSURLSessionDataTask] = []
+    private var queue: [NetworkTask] = []
     private var executing: Bool = false
     private var timer: Timer? = nil
     
     private init() {
-        self.timer = Timer(timesPerSecond: 2, closure: { () -> Void in
+        self.timer = Timer(timesPerSecond: 8, closure: { () -> Void in
             if !self.executing && self.queue.count > 0 {
-                NSLog("Executing network request..." + (self.queue.last?.description)!)
                 self.executing = true;
-                self.queue.last?.resume()
+                let task = self.queue.last!
+                task.task()
+                NSLog("Executing network request: " + task.description)
             }
         })
-        self.timer!.startTimer()
     }
     
-    func push(task: NSURLSessionDataTask) {
+    func push(task: NetworkTask) {
         self.queue.append(task)
+        if self.timer!.stopped {
+            self.timer!.startTimer()
+        }
     }
     
-    func enqueue(task: NSURLSessionDataTask) {
+    func enqueue(task: NetworkTask) {
         self.queue.insert(task, atIndex: 0)
+        NSLog("Enqueueing network request: " + task.description)
+        if self.timer!.stopped {
+            self.timer!.startTimer()
+        }
     }
     
     func dequeue() {
         assert(self.queue.count > 0)
-        self.queue.removeLast()
+        let task = self.queue.removeLast()        
+        NSLog("Dequeueing network request: " + task.description)
+        if self.queue.count == 0 {
+            self.timer!.cancelTimer()
+        }
         self.executing = false
     }
     
