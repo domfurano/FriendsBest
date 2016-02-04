@@ -99,14 +99,14 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         let fa_cog_image: UIImage = fa_cog.imageWithSize(CGSize(width: 22, height: 22))
         let settingsButton: UIBarButtonItem = UIBarButtonItem(image: fa_cog_image, style: .Plain, target: self, action: Selector("settingsButtonPressed"))
         
-//        let fa_circle: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(22)
-//        let fa_circle_image: UIImage = fa_circle.imageWithSize(CGSize(width: 22, height: 22))
-//        let profileButton: UIBarButtonItem = UIBarButtonItem(image: fa_circle_image, style: .Plain, target: self, action: Selector("profileButtonPressed"))
-//        profileButton.tintColor = .colorFromHex(0x3b5998)
+        let fa_circle: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(22)
+        let fa_circle_image: UIImage = fa_circle.imageWithSize(CGSize(width: 22, height: 22))
+        let profileButton: UIBarButtonItem = UIBarButtonItem(image: fa_circle_image, style: .Plain, target: self, action: Selector("profileButtonPressed"))
+        profileButton.tintColor = .colorFromHex(0x3b5998)
         
         
-        let profilePic = FBSDKProfilePictureView(frame: CGRect(x: 0,y: 0,width: 22,height: 22))
-        let profileButton: UIBarButtonItem = UIBarButtonItem(image: FBSDKProfilePictureView, style: .Plain, target: self, action: Selector("profileButtonPressed"))
+//        let profilePic = FBSDKProfilePictureView(frame: CGRect(x: 0,y: 0,width: 22,height: 22))
+//        let profileButton: UIBarButtonItem = UIBarButtonItem(image: FBSDKProfilePictureView, style: .Plain, target: self, action: Selector("profileButtonPressed"))
         
         let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
         let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))

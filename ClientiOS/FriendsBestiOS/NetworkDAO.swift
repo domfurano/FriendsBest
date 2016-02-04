@@ -71,6 +71,7 @@ class NetworkDAO {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
                 if let error = error {
+                    NetworkQueue.instance.tryAgain()
                     NSLog("Error - FriendsBest API - getQueries() - \(error)")
                     return
                 }
@@ -143,6 +144,7 @@ class NetworkDAO {
                 
                 if let error = error {
                     NSLog("Error - FriendsBest API - getQuerySolutions() - \(error)")
+                    NetworkQueue.instance.tryAgain()
                     return
                 }
                 
@@ -248,6 +250,7 @@ class NetworkDAO {
                 
                 if let error = error {
                     NSLog("Error - FriendsBest API - postNewQuery() - \(error.localizedDescription)")
+                    NetworkQueue.instance.tryAgain()
                     return
                 }
                 
@@ -332,6 +335,7 @@ class NetworkDAO {
                 
                 if let error = error {
                     NSLog("Error - FriendsBest API - postNewRecommendation() - \(error.localizedDescription)")
+                    NetworkQueue.instance.tryAgain()
                     return
                 }
                 
@@ -405,6 +409,7 @@ class NetworkDAO {
                 
                 if let error = error {
                     NSLog("Error - FriendsBest API - postFacebookToken() - \(error.localizedDescription)")
+                    NetworkQueue.instance.tryAgain()
                     return
                 }
                 
