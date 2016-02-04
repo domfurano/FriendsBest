@@ -37,39 +37,7 @@ class NetworkDAO {
     
     /* Private constructor */
     private init() { }
-    
-    
-    func testAPIconnection() {
-        guard let token = self.friendsBestToken else {
-            postFacebookTokenAndAuthenticate()
-            NSLog("User has not authenticated")
-            return
-        }
-        
-        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.HTTPAdditionalHeaders = ["Authorization": token]
-        let session: NSURLSession = NSURLSession(configuration: configuration)
-        
-        session.dataTaskWithURL(friendsBestAPIurl,
-            completionHandler: { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
-                // Closure does not execute on the main thread.
-                // NSLog(NSThread.isMainThread().description)
-                
-                if error != nil {
-                    NSLog("API error: \(error)")
-                    return
-                }
-                
-                if let data = data {
-                    do {
-                        try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
-                        NSLog("API connection successful")
-                    } catch _ {
-                        NSLog("API error. Unable to parse JSON.")
-                    }
-                }
-        }).resume()
-    }
+
     
     func getQueries() {
         guard let token = self.friendsBestToken else {
@@ -90,7 +58,7 @@ class NetworkDAO {
             return
         }
         
-        session.dataTaskWithURL(validQueryURL,
+        let task = session.dataTaskWithURL(validQueryURL,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
@@ -134,9 +102,11 @@ class NetworkDAO {
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     self?.networkDAODelegate?.queriesFetched()
+                    NetworkQueue.instance.dequeue()
                 })
                 
-            }).resume()
+            })
+        NetworkQueue.instance.enqueue(task)
     }
     
     func getQuerySolutions(queryID: Int) {
@@ -153,7 +123,7 @@ class NetworkDAO {
         let queryString: String = "query/\(queryID)/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
-        session.dataTaskWithURL(queryURL,
+        let task = session.dataTaskWithURL(queryURL,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
@@ -218,9 +188,11 @@ class NetworkDAO {
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     self?.networkDAODelegate?.querySolutionsFetched(forQueryID: queryID)
+                    NetworkQueue.instance.dequeue()
                 })
                 
-            }).resume()
+            })
+        NetworkQueue.instance.enqueue(task)
     }
     
     func postNewQuery(queryTags: [String]) {
@@ -251,7 +223,7 @@ class NetworkDAO {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        session.dataTaskWithRequest(request,
+        let task = session.dataTaskWithRequest(request,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
@@ -294,8 +266,10 @@ class NetworkDAO {
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     self?.networkDAODelegate?.newQueryFetched(newQuery.ID)
+                    NetworkQueue.instance.dequeue()
                 })
-            }).resume()
+            })
+        NetworkQueue.instance.enqueue(task)
         
     }
     
@@ -327,7 +301,7 @@ class NetworkDAO {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        session.dataTaskWithRequest(request,
+        let task = session.dataTaskWithRequest(request,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
@@ -370,8 +344,10 @@ class NetworkDAO {
                 }
                 
                 // TODO: Do something?
+                NetworkQueue.instance.dequeue()
 
-        }).resume()
+        })
+        NetworkQueue.instance.enqueue(task)
     }
     
     func postFacebookTokenAndAuthenticate() {
@@ -393,7 +369,7 @@ class NetworkDAO {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        session.dataTaskWithRequest(request,
+        let task = session.dataTaskWithRequest(request,
             completionHandler: {
                 [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
@@ -416,7 +392,10 @@ class NetworkDAO {
                 }
                 
                 self?.friendsBestToken = "Token " + (key as String)
-            }).resume()
+                
+                NetworkQueue.instance.dequeue()
+            })
+        NetworkQueue.instance.push(task)
     }
     
     private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> [Solution]? {
