@@ -148,6 +148,8 @@ class QuerySerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, query):
+        
+        # Get a solutions object to return
         solutions = getQuerySolutions(query)
         solution_collection = {
             'id':query.id,
@@ -168,10 +170,6 @@ class QuerySerializer(serializers.ModelSerializer):
         tags = validated_data.get('tags')
         q = submitQuery(user, *tags)
         return q
-        
-    def update(self, instance, validated_data):
-	    return
-    
 
     def validate(self, data):
         if 'user' not in data:

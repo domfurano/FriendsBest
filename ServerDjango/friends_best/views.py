@@ -7,6 +7,7 @@ from rest_framework.request import Request
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
+from django.utils import timezone
 
 from friends_best.serializers import *
 from friends_best.services import *
@@ -35,15 +36,26 @@ class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendsSerializer
 
 class QueryViewSet(viewsets.ModelViewSet):
-    queryset = Query.objects.order_by('timestamp').all()
+    queryset = Query.objects.all()
     serializer_class = QuerySerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def list(self, request):
          history = getQueryHistory(request.user.id)
          serializer = QuerySerializer(history, many=True)
-         # Remove solutions?
          return Response(serializer.data)
+         
+    def retrieve(self, request, pk=None):
+        instance = self.get_object()
+        
+        # update the query to have the current time
+        # so that it appears in the proper sequence
+        # of all queries made by the user
+        instance.timestamp = timezone.now()
+        instance.save()
+        
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         data = request.data
