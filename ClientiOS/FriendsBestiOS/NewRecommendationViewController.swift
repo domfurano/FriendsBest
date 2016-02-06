@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
+class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
     let tagsLabel: UILabel = UILabel()
     let tagsField: UITextField = UITextField()
@@ -19,14 +19,30 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
     let commentsLabel: UILabel = UILabel()
     let commentsField: UITextView = UITextView()
     
+    let NRinputAccessoryView: NewRecommendationInputAccessoryView = NewRecommendationInputAccessoryView()
+    
+    var scrollView: UIScrollView {
+        get {
+            return self.view as! UIScrollView
+        }
+    }
     
     override func loadView() {
-        view = NewRecommendationView()
-        view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
+        self.view = NewRecommendationView()
+        self.view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
     }
     
     override func viewDidLoad() {
         styleControls()
+        
+        tagsField.delegate = self
+        titleField.delegate = self
+        commentsField.delegate = self
+        NRinputAccessoryView.recommendButton?.addTarget(
+            self,
+            action: "createNewRecommendationButtonPressed",
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
         
         view.addSubview(tagsLabel)
         view.addSubview(tagsField)
@@ -37,6 +53,8 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(commentsLabel)
         view.addSubview(commentsField)
         
+//        view.addSubview(NRinputAccessoryView)
+        
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
         tagsField.translatesAutoresizingMaskIntoConstraints = false
         
@@ -45,6 +63,8 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
         
         commentsLabel.translatesAutoresizingMaskIntoConstraints = false
         commentsField.translatesAutoresizingMaskIntoConstraints = false
+        
+//        NRinputAccessoryView.translatesAutoresizingMaskIntoConstraints = false
         
         addConstraints()
     }
@@ -55,21 +75,45 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
         setToolbarItems()
     }
     
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if textField == tagsField {
+            titleField.becomeFirstResponder()
+        } else if textField == titleField {
+            commentsField.becomeFirstResponder()
+        } else if textField == commentsField {
+            commentsField.resignFirstResponder()
+        }
+        return true
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+//        self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, textField.bound, <#T##right: CGFloat##CGFloat#>)
+    }
+    
     private func styleControls() {
         tagsLabel.text = "Tags"
         tagsField.backgroundColor = UIColor.whiteColor()
         tagsField.borderStyle = UITextBorderStyle.RoundedRect
+        tagsField.returnKeyType = UIReturnKeyType.Next
+        tagsField.keyboardAppearance = .Dark
         
         titleLabel.text = "Title"
         titleField.backgroundColor = UIColor.whiteColor()
         titleField.borderStyle = UITextBorderStyle.RoundedRect
+        titleField.returnKeyType = UIReturnKeyType.Next
+        titleField.keyboardAppearance = .Dark
         
         commentsLabel.text = "Comments"
         commentsField.backgroundColor = UIColor.whiteColor()
         commentsField.editable = true
         commentsField.layer.borderWidth = 0.2
         commentsField.layer.cornerRadius = 5
+        commentsField.returnKeyType = .Default
+        commentsField.keyboardAppearance = .Dark
+        commentsField.inputAccessoryView = NRinputAccessoryView
     }
+    
+
     
     /* Constraints */
     
@@ -174,6 +218,16 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
                 multiplier: 0.5,
                 constant: 0.0))
         
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: NRinputAccessoryView,
+//                attribute: NSLayoutAttribute.Height,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.Height,
+//                multiplier: 0.1,
+//                constant: 0.0))
+        
         let views: [String: UIView] = [
             "tagsLabel": tagsLabel,
             "tags" : tagsField,
@@ -210,3 +264,19 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewRecommendationView: UIView {
+class NewRecommendationView: UIScrollView {
     
     override func drawRect(rect: CGRect) {
         let context: CGContext = UIGraphicsGetCurrentContext()!
