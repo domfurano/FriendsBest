@@ -27,6 +27,9 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         }
     }
     
+    var activeTextField: UITextField? = nil
+    var activeTextView: UITextView? = nil
+    
     override func loadView() {
         self.view = NewRecommendationView()
         self.view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
@@ -53,8 +56,6 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         view.addSubview(commentsLabel)
         view.addSubview(commentsField)
         
-//        view.addSubview(NRinputAccessoryView)
-        
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
         tagsField.translatesAutoresizingMaskIntoConstraints = false
         
@@ -64,30 +65,94 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         commentsLabel.translatesAutoresizingMaskIntoConstraints = false
         commentsField.translatesAutoresizingMaskIntoConstraints = false
         
-//        NRinputAccessoryView.translatesAutoresizingMaskIntoConstraints = false
-        
         addConstraints()
+        
+        // Register for keyboard events
+        registerForKeyboardNotifications()
     }
+    
+
     
     override func viewWillAppear(animated: Bool) {
         title = "New Recommendation"
         edgesForExtendedLayout = UIRectEdge.None
         setToolbarItems()
+        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        // Tags field gets focus when view appears
+        tagsField.becomeFirstResponder()
+    }
+    
+    func registerForKeyboardNotifications() {
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: Selector("keyboardWasShown:"),
+            name: UIKeyboardDidShowNotification,
+            object: nil
+        )
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: Selector("keyboardWillBeHidden:"),
+            name: UIKeyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    func keyboardWasShown(aNotification: NSNotification) {
+        let scrollViewFrame: CGRect = self.scrollView.frame
+        let mainScreenBounds = UIScreen.mainScreen().bounds
+        let keyboardFrame: CGRect = aNotification.userInfo![UIKeyboardFrameBeginUserInfoKey]!.CGRectValue
+        
+        let distanceBetweenNavBarAndKeyboard = mainScreenBounds.height - scrollViewFrame.origin.x - keyboardFrame.height
+        let midpoint = distanceBetweenNavBarAndKeyboard / 2
+        
+        if self.activeTextField != nil {
+            let activeTextFieldFrame: CGRect = self.activeTextField!.frame
+            scrollView.setContentOffset(CGPointMake(0.0, activeTextFieldFrame.midY - midpoint), animated: true)
+        }
+        
+        if self.activeTextView != nil {
+            let activeTextViewFrame: CGRect = self.activeTextView!.frame            
+            self.scrollView.setContentOffset(CGPointMake(0.0, activeTextViewFrame.midY - midpoint), animated:  true)
+        }
+    }
+    
+    func keyboardWillBeHidden(aNotification: NSNotification) {
+        let contentInsets: UIEdgeInsets = UIEdgeInsetsZero
+        self.scrollView.contentInset = contentInsets
+        self.scrollView.scrollIndicatorInsets = contentInsets
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        self.activeTextField = textField
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        self.activeTextField = nil
+    }
+    
+    func textViewDidBeginEditing(textView: UITextView) {
+        self.activeTextView = textView
+    }
+    
+    func textViewDidEndEditing(textView: UITextView) {
+        self.activeTextView = nil
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if textField == tagsField {
             titleField.becomeFirstResponder()
+            return false
         } else if textField == titleField {
             commentsField.becomeFirstResponder()
-        } else if textField == commentsField {
+            return false
+        } else {
             commentsField.resignFirstResponder()
+            return true
         }
-        return true
-    }
-    
-    func textFieldDidEndEditing(textField: UITextField) {
-//        self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, textField.bound, <#T##right: CGFloat##CGFloat#>)
     }
     
     private func styleControls() {
@@ -248,7 +313,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
             navigationController?.popViewControllerAnimated(true)
         } else {
-            // Show the user an error.
+            // TODO: Show the user an error.
         }
     }
     
