@@ -130,8 +130,7 @@ class RecommendationSerializer(serializers.Serializer):
         desc = validated_data.get('description')
         comments = validated_data.get('comments')
         tags = validated_data.get('tags')
-        rec_id = createRecommendation(user, desc, comments, *tags)
-        return Recommendation.objects.filter(id=rec_id).get()
+        return createRecommendation(user, desc, comments, *tags)
 
     # Return - validated data in a dictionary
     def validate(self, data):

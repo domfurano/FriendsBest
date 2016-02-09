@@ -63,8 +63,7 @@ class QueryViewSet(viewsets.ModelViewSet):
         serializer = QuerySerializer(data=data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            data = serializer.data
-            return Response(data, status.HTTP_201_CREATED)
+            return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(data, status.HTTP_400_BAD_REQUEST)
 
 class ThingViewSet(viewsets.ModelViewSet):
@@ -82,7 +81,7 @@ class RecommendationViewSet(viewsets.ModelViewSet):
         serializer = RecommendationSerializer(data=data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response({"recommendationId": serializer.data}, status.HTTP_201_CREATED)
+            return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 class TextThingViewSet(viewsets.ModelViewSet):

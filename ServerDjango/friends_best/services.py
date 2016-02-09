@@ -280,7 +280,7 @@ def createRecommendation(user, description, comments, *tags):
         newtag, created = Tag.objects.get_or_create(tag=t.lower())
         recommendation.tags.add(newtag)
          
-    return recommendation.id
+    return recommendation
 
 
 # for class demo tag cloud
