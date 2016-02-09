@@ -6,7 +6,6 @@ define([
 	var RecommendModel = Backbone.Model.extend({
 		urlRoot: '/fb/api/recommend/',
 		defaults: {
-			user: 1,			// Hard coded as 1 for prototype
 			description: "",
 			tags: [],
 			comments: "",
