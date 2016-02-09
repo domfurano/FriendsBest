@@ -127,5 +127,10 @@ class PinViewSet(viewsets.ModelViewSet):
     serializer_class = PinSerializer
     
 class FacebookLogin(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter    
+    adapter_class = FacebookOAuth2Adapter
+    
+    def login(self):
+        getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
+        return SocialLoginView.login(self)
+        
 

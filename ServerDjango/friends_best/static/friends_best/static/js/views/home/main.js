@@ -57,6 +57,7 @@ define([
     					});
     				} else if(ui.position.left > distance) {
     					ui.helper.animate({left: "+=600"}, 200, function() {
+        					prompts.get(ui.helper.attr("id")).destroy();
     						require(['app'],function(App){
     							r = new Recommend()
     							r.tags = ui.helper.children(".topic").html();
