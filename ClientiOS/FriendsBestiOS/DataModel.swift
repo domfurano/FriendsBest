@@ -84,40 +84,46 @@ class QueryHistory {
         return nil
     }
     
-    func getQueryFromTags(tags: [String]) -> Query? {
+    func getQueryFromTagHash(tagHash: String) -> Query? {
         for query in self._queries {
-            if tagsEqual(query.tags, tag2: tags) {
+            if query.tagHash == tagHash {
                 return query
             }
         }
         return nil
     }
     
-    private func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
-        if (tag1.count != tag2.count) {
-            return false
-        }
-        var tagsEqual: Bool = true
-        for tag1_tag in tag1 {
-            var tagFound: Bool = false
-            for tag2_tag in tag2 {
-                if tag1_tag == tag2_tag {
-                    tagFound = true
-                    break
-                }
+    func setQuerySolutionsForQueryID(solutions: [Solution], queryID: Int) {
+        for query in self._queries {
+            if query.ID == queryID {
+                query.solutions = solutions
+                break
             }
-            tagsEqual = tagsEqual && tagFound
         }
-        return tagsEqual
     }
 }
 
 
 class Query: Hashable, Equatable {
     private(set) var tags: [String]
+    private(set) var tagHash: String
+    private(set) var tagString: String
     private(set) var ID: Int
     private(set) var timestamp: NSDate
-    var solutions: [Solution]?
+    private var _solutions: [Solution]?
+    var solutions: [Solution]? {
+        get {
+            if let solutions = self._solutions {
+                return solutions
+            } else {
+                return nil
+            }
+        }
+        set (solutions) {
+            // TODO: only insert solution if it doesn't exist in order to demarcate new from old solutions
+            self._solutions = solutions
+        }
+    }
     
     var hashValue: Int {
         get {
@@ -125,8 +131,10 @@ class Query: Hashable, Equatable {
         }
     }
     
-    init(tags: [String], ID: Int, timestamp: NSDate) {
+    init(tags: [String], tagHash: String, tagString: String, ID: Int, timestamp: NSDate) {
         self.tags = tags
+        self.tagHash = tagHash
+        self.tagString = tagString
         self.ID = ID
         self.timestamp = timestamp
     }
