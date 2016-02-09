@@ -41,11 +41,22 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         tagsField.delegate = self
         titleField.delegate = self
         commentsField.delegate = self
-        NRinputAccessoryView.recommendButton?.addTarget(
+        NRinputAccessoryView.prevButton!.addTarget(
             self,
-            action: "createNewRecommendationButtonPressed",
+            action: "prevButtonPressed",
             forControlEvents: UIControlEvents.TouchUpInside
         )
+        NRinputAccessoryView.nextButton!.addTarget(
+            self,
+            action: "nextButtonPressed",
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
+
+        
+        /* Fonts */
+        tagsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
+        titleField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
+        commentsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
         
         view.addSubview(tagsLabel)
         view.addSubview(tagsField)
@@ -71,13 +82,47 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         registerForKeyboardNotifications()
     }
     
-
-    
     override func viewWillAppear(animated: Bool) {
         title = "New Recommendation"
         edgesForExtendedLayout = UIRectEdge.None
         setToolbarItems()
         
+    }
+    
+    func prevButtonPressed() {
+        if self.activeTextField != nil {
+            assert(self.activeTextField != tagsField)
+            tagsField.becomeFirstResponder()
+            self.activeTextField = tagsField
+            // TODO: hide previous button
+            return
+        }
+        
+        if self.activeTextView != nil {
+            self.titleField.becomeFirstResponder()
+            self.activeTextView = nil
+            self.activeTextField = self.titleField
+            // TODO: show next button
+            return
+        }
+    }
+    
+    func nextButtonPressed() {
+        assert(self.activeTextView == nil)
+        
+        if self.activeTextField != nil {
+            assert(self.activeTextView == nil)
+            if self.activeTextField == self.tagsField {
+                self.titleField.becomeFirstResponder()
+                self.activeTextField = titleField
+                // TODO: show prev button
+            } else {
+                self.commentsField.becomeFirstResponder()
+                self.activeTextField = nil
+                self.activeTextView = self.commentsField
+                // TODO: change next button to done button
+            }
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -128,6 +173,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     
     func textFieldDidBeginEditing(textField: UITextField) {
         self.activeTextField = textField
+        self.activeTextView = nil
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
@@ -136,6 +182,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     
     func textViewDidBeginEditing(textView: UITextView) {
         self.activeTextView = textView
+        self.activeTextField = nil
     }
     
     func textViewDidEndEditing(textView: UITextView) {
@@ -161,12 +208,14 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         tagsField.borderStyle = UITextBorderStyle.RoundedRect
         tagsField.returnKeyType = UIReturnKeyType.Next
         tagsField.keyboardAppearance = .Dark
+        tagsField.inputAccessoryView = NRinputAccessoryView
         
         titleLabel.text = "Title"
         titleField.backgroundColor = UIColor.whiteColor()
         titleField.borderStyle = UITextBorderStyle.RoundedRect
         titleField.returnKeyType = UIReturnKeyType.Next
         titleField.keyboardAppearance = .Dark
+        titleField.inputAccessoryView = NRinputAccessoryView
         
         commentsLabel.text = "Comments"
         commentsField.backgroundColor = UIColor.whiteColor()
@@ -178,7 +227,6 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         commentsField.inputAccessoryView = NRinputAccessoryView
     }
     
-
     
     /* Constraints */
     
@@ -280,18 +328,8 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.5,
+                multiplier: 0.4,
                 constant: 0.0))
-        
-//        view.addConstraint(
-//            NSLayoutConstraint(
-//                item: NRinputAccessoryView,
-//                attribute: NSLayoutAttribute.Height,
-//                relatedBy: NSLayoutRelation.Equal,
-//                toItem: view,
-//                attribute: NSLayoutAttribute.Height,
-//                multiplier: 0.1,
-//                constant: 0.0))
         
         let views: [String: UIView] = [
             "tagsLabel": tagsLabel,

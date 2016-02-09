@@ -10,7 +10,8 @@ import UIKit
 
 class NewRecommendationInputAccessoryView: UIView {
     
-    var recommendButton: UIButton?
+    var prevButton: UIButton?
+    var nextButton: UIButton?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,15 +22,23 @@ class NewRecommendationInputAccessoryView: UIView {
         self.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.75)
         self.layoutMargins = UIEdgeInsetsMake(2, 8, 2, 8)
         
-        recommendButton = UIButton(type: UIButtonType.System)
-        recommendButton?.setTitle("Recommend", forState: UIControlState.Normal)
-        recommendButton?.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
-        recommendButton?.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
-        recommendButton?.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
+        prevButton = UIButton(type: UIButtonType.System)
+        prevButton!.setTitle("prev", forState: UIControlState.Normal)
+        prevButton!.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
+        prevButton!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
+        prevButton!.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
         
-        recommendButton?.translatesAutoresizingMaskIntoConstraints = false
+        nextButton = UIButton(type: UIButtonType.System)
+        nextButton!.setTitle("next", forState: UIControlState.Normal)
+        nextButton!.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
+        nextButton!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
+        nextButton!.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
         
-        self.addSubview(recommendButton!)
+        prevButton?.translatesAutoresizingMaskIntoConstraints = false
+        nextButton?.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.addSubview(prevButton!)
+        self.addSubview(nextButton!)
         
         addConstraints()
     }
@@ -38,10 +47,14 @@ class NewRecommendationInputAccessoryView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func hidePrevButton() {
+        
+    }
+    
     private func addConstraints() {
         self.addConstraint(
             NSLayoutConstraint(
-                item: recommendButton!,
+                item: prevButton!,
                 attribute: NSLayoutAttribute.CenterY,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self,
@@ -51,7 +64,27 @@ class NewRecommendationInputAccessoryView: UIView {
         
         self.addConstraint(
             NSLayoutConstraint(
-                item: recommendButton!,
+                item: prevButton!,
+                attribute: NSLayoutAttribute.Left,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: self,
+                attribute: NSLayoutAttribute.Left,
+                multiplier: 1.0,
+                constant: 16.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: nextButton!,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: self,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: nextButton!,
                 attribute: NSLayoutAttribute.Right,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self,
@@ -59,29 +92,35 @@ class NewRecommendationInputAccessoryView: UIView {
                 multiplier: 1.0,
                 constant: -16.0))
         
-//        self.addConstraint(
-//            NSLayoutConstraint(
-//                item: recommendButton!,
-//                attribute: NSLayoutAttribute.,
-//                relatedBy: NSLayoutRelation.Equal,
-//                toItem: self,
-//                attribute: NSLayoutAttribute.Right,
-//                multiplier: 1.0,
-//                constant: 0.0))
     }
-    
-    
-//    private func inputAccessoryView() -> UIView {
-//        let accessFrame: CGRect = CGRectMake(0.0, 0.0, 768.0, 77.0)
-//        let inputAccessoryView: UIView = UIView(frame: accessFrame)
-//        inputAccessoryView.backgroundColor = UIColor.blueColor()
-//        let compButton: UIButton = UIButton(type: UIButtonType.RoundedRect)
-//        compButton.frame = CGRectMake(313.0, 20.0, 158.0, 37.0)
-//        compButton.setTitle("Word Completions", forState: UIControlState.Normal)
-//        compButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-//        compButton.addTarget(self, action: Selector("completeCurrentWord"), forControlEvents: UIControlEvents.TouchUpInside)
-//        inputAccessoryView.addSubview(compButton)
-//        return inputAccessoryView;
-//    }
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

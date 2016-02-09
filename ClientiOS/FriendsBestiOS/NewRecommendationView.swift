@@ -17,7 +17,5 @@ class NewRecommendationView: UIScrollView {
         CGContextSetFillColorWithColor(context, UIColor.lightGrayColor().CGColor)
         CGContextFillRect(context, bounds)
     }
-
-    
     
 }

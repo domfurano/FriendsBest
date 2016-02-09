@@ -25,7 +25,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         /* Navigation bar */
         let historyIcon: FAKFontAwesome = FAKFontAwesome.historyIconWithSize(22)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: historyIcon.imageWithSize(CGSize(width: 22, height: 22)), style: .Plain, target: self, action: Selector("queryHistoryButtonClicked"))
-//        navigationController?.navigationBar.barTintColor = UIColor.grayColor()
         
         searchController.searchBar.barTintColor = UIColor.clearColor()
         searchController.searchBar.backgroundColor = UIColor.clearColor()
@@ -38,13 +37,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         self.definesPresentationContext = true
         
         /* Facebook */
-//        if FBSDKAccessToken.currentAccessToken() == nil {
-//            navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
-//        } else {
-//            print(FBSDKAccessToken.currentAccessToken().tokenString)
-////            userDefaults.setObject(FBSDKAccessToken.currentAccessToken(), forKey: "fb_access_token")
-//            // TODO: Key exchange and login with FriendsBest server
-//        }
+        if FBSDKAccessToken.currentAccessToken() == nil {
+            navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
+        } else {
+            print(FBSDKAccessToken.currentAccessToken().tokenString)
+            // TODO: Key exchange and login with FriendsBest server
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -58,7 +56,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Navigation bar */
     
     func queryHistoryButtonClicked() {
-//        navigationController?.presentViewController(QueryHistoryViewController(), animated: true, completion: nil)
         navigationController?.pushViewController(QueryHistoryViewController(), animated: true)
     }
     
