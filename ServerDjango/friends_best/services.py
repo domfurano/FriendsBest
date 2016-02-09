@@ -180,13 +180,12 @@ def getCurrentFriendsListFromFacebook(user):
         friendId = friend['id']
         # if friend is not already in the db, save it in the db
         if not allFriendsFacebookIds.__contains__(friendId):
-            f = Friendship(userOne=user, userTwo=SocialAccount.objects.filter(uid=friendId).first().user)
-            f.save()
+            createFriendship(user, SocialAccount.objects.filter(uid=friendId).first().user)
             allFriendsFacebookIds.discard(friendId)  # remove friendId from the set
 
     # remove all remaining friends (i.e., friends left in the set) from the db
     for friendId in allFriendsFacebookIds:
-            Friendship.objects.filter(userOne=user, userTwo__facebookUserId=friendId).delete()
+            deleteFriendship(user, User.objects.filter(facebookUserId=friendId).first())
 
     return allFriends
 
@@ -236,9 +235,16 @@ def getQuery(user, queryId):
 
 def createFriendship(user1, user2):
     f1 = Friendship(userOne=user1, userTwo=user2)
-    f2 = Friendship(userOne=user1, userTwo=user2)
+    f2 = Friendship(userOne=user2, userTwo=user1)
     f1.save()
     f2.save()
+
+
+def deleteFriendship(user1, user2):
+    f1 = Friendship.objects.filter(userOne=user1, userTwo=user2).first()
+    f2 = Friendship.objects.filter(userOne=user2, userTwo=user1).first()
+    f1.delete()
+    f2.delete()
 
 
 def createRecommendation(user, description, comments, *tags):
