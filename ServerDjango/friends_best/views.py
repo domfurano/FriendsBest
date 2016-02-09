@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
@@ -38,7 +38,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 class QueryViewSet(viewsets.ModelViewSet):
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.IsAuthenticated, Owner)
 
     def list(self, request):
          history = getQueryHistory(request.user.id)
@@ -74,7 +74,7 @@ class ThingViewSet(viewsets.ModelViewSet):
 class RecommendationViewSet(viewsets.ModelViewSet):
     queryset = Recommendation.objects.order_by('user')
     serializer_class = RecommendationSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -89,10 +89,25 @@ class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
     serializer_class = TextSerializer
 
-class PromptViewSet(viewsets.ModelViewSet):
+# Limited to GET HEAD DELETE OPTIONS
+# http://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
+class PromptViewSet(mixins.RetrieveModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    
     queryset = Prompt.objects.order_by('user')
     serializer_class = PromptSerializer
-
+    permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
+    
+    def list(self, request):
+         prompts = getPrompts(request.user)
+         serializer = PromptSerializer(prompts, many=True)
+         return Response(serializer.data)
+         
+    # When deleting a prompt now, we rely on default behavior.
+    # In the future we might want to hide prompts so that
+    # friends can't get spammed by a repeat query.
+    # def destroy(self, request):
 
 class RecommendationTagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.order_by('recommendation')

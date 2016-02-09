@@ -48,9 +48,25 @@ class TextSerializer(serializers.ModelSerializer):
 
 class PromptSerializer(serializers.ModelSerializer):
     
+    def to_representation(self, prompt):
+        
+        recommendation_json = {
+            'id': prompt.id,
+            # We might want a more detailed representation of a friend
+            'friend': prompt.query.user.first_name + " " + prompt.query.user.last_name,
+            'tags': [t.tag for t in prompt.query.tags.all()],
+            'tagstring': prompt.query.tagstring,
+            # could also be a good place to send articles like "a," "an"
+            # but we'll need some good NLP
+            'article': 'a'
+        }
+        return recommendation_json
+        
+    
     class Meta:
         model = Prompt
         fields = '__all__'
+        depth = 1
 
     
 # class RecommendationTagSerializer(serializers.ModelSerializer):

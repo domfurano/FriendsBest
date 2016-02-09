@@ -86,7 +86,7 @@ class Query(models.Model):
         
 class Prompt(models.Model):
     user = models.ForeignKey(User)
-    query = models.ForeignKey(Query)  # we can get the user's id from the query
+    query = models.OneToOneField(Query)  # we can get the user's id from the query
 
     def __str__(self):
         return "forUser:%s, fromQuery:%s" % (self.user, self.query)

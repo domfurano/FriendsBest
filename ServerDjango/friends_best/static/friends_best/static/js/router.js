@@ -74,8 +74,14 @@ define([
 				$.post("/fb/api/facebook/", {'access_token' : response.authResponse.accessToken}, function(data) {
 					token = data.key;
 					
+					Backbone.$.support.cors = true;
+					
 					Backbone.$.ajaxSetup({
-					    headers: { 'Authorization' :'Token ' + token }
+					    //headers: { 'Authorization' :'Token ' + token },
+					    beforeSend: function(jqXHR) {
+    					    console.log(jqXHR);
+                            jqXHR.setRequestHeader('Authorization', 'Token ' + token);
+                        }
 					});
 					
 					// Start routing

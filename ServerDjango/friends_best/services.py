@@ -49,6 +49,10 @@ def getUserFacebookToken(user):
     token = SocialToken.objects.filter(account=account).first()
     return token.token
 
+def getPrompts(user):
+    # Get prompts, ordered by query timestamp
+    return Prompt.objects.filter(user=user).order_by('query__timestamp')
+
 def getAllPrompts(user):
     prompts = Prompt.objects.filter(user=user)
     promptList = []
@@ -87,11 +91,14 @@ def submitQuery(user, *tags):
     
     q1.save()
 
+    # create self prompt as a test
+    # remove this when we can test that friends work
+    p, created = Prompt.objects.get_or_create(user=user, query=q1)
+    
     # create prompts for all of user's friends
     allFriends = getAllFriendUsers(user)
     for friendUser in allFriends:
-        p = Prompt(user=friendUser, query=q1)
-        p.save()
+        p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
     
     return q1
 
