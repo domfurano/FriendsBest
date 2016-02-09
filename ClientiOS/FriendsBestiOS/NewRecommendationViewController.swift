@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
+class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
     let tagsLabel: UILabel = UILabel()
     let tagsField: UITextField = UITextField()
@@ -19,14 +19,44 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
     let commentsLabel: UILabel = UILabel()
     let commentsField: UITextView = UITextView()
     
+    let NRinputAccessoryView: NewRecommendationInputAccessoryView = NewRecommendationInputAccessoryView()
+    
+    var scrollView: UIScrollView {
+        get {
+            return self.view as! UIScrollView
+        }
+    }
+    
+    var activeTextField: UITextField? = nil
+    var activeTextView: UITextView? = nil
     
     override func loadView() {
-        view = NewRecommendationView()
-        view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
+        self.view = NewRecommendationView()
+        self.view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
     }
     
     override func viewDidLoad() {
         styleControls()
+        
+        tagsField.delegate = self
+        titleField.delegate = self
+        commentsField.delegate = self
+        NRinputAccessoryView.prevButton!.addTarget(
+            self,
+            action: "prevButtonPressed",
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
+        NRinputAccessoryView.nextButton!.addTarget(
+            self,
+            action: "nextButtonPressed",
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
+
+        
+        /* Fonts */
+        tagsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
+        titleField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
+        commentsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
         
         view.addSubview(tagsLabel)
         view.addSubview(tagsField)
@@ -47,29 +77,156 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
         commentsField.translatesAutoresizingMaskIntoConstraints = false
         
         addConstraints()
+        
+        // Register for keyboard events
+        registerForKeyboardNotifications()
     }
     
     override func viewWillAppear(animated: Bool) {
         title = "New Recommendation"
         edgesForExtendedLayout = UIRectEdge.None
         setToolbarItems()
+        
+    }
+    
+    func prevButtonPressed() {
+        if self.activeTextField != nil {
+            assert(self.activeTextField != tagsField)
+            tagsField.becomeFirstResponder()
+            self.activeTextField = tagsField
+            // TODO: hide previous button
+            return
+        }
+        
+        if self.activeTextView != nil {
+            self.titleField.becomeFirstResponder()
+            self.activeTextView = nil
+            self.activeTextField = self.titleField
+            // TODO: show next button
+            return
+        }
+    }
+    
+    func nextButtonPressed() {
+        assert(self.activeTextView == nil)
+        
+        if self.activeTextField != nil {
+            assert(self.activeTextView == nil)
+            if self.activeTextField == self.tagsField {
+                self.titleField.becomeFirstResponder()
+                self.activeTextField = titleField
+                // TODO: show prev button
+            } else {
+                self.commentsField.becomeFirstResponder()
+                self.activeTextField = nil
+                self.activeTextView = self.commentsField
+                // TODO: change next button to done button
+            }
+        }
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        // Tags field gets focus when view appears
+        tagsField.becomeFirstResponder()
+    }
+    
+    func registerForKeyboardNotifications() {
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: Selector("keyboardWasShown:"),
+            name: UIKeyboardDidShowNotification,
+            object: nil
+        )
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: Selector("keyboardWillBeHidden:"),
+            name: UIKeyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    func keyboardWasShown(aNotification: NSNotification) {
+        let scrollViewFrame: CGRect = self.scrollView.frame
+        let mainScreenBounds = UIScreen.mainScreen().bounds
+        let keyboardFrame: CGRect = aNotification.userInfo![UIKeyboardFrameBeginUserInfoKey]!.CGRectValue
+        
+        let distanceBetweenNavBarAndKeyboard = mainScreenBounds.height - scrollViewFrame.origin.x - keyboardFrame.height
+        let midpoint = distanceBetweenNavBarAndKeyboard / 2
+        
+        if self.activeTextField != nil {
+            let activeTextFieldFrame: CGRect = self.activeTextField!.frame
+            scrollView.setContentOffset(CGPointMake(0.0, activeTextFieldFrame.midY - midpoint), animated: true)
+        }
+        
+        if self.activeTextView != nil {
+            let activeTextViewFrame: CGRect = self.activeTextView!.frame            
+            self.scrollView.setContentOffset(CGPointMake(0.0, activeTextViewFrame.midY - midpoint), animated:  true)
+        }
+    }
+    
+    func keyboardWillBeHidden(aNotification: NSNotification) {
+        let contentInsets: UIEdgeInsets = UIEdgeInsetsZero
+        self.scrollView.contentInset = contentInsets
+        self.scrollView.scrollIndicatorInsets = contentInsets
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        self.activeTextField = textField
+        self.activeTextView = nil
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        self.activeTextField = nil
+    }
+    
+    func textViewDidBeginEditing(textView: UITextView) {
+        self.activeTextView = textView
+        self.activeTextField = nil
+    }
+    
+    func textViewDidEndEditing(textView: UITextView) {
+        self.activeTextView = nil
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if textField == tagsField {
+            titleField.becomeFirstResponder()
+            return false
+        } else if textField == titleField {
+            commentsField.becomeFirstResponder()
+            return false
+        } else {
+            commentsField.resignFirstResponder()
+            return true
+        }
     }
     
     private func styleControls() {
         tagsLabel.text = "Tags"
         tagsField.backgroundColor = UIColor.whiteColor()
         tagsField.borderStyle = UITextBorderStyle.RoundedRect
+        tagsField.returnKeyType = UIReturnKeyType.Next
+        tagsField.keyboardAppearance = .Dark
+        tagsField.inputAccessoryView = NRinputAccessoryView
         
         titleLabel.text = "Title"
         titleField.backgroundColor = UIColor.whiteColor()
         titleField.borderStyle = UITextBorderStyle.RoundedRect
+        titleField.returnKeyType = UIReturnKeyType.Next
+        titleField.keyboardAppearance = .Dark
+        titleField.inputAccessoryView = NRinputAccessoryView
         
         commentsLabel.text = "Comments"
         commentsField.backgroundColor = UIColor.whiteColor()
         commentsField.editable = true
         commentsField.layer.borderWidth = 0.2
         commentsField.layer.cornerRadius = 5
+        commentsField.returnKeyType = .Default
+        commentsField.keyboardAppearance = .Dark
+        commentsField.inputAccessoryView = NRinputAccessoryView
     }
+    
     
     /* Constraints */
     
@@ -171,7 +328,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.5,
+                multiplier: 0.4,
                 constant: 0.0))
         
         let views: [String: UIView] = [
@@ -194,7 +351,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
             NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
             navigationController?.popViewControllerAnimated(true)
         } else {
-            // Show the user an error.
+            // TODO: Show the user an error.
         }
     }
     
@@ -210,3 +367,19 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate {
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

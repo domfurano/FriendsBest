@@ -10,9 +10,13 @@
 		CE0368701C617ECD006333DA /* NetworkQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03686F1C617ECD006333DA /* NetworkQueue.swift */; };
 		CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */; };
 		CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */; };
+		CE278D9A1C6A7A7D00B546C5 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE278D991C6A7A7D00B546C5 /* AppSettings.swift */; };
 		CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */; };
 		CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */; };
 		CE53AE951C62F04000008F4A /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53AE941C62F04000008F4A /* Timer.swift */; };
+		CE55B5A91C667AA500289811 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE55B5A81C667AA500289811 /* Queue.swift */; };
+		CE55B5AE1C66840200289811 /* Icon-60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CE55B5AD1C66840200289811 /* Icon-60@3x.png */; };
+		CE55B5B01C6684D400289811 /* Icon-602x.png in Resources */ = {isa = PBXBuildFile; fileRef = CE55B5AF1C6684D400289811 /* Icon-602x.png */; };
 		CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE64683D1C459FB0002F73A0 /* AppDelegate.swift */; };
 		CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468411C459FB0002F73A0 /* Main.storyboard */; };
 		CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6468441C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld */; };
@@ -46,6 +50,7 @@
 		CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2821C4C4B450062B38F /* DataController.swift */; };
 		CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */; };
 		CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2861C4C5BDB0062B38F /* MainView.swift */; };
+		CEF2BB4F1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF2BB4E1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift */; };
 		CEFF55C51C63CC3A0020B364 /* NetworkTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,9 +75,13 @@
 		CE03686F1C617ECD006333DA /* NetworkQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkQueue.swift; sourceTree = "<group>"; };
 		CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkDAO.swift; sourceTree = "<group>"; };
 		CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryHistoryViewController.swift; sourceTree = "<group>"; };
+		CE278D991C6A7A7D00B546C5 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionDetailViewController.swift; sourceTree = "<group>"; };
 		CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionsViewController.swift; sourceTree = "<group>"; };
 		CE53AE941C62F04000008F4A /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		CE55B5A81C667AA500289811 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		CE55B5AD1C66840200289811 /* Icon-60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-60@3x.png"; sourceTree = "<group>"; };
+		CE55B5AF1C6684D400289811 /* Icon-602x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-602x.png"; sourceTree = "<group>"; };
 		CE64683A1C459FB0002F73A0 /* FriendsBestiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendsBestiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE64683D1C459FB0002F73A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE6468421C459FB0002F73A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -121,6 +130,7 @@
 		CEBAA2821C4C4B450062B38F /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
 		CEBAA2861C4C5BDB0062B38F /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		CEF2BB4E1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationInputAccessoryView.swift; sourceTree = "<group>"; };
 		CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -159,6 +169,7 @@
 				CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */,
 				CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */,
 				CE03686F1C617ECD006333DA /* NetworkQueue.swift */,
+				CE55B5A81C667AA500289811 /* Queue.swift */,
 				CE53AE941C62F04000008F4A /* Timer.swift */,
 				CEBAA2821C4C4B450062B38F /* DataController.swift */,
 				CE67F1B11C59156A001056C3 /* Extensions.swift */,
@@ -182,9 +193,20 @@
 		CE22F3BC1C481C2B00AD2BFB /* View */ = {
 			isa = PBXGroup;
 			children = (
-				CE6F6AFD1C4C6B5E0095BCA7 /* Main */,
+				CEF2BB4D1C641BA6006B47AC /* NewRecommendationView */,
+				CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */,
+				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
 			);
 			name = View;
+			sourceTree = "<group>";
+		};
+		CE55B5AA1C66821200289811 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				CE55B5AF1C6684D400289811 /* Icon-602x.png */,
+				CE55B5AD1C66840200289811 /* Icon-60@3x.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 		CE6468311C459FB0002F73A0 = {
@@ -211,9 +233,11 @@
 		CE64683C1C459FB0002F73A0 /* FriendsBestiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CE64683D1C459FB0002F73A0 /* AppDelegate.swift */,
+				CE278D991C6A7A7D00B546C5 /* AppSettings.swift */,
+				CE55B5AA1C66821200289811 /* Images */,
 				CE67F1B01C589176001056C3 /* FontAwesome-Header.h */,
 				CE92887F1C588BAE009A580F /* FontAwesomeKit */,
-				CE64683D1C459FB0002F73A0 /* AppDelegate.swift */,
 				CE22F3BC1C481C2B00AD2BFB /* View */,
 				CE22F3B91C45F14900AD2BFB /* Controller */,
 				CE22F3B61C45D07500AD2BFB /* Model */,
@@ -242,16 +266,6 @@
 				CE6468621C459FB0002F73A0 /* Info.plist */,
 			);
 			path = FriendsBestiOSUITests;
-			sourceTree = "<group>";
-		};
-		CE6F6AFD1C4C6B5E0095BCA7 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
-				CE9287A81C582C0C009A580F /* NewRecommendationView.swift */,
-				CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */,
-			);
-			name = Main;
 			sourceTree = "<group>";
 		};
 		CE92887F1C588BAE009A580F /* FontAwesomeKit */ = {
@@ -291,6 +305,15 @@
 				CEB593611C5171BE00F6AE6C /* FBSDKCoreKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CEF2BB4D1C641BA6006B47AC /* NewRecommendationView */ = {
+			isa = PBXGroup;
+			children = (
+				CE9287A81C582C0C009A580F /* NewRecommendationView.swift */,
+				CEF2BB4E1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift */,
+			);
+			name = NewRecommendationView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -361,6 +384,7 @@
 				TargetAttributes = {
 					CE6468391C459FB0002F73A0 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 783423M9DF;
 					};
 					CE6468501C459FB0002F73A0 = {
 						CreatedOnToolsVersion = 7.2;
@@ -399,6 +423,7 @@
 			files = (
 				CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */,
 				CE6468481C459FB0002F73A0 /* Assets.xcassets in Resources */,
+				CE55B5B01C6684D400289811 /* Icon-602x.png in Resources */,
 				CE92889D1C588BAE009A580F /* FontAwesome.otf in Resources */,
 				CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */,
 				CE9288A01C588BAE009A580F /* ionicons.ttf in Resources */,
@@ -407,6 +432,7 @@
 				CE9288A31C588BAE009A580F /* zocial-regular-webfont.ttf in Resources */,
 				CE9288A21C588BAE009A580F /* octicons.ttf in Resources */,
 				CE9288A11C588BAE009A580F /* Material-Design-Iconic-Font.ttf in Resources */,
+				CE55B5AE1C66840200289811 /* Icon-60@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,6 +458,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE9287A91C582C0C009A580F /* NewRecommendationView.swift in Sources */,
+				CEF2BB4F1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift in Sources */,
+				CE278D9A1C6A7A7D00B546C5 /* AppSettings.swift in Sources */,
 				CE9287A71C582197009A580F /* NewRecommendationViewController.swift in Sources */,
 				CE92889B1C588BAE009A580F /* FAKOcticons.m in Sources */,
 				CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */,
@@ -446,6 +474,7 @@
 				CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */,
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
 				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,
+				CE55B5A91C667AA500289811 /* Queue.swift in Sources */,
 				CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */,
 				CE53AE951C62F04000008F4A /* Timer.swift in Sources */,
 				CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */,
@@ -599,6 +628,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -608,6 +639,7 @@
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "FriendsBestiOS/FontAwesome-Header.h";
 			};
 			name = Debug;
@@ -616,6 +648,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -624,6 +658,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "FriendsBestiOS/FontAwesome-Header.h";
 			};
 			name = Release;

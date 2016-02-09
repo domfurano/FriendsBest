@@ -98,5 +98,10 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Icon-602x</string>
+		<string>Icon-60@3x</string>
+	</array>
 </dict>
 </plist>

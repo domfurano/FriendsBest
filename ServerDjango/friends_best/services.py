@@ -49,6 +49,10 @@ def getUserFacebookToken(user):
     token = SocialToken.objects.filter(account=account).first()
     return token.token
 
+def getPrompts(user):
+    # Get prompts, ordered by query timestamp
+    return Prompt.objects.filter(user=user).order_by('query__timestamp')
+
 def getAllPrompts(user):
     prompts = Prompt.objects.filter(user=user)
     promptList = []
@@ -87,13 +91,16 @@ def submitQuery(user, *tags):
     
     q1.save()
 
+    # create self prompt as a test
+    # remove this when we can test that friends work
+    p, created = Prompt.objects.get_or_create(user=user, query=q1)
+    
     # create prompts for all of user's friends
     allFriends = getAllFriendUsers(user)
     for friendUser in allFriends:
-        p = Prompt(user=friendUser, query=q1)
-        p.save()
+        p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
     
-    return q1.timestamp
+    return q1
 
 
 def getQuerySolutions(query):
@@ -180,13 +187,12 @@ def getCurrentFriendsListFromFacebook(user):
         friendId = friend['id']
         # if friend is not already in the db, save it in the db
         if not allFriendsFacebookIds.__contains__(friendId):
-            f = Friendship(userOne=user, userTwo=SocialAccount.objects.filter(uid=friendId).first().user)
-            f.save()
+            createFriendship(user, SocialAccount.objects.filter(uid=friendId).first().user)
             allFriendsFacebookIds.discard(friendId)  # remove friendId from the set
 
     # remove all remaining friends (i.e., friends left in the set) from the db
     for friendId in allFriendsFacebookIds:
-            Friendship.objects.filter(userOne=user, userTwo__facebookUserId=friendId).delete()
+            deleteFriendship(user, User.objects.filter(facebookUserId=friendId).first())
 
     return allFriends
 
@@ -220,7 +226,11 @@ def getFacebookUserIdFromFacebook(user):
 
 
 def getQueryHistory(user):
-    return Query.objects.filter(user=user).prefetch_related('tags').all()  # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
+    # Order-by done to return the queries in the right order (from oldest run to newest)
+    return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all() 
+    # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
+    # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
+    # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
 
 
 def getQuery(user, queryId):
@@ -236,9 +246,16 @@ def getQuery(user, queryId):
 
 def createFriendship(user1, user2):
     f1 = Friendship(userOne=user1, userTwo=user2)
-    f2 = Friendship(userOne=user1, userTwo=user2)
+    f2 = Friendship(userOne=user2, userTwo=user1)
     f1.save()
     f2.save()
+
+
+def deleteFriendship(user1, user2):
+    f1 = Friendship.objects.filter(userOne=user1, userTwo=user2).first()
+    f2 = Friendship.objects.filter(userOne=user2, userTwo=user1).first()
+    f1.delete()
+    f2.delete()
 
 
 def createRecommendation(user, description, comments, *tags):

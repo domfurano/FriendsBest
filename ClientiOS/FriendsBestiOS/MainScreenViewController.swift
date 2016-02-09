@@ -14,7 +14,7 @@ import FBSDKLoginKit
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate {
     
     let userDefaults: NSUserDefaults = NSUserDefaults()
-    var searchController: UISearchController!
+    var searchController: UISearchController = UISearchController(searchResultsController: nil)
 
     
     override func loadView() {
@@ -24,25 +24,23 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     override func viewDidLoad() {
         /* Navigation bar */
         let historyIcon: FAKFontAwesome = FAKFontAwesome.historyIconWithSize(22)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: historyIcon.imageWithSize(CGSize(width: 20, height: 20)), style: .Plain, target: self, action: Selector("queryHistoryButtonClicked"))
-        navigationController?.navigationBar.barTintColor = UIColor.grayColor()
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: historyIcon.imageWithSize(CGSize(width: 22, height: 22)), style: .Plain, target: self, action: Selector("queryHistoryButtonClicked"))
         
-        searchController = UISearchController(searchResultsController:  nil)
-        searchController.searchBar.barTintColor = UIColor.grayColor()
-        searchController.searchBar.backgroundColor = UIColor.grayColor()
-        searchController.view.backgroundColor = UIColor.grayColor()
+        searchController.searchBar.barTintColor = UIColor.clearColor()
+        searchController.searchBar.backgroundColor = UIColor.clearColor()
+        searchController.view.backgroundColor = UIColor.clearColor()
         searchController.searchBar.delegate = self
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.dimsBackgroundDuringPresentation = true
-        navigationItem.titleView = searchController.searchBar
-        definesPresentationContext = true
+        
+        self.navigationItem.titleView = searchController.searchBar
+        self.definesPresentationContext = true
         
         /* Facebook */
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
             print(FBSDKAccessToken.currentAccessToken().tokenString)
-//            userDefaults.setObject(FBSDKAccessToken.currentAccessToken(), forKey: "fb_access_token")
             // TODO: Key exchange and login with FriendsBest server
         }
     }
@@ -58,7 +56,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Navigation bar */
     
     func queryHistoryButtonClicked() {
-//        navigationController?.presentViewController(QueryHistoryViewController(), animated: true, completion: nil)
         navigationController?.pushViewController(QueryHistoryViewController(), animated: true)
     }
     
@@ -99,19 +96,19 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         let fa_cog_image: UIImage = fa_cog.imageWithSize(CGSize(width: 22, height: 22))
         let settingsButton: UIBarButtonItem = UIBarButtonItem(image: fa_cog_image, style: .Plain, target: self, action: Selector("settingsButtonPressed"))
         
-//        let fa_circle: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(22)
-//        let fa_circle_image: UIImage = fa_circle.imageWithSize(CGSize(width: 22, height: 22))
-//        let profileButton: UIBarButtonItem = UIBarButtonItem(image: fa_circle_image, style: .Plain, target: self, action: Selector("profileButtonPressed"))
-//        profileButton.tintColor = .colorFromHex(0x3b5998)
+        let fa_circle: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(22)
+        let fa_circle_image: UIImage = fa_circle.imageWithSize(CGSize(width: 22, height: 22))
+        let profileButton: UIBarButtonItem = UIBarButtonItem(image: fa_circle_image, style: .Plain, target: self, action: Selector("profileButtonPressed"))
+        profileButton.tintColor = .colorFromHex(0x3b5998)
         
         
-        let profilePic = FBSDKProfilePictureView(frame: CGRect(x: 0,y: 0,width: 22,height: 22))
-        let profileButton: UIBarButtonItem = UIBarButtonItem(image: FBSDKProfilePictureView, style: .Plain, target: self, action: Selector("profileButtonPressed"))
+//        let profilePic = FBSDKProfilePictureView(frame: CGRect(x: 0,y: 0,width: 22,height: 22))
+//        let profileButton: UIBarButtonItem = UIBarButtonItem(image: FBSDKProfilePictureView, style: .Plain, target: self, action: Selector("profileButtonPressed"))
         
         let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
         let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("newRecommendationButtonPressed"))
-        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
+        newRecommendationButton.tintColor = UIColor.colorFromHex(0x00d735)
 
         self.toolbarItems = [settingsButton, flexibleSpace, profileButton, flexibleSpace, newRecommendationButton]
     }

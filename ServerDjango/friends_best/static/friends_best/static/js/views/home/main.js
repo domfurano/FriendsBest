@@ -60,7 +60,7 @@ define([
 			tags = _.map(tags, String.toLowerCase);
 			
 			// create query
-			var query = new QueryModel({user: 2, tags: tags});
+			var query = new QueryModel({tags: tags});
 			// save query
 			query.save(null, {
 				success: function(model, response, options) {

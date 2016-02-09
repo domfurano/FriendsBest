@@ -2,8 +2,8 @@ import json
 
 from rest_framework import serializers
 
-from ServerDjango.friends_best.models import *
-from ServerDjango.friends_best.services import *
+from friends_best.models import *
+from friends_best.services import *
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
 
@@ -13,27 +13,27 @@ import base64
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = User
         fields = '__all__'
 
 class UserSocialSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = SocialAccount
         fields = '__all__'
 
 
 class FriendsSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Friendship
         fields = '__all__'
 
-
+    
 class ThingSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Thing
         fields = '__all__'
@@ -47,12 +47,28 @@ class TextSerializer(serializers.ModelSerializer):
 
 
 class PromptSerializer(serializers.ModelSerializer):
-
+    
+    def to_representation(self, prompt):
+        
+        recommendation_json = {
+            'id': prompt.id,
+            # We might want a more detailed representation of a friend
+            'friend': prompt.query.user.first_name + " " + prompt.query.user.last_name,
+            'tags': [t.tag for t in prompt.query.tags.all()],
+            'tagstring': prompt.query.tagstring,
+            # could also be a good place to send articles like "a," "an"
+            # but we'll need some good NLP
+            'article': 'a'
+        }
+        return recommendation_json
+        
+    
     class Meta:
         model = Prompt
         fields = '__all__'
+        depth = 1
 
-
+    
 # class RecommendationTagSerializer(serializers.ModelSerializer):
 # 
 #     class Meta:
@@ -76,7 +92,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('query', 'tag',)
+        fields = ('tag',)
 
 
 class TextThingSerializer(serializers.ModelSerializer):
@@ -141,13 +157,15 @@ class RecommendationSerializer(serializers.Serializer):
 
 
 class QuerySerializer(serializers.ModelSerializer):
-    user = UserSerializer
+    #user = UserSerializer
     tags = TagSerializer(many=True)
 
     def to_internal_value(self, data):
         return data
 
     def to_representation(self, query):
+        
+        # Get a solutions object to return
         solutions = getQuerySolutions(query)
         solution_collection = {
             'id':query.id,
@@ -163,15 +181,11 @@ class QuerySerializer(serializers.ModelSerializer):
             solution_collection['solutions'].append({'name': name, 'recommendation': recommendations})
         return solution_collection
 
-    def create(self, validated_data):
+    def create(self, validated_data):    
         user = validated_data.get('user')
         tags = validated_data.get('tags')
         q = submitQuery(user, *tags)
         return q
-
-    def update(self, instance, validated_data):
-        return
-
 
     def validate(self, data):
         if 'user' not in data:
@@ -187,11 +201,11 @@ class QuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Query
-        fields = ('id', 'tags', 'tagstring', 'user', 'timestamp', )
+        fields = ('id', 'tags', )
 
 
 class PinSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Pin
         fields = '__all__'
