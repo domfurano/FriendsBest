@@ -30,7 +30,7 @@ define([
 		this.collection.fetch({success: function(collection, response, options){
 			// Render the collection
 			itemsTemplate = _.template(itemsHTML);
-			that.$el.append(itemsTemplate({collection: that.collection.toJSON()}));
+			that.$el.prepend(itemsTemplate({collection: that.collection.toJSON()}));
 		}});
  
     },

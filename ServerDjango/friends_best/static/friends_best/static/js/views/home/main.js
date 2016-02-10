@@ -6,33 +6,71 @@ define([
   'views/recommend/add',
   'views/search/results',
   'models/query',
+  'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, searchHTML, promptHTML, menuHTML){
+], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
 
     render: function(){
       
+        that = this;
+      
 		var menuTemplate = _.template( menuHTML, {} );
 		this.$el.html(menuTemplate);
 		
-		var promptTemplate = _.template(promptHTML);
+		this.collection = new PromptsCollection();
 		
-		prompts = 	_.shuffle([
-						{item : "Wireless Mouse", user: "Jim de St. Germain"},
-						{item : "Gym", user: "Dominic Furano"},
-						{item : "Coffee Shop", user: "Ray Phillips"},
-						{item : "Sushi Restaurant", user: "Umair Naveed"},
-						{item : "Fantasy Novel", user: "Paul Hanson"},
-					]);
-		
-		_.each(prompts, function(prompt) {
-			this.$el.append(promptTemplate(prompt));
-		}, this);
-		
+		this.collection.fetch({success: function(prompts, response, options){
+    		
+            promptTemplate = _.template(promptHTML);
+			
+			el = that.$el;
+			
+			prompts.each(function(prompt) {
+    			promptcard = promptTemplate(prompt.toJSON());
+    			el.append(promptcard);
+    		});
+    		
+    				// Prompts
+    		$('.swipable').each( function(index, item) {
+    			d = Math.random() * 3 - 1.5;
+    			$(item).css({'transform': 'rotate('+d+'deg)'});
+    		});
+    		
+    		distance = 30;
+    		$('.swipable').draggable({
+    			revert: function(ui, ui2) {
+    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
+    				else return true;
+    			},
+    			axis: "x",
+    			scroll: false,
+    			stop: function(event, ui) {	
+    				if(ui.position.left < -distance) {
+    					ui.helper.animate({left: "-=600"}, 200, function() {
+    						ui.helper.parent().remove();
+    						prompts.get(ui.helper.attr("id")).destroy();
+    					});
+    				} else if(ui.position.left > distance) {
+    					ui.helper.animate({left: "+=600"}, 200, function() {
+        					prompts.get(ui.helper.attr("id")).destroy();
+    						require(['app'],function(App){
+    							r = new Recommend()
+    							r.tags = ui.helper.children(".topic").html();
+    							App.router.navigate('recommend');
+    							App.router.render(r);
+    						});
+    					});
+    				}
+    			}
+    		});
+			
+		}});
+						
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
@@ -76,38 +114,6 @@ define([
 					console.log("error saving model");
 				}});
 			return false;
-		});
-		
-		// Prompts
-		$('.swipable').each( function(index, item) {
-			d = Math.random() * 3 - 1.5;
-			$(item).css({'transform': 'rotate('+d+'deg)'});
-		});
-		
-		distance = 30;
-		$('.swipable').draggable({
-			revert: function(ui, ui2) {
-				if($(this).position().left < -distance || $(this).position().left > distance) return false;
-				else return true;
-			},
-			axis: "x",
-			scroll: false,
-			stop: function(event, ui) {	
-				if(ui.position.left < -distance) {
-					ui.helper.animate({left: "-=600"}, 200, function() {
-						ui.helper.parent().remove();
-					});
-				} else if(ui.position.left > distance) {
-					ui.helper.animate({left: "+=600"}, 200, function() {
-						require(['app'],function(App){
-							r = new Recommend()
-							r.tags = ui.helper.children(".topic").html();
-							App.router.navigate('recommend');
-							App.router.render(r);
-						});
-					});
-				}
-			}
 		});
 		
 		// Logout (TEMP)

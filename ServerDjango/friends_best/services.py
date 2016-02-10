@@ -93,7 +93,7 @@ def submitQuery(user, *tags):
 
     # create self prompt as a test
     # remove this when we can test that friends work
-    p, created = Prompt.objects.get_or_create(user=user, query=q1)
+    #p, created = Prompt.objects.get_or_create(user=user, query=q1)
     
     # create prompts for all of user's friends
     allFriends = getAllFriendUsers(user)
@@ -160,41 +160,55 @@ def getAllFriendUsers(user):
 def getAllFriendsFacebookUserIds(user):
     allFriends = set()
     for friendship in Friendship.objects.filter(userOne=user, muted=False):
-        allFriends.append(SocialAccount.objects.filter(user=user).first().uid)
+        allFriends.add(SocialAccount.objects.filter(user=friendship.userTwo).first().uid)
+    print(allFriends)
     return allFriends
 
 
 def getCurrentFriendsListFromFacebook(user):
-    facebookUserId = user.facebookUserId
+    print("getCurrentFriendsListFromFacebook")
+    
+    facebookUserId = SocialAccount.objects.filter(user=user).first().uid
+    print("uid " + facebookUserId)
+    
 
     # this will only include friends who have a friendsbest account
-    payload = {'access_token', getUserFacebookToken(user)}
-    r = requests.get(_baseFacebookURL + "/" + facebookUserId + "/friends", params=payload)
-    if r.status_code != "200":
-        return "error: failed to get user's friends"
-
+    payload = {'access_token': getUserFacebookToken(user)}
+    url = _baseFacebookURL + "/" + facebookUserId + "/friends?access_token=" + getUserFacebookToken(user)
+    print("url " + url)
+    r = requests.get(url)
+    if r.status_code != 200:
+        print("Error")
+        return "error: failed to get user's friends"    
     jsonDict = json.loads(r.text)  # convert json response to dictionary
     allFriends = []
     allFriendsFacebookIds = getAllFriendsFacebookUserIds(user)  # this is retrieved from the db (not Facebook.com)
-    for friend in jsonDict['data'].items:
-        d = {}
-        d['firstName'] = friend['first_name']
-        d['lastName'] = friend['last_name']
+    for friend in jsonDict['data']:
+        print("friend: " + friend['name'])
+#         d = {}
+#         d['firstName'] = friend['first_name']
+#         d['lastName'] = friend['last_name']
         # d['picture'] = friend['picture']
-        allFriends.append(d)
+        #allFriends.append(d)
 
         # update Friendship table  (friend['id'] is the facebookuserid)
         friendId = friend['id']
         # if friend is not already in the db, save it in the db
-        if not allFriendsFacebookIds.__contains__(friendId):
-            createFriendship(user, SocialAccount.objects.filter(uid=friendId).first().user)
-            allFriendsFacebookIds.discard(friendId)  # remove friendId from the set
+        if not friendId in allFriendsFacebookIds:
+            friend = SocialAccount.objects.filter(uid=friendId)
+            if friend:
+                createFriendship(user, friend.first().user)
+                
+        allFriendsFacebookIds.discard(friendId)  # remove friendId from the set
 
     # remove all remaining friends (i.e., friends left in the set) from the db
     for friendId in allFriendsFacebookIds:
-            deleteFriendship(user, User.objects.filter(facebookUserId=friendId).first())
+        #deleteFriendship(user, User.objects.filter(facebookUserId=friendId).first())
+        friend = SocialAccount.objects.filter(uid=friendId)
+        if friend:
+            deleteFriendship(user, friend.first().user)
 
-    return allFriends
+    #return allFriends
 
 
 def exchangeShortTermTokenForLongTermToken(user, shortTermToken):
@@ -280,7 +294,7 @@ def createRecommendation(user, description, comments, *tags):
         newtag, created = Tag.objects.get_or_create(tag=t.lower())
         recommendation.tags.add(newtag)
          
-    return recommendation.id
+    return recommendation
 
 
 # for class demo tag cloud
