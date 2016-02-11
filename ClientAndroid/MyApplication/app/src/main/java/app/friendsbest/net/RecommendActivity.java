@@ -1,19 +1,26 @@
 package app.friendsbest.net;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
 
+import app.friendsbest.net.model.Prompt;
+import app.friendsbest.net.model.Response;
+import app.friendsbest.net.model.Thing;
+import app.friendsbest.net.model.UserProfile;
+
 public class RecommendActivity extends AppCompatActivity {
 
     private Button _submitBtn;
+    private String _token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +38,12 @@ public class RecommendActivity extends AppCompatActivity {
         final EditText tagsInput = (EditText) findViewById(R.id.rec_tags_input);
         final EditText commentsInput = (EditText) findViewById(R.id.rec_comments_input);
 
+        Intent intent = getIntent();
+        _token = intent.getStringExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey());
+        if (intent.hasExtra(Prompt.Key.PROMPT_STRING.getKey())){
+            tagsInput.setText(intent.getStringExtra(Prompt.Key.PROMPT_STRING.getKey()));
+        }
+
         _submitBtn = (Button) findViewById(R.id.add_recommendation_button);
 
         _submitBtn.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +57,20 @@ public class RecommendActivity extends AppCompatActivity {
                 RecommendActivity.this.finish();
             }
         });
+    }
 
+    /**
+     * Make toolbar back button function the same as Android back button
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class HttpPost extends AsyncTask<Void, Void, Boolean> {
@@ -67,7 +93,7 @@ public class RecommendActivity extends AppCompatActivity {
             thing.setComments(_comments);
             thing.setTags(_tags);
             String jsonData = new Gson().toJson(thing, Thing.class);
-            Response response = APIUtility.postRequest("recommend/", jsonData);
+            Response response = APIUtility.postRequest("recommend/", jsonData, _token);
             return response.wasPosted();
         }
     }

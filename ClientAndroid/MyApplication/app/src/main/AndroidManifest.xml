@@ -55,6 +55,18 @@
             android:parentActivityName=".SolutionActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".SolutionActivity"
+            android:label="@string/title_activity_history"
+            android:parentActivityName=".HistoryActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 

@@ -1,8 +1,27 @@
-package app.friendsbest.net;
+package app.friendsbest.net.model;
 
 import com.google.gson.annotations.SerializedName;
 
 public class UserProfile {
+
+    public enum ProfileKey {
+
+        FULL_NAME("full_name"),
+        USER_ID("user_id"),
+        ACCESS_TOKEN("access_token"),
+        FACEBOOK_TOKEN("facebook_token");
+
+        private String _key;
+
+        private ProfileKey(String key){
+            _key = key;
+        }
+
+        public String getKey(){
+            return _key;
+        }
+    }
+
     @SerializedName("name")
     private String _fullName;
 

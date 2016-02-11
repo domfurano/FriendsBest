@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import app.friendsbest.net.model.UserRecommendation;
+
 public class UserRecommendationAdapter extends ArrayAdapter<UserRecommendation> {
 
     public UserRecommendationAdapter(Context context,

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,15 +26,15 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+
+import app.friendsbest.net.model.Response;
+import app.friendsbest.net.model.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
 
     // TODO: What happens if login fails? Handle user logging out.
 
-    private static final String PREFS_NAME = "stored-user-data";
-    private static final String DEFAULT = "empty";
-
+    public static final String DEFAULT = "empty";
     private CoordinatorLayout _coordinatorLayout;
     private SharedPreferences _storedSessionData;
     private CallbackManager _callbackManager;
@@ -48,15 +49,16 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
-        _storedSessionData = getSharedPreferences(PREFS_NAME, 0);
-        String session = _storedSessionData.getString(MainActivity.TOKEN_KEY, DEFAULT);
+        _storedSessionData = PreferenceManager.getDefaultSharedPreferences(this);
+        String session = _storedSessionData.
+                getString(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), DEFAULT);
 
         Log.i("Login Activity", session);
 
         // For stored session, redirect to main page.
         if (!session.equals(DEFAULT))  {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra(MainActivity.TOKEN_KEY, session);
+            intent.putExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), session);
             startActivity(intent);
         }
 
@@ -114,16 +116,17 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Response doInBackground(Void... params) {
             Gson gson = new Gson();
-            String serializedData = gson.toJson(
-                    new HashMap<String, String>().put(MainActivity.TOKEN_KEY, _facebookToken));
-            return APIUtility.postRequest("facebook/", serializedData);
+            HashMap<String, String> exchangeTokenMap = new HashMap<>();
+            exchangeTokenMap.put(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), _facebookToken);
+            String serializedData = gson.toJson(exchangeTokenMap, new TypeToken<HashMap<String, String>>(){}.getType());
+            return APIUtility.postRequest("facebook/", serializedData, null);
         }
 
         @Override
         protected void onPostExecute(Response response) {
             if (response != null && response.wasPosted()) {
                 SharedPreferences.Editor editor = _storedSessionData.edit();
-                Type type = new TypeToken<Map<String, String>>(){}.getType();
+                Type type = new TypeToken<HashMap<String, String>>(){}.getType();
                 HashMap<String, String> accessTokenMap =
                         new Gson().fromJson(response.getData(), type);
                 _djangoToken = accessTokenMap.get("key");
@@ -132,13 +135,15 @@ public class LoginActivity extends AppCompatActivity {
                 _userProfile.setDjangoToken(_djangoToken);
 
                 // Store facebook and django tokens
-                editor.putString("facebook-token", _facebookToken);
-                editor.putString("django-token", _djangoToken);
+                editor.putString(UserProfile.ProfileKey.FACEBOOK_TOKEN.getKey(), _facebookToken);
+                editor.putString(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), _djangoToken);
+                editor.putString(UserProfile.ProfileKey.FULL_NAME.getKey(), _userProfile.getFullName());
 
                 // Save data to local storage and redirect to main page
                 editor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra(MainActivity.TOKEN_KEY, _djangoToken);
+                intent.putExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), _djangoToken);
+                intent.putExtra("fullName", _userProfile.getFullName());
                 startActivity(intent);
             }
             else {

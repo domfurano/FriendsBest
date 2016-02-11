@@ -1,4 +1,4 @@
-package app.friendsbest.net;
+package app.friendsbest.net.model;
 
 public class Response {
 

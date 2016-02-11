@@ -15,7 +15,8 @@
     <RelativeLayout
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="0">
         <ImageButton
             android:id="@+id/historyButton"
             android:layout_width="wrap_content"
@@ -36,51 +37,67 @@
             android:background="@drawable/ic_search_black_36dp"
             android:layout_alignParentRight="true"
             />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/prompt_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="4">
         <android.support.v7.widget.CardView
             android:id="@+id/prompt_card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="20dp"
             app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/gray200"
-            android:layout_below="@id/query_field">
+            app:cardBackgroundColor="@color/gray200">
             <RelativeLayout
+                android:layout_gravity="top"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/prompt_card_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top|center"
-                    android:paddingBottom="50dp"
-                    android:paddingTop="20dp"
+                    android:paddingTop="10dp"
                     android:textSize="26dp"
                     android:text="@string/prompt_title"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/prompt_card_tag"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/prompt_card_title"
-                    android:paddingTop="60dp"
                     android:gravity="center"
                     android:textSize="50dp"
                     android:text="@string/prompt_tag"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/prompt_card_asker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/prompt_card_tag"
                     android:gravity="bottom|center"
-                    android:paddingTop="100dp"
                     android:paddingBottom="20dp"
                     android:textSize="15dp"
                     android:text="@string/prompt_asker"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:paddingTop="15dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:gravity="left">
             <ImageButton
                 android:id="@+id/settings_button"
@@ -92,8 +109,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_alignParentBottom="true">
+            android:gravity="center">
             <ImageButton
                 android:id="@+id/profile_button"
                 android:layout_width="wrap_content"
@@ -104,7 +120,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:gravity="right">
             <ImageButton
                 android:id="@+id/recommendation_button"

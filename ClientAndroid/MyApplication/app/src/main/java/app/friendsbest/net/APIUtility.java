@@ -3,7 +3,6 @@ package app.friendsbest.net;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -11,10 +10,11 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import app.friendsbest.net.model.Response;
+
 public class APIUtility {
 
-    public static final String API_BASE_URL = "http://10.0.1.13:8000/fb/api/";
-    private static final String ACCEPT_LANG = "en-US,en;q=0.5";
+    public static final String API_BASE_URL = "https://www.friendsbest.net/fb/api/";
     private static final String CONTENT_TYPE = "application/json";
 
     /**
@@ -26,9 +26,10 @@ public class APIUtility {
         try {
             URL url = new URL(API_BASE_URL + apiURL);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Authorization", token);
+            urlConnection.setRequestProperty("Authorization", "Token " + token);
             urlConnection.setRequestMethod("GET");
             try {
+                Log.i("GET response code", Integer.toString(urlConnection.getResponseCode()));
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(urlConnection.getInputStream()));
                 StringBuilder stringBuilder = new StringBuilder();
@@ -51,21 +52,31 @@ public class APIUtility {
     }
 
     /**
-     * Given a URL for a web service and a JSON formatted String, posts data to the web service.
-     * @param apiURL - URL of the web service to post data to.
-     * @param payload - JSON formatted string containing data to send to web service.
-     * @return - Response from the server.
+     * Post JSON formatted string to endpoint with authorization token in header.
+     * @param apiURL - Endpoint url
+     * @param payload - JSON formatted string
+     * @param token - Authorization token
+     * @return - Response containing status code and (if applicable) JSON string.
      */
-    public static Response postRequest(String apiURL, String payload) {
+    public static Response postRequest(String apiURL, String payload, String token) {
         try {
             Log.i("APIUtility ", "JSON Data: \n" + payload);
-            URL url = new URL(apiURL);
+            if (token != null)
+               Log.i("APIUtility POST Token: ", token);
+
+            URL url = new URL(API_BASE_URL + apiURL);
             HttpURLConnection client = (HttpURLConnection) url.openConnection();
 
             client.setRequestMethod("POST");
             client.setRequestProperty("Content-Type", CONTENT_TYPE);
-            client.setRequestProperty("Accept-Type", CONTENT_TYPE);
-            client.setRequestProperty("Accept-Language", ACCEPT_LANG);
+
+            // hack for facebook
+            if (!apiURL.equals("facebook/")) {
+//                client.setRequestProperty("Accept-Language", ACCEPT_LANG);
+                client.setRequestProperty("Accept-Type", CONTENT_TYPE);
+                client.setRequestProperty("Authorization", "Token " + token);
+            }
+
 
             // Send POST request
             client.setDoOutput(true);
@@ -76,6 +87,9 @@ public class APIUtility {
             writer.flush();
             writer.close();
             outputStream.close();
+
+            int responseCode = client.getResponseCode();
+            Log.i("POSTing", Integer.toString(responseCode));
 
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -88,8 +102,11 @@ public class APIUtility {
 
             Log.i("Response: ", responseBuffer.toString());
 
-            int responseCode = client.getResponseCode();
             boolean wasPosted = responseCode == 201;
+
+            // hack for facebook
+            if (apiURL.equals("facebook/"))
+                wasPosted = responseCode >= 200 && responseCode < 300;
             return new Response(wasPosted, responseBuffer.toString(), responseCode);
         }
         catch (Exception e) {

@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
     tools:context="net.friendsbest.app.fbest.MainActivity">
     <include layout="@layout/content_main" />
 

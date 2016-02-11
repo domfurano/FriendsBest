@@ -2,7 +2,7 @@
     <string name="app_name">FriendsBest</string>
     <string name="logo_1">Friends</string>
     <string name="logo_2">Best</string>
-    <string name="facebook_app_id">554775518019379</string>
+    <string name="facebook_app_id">1519942364964737</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_history">Search History</string>
     <string name="title_activity_profile">Profile</string>
@@ -16,7 +16,7 @@
     <string name="no_results">No Results</string>
     <string name="back">Back</string>
     <string name="no_internet">No Internet connection</string>
-    <string name="prompt_title">Do you have a recommendation for a</string>
+    <string name="prompt_title">Do you have a recommendation for</string>
     <string name="prompt_tag">Restaurant</string>
-    <string name="prompt_asker">Based on a search by Peter Jensen</string>
+    <string name="prompt_asker">Based on a search by</string>
 </resources>

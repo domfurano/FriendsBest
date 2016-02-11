@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,6 +16,10 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import app.friendsbest.net.model.QuerySolution;
+import app.friendsbest.net.model.Solution;
+import app.friendsbest.net.model.UserProfile;
 
 public class SolutionActivity  extends AppCompatActivity{
 
@@ -39,7 +44,7 @@ public class SolutionActivity  extends AppCompatActivity{
 
         Intent intent = getIntent();
 
-        _token = intent.getStringExtra("access-token");
+        _token = intent.getStringExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey());
         int queryId = intent.getIntExtra("QUERY_ID", -1);
         String title = intent.getStringExtra("QUERY_TITLE");
         setTitle(title);
@@ -62,6 +67,25 @@ public class SolutionActivity  extends AppCompatActivity{
         });
     }
 
+    /**
+     * Make toolbar back button function the same as Android back button
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstance){
+
+    }
+
     class SolutionFetch extends AsyncTask<Void, Void, List<Solution>> {
         private int _queryId;
 
@@ -76,6 +100,7 @@ public class SolutionActivity  extends AppCompatActivity{
 
         @Override
         protected List<Solution> doInBackground(Void... params) {
+
             String data = APIUtility.getResponse("query/" + _queryId, _token);
             Gson gson = new Gson();
             QuerySolution querySolution = gson.fromJson(data, QuerySolution.class);
