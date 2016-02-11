@@ -168,9 +168,10 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     // This method gets called when a user selects a different textfield or textview
     // even if the keyboard is already shown.
     func keyboardWasShown(aNotification: NSNotification) {
-//        if self.activeTextView == nil {
-//            return
-//        }
+        if self.activeTextView == nil {
+            self.scrollView.setContentOffset(CGPointZero, animated: true)
+            return
+        }
         
         let scrollViewFrame: CGRect = self.scrollView.frame
         let mainScreenBounds = UIScreen.mainScreen().bounds

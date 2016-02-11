@@ -14,23 +14,13 @@ class MainView: UIView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-        let colorSpace: CGColorSpaceRef? = CGColorSpaceCreateDeviceRGB()
-        
-        let gradient: CGGradientRef? = CGGradientCreateWithColors(
-            colorSpace,
+        CommonUIElements.drawGradientForContext(
             [
                 UIColor.colorFromHex(0xfefefe).CGColor,
                 UIColor.colorFromHex(0xc8ced0).CGColor
             ],
-            nil
-        )
-        
-        CGContextDrawLinearGradient(
-            context,
-            gradient,
-            CGPoint(x: self.frame.midX, y: 0),
-            CGPoint(x: self.frame.midX, y: self.frame.maxY),
-            CGGradientDrawingOptions.DrawsAfterEndLocation
+            frame: self.frame,
+            context: context
         )
     }
 }

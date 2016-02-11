@@ -122,8 +122,8 @@ class NewRecommendationInputAccessoryView: UIView {
                 attribute: NSLayoutAttribute.Right,
                 multiplier: 1.0,
                 constant: -16.0))
-        
     }
+    
 }
 
 

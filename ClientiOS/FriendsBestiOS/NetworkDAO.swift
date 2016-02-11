@@ -286,13 +286,13 @@ class NetworkDAO {
                     return
                 }
                 
-                guard let tagHash: String = queryDict["tagHash"] as? String else {
+                guard let tagHash: String = queryDict["taghash"] as? String else {
                     NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON: tagHash not in dictionary")
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let tagString: String = queryDict["tagString"] as? String else {
+                guard let tagString: String = queryDict["tagstring"] as? String else {
                     NSLog("Error - FriendsBest API - postNewQuery() - Invalid JSON: tagHash not in dictionary")
                     NetworkQueue.instance.tryAgain()
                     return
