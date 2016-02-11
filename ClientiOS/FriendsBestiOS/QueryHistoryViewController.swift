@@ -61,3 +61,12 @@ class QueryHistoryViewController: UITableViewController {
         return 1
     }
 }
+
+//class QueryHistoryCell: UITableViewCell {
+//    
+//    init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+//        super.init(style: style, reuseIdentifier: reuseIdentifier)
+//    }
+//    
+//    
+//}

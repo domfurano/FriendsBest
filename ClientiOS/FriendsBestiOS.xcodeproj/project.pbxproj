@@ -11,17 +11,18 @@
 		CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */; };
 		CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */; };
 		CE278D9A1C6A7A7D00B546C5 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE278D991C6A7A7D00B546C5 /* AppSettings.swift */; };
+		CE278D9E1C6AC7C500B546C5 /* PromptCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE278D9D1C6AC7C500B546C5 /* PromptCardView.swift */; };
 		CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */; };
 		CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */; };
 		CE53AE951C62F04000008F4A /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53AE941C62F04000008F4A /* Timer.swift */; };
 		CE55B5A91C667AA500289811 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE55B5A81C667AA500289811 /* Queue.swift */; };
 		CE55B5AE1C66840200289811 /* Icon-60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CE55B5AD1C66840200289811 /* Icon-60@3x.png */; };
 		CE55B5B01C6684D400289811 /* Icon-602x.png in Resources */ = {isa = PBXBuildFile; fileRef = CE55B5AF1C6684D400289811 /* Icon-602x.png */; };
+		CE5D17D31C6AD35100256331 /* BaseCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5D17D21C6AD35100256331 /* BaseCardView.swift */; };
 		CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE64683D1C459FB0002F73A0 /* AppDelegate.swift */; };
 		CE6468431C459FB0002F73A0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468411C459FB0002F73A0 /* Main.storyboard */; };
 		CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6468441C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld */; };
 		CE6468481C459FB0002F73A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE6468471C459FB0002F73A0 /* Assets.xcassets */; };
-		CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6468491C459FB0002F73A0 /* LaunchScreen.storyboard */; };
 		CE6468561C459FB0002F73A0 /* FriendsBestiOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468551C459FB0002F73A0 /* FriendsBestiOSTests.swift */; };
 		CE6468611C459FB0002F73A0 /* FriendsBestiOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6468601C459FB0002F73A0 /* FriendsBestiOSUITests.swift */; };
 		CE67F1B21C59156A001056C3 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE67F1B11C59156A001056C3 /* Extensions.swift */; };
@@ -76,18 +77,19 @@
 		CE22F3B71C45D0A000AD2BFB /* NetworkDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkDAO.swift; sourceTree = "<group>"; };
 		CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryHistoryViewController.swift; sourceTree = "<group>"; };
 		CE278D991C6A7A7D00B546C5 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		CE278D9D1C6AC7C500B546C5 /* PromptCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptCardView.swift; sourceTree = "<group>"; };
 		CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionDetailViewController.swift; sourceTree = "<group>"; };
 		CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionsViewController.swift; sourceTree = "<group>"; };
 		CE53AE941C62F04000008F4A /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		CE55B5A81C667AA500289811 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		CE55B5AD1C66840200289811 /* Icon-60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-60@3x.png"; sourceTree = "<group>"; };
 		CE55B5AF1C6684D400289811 /* Icon-602x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-602x.png"; sourceTree = "<group>"; };
+		CE5D17D21C6AD35100256331 /* BaseCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCardView.swift; sourceTree = "<group>"; };
 		CE64683A1C459FB0002F73A0 /* FriendsBestiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendsBestiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE64683D1C459FB0002F73A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE6468421C459FB0002F73A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE6468451C459FB0002F73A0 /* FriendsBestiOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FriendsBestiOS.xcdatamodel; sourceTree = "<group>"; };
 		CE6468471C459FB0002F73A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		CE64684A1C459FB0002F73A0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE64684C1C459FB0002F73A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE6468511C459FB0002F73A0 /* FriendsBestiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FriendsBestiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE6468551C459FB0002F73A0 /* FriendsBestiOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsBestiOSTests.swift; sourceTree = "<group>"; };
@@ -193,9 +195,9 @@
 		CE22F3BC1C481C2B00AD2BFB /* View */ = {
 			isa = PBXGroup;
 			children = (
+				CE5D17D11C6AD33B00256331 /* MainView */,
 				CEF2BB4D1C641BA6006B47AC /* NewRecommendationView */,
 				CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */,
-				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -207,6 +209,16 @@
 				CE55B5AD1C66840200289811 /* Icon-60@3x.png */,
 			);
 			name = Images;
+			sourceTree = "<group>";
+		};
+		CE5D17D11C6AD33B00256331 /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				CEBAA2861C4C5BDB0062B38F /* MainView.swift */,
+				CE278D9D1C6AC7C500B546C5 /* PromptCardView.swift */,
+				CE5D17D21C6AD35100256331 /* BaseCardView.swift */,
+			);
+			name = MainView;
 			sourceTree = "<group>";
 		};
 		CE6468311C459FB0002F73A0 = {
@@ -243,7 +255,6 @@
 				CE22F3B61C45D07500AD2BFB /* Model */,
 				CE6468411C459FB0002F73A0 /* Main.storyboard */,
 				CE6468471C459FB0002F73A0 /* Assets.xcassets */,
-				CE6468491C459FB0002F73A0 /* LaunchScreen.storyboard */,
 				CE64684C1C459FB0002F73A0 /* Info.plist */,
 				CE6468441C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld */,
 			);
@@ -421,7 +432,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE64684B1C459FB0002F73A0 /* LaunchScreen.storyboard in Resources */,
 				CE6468481C459FB0002F73A0 /* Assets.xcassets in Resources */,
 				CE55B5B01C6684D400289811 /* Icon-602x.png in Resources */,
 				CE92889D1C588BAE009A580F /* FontAwesome.otf in Resources */,
@@ -475,11 +485,13 @@
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
 				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,
 				CE55B5A91C667AA500289811 /* Queue.swift in Sources */,
+				CE5D17D31C6AD35100256331 /* BaseCardView.swift in Sources */,
 				CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */,
 				CE53AE951C62F04000008F4A /* Timer.swift in Sources */,
 				CE64683E1C459FB0002F73A0 /* AppDelegate.swift in Sources */,
 				CE9288981C588BAE009A580F /* FAKIcon.m in Sources */,
 				CE9288991C588BAE009A580F /* FAKIonIcons.m in Sources */,
+				CE278D9E1C6AC7C500B546C5 /* PromptCardView.swift in Sources */,
 				CE9288961C588BAE009A580F /* FAKFontAwesome.m in Sources */,
 				CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */,
 				CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */,
@@ -526,14 +538,6 @@
 				CE6468421C459FB0002F73A0 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		CE6468491C459FB0002F73A0 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CE64684A1C459FB0002F73A0 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -617,6 +621,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -636,7 +641,7 @@
 				);
 				INFOPLIST_FILE = FriendsBestiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "";
 				PRODUCT_BUNDLE_IDENTIFIER = hovercraft.FriendsBestiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

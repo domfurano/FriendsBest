@@ -10,6 +10,8 @@ import UIKit
 
 class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
+    // TODO: Need different recommendation modes
+    
     let tagsLabel: UILabel = UILabel()
     let tagsField: UITextField = UITextField()
     
@@ -37,7 +39,12 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     
     override func viewDidLoad() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: Selector("cancelButtonPressed"))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: Selector("createNewRecommendationButtonPressed"))
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.redColor()
+        
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(32)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.colorFromHex(0x00d735)
         
         styleControls()
         
@@ -158,7 +165,13 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         )
     }
     
+    // This method gets called when a user selects a different textfield or textview
+    // even if the keyboard is already shown.
     func keyboardWasShown(aNotification: NSNotification) {
+//        if self.activeTextView == nil {
+//            return
+//        }
+        
         let scrollViewFrame: CGRect = self.scrollView.frame
         let mainScreenBounds = UIScreen.mainScreen().bounds
         let keyboardFrame: CGRect = aNotification.userInfo![UIKeyboardFrameBeginUserInfoKey]!.CGRectValue
@@ -386,14 +399,18 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     }
     
     func createNewRecommendationButtonPressed() {
-        if let description = titleField.text, let tags = tagsField.text {
-            let comments = commentsField.text == nil ? "" : commentsField.text!
-            let tags = tags.characters.split{ $0 == " " }.map(String.init)
-            NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
-            navigationController?.popViewControllerAnimated(true)
-        } else {
-            // TODO: Show the user an error.
+        guard let description: String = titleField.text, let tagsString: String = tagsField.text else {
+            return
         }
+        
+        if description.isEmpty || tagsString.isEmpty {
+            return
+        }
+        
+        let comments = commentsField.text == nil ? "" : commentsField.text!
+        let tags = tagsString.characters.split{ $0 == " " }.map(String.init)
+        NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
+        navigationController?.popViewControllerAnimated(true)
     }
     
     private func setToolbarItems() {

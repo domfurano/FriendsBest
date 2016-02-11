@@ -17,11 +17,13 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     private(set) var queryHistory: QueryHistory = QueryHistory()
+    var prompts: [Prompt] = []
     
     
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
+    var promptsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
@@ -42,6 +44,10 @@ class User: NetworkDAODelegate {
     
     func newQueryFetched(queryID: Int) {
         querySolutionsUpdatedClosure(queryID: queryID)
+    }
+    
+    func promptsFetched() {
+        promptsFetchedClosure()
     }
     
     
@@ -91,6 +97,33 @@ class QueryHistory {
             }
         }
         return nil
+    }
+    
+    func getQueryFromTags(tags: [String]) -> Query? {
+        for query in self._queries {
+            if tagsEqual(query.tags, tag2: tags) {
+                return query
+            }
+        }
+        return nil
+    }
+    
+    private func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
+        if (tag1.count != tag2.count) {
+            return false
+        }
+        var tagsEqual: Bool = true
+        for tag1_tag in tag1 {
+            var tagFound: Bool = false
+            for tag2_tag in tag2 {
+                if tag1_tag == tag2_tag {
+                    tagFound = true
+                    break
+                }
+            }
+            tagsEqual = tagsEqual && tagFound
+        }
+        return tagsEqual
     }
     
     func setQuerySolutionsForQueryID(solutions: [Solution], queryID: Int) {
@@ -165,3 +198,49 @@ class Recommendation {
         self.comment = comment
     }
 }
+
+class Prompt {
+    private(set) var article: String
+    private(set) var tags: [String]
+    private(set) var tagString: String
+    private(set) var friend: String
+    private(set) var ID: Int
+
+    init(article: String, tags: [String], tagString: String, friend: String, ID: Int) {
+        self.article = article
+        self.tags = tags
+        self.tagString = tagString
+        self.friend = friend
+        self.ID = ID
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,7 @@ protocol NetworkDAODelegate: class {
     func queriesFetched()
     func querySolutionsFetched(forQueryID queryID: Int)
     func newQueryFetched(queryID: Int)
+    func promptsFetched()
 }
 
 
@@ -25,7 +26,7 @@ class NetworkDAO {
     
     /* Instance members */    
     #if DEBUG
-    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
+//    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
     #else
     private let friendsBestAPIurl: NSURL! = NSURL(string: "https://www.friendsbest.net/fb/api/")
     #endif
@@ -42,8 +43,9 @@ class NetworkDAO {
     
     
     func getQueries() {
-        NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
-            self._getQueries()
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._getQueries()
         }, description: "getQueries()"))
     }
     
@@ -124,8 +126,9 @@ class NetworkDAO {
     
     
     func getQuerySolutions(queryID: Int) {
-        NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
-            self._getQuerySolutions(queryID)
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._getQuerySolutions(queryID)
         }, description: "getQuerySolutions()"))
     }
     
@@ -217,8 +220,9 @@ class NetworkDAO {
     }
     
     func postNewQuery(queryTags: [String]) {
-        NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
-            self._postNewQuery(queryTags)
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._postNewQuery(queryTags)
         }, description: "postNewQuery()"))
     }
     
@@ -330,8 +334,9 @@ class NetworkDAO {
     }
     
     func postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
-        NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
-            self._postNewRecommendtaion(description, comments: comments, recommendationTags: recommendationTags)
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._postNewRecommendtaion(description, comments: comments, recommendationTags: recommendationTags)
         }, description: "postNewRecommendtaion()"))
     }
     
@@ -414,6 +419,86 @@ class NetworkDAO {
         }).resume()
     }
     
+    func getPrompt() {
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._getPrompt()
+            }, description: "getPrompts()"))
+    }
+    
+    private func _getPrompt() {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        let queryString: String = "prompt/"
+        let queryURL: NSURL? = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        
+        guard let validQueryURL = queryURL else {
+            NSLog("Error - FriendsBest API - getPrompts() - Bad query URL")
+            return
+        }
+        
+        session.dataTaskWithURL(validQueryURL,
+            completionHandler: {
+                [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+                
+                if let error = error {
+                    NSLog("Error - FriendsBest API - getPrompts() - \(error)")
+                    NetworkQueue.instance.tryAgain()
+                    return
+                }
+                
+                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getPrompts") {
+                    NetworkQueue.instance.tryAgain()
+                    return
+                }
+                
+                guard let promptArray: NSArray = NetworkDAO.getNSArrayFromJSONdata(data, funcName: "getPrompts") else {
+                    NetworkQueue.instance.tryAgain()
+                    return
+                }
+                
+                var prompts: [Prompt] = []
+                
+                for promptDict in promptArray {
+                    guard let promptDict: NSDictionary = promptDict as? NSDictionary else {
+                        NSLog("Error - FriendsBest API - getPrompts() - Invalid JSON object")
+                        NetworkQueue.instance.tryAgain()
+                        return
+                    }
+                    
+                    let article: String? = promptDict["article"] as? String
+                    let tags: [String]? = promptDict["tags"] as? [String]
+                    let friend: String? = promptDict["friend"] as? String
+                    let ID: Int? = promptDict["id"] as? Int
+                    let tagString: String? = promptDict["tagstring"] as? String
+                    
+                    guard let validArticle = article, let validTags = tags, let validFriend = friend, let validID = ID, let validTagString = tagString else {
+                            NSLog("Error - FriendsBest API - getPrompts() - Invalid JSON")
+                            NetworkQueue.instance.tryAgain()
+                            return
+                    }
+                    
+                    prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: validFriend, ID: validID))
+                }
+                
+                User.instance.prompts = prompts
+                
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self?.networkDAODelegate?.promptsFetched()
+                    NetworkQueue.instance.dequeue()
+                })
+                
+            }).resume()
+    }
+    
     func postFacebookTokenAndAuthenticate() {
         NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
             self._postFacebookTokenAndAuthenticate()
@@ -445,6 +530,7 @@ class NetworkDAO {
                 
                 if let error = error {
                     NSLog("Error - FriendsBest API - postFacebookToken() - \(error.localizedDescription)")
+                    NSLog("\(error.code)")
                     NetworkQueue.instance.tryAgain()
                     return
                 }
