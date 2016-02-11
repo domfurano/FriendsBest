@@ -83,3 +83,5 @@ xcuserdata/
 *.pbxproj
 
 *.pbxproj
+
+ServerDjango/db.sqlite3
