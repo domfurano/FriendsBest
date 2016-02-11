@@ -9,47 +9,31 @@
 import Foundation
 
 class PromptCardView: UIView {
+
     var titleLabel: UILabel = UILabel()
     var tagLabel: UILabel = UILabel()
     var subTitleLabel: UILabel = UILabel()
     
     //    var userPicture: UIView?
     
-    var prompt: Prompt?
-    
-    func drawLinearGradient(context: CGContext) {
-        let colorSpace: CGColorSpaceRef? = CGColorSpaceCreateDeviceRGB()
-        
-        let gradient: CGGradientRef? = CGGradientCreateWithColors(
-            colorSpace,
-            [
-                UIColor.colorFromHex(0xd5dadc).CGColor,
-                UIColor.colorFromHex(0xaab4bb).CGColor
-            ],
-            nil
-        )
-        
-        CGContextDrawLinearGradient(
-            context,
-            gradient,
-            CGPoint(x: self.frame.midX, y: 0),
-            CGPoint(x: self.frame.midX, y: self.frame.maxY),
-            CGGradientDrawingOptions.DrawsAfterEndLocation
-        )
-    }
-    
+    var prompt: Prompt? // TODO: remove this property. Data model objects don't belong in the view.
     
     override func drawRect(rect: CGRect) {
         
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, self.bounds)
         
-        drawLinearGradient(context)
-        
-//        CGContextSetAllowsAntialiasing(context, true)
-//        CGContextSetShouldAntialias(context, true)
+        CommonUIElements.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0xd5dadc).CGColor,
+                UIColor.colorFromHex(0xaab4bb).CGColor
+            ],
+            frame: self.frame,
+            context: context
+        )
         
         /* Rotate */
+        
         let angleInRadians: CGFloat = CGFloat((Int32(random()) - INT32_MAX / 2) % (INT32_MAX / 32)) / CGFloat(INT32_MAX)
         let transform: CGAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, angleInRadians)
         self.transform = transform
@@ -149,36 +133,6 @@ class PromptCardView: UIView {
                 attribute: NSLayoutAttribute.CenterY,
                 multiplier: 1.9,
                 constant: 0.0))
-        
-        //        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "FriendsBest")
-        //        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 22.0)!, range: NSMakeRange(0, 7))
-        //        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 22.0)!, range: NSMakeRange(7, 4))
-        //
-        //        friendsBestLabel.attributedText = attributedString
-        //
-        //        friendsBestLabel.translatesAutoresizingMaskIntoConstraints = false
-        //
-        //        self.addSubview(friendsBestLabel)
-        //
-        //        self.addConstraint(
-        //            NSLayoutConstraint(
-        //                item: friendsBestLabel,
-        //                attribute: NSLayoutAttribute.CenterX,
-        //                relatedBy: NSLayoutRelation.Equal,
-        //                toItem: self,
-        //                attribute: NSLayoutAttribute.CenterX,
-        //                multiplier: 1.0,
-        //                constant: 0.0))
-        //
-        //        self.addConstraint(
-        //            NSLayoutConstraint(
-        //                item: friendsBestLabel,
-        //                attribute: NSLayoutAttribute.CenterY,
-        //                relatedBy: NSLayoutRelation.Equal,
-        //                toItem: self,
-        //                attribute: NSLayoutAttribute.CenterY,
-        //                multiplier: 1.0,
-        //                constant: 0.0))
     }
     
 }

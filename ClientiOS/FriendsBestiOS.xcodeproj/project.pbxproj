@@ -51,6 +51,9 @@
 		CEBAA2831C4C4B450062B38F /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2821C4C4B450062B38F /* DataController.swift */; };
 		CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */; };
 		CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBAA2861C4C5BDB0062B38F /* MainView.swift */; };
+		CED88D361C6D06D700463CC3 /* CommonUIElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED88D351C6D06D700463CC3 /* CommonUIElements.swift */; };
+		CED88D381C6D131D00463CC3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED88D371C6D131D00463CC3 /* ProfileViewController.swift */; };
+		CED88D3A1C6D135300463CC3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED88D391C6D135300463CC3 /* ProfileView.swift */; };
 		CEF2BB4F1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF2BB4E1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift */; };
 		CEFF55C51C63CC3A0020B364 /* NetworkTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */; };
 /* End PBXBuildFile section */
@@ -132,6 +135,9 @@
 		CEBAA2821C4C4B450062B38F /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		CEBAA2841C4C584F0062B38F /* MainScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
 		CEBAA2861C4C5BDB0062B38F /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		CED88D351C6D06D700463CC3 /* CommonUIElements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUIElements.swift; sourceTree = "<group>"; };
+		CED88D371C6D131D00463CC3 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		CED88D391C6D135300463CC3 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		CEF2BB4E1C641BBD006B47AC /* NewRecommendationInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewRecommendationInputAccessoryView.swift; sourceTree = "<group>"; };
 		CEFF55C41C63CC3A0020B364 /* NetworkTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTask.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -188,6 +194,7 @@
 				CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */,
 				CE9287A61C582197009A580F /* NewRecommendationViewController.swift */,
 				CE9F33621C604B7B0018DBC0 /* FacebookLoginViewController.swift */,
+				CED88D371C6D131D00463CC3 /* ProfileViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -198,6 +205,8 @@
 				CE5D17D11C6AD33B00256331 /* MainView */,
 				CEF2BB4D1C641BA6006B47AC /* NewRecommendationView */,
 				CE9F33661C60624B0018DBC0 /* FacebookLoginView.swift */,
+				CED88D391C6D135300463CC3 /* ProfileView.swift */,
+				CED88D351C6D06D700463CC3 /* CommonUIElements.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -473,6 +482,8 @@
 				CE9287A71C582197009A580F /* NewRecommendationViewController.swift in Sources */,
 				CE92889B1C588BAE009A580F /* FAKOcticons.m in Sources */,
 				CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */,
+				CED88D381C6D131D00463CC3 /* ProfileViewController.swift in Sources */,
+				CED88D361C6D06D700463CC3 /* CommonUIElements.swift in Sources */,
 				CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */,
 				CE0368701C617ECD006333DA /* NetworkQueue.swift in Sources */,
 				CEBAA2871C4C5BDB0062B38F /* MainView.swift in Sources */,
@@ -496,6 +507,7 @@
 				CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */,
 				CEBAA2811C4C1DB50062B38F /* DataModel.swift in Sources */,
 				CE9F33671C60624B0018DBC0 /* FacebookLoginView.swift in Sources */,
+				CED88D3A1C6D135300463CC3 /* ProfileView.swift in Sources */,
 				CE92889A1C588BAE009A580F /* FAKMaterialIcons.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

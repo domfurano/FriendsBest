@@ -24,7 +24,7 @@ class FacebookLoginView: UIView {
         
         title.text = "FriendsBest"
         title.textColor = UIColor.whiteColor()
-        title.font = UIFont.boldSystemFontOfSize(40.0)
+        title.font = UIFont.boldSystemFontOfSize(50.0)
         
         title.translatesAutoresizingMaskIntoConstraints = false
         loginButton.translatesAutoresizingMaskIntoConstraints = false
@@ -97,15 +97,6 @@ class FacebookLoginView: UIView {
                 attribute: NSLayoutAttribute.CenterY,
                 multiplier: 1.5,
                 constant: 0.0))
-
-        
-//        let views: [String: UIView] = [
-//            "title": title,
-//            "loginButton": loginButton!
-//        ]
-        
-//        self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[title]-32-[loginButton]",
-//            options: NSLayoutFormatOptions(), metrics: nil, views: views))
     }
 
     
