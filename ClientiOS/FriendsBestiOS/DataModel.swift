@@ -17,11 +17,13 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     private(set) var queryHistory: QueryHistory = QueryHistory()
+    var prompts: [Prompt] = []
     
     
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
+    var promptsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
@@ -42,6 +44,10 @@ class User: NetworkDAODelegate {
     
     func newQueryFetched(queryID: Int) {
         querySolutionsUpdatedClosure(queryID: queryID)
+    }
+    
+    func promptsFetched() {
+        promptsFetchedClosure()
     }
     
     
@@ -84,6 +90,15 @@ class QueryHistory {
         return nil
     }
     
+    func getQueryFromTagHash(tagHash: String) -> Query? {
+        for query in self._queries {
+            if query.tagHash == tagHash {
+                return query
+            }
+        }
+        return nil
+    }
+    
     func getQueryFromTags(tags: [String]) -> Query? {
         for query in self._queries {
             if tagsEqual(query.tags, tag2: tags) {
@@ -110,14 +125,38 @@ class QueryHistory {
         }
         return tagsEqual
     }
+    
+    func setQuerySolutionsForQueryID(solutions: [Solution], queryID: Int) {
+        for query in self._queries {
+            if query.ID == queryID {
+                query.solutions = solutions
+                break
+            }
+        }
+    }
 }
 
 
 class Query: Hashable, Equatable {
     private(set) var tags: [String]
+    private(set) var tagHash: String
+    private(set) var tagString: String
     private(set) var ID: Int
     private(set) var timestamp: NSDate
-    var solutions: [Solution]?
+    private var _solutions: [Solution]?
+    var solutions: [Solution]? {
+        get {
+            if let solutions = self._solutions {
+                return solutions
+            } else {
+                return nil
+            }
+        }
+        set (solutions) {
+            // TODO: only insert solution if it doesn't exist in order to demarcate new from old solutions
+            self._solutions = solutions
+        }
+    }
     
     var hashValue: Int {
         get {
@@ -125,8 +164,10 @@ class Query: Hashable, Equatable {
         }
     }
     
-    init(tags: [String], ID: Int, timestamp: NSDate) {
+    init(tags: [String], tagHash: String, tagString: String, ID: Int, timestamp: NSDate) {
         self.tags = tags
+        self.tagHash = tagHash
+        self.tagString = tagString
         self.ID = ID
         self.timestamp = timestamp
     }
@@ -157,3 +198,49 @@ class Recommendation {
         self.comment = comment
     }
 }
+
+class Prompt {
+    private(set) var article: String
+    private(set) var tags: [String]
+    private(set) var tagString: String
+    private(set) var friend: String
+    private(set) var ID: Int
+
+    init(article: String, tags: [String], tagString: String, friend: String, ID: Int) {
+        self.article = article
+        self.tags = tags
+        self.tagString = tagString
+        self.friend = friend
+        self.ID = ID
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,6 +10,8 @@ import UIKit
 
 class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
+    // TODO: Need different recommendation modes
+    
     let tagsLabel: UILabel = UILabel()
     let tagsField: UITextField = UITextField()
     
@@ -36,6 +38,14 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     }
     
     override func viewDidLoad() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: Selector("cancelButtonPressed"))
+        navigationItem.leftBarButtonItem?.tintColor = UIColor.redColor()
+        
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(32)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
+        navigationItem.rightBarButtonItem?.tintColor = UIColor.colorFromHex(0x00d735)
+        
         styleControls()
         
         tagsField.delegate = self
@@ -51,7 +61,11 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             action: "nextButtonPressed",
             forControlEvents: UIControlEvents.TouchUpInside
         )
-
+        NRinputAccessoryView.doneButton!.addTarget(
+            self,
+            action: "doneButtonPressed",
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
         
         /* Fonts */
         tagsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
@@ -80,6 +94,9 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         
         // Register for keyboard events
         registerForKeyboardNotifications()
+        
+        // Recognize touches in background
+        self.scrollView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("doneButtonPressed")))
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -94,7 +111,6 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             assert(self.activeTextField != tagsField)
             tagsField.becomeFirstResponder()
             self.activeTextField = tagsField
-            // TODO: hide previous button
             return
         }
         
@@ -102,7 +118,6 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             self.titleField.becomeFirstResponder()
             self.activeTextView = nil
             self.activeTextField = self.titleField
-            // TODO: show next button
             return
         }
     }
@@ -115,14 +130,18 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             if self.activeTextField == self.tagsField {
                 self.titleField.becomeFirstResponder()
                 self.activeTextField = titleField
-                // TODO: show prev button
+                NRinputAccessoryView.prevButton!.enabled = true
             } else {
                 self.commentsField.becomeFirstResponder()
                 self.activeTextField = nil
                 self.activeTextView = self.commentsField
-                // TODO: change next button to done button
             }
         }
+    }
+    
+    func doneButtonPressed() {
+        self.scrollView.endEditing(true)
+        self.scrollView.setContentOffset(CGPointMake(0.0, 0.0), animated: true)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -146,7 +165,13 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         )
     }
     
+    // This method gets called when a user selects a different textfield or textview
+    // even if the keyboard is already shown.
     func keyboardWasShown(aNotification: NSNotification) {
+//        if self.activeTextView == nil {
+//            return
+//        }
+        
         let scrollViewFrame: CGRect = self.scrollView.frame
         let mainScreenBounds = UIScreen.mainScreen().bounds
         let keyboardFrame: CGRect = aNotification.userInfo![UIKeyboardFrameBeginUserInfoKey]!.CGRectValue
@@ -161,7 +186,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         
         if self.activeTextView != nil {
             let activeTextViewFrame: CGRect = self.activeTextView!.frame            
-            self.scrollView.setContentOffset(CGPointMake(0.0, activeTextViewFrame.midY - midpoint), animated:  true)
+            self.scrollView.setContentOffset(CGPointMake(0.0, activeTextViewFrame.midY - midpoint), animated: true)
         }
     }
     
@@ -174,6 +199,24 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     func textFieldDidBeginEditing(textField: UITextField) {
         self.activeTextField = textField
         self.activeTextView = nil
+        
+        if textField == self.tagsField {
+            NRinputAccessoryView.prevButton!.enabled = false
+            NRinputAccessoryView.prevButton!.hidden = false
+            NRinputAccessoryView.nextButton!.enabled = true
+            NRinputAccessoryView.nextButton!.hidden = false
+            NRinputAccessoryView.doneButton!.enabled = false
+            NRinputAccessoryView.doneButton!.hidden = true
+        }
+        
+        if textField == self.titleField {
+            NRinputAccessoryView.prevButton!.enabled = true
+            NRinputAccessoryView.prevButton!.hidden = false
+            NRinputAccessoryView.nextButton!.enabled = true
+            NRinputAccessoryView.nextButton!.hidden = false
+            NRinputAccessoryView.doneButton!.enabled = false
+            NRinputAccessoryView.doneButton!.hidden = true
+        }
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
@@ -183,6 +226,13 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     func textViewDidBeginEditing(textView: UITextView) {
         self.activeTextView = textView
         self.activeTextField = nil
+        
+        NRinputAccessoryView.prevButton!.enabled = true
+        NRinputAccessoryView.prevButton!.hidden = false
+        NRinputAccessoryView.nextButton!.enabled = false
+        NRinputAccessoryView.nextButton!.hidden = true
+        NRinputAccessoryView.doneButton!.enabled = true
+        NRinputAccessoryView.doneButton!.hidden = false
     }
     
     func textViewDidEndEditing(textView: UITextView) {
@@ -328,7 +378,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.4,
+                multiplier: 0.3,
                 constant: 0.0))
         
         let views: [String: UIView] = [
@@ -344,26 +394,34 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             options: NSLayoutFormatOptions(), metrics: nil, views: views))
     }
     
+    func cancelButtonPressed() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
     func createNewRecommendationButtonPressed() {
-        if let description = titleField.text, let tags = tagsField.text {
-            let comments = commentsField.text == nil ? "" : commentsField.text!
-            let tags = tags.characters.split{ $0 == " " }.map(String.init)
-            NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
-            navigationController?.popViewControllerAnimated(true)
-        } else {
-            // TODO: Show the user an error.
+        guard let description: String = titleField.text, let tagsString: String = tagsField.text else {
+            return
         }
+        
+        if description.isEmpty || tagsString.isEmpty {
+            return
+        }
+        
+        let comments = commentsField.text == nil ? "" : commentsField.text!
+        let tags = tagsString.characters.split{ $0 == " " }.map(String.init)
+        NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
+        navigationController?.popViewControllerAnimated(true)
     }
     
     private func setToolbarItems() {
-        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        
-        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
-        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
-        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
-        
-        self.toolbarItems = [flexibleSpace, newRecommendationButton]
+//        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+//        
+//        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
+//        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
+//        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
+//        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
+//        
+//        self.toolbarItems = [flexibleSpace, newRecommendationButton]
     }
     
 }

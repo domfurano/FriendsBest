@@ -12,6 +12,7 @@ class NewRecommendationInputAccessoryView: UIView {
     
     var prevButton: UIButton?
     var nextButton: UIButton?
+    var doneButton: UIButton?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,29 +27,39 @@ class NewRecommendationInputAccessoryView: UIView {
         prevButton!.setTitle("prev", forState: UIControlState.Normal)
         prevButton!.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
         prevButton!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
+        prevButton!.setTitleColor(UIColor.darkGrayColor(), forState: UIControlState.Disabled)
         prevButton!.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
+        prevButton!.enabled = false
         
         nextButton = UIButton(type: UIButtonType.System)
         nextButton!.setTitle("next", forState: UIControlState.Normal)
         nextButton!.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
         nextButton!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
+        nextButton!.setTitleColor(UIColor.darkGrayColor(), forState: UIControlState.Disabled)
         nextButton!.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
+        
+        doneButton = UIButton(type: UIButtonType.System)
+        doneButton!.setTitle("done", forState: UIControlState.Normal)
+        doneButton!.setTitleColor(UIColor.colorFromHex(0x007aff), forState: UIControlState.Normal)
+        doneButton!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Highlighted)
+        doneButton!.setTitleColor(UIColor.darkGrayColor(), forState: UIControlState.Disabled)
+        doneButton!.titleLabel?.font = UIFont(name: "Helvetica Neue", size: 20.0)
+        doneButton!.enabled = false
+        doneButton!.hidden = true
         
         prevButton?.translatesAutoresizingMaskIntoConstraints = false
         nextButton?.translatesAutoresizingMaskIntoConstraints = false
+        doneButton?.translatesAutoresizingMaskIntoConstraints = false
         
         self.addSubview(prevButton!)
         self.addSubview(nextButton!)
+        self.addSubview(doneButton!)
         
         addConstraints()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func hidePrevButton() {
-        
     }
     
     private func addConstraints() {
@@ -85,6 +96,26 @@ class NewRecommendationInputAccessoryView: UIView {
         self.addConstraint(
             NSLayoutConstraint(
                 item: nextButton!,
+                attribute: NSLayoutAttribute.Right,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: self,
+                attribute: NSLayoutAttribute.Right,
+                multiplier: 1.0,
+                constant: -16.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: doneButton!,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: self,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: doneButton!,
                 attribute: NSLayoutAttribute.Right,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self,

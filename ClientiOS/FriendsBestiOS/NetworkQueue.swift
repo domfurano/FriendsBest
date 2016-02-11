@@ -54,6 +54,7 @@ class NetworkQueue {
     
     func tryAgain() {
         self.executing = false
+        // TODO: Slow down timer until task is dequeued
     }
 }
 

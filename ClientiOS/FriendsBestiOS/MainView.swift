@@ -14,13 +14,6 @@ class MainView: UIView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-//        let gradient: CAGradientLayer = CAGradientLayer()
-//        gradient.frame = self.bounds
-//        gradient.colors = [
-//            UIColor.colorFromHex(0xfefefe),
-//            UIColor.colorFromHex(0xe8eef0)
-//        ]
-        
         let colorSpace: CGColorSpaceRef? = CGColorSpaceCreateDeviceRGB()
         
         let gradient: CGGradientRef? = CGGradientCreateWithColors(
@@ -39,8 +32,5 @@ class MainView: UIView {
             CGPoint(x: self.frame.midX, y: self.frame.maxY),
             CGGradientDrawingOptions.DrawsAfterEndLocation
         )
-        
-//        CGContextSetFillColorWithColor(context, UIColor.colorFromHex(0xe8edef).CGColor)
-//        CGContextFillRect(context, bounds)
     }
 }
