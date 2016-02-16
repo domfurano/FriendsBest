@@ -54,7 +54,7 @@ class PromptCardView: UIView {
         titleLabel.textAlignment = .Center
         titleLabel.font = UIFont(name: "Helvetica Neue", size: 16.0)
         
-        tagLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 22.0)
+        tagLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 20.0)
         
         subTitleLabel.font = UIFont(name: "Helvetica Neue", size: 10.0)
         

@@ -18,7 +18,7 @@ class ProfileViewController: UIViewController {
         self.view = ProfileView()
     }
     
-    override func viewDidLoad() {x
+    override func viewDidLoad() {
         pictureView = UIView(frame: self.view.frame)
         pictureView!.translatesAutoresizingMaskIntoConstraints = false
         pictureView!.addSubview(facebookProfilePictureView)

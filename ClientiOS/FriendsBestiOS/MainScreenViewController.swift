@@ -25,6 +25,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func loadView() {
         view = MainView()
+        
+        /* Facebook */
+        if FBSDKAccessToken.currentAccessToken() == nil {
+            navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
+        }
     }
     
     override func viewDidLoad() {
@@ -72,10 +77,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         addConstraints()
         
-        /* Facebook */
-        if FBSDKAccessToken.currentAccessToken() == nil {
-            navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
-        }
+
     }
     
     override func viewWillAppear(animated: Bool) {

@@ -9,6 +9,7 @@
 import Foundation
 import CoreData
 import FBSDKLoginKit
+import FBSDKCoreKit
 
 
 protocol NetworkDAODelegate: class {
@@ -506,6 +507,9 @@ class NetworkDAO {
     }
     
     private func _postFacebookTokenAndAuthenticate() {
+        if FBSDKAccessToken.currentAccessToken() == nil {
+            return
+        }
         let queryString: String = "facebook/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
