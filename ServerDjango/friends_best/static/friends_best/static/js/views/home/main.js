@@ -9,8 +9,9 @@ define([
   'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
-  'text!templates/home/menu.html'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML){
+  'text!templates/home/menu.html',
+  'text!templates/home/info.html'
+], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -35,7 +36,12 @@ define([
     			el.append(promptcard);
     		});
     		
-    				// Prompts
+    		infoTemplate = _.template(infoHTML);
+    		infoCard = infoTemplate();
+    		el.append(infoCard);
+    		
+    		
+            // Prompts
     		$('.swipable').each( function(index, item) {
     			d = Math.random() * 3 - 1.5;
     			$(item).css({'transform': 'rotate('+d+'deg)'});

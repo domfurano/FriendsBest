@@ -1,15 +1,17 @@
 //
-//  NewRecommendationView.swift
+//  ProfileView.swift
 //  FriendsBestiOS
 //
-//  Created by Dominic Furano on 1/26/16.
+//  Created by Dominic Furano on 2/11/16.
 //  Copyright © 2016 Dominic Furano. All rights reserved.
 //
 
 import UIKit
+import FBSDKCoreKit
 
-class NewRecommendationView: UIScrollView {
+class ProfileView: UIView {
     
+
     override func drawRect(rect: CGRect) {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
@@ -22,6 +24,7 @@ class NewRecommendationView: UIScrollView {
             frame: self.frame,
             context: context
         )
+        
     }
     
 }

@@ -15,12 +15,21 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad()
+//        let context: CGContext = UIGraphicsGetCurrentContext()!
+//        CGContextClearRect(context, self.view.bounds)
+//        
+//        CommonUIElements.drawGradientForContext(
+//            [
+//                UIColor.colorFromHex(0xfefefe).CGColor,
+//                UIColor.colorFromHex(0xc8ced0).CGColor
+//            ],
+//            frame: self.view.frame,
+//            context: context
+//        )
         
         /* Navigation bar */
         
-        title = "Search History"
-        
+        title = "Search History"        
         
         /* Tableview datasource and delegate */
         
@@ -47,7 +56,7 @@ class QueryHistoryViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // TODO: learn about reuseIdentifier
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
+        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "cell")
         cell.textLabel?.text = User.instance.queryHistory.queries[indexPath.row].tags.joinWithSeparator(" ")
         return cell
     }
@@ -61,3 +70,16 @@ class QueryHistoryViewController: UITableViewController {
         return 1
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

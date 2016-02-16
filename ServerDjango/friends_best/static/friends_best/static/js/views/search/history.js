@@ -28,9 +28,12 @@ define([
       
 		this.collection = new QueriesCollection();
 		this.collection.fetch({success: function(collection, response, options){
+    		
+    		collection.sort();
+    		
 			// Render the collection
 			itemsTemplate = _.template(itemsHTML);
-			that.$el.prepend(itemsTemplate({collection: that.collection.toJSON()}));
+			that.$el.append(itemsTemplate({collection: that.collection.toJSON()}));
 		}});
  
     },
