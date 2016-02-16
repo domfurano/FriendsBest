@@ -10,11 +10,6 @@ define([
 			tags: [],
 			comments: "",
 		},
-/*
-		url: function() {
-			return '/fb/api/recommend/'+this.id+'/';
-		},
-*/
 	});
 	
 	return RecommendModel;
