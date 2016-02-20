@@ -18,6 +18,7 @@ class NetworkQueue {
     
     private init() {
         self.timer = Timer(timesPerSecond: 8, closure: { () -> Void in
+            NSLog("Timer firing!")
             if !self.executing && self.queue.count > 0 {
                 self.executing = true;
                 let task = self.queue.last!

@@ -14,6 +14,10 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     let loginButton: FBSDKLoginButton = FBSDKLoginButton()
     
+//    NetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
+//    
+//    }
+    
     override func loadView() {
         view = FacebookLoginView(loginButton: loginButton)
     }
@@ -24,12 +28,18 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         loginButton.readPermissions = ["public_profile", "email", "user_friends"]
         loginButton.delegate = self
+        
+        NetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
+            self.navigationController?.popViewControllerAnimated(true)
+        }
     }
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         // TODO: Deal with declined permissons
+
         if error == nil && FBSDKAccessToken.currentAccessToken() != nil {
-            navigationController?.popViewControllerAnimated(true)
+            // Authenticate with FriendsBest
+            NetworkDAO.instance.postFacebookTokenAndAuthenticate()
         }
     }
     
@@ -38,3 +48,19 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
