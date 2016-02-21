@@ -3,7 +3,6 @@ package app.friendsbest.net;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -38,11 +37,8 @@ import app.friendsbest.net.model.UserProfile;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    private static final String API_BASE_URL = "https://www.friendsbest.net/fb/api/";
-//    private static final String QUERY_URL = "https://www.friendsbest.net/fb/api/query/";
     public static final String QUERY_SUCCESS = "Submitted query.";
     public static final String QUERY_FAIL = "Error, could not submit query.";
-    public final String dummyPrompt = "[{'article': 'a','tags': ['restaurant', 'mexican'],'friend': 'Ray Phillips','id': 10,'tagstring': 'mexican restaurant' }, { 'article': 'a', 'tags': [ 'birds' ], 'friend': 'Ray Phillips', 'id': 9, 'tagstring': 'birds' } ]";
     private final String PROMPT_QUERY_BY = "Based on a search by ";
     private static ConnectivityManager _connectionManager;
 
@@ -58,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton _recommendationBtn;
     private ImageButton _historyBtn;
     private ImageButton _searchBtn;
-    private TextView _prompthTags;
+    private TextView _promptTags;
     private TextView _promptAuthor;
     private TextView _promptTitle;
     private float _x1,_x2;
@@ -74,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         _fullName = savedData.getString(UserProfile.ProfileKey.FULL_NAME.getKey(), null);
 
         inflateViews();
-        _prompts = showPrompts();
+        new PromptFetcher().execute();
         cyclePromptCards(false);
 
         // Set focus listener for search field
@@ -115,12 +111,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     intent.putExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey(), _token);
                                     intent.putExtra(Prompt.Key.PROMPT_STRING.getKey(), prompt.getTagString());
                                     intent.putExtra("distance", deltaX);
+                                    dismissPrompt("/prompt/" + prompt.getId());
                                     startActivity(intent);
                                 }
                             }
                             // Swipe left
                             else if (deltaX < -50) {
-                                cyclePromptCards(true);
+                                Prompt prompt = cyclePromptCards(true);
+                                dismissPrompt("/prompt/" + prompt.getId());
                             }
                             break;
                     }
@@ -129,12 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
-    }
-
-    private Queue<Prompt> showPrompts() {
-        Gson gson = new Gson();
-        Type promptType = new TypeToken<Queue<Prompt>>(){}.getType();
-        return gson.fromJson(dummyPrompt, promptType);
     }
 
     /**
@@ -148,15 +140,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else
                 prompt = _prompts.poll();
             _promptAuthor.setText(PROMPT_QUERY_BY + prompt.getFriend());
-            _prompthTags.setText(prompt.getTagString());
+            _promptTags.setText(prompt.getTagString());
             return prompt;
         }
-        else {
-            _promptAuthor.setText("");
-            _prompthTags.setText("No prompts");
-            _promptTitle.setText("");
-            return null;
-        }
+
+        return null;
     }
 
     @Override
@@ -205,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         _recommendationBtn = (ImageButton) findViewById(R.id.recommendation_button);
 
         // Get text for prompt card
-        _prompthTags = (TextView) findViewById(R.id.prompt_card_tag);
+        _promptTags = (TextView) findViewById(R.id.prompt_card_tag);
         _promptAuthor = (TextView) findViewById(R.id.prompt_card_asker);
         _promptTitle = (TextView) findViewById(R.id.prompt_card_title);
 
@@ -228,9 +216,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void dismissPrompt(String url){
+        new PromptDeleter(url).execute();
+    }
+
     private boolean hasInternetConnection() {
         NetworkInfo networkInfo = _connectionManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    class PromptFetcher extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            String response = APIUtility.getResponse("prompt/", _token);
+            Gson gson = new Gson();
+            Type promptType = new TypeToken<Queue<Prompt>>(){}.getType();
+            _prompts = gson.fromJson(response, promptType);
+            return null;
+        }
+    }
+
+    class PromptDeleter extends AsyncTask<Void, Void, Void> {
+
+        private String promptUrl;
+
+        public PromptDeleter(String url){
+            promptUrl = url;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            APIUtility.deleteRequest(promptUrl, _token);
+            return null;
+        }
     }
 
     class QueryPost extends AsyncTask<String[], String[], Boolean> {

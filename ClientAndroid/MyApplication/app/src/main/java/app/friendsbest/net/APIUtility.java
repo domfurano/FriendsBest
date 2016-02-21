@@ -114,4 +114,18 @@ public class APIUtility {
             return new Response(false, e.getMessage(), -1);
         }
     }
+
+    public static void deleteRequest(String apiUrl, String token){
+        try {
+            URL url = new URL(API_BASE_URL + apiUrl);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestProperty("Authorization", "Token " + token);
+            urlConnection.setRequestMethod("DELETE");
+            Log.i("GET response code", Integer.toString(urlConnection.getResponseCode()));
+            urlConnection.disconnect();
+        }
+        catch (Exception e) {
+            Log.e("Error ", e.getMessage(), e);
+        }
+    }
 }

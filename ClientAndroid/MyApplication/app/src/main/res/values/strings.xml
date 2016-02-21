@@ -10,11 +10,12 @@
     <string name="title_activity_recommendation">New Recommendation</string>
     <string name="title_activity_login">Login</string>
     <string name="add_recommendation">Add Recommendation</string>
-    <string name="rec_title_label">Recommendation for</string>
-    <string name="rec_tags_label">Search tags</string>
+    <string name="rec_title_label">Recommendation</string>
+    <string name="rec_tags_label">Keywords</string>
     <string name="rec_comments_label">Comments</string>
     <string name="no_results">No Results</string>
     <string name="back">Back</string>
+    <string name="create">+</string>
     <string name="no_internet">No Internet connection</string>
     <string name="prompt_title">Do you have a recommendation for</string>
     <string name="prompt_tag">Restaurant</string>

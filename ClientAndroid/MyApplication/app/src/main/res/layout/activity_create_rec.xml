@@ -8,23 +8,24 @@
         android:layout_height="wrap_content"
         android:background="@color/appGreen"
         android:elevation="4dp"
-        android:theme="@style/ToolbarStyleLight"/>
+        android:theme="@style/ToolbarStyleLight">
+        <Button
+            style="@style/Widget.AppCompat.Button.Small"
+            android:id="@+id/add_recommendation_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@color/appGreen"
+            android:textSize="25dp"
+            android:text="@string/create"
+            />
+    </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="15dp">
-        <TextView
-            android:id="@+id/rec_title_input_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rec_title_label"
-            android:paddingTop="15dp"/>
-        <EditText
-            android:id="@+id/rec_title_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
         <TextView
             android:id="@+id/rec_tags_input_label"
             android:layout_width="wrap_content"
@@ -34,7 +35,19 @@
         <EditText
             android:id="@+id/rec_tags_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:hint="restaurant,exercise,recipe,etc"/>
+        <TextView
+            android:id="@+id/rec_title_input_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rec_title_label"
+            android:paddingTop="15dp"/>
+        <EditText
+            android:id="@+id/rec_title_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="A business, place, product, etc"/>
         <TextView
             android:id="@+id/rec_comments_label"
             android:layout_width="wrap_content"
@@ -44,11 +57,7 @@
         <EditText
             android:id="@+id/rec_comments_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/add_recommendation_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_recommendation"/>
+            android:hint="Tell us why you recommend it"/>
     </LinearLayout>
 </LinearLayout>

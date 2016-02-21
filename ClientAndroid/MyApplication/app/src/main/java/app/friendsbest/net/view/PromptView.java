@@ -1,38 +1,43 @@
 package app.friendsbest.net.view;
 
 import android.content.Context;
-import android.graphics.PointF;
-import android.view.MotionEvent;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 
-import app.friendsbest.net.model.Prompt;
+import app.friendsbest.net.R;
 
-public class PromptView extends ViewGroup {
+public class PromptView extends View {
 
-    private Prompt _prompt;
+    private final String _cardTitle = "Do you have a recommendation for";
+    private String _tagsText;
+    private String _authorText;
+    private Paint _card;
 
     public PromptView(Context context) {
         super(context);
+        init(context, null);
     }
 
-    public PromptView(Context context, Prompt prompt){
-        super(context);
-        _prompt = prompt;
+    public PromptView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        PointF pointF = new PointF();
-        View view = getChildCount() == 0 ? null : getChildAt(0);
-        if (view != null){
-
-        }
-        return true;
+    private void init(Context context, AttributeSet attrs){
+        _card = new Paint();
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        int viewWidth = getMeasuredWidth();
+        int viewHeight = getMeasuredHeight();
+        _card.setColor(Color.RED);
+        _card.setAntiAlias(true);
+        _card.setStyle(Paint.Style.FILL);
     }
 }

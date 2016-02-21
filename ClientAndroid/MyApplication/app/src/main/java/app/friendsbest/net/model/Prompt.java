@@ -1,11 +1,10 @@
 package app.friendsbest.net.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Prompt {
 
-    public static enum Key {
+    public enum Key {
         PROMPT_STRING("prompt_string");
 
         private String _key;

@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         // If no stored data, retrieve and save session data
         _callbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
 
         loginButton.registerCallback(_callbackManager, new FacebookCallback<LoginResult>() {
             @Override
