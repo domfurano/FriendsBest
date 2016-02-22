@@ -1,4 +1,4 @@
-package app.friendsbest.net.model;
+package app.friendsbest.net.data.model;
 
 import com.google.gson.annotations.SerializedName;
 

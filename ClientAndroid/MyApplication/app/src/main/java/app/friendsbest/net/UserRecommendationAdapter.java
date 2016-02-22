@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import app.friendsbest.net.model.UserRecommendation;
+import app.friendsbest.net.data.model.UserRecommendation;
 
 public class UserRecommendationAdapter extends ArrayAdapter<UserRecommendation> {
 

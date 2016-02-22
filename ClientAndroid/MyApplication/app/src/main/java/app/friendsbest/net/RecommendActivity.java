@@ -1,6 +1,5 @@
 package app.friendsbest.net;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,14 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import app.friendsbest.net.model.Prompt;
-import app.friendsbest.net.model.Response;
-import app.friendsbest.net.model.Thing;
-import app.friendsbest.net.model.UserProfile;
+import app.friendsbest.net.data.model.Response;
+import app.friendsbest.net.data.model.Thing;
 
 public class RecommendActivity extends AppCompatActivity {
 
@@ -39,11 +35,6 @@ public class RecommendActivity extends AppCompatActivity {
         final EditText tagsInput = (EditText) findViewById(R.id.rec_tags_input);
         final EditText commentsInput = (EditText) findViewById(R.id.rec_comments_input);
 
-        Intent intent = getIntent();
-        _token = intent.getStringExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey());
-        if (intent.hasExtra(Prompt.Key.PROMPT_STRING.getKey())){
-            tagsInput.setText(intent.getStringExtra(Prompt.Key.PROMPT_STRING.getKey()));
-        }
 
         _submitBtn = (Button) findViewById(R.id.add_recommendation_button);
 

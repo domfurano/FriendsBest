@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import app.friendsbest.net.model.Response;
+import app.friendsbest.net.data.model.Response;
 
 public class APIUtility {
 

@@ -1,4 +1,4 @@
-package app.friendsbest.net.model;
+package app.friendsbest.net.data.model;
 
 import java.util.List;
 

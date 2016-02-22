@@ -20,8 +20,8 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 
-import app.friendsbest.net.model.Query;
-import app.friendsbest.net.model.UserProfile;
+import app.friendsbest.net.data.model.Query;
+import app.friendsbest.net.data.model.UserProfile;
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -49,8 +49,6 @@ public class HistoryActivity extends AppCompatActivity {
         _listView = (ListView) findViewById(R.id.history_items);
         _adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_2, android.R.id.text1);
 
-        Intent intent = getIntent();
-        _token = intent.getStringExtra(UserProfile.ProfileKey.ACCESS_TOKEN.getKey());
 
         // Load saved query history data if it exists
         String serializedQuery;

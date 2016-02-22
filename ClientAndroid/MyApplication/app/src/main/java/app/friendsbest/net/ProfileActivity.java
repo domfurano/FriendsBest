@@ -13,7 +13,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 
-import app.friendsbest.net.model.UserProfile;
+import app.friendsbest.net.data.model.UserProfile;
 
 public class ProfileActivity extends AppCompatActivity {
 

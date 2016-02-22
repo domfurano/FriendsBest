@@ -17,9 +17,9 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.friendsbest.net.model.QuerySolution;
-import app.friendsbest.net.model.Solution;
-import app.friendsbest.net.model.UserProfile;
+import app.friendsbest.net.data.model.QuerySolution;
+import app.friendsbest.net.data.model.Solution;
+import app.friendsbest.net.data.model.UserProfile;
 
 public class SolutionActivity  extends AppCompatActivity{
 

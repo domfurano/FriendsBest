@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <android.support.v7.widget.Toolbar
         android:id="@+id/settings_toolbar"
         android:layout_width="match_parent"
@@ -10,4 +12,17 @@
         android:background="@color/gray200"
         android:elevation="4dp"
         android:theme="@style/ToolbarStyleLight"/>
+    <app.friendsbest.net.view.CardViewGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"/>
+    <fragment
+        android:id="@+id/navigation_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="app.friendsbest.net.view.fragment.NavigationFragment"
+        tools:layout="@layout/fragment_navigation_bar"
+        android:layout_weight="1">
+
+    </fragment>
 </LinearLayout>

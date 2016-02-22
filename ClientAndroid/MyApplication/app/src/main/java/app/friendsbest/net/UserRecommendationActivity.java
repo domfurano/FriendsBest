@@ -11,8 +11,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import app.friendsbest.net.model.Solution;
-import app.friendsbest.net.model.UserRecommendation;
+import app.friendsbest.net.data.model.Solution;
+import app.friendsbest.net.data.model.UserRecommendation;
 
 public class UserRecommendationActivity extends AppCompatActivity {
     @Override
