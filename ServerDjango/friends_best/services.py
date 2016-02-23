@@ -5,6 +5,8 @@ from .models import Friendship
 from .models import Query
 from .models import Thing
 from .models import TextThing
+from .models import PlaceThing
+from .models import PlaceThing
 from .models import Recommendation
 from .models import Prompt
 # from .models import RecommendationTag
@@ -117,7 +119,11 @@ def getQuerySolutions(query):
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
     solutionsWithTags = {'tags': [tag.tag for tag in tags], 'solutions': [], 'count': len(recommendations)}
     for thing in things:
-        description = TextThing.objects.filter(thing_id=thing.id)[0].description
+        description = ""  # for a text thing this is the description; for a place thing this is the placeId
+        if thing.thingType == 'Text':
+            description = TextThing.objects.filter(thing_id=thing.id)[0].description
+        elif thing.thingType == 'Place':
+            description = PlaceThing.objects.filter(thing_id=thing.id)[0].placeId
         recommendations = Recommendation.objects.filter(thing=thing)
         userComments = []
         recommendedByFriend = False  # thing is recommended by at least one friend
@@ -133,9 +139,9 @@ def getQuerySolutions(query):
 
         # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
         if recommendedByFriend:
-            solutionsWithTags['solutions'].insert(0, Solution(description=description, userComments=userComments))
+            solutionsWithTags['solutions'].insert(0, Solution(description=description, userComments=userComments, thingType=thing.thingType))
         else:
-            solutionsWithTags['solutions'].append(Solution(description=description, userComments=userComments))
+            solutionsWithTags['solutions'].append(Solution(description=description, userComments=userComments, thingType=thing.thingType))
 
     return solutionsWithTags
 
@@ -284,19 +290,30 @@ def deleteFriendship(user1, user2):
     f2.delete()
 
 
-def createRecommendation(user, description, comments, *tags):
+# if thing is a PlaceThing, put in the placeId as the description
+def createRecommendation(user, description, comments, *tags, thingType):
     if len(tags) == 0:
         return "error: recommendation must include at least one tag"
 
     # if a thing with same content doesn't already exist, create a new thing (and corresponding textthing)
     # otherwise get the existing thing
-    if TextThing.objects.filter(description=description).count() == 0:
-        thing = Thing()
-        thing.save()
-        text = TextThing(thing=thing, description=description)
-        text.save()
-    else:
-        thing = TextThing.objects.filter(description=description)[0].thing
+    if thingType.lower() == 'text':
+        if TextThing.objects.filter(description=description).count() == 0:
+            thing = Thing(thingType='Text')
+            thing.save()
+            text = TextThing(thing=thing, description=description)
+            text.save()
+        else:
+            thing = TextThing.objects.filter(description=description)[0].thing
+    elif thingType.lower() == 'place':
+        if PlaceThing.objects.filter(placeId=description).count() == 0:
+            thing = Thing(thingType='Place')
+            thing.save()
+            place = PlaceThing(thing=thing, placeId=description)
+            place.save()
+        else:
+            thing = PlaceThing.objects.filter(placeId=description)[0].thing
+
 
     recommendation = Recommendation(thing=thing, user=user, comments=comments)
     recommendation.save()
@@ -321,10 +338,17 @@ def createRecommendation(user, description, comments, *tags):
     
     
 def createTextThing(description):
-    thing = Thing()
+    thing = Thing(thingType='Text')
     thing.save()
     text = TextThing(thing=thing, description=description)
     text.save()
+
+
+def createPlaceThing(placeId):
+    thing = Thing(thingType='Place')
+    thing.save()
+    place = PlaceThing(thing=thing, placeId=placeId)
+    place.save()
 
 
 def createPin():
@@ -336,8 +360,9 @@ def createPin():
 
 
 class Solution:
-    def __init__(self, description, userComments):
+    def __init__(self, description, userComments, thingType):
         self.description = description
         self.userComments = userComments
+        self.thingType = thingType
 
 

@@ -32,8 +32,10 @@ class Friendship(models.Model):
 
 class Thing(models.Model):
     TEXT = 'TEXT'
+    PLACE = 'PLACE'
     THING_TYPE_CHOICES = (
         (TEXT, 'Text'),
+        (PLACE, 'Place'),
     )
     thingType = models.CharField(max_length=15, choices=THING_TYPE_CHOICES, default=TEXT)
 
@@ -47,6 +49,15 @@ class TextThing(models.Model):
 
     def __str__(self):
         return "thingID:%s, content:%s" % (self.thing.pk, self.description)
+
+
+class PlaceThing(models.Model):
+    thing = models.OneToOneField(Thing, primary_key=True)
+    placeId = models.TextField(max_length=200, unique=True)
+
+    def __str__(self):
+        return "thingID:%s, placeId:%s" % (self.thing.pk, self.placeId)
+
 
 class Tag(models.Model):
     tag = models.CharField(max_length=25, unique=True)
