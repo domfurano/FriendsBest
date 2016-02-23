@@ -31,10 +31,6 @@ class CurrentSocialUserView(APIView):
 		serializer = UserSocialSerializer(accounts)
 		return Response(serializer.data)
 
-class FriendViewSet(viewsets.ModelViewSet):
-    queryset = Friendship.objects.order_by('userOne')
-    serializer_class = FriendsSerializer
-
 class QueryViewSet(viewsets.ModelViewSet):
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
@@ -107,6 +103,50 @@ class PromptViewSet(mixins.RetrieveModelMixin,
     # In the future we might want to hide prompts so that
     # friends can't get spammed by a repeat query.
     # def destroy(self, request):
+    
+class FriendViewSet(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    viewsets.GenericViewSet):
+    permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
+    serializer_class = FriendshipSerializer
+    queryset = Friendship.objects
+    
+    def list(self, request):
+        friends = Friendship.objects.filter(userOne=request.user).all()
+        serializer = FriendshipSerializer(friends, many=True)
+        return Response(serializer.data)
+    
+    # GET friendship
+    def retrieve(self, request, pk=None):
+        friendship = getFriendship(request.user, pk)
+        if friendship:
+            # Serialize and return friendship
+            serializer = FriendshipSerializer(friendship.first(), many=False)
+            return Response(serializer.data)
+        return Response({'detail': 'not found'}, status.HTTP_404_NOT_FOUND)
+        
+    # PUT to change muted
+    def update(self, request, pk=None, **kwargs):
+        friendship = getFriendship(request.user, pk)
+        if friendship:
+            partial = kwargs.pop('partial', False)
+            
+            # in the event we got an empty put, unmute
+            if "muted" not in request.data.keys():
+                request.data["muted"] = False
+                
+            serializer = self.get_serializer(friendship.first(), data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        return Response({'detail': 'not found'}, status.HTTP_404_NOT_FOUND)
+    
+#     def update(request, *args, **kwargs):
+#         
+#         
+#     def partial_update(request, *args, **kwargs):
+#         
+                    
 
 class RecommendationTagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.order_by('recommendation')

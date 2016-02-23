@@ -25,9 +25,9 @@ class NetworkDAO {
     /* Singleton instance */
     static let instance: NetworkDAO = NetworkDAO()
     
-    /* Instance members */    
+    /* Instance members */
     #if DEBUG
-//    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
+    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
     #else
     private let friendsBestAPIurl: NSURL! = NSURL(string: "https://www.friendsbest.net/fb/api/")
     #endif
@@ -37,17 +37,18 @@ class NetworkDAO {
     /* Delegation */
     weak var networkDAODelegate: NetworkDAODelegate? = nil
     
+    var authenticatedWithFriendsBestServerDelegate: () -> Void = {}
+    
+    
     /* Private constructor */
-    private init() {
-        postFacebookTokenAndAuthenticate()
-    }
+    private init() { }
     
     
     func getQueries() {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
             self?._getQueries()
-        }, description: "getQueries()"))
+            }, description: "getQueries()"))
     }
     
     private func _getQueries() {
@@ -130,7 +131,7 @@ class NetworkDAO {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
             self?._getQuerySolutions(queryID)
-        }, description: "getQuerySolutions()"))
+            }, description: "getQuerySolutions()"))
     }
     
     private func _getQuerySolutions(queryID: Int) {
@@ -211,7 +212,7 @@ class NetworkDAO {
                 }
                 
                 User.instance.queryHistory.setQuerySolutionsForQueryID(solutions, queryID: queryID)
-                                
+                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     self?.networkDAODelegate?.querySolutionsFetched(forQueryID: queryID)
                     NetworkQueue.instance.dequeue()
@@ -224,7 +225,7 @@ class NetworkDAO {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
             self?._postNewQuery(queryTags)
-        }, description: "postNewQuery()"))
+            }, description: "postNewQuery()"))
     }
     
     private func _postNewQuery(queryTags: [String]) {
@@ -323,7 +324,7 @@ class NetworkDAO {
                 }
                 
                 let newQuery: Query = Query(tags: tags, tagHash: tagHash, tagString: tagString, ID: id, timestamp: timestamp)
-                newQuery.solutions = solutions                
+                newQuery.solutions = solutions
                 User.instance.queryHistory.appendQuery(newQuery)
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
@@ -338,7 +339,7 @@ class NetworkDAO {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
             self?._postNewRecommendtaion(description, comments: comments, recommendationTags: recommendationTags)
-        }, description: "postNewRecommendtaion()"))
+            }, description: "postNewRecommendtaion()"))
     }
     
     private func _postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
@@ -371,7 +372,7 @@ class NetworkDAO {
         
         session.dataTaskWithRequest(request,
             completionHandler: {
-//                [weak self]
+                //                [weak self]
                 (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
                 if let error = error {
@@ -385,38 +386,38 @@ class NetworkDAO {
                     return
                 }
                 
-//                guard let recommendationDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
-//                    return
-//                }
-//                
-//                guard let recommendationIdDict: NSDictionary = recommendationDict["recommendationId"] as? NSDictionary else {
-//                    NSLog("Error - FriendsBest API - postNewRecommendation() - recommendationId not in JSON dictionary")
-//                    return
-//                }
-//                
-//                guard let description: String = recommendationIdDict["description"] as? String else {
-//                    NSLog("Error - FriendsBest API - postNewRecommendation() - decription not in JSON dictionary")
-//                    return
-//                }
-//                
-//                guard let tags: [String] = recommendationIdDict["tags"] as? [String] else {
-//                    NSLog("Error - FriendsBest API - postNewRecommendation() - tags not in JSON dictionary")
-//                    return
-//                }
-//                
-//                guard let comments: String = recommendationIdDict["comments"] as? String else {
-//                    NSLog("Error - FriendsBest API - postNewRecommendation() - comments not in JSON dictionary")
-//                    return
-//                }
-//                
-//                guard let id: Int = recommendationIdDict["id"] as? Int else {
-//                    NSLog("Error - FriendsBest API - postNewRecommendation() - id not in JSON dictionary")
-//                    return
-//                }
+                //                guard let recommendationDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
+                //                    return
+                //                }
+                //
+                //                guard let recommendationIdDict: NSDictionary = recommendationDict["recommendationId"] as? NSDictionary else {
+                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - recommendationId not in JSON dictionary")
+                //                    return
+                //                }
+                //
+                //                guard let description: String = recommendationIdDict["description"] as? String else {
+                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - decription not in JSON dictionary")
+                //                    return
+                //                }
+                //
+                //                guard let tags: [String] = recommendationIdDict["tags"] as? [String] else {
+                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - tags not in JSON dictionary")
+                //                    return
+                //                }
+                //
+                //                guard let comments: String = recommendationIdDict["comments"] as? String else {
+                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - comments not in JSON dictionary")
+                //                    return
+                //                }
+                //
+                //                guard let id: Int = recommendationIdDict["id"] as? Int else {
+                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - id not in JSON dictionary")
+                //                    return
+                //                }
                 
                 // TODO: Do something?
                 NetworkQueue.instance.dequeue()
-
+                
         }).resume()
     }
     
@@ -482,9 +483,9 @@ class NetworkDAO {
                     let tagString: String? = promptDict["tagstring"] as? String
                     
                     guard let validArticle = article, let validTags = tags, let validFriend = friend, let validID = ID, let validTagString = tagString else {
-                            NSLog("Error - FriendsBest API - getPrompts() - Invalid JSON")
-                            NetworkQueue.instance.tryAgain()
-                            return
+                        NSLog("Error - FriendsBest API - getPrompts() - Invalid JSON")
+                        NetworkQueue.instance.tryAgain()
+                        return
                     }
                     
                     prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: validFriend, ID: validID))
@@ -503,13 +504,11 @@ class NetworkDAO {
     func postFacebookTokenAndAuthenticate() {
         NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
             self._postFacebookTokenAndAuthenticate()
-        }, description: "postFacebookTokenAndAuthenticate()"))
+            }, description: "postFacebookTokenAndAuthenticate()"))
     }
     
     private func _postFacebookTokenAndAuthenticate() {
-        if FBSDKAccessToken.currentAccessToken() == nil {
-            return
-        }
+        assert(FBSDKAccessToken.currentAccessToken() != nil);
         let queryString: String = "facebook/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
@@ -557,7 +556,11 @@ class NetworkDAO {
                 
                 self?.friendsBestToken = "Token " + (key as String)
                 
-                NetworkQueue.instance.dequeue()
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self?.authenticatedWithFriendsBestServerDelegate()
+                    NetworkQueue.instance.dequeue()
+                })
+                
             }).resume()
     }
     
@@ -625,7 +628,7 @@ class NetworkDAO {
             NSLog("Error - FriendsBest API - \(funcName)() - No data")
             return dict
         }
-
+        
         do {
             dict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
         } catch {

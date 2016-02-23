@@ -263,7 +263,17 @@ def createFriendship(user1, user2):
     f2 = Friendship(userOne=user2, userTwo=user1)
     f1.save()
     f2.save()
-
+    
+# Returns friendship or false if friendship does not exist
+def getFriendship(user1, user2ID):
+    # Check to see if user2 exists
+    friend = User.objects.filter(id=user2ID)
+    if friend:
+        # Check to see if friendship exisits
+        friendship = Friendship.objects.filter(userOne=user1, userTwo=friend)
+        if friendship:
+            return friendship
+    return False
 
 def deleteFriendship(user1, user2):
     f1 = Friendship.objects.filter(userOne=user1, userTwo=user2).first()
