@@ -1,4 +1,4 @@
-//
+ //
 //  ProfileViewController.swift
 //  FriendsBestiOS
 //
@@ -11,33 +11,39 @@ import FBSDKCoreKit
 
 class ProfileViewController: UIViewController {
     
-    let facebookProfilePictureView: FBSDKProfilePictureView = FBSDKProfilePictureView(frame: CGRectMake(0, 0, 256, 256))
-    var pictureView: UIView?
+    let profileImageView: UIImageView = FacebookProfileImage().imageView
+    
+//    let facebookProfilePictureView: FBSDKProfilePictureView = FBSDKProfilePictureView(frame: CGRectMake(0, 0, 256, 256))
+//    var pictureView: UIView?
     
     override func loadView() {
         self.view = ProfileView()
     }
     
     override func viewDidLoad() {
-        pictureView = UIView(frame: self.view.frame)
-        pictureView!.translatesAutoresizingMaskIntoConstraints = false
-        pictureView!.addSubview(facebookProfilePictureView)
+//        pictureView = UIView(frame: self.view.frame)
+//        pictureView!.translatesAutoresizingMaskIntoConstraints = false
+//        pictureView!.addSubview(facebookProfilePictureView)
+        
+//        pictureView!.layer.masksToBounds = true
+//        pictureView!.layer.cornerRadius = pictureView!.bounds.width / 2
         
 
         
-        self.view.addSubview(pictureView!)
+//        self.view.addSubview(pictureView!)
         
-        facebookProfilePictureView.translatesAutoresizingMaskIntoConstraints = false
+//        facebookProfilePictureView.translatesAutoresizingMaskIntoConstraints = false
         
-        addConstraints()
-        
+//        addConstraints()
+
+        self.view.addSubview(profileImageView)
 
     }
     
     private func addConstraints() {
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: pictureView!,
+                item: profileImageView,
                 attribute: NSLayoutAttribute.CenterY,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self.view,
@@ -47,7 +53,7 @@ class ProfileViewController: UIViewController {
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: pictureView!,
+                item: profileImageView,
                 attribute: NSLayoutAttribute.Width,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self.view,
@@ -57,7 +63,7 @@ class ProfileViewController: UIViewController {
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: pictureView!,
+                item: profileImageView,
                 attribute: NSLayoutAttribute.CenterX,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self.view,
