@@ -54,6 +54,7 @@ class NetworkDAO {
     private func _getQueries() {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
             return
         }
@@ -137,6 +138,7 @@ class NetworkDAO {
     private func _getQuerySolutions(queryID: Int) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
             return
         }
@@ -231,6 +233,7 @@ class NetworkDAO {
     private func _postNewQuery(queryTags: [String]) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
             return
         }
@@ -345,6 +348,7 @@ class NetworkDAO {
     private func _postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
             return
         }
@@ -431,6 +435,7 @@ class NetworkDAO {
     private func _getPrompt() {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
             return
         }
@@ -502,7 +507,7 @@ class NetworkDAO {
     }
     
     func postFacebookTokenAndAuthenticate() {
-        NetworkQueue.instance.enqueue(NetworkTask(task: { () -> Void in
+        NetworkQueue.instance.push(NetworkTask(task: { () -> Void in
             self._postFacebookTokenAndAuthenticate()
             }, description: "postFacebookTokenAndAuthenticate()"))
     }
