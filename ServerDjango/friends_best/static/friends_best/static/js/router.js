@@ -8,7 +8,8 @@ define([
   'views/recommend/add',
   'views/search/results',
   'views/home/login',
-], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView, LoginView){
+  'views/profile/menu',
+], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu){
 	
 	var AppRouter = Backbone.Router.extend({
 	    routes: {
@@ -72,6 +73,10 @@ define([
 		
 		app_router.on('route:login', function(){
 			this.render(new LoginView());
+		});
+		
+		app_router.on('route:profile', function(){
+			this.render(new ProfileMenu());
 		});
 		
 		// Check login status

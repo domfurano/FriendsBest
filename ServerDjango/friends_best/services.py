@@ -134,6 +134,11 @@ def getQuerySolutions(query):
             comments = recommendation.comments
             dictionary = {}
             dictionary['name'] = firstName + " " + lastName
+            
+            account = SocialAccount.objects.filter(user=recommendation.user).first()
+            dictionary['fbid'] = account.uid
+            
+            dictionary['id'] = recommendation.user.id
             dictionary['comment'] = comments
             userComments.append(dictionary)
 

@@ -14,6 +14,18 @@ import base64
 
 class UserSerializer(serializers.ModelSerializer):
     
+    def to_representation(self, user):
+        
+        account = SocialAccount.objects.filter(user=user).first()
+        
+        return {
+            'id': user.id,
+            'name': user.first_name + " " + user.last_name,
+            'email': user.email,
+            'fbid': account.uid
+        }
+
+    
     class Meta:
         model = User
         fields = '__all__'
@@ -130,7 +142,6 @@ class RecommendationSerializer(serializers.Serializer):
 
         recommendation_json = {
             'id': recommendation.id,
-            'user': recommendation.user.first_name,
             'description': text_thing.description,
             'comments': recommendation.comments,
             'tags': [rt.tag for rt in rec_tags]

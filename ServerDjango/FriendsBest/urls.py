@@ -19,7 +19,6 @@ from friends_best.urls import router
 from django.views.generic.base import RedirectView
 from django.conf import settings
 from friends_best.views import FacebookLogin
-from friends_best.views import CurrentUserView
 
 if settings.DEBUG:
     urlpatterns = [
@@ -27,12 +26,12 @@ if settings.DEBUG:
         url(r'^fb/api/', include(router.urls)),
         url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-        url(r'^fb/api/me/$', CurrentUserView.as_view())
+#         url(r'^fb/api/me/$', CurrentUserView.as_view())
     ]
 else:
     urlpatterns = [
         url(r'^admin/', include(admin.site.urls)),
         url(r'^api/', include(router.urls)),
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-        url(r'^api/me/$', CurrentUserView.as_view())
+#         url(r'^api/me/$', CurrentUserView.as_view())
     ]

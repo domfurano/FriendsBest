@@ -12,17 +12,16 @@ from django.utils import timezone
 from friends_best.serializers import *
 from friends_best.services import *
 from friends_best.permissions import *
-
-class UserViewSet(viewsets.ModelViewSet):
+    
+class CurrentUserViewSet(viewsets.GenericViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
     
-class CurrentUserView(APIView):
-	def get(self, request):
-		user = request.user
-		accounts = SocialAccount.objects.get(user=user)
-		serializer = UserSerializer(user)
-		return Response(serializer.data)
+    def list(self, request):
+        user = request.user
+        accounts = SocialAccount.objects.get(user=user)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
     
 class CurrentSocialUserView(APIView):
 	def get(self, request):
