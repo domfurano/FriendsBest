@@ -30,15 +30,14 @@ define([
 		commentsTemplate = _.template(commentsHTML);
 		that.$el.append(commentsTemplate(this.solution));
 		
-
-		
 		// Empty the list
 		var list = that.$el.find(".listcontainer");
 		list.html("");
 		
 		commentTemplate = _.template(commentHTML);
-		_.each(this.solution.recommendation, function(recommendation, index) {
-			r = { name: recommendation.name.trim(),
+		_.each(this.solution.recommendations, function(recommendation, index) {
+    		console.log(recommendation);
+			r = { name: recommendation.user.name.trim(),
 				  comment: recommendation.comment.split("\n").join("<br>")};
 			list.append(commentTemplate(r));
 		});

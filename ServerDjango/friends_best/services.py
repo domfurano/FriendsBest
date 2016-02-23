@@ -284,28 +284,28 @@ def deleteFriendship(user1, user2):
 
 
 # if thing is a PlaceThing, put in the placeId as the description
-def createRecommendation(user, description, comments, *tags, thingType):
+def createRecommendation(user, detail, thingType, comments, *tags):
     if len(tags) == 0:
         return "error: recommendation must include at least one tag"
 
     # if a thing with same content doesn't already exist, create a new thing (and corresponding textthing)
     # otherwise get the existing thing
     if thingType.lower() == 'text':
-        if TextThing.objects.filter(description=description).count() == 0:
+        if TextThing.objects.filter(description=detail).count() == 0:
             thing = Thing(thingType='Text')
             thing.save()
-            text = TextThing(thing=thing, description=description)
+            text = TextThing(thing=thing, description=detail)
             text.save()
         else:
-            thing = TextThing.objects.filter(description=description)[0].thing
+            thing = TextThing.objects.filter(description=detail)[0].thing
     elif thingType.lower() == 'place':
-        if PlaceThing.objects.filter(placeId=description).count() == 0:
+        if PlaceThing.objects.filter(placeId=detail).count() == 0:
             thing = Thing(thingType='Place')
             thing.save()
-            place = PlaceThing(thing=thing, placeId=description)
+            place = PlaceThing(thing=thing, placeId=detail)
             place.save()
         else:
-            thing = PlaceThing.objects.filter(placeId=description)[0].thing
+            thing = PlaceThing.objects.filter(placeId=detail)[0].thing
 
 
     recommendation = Recommendation(thing=thing, user=user, comments=comments)

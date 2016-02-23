@@ -29,7 +29,7 @@ define([
 		  
 		  // Pull the data
 		  r.set({
-			  		"description": $("#description").val(),
+			  		"detail": $("#description").val(),
 			  		"tags": $("#tags").val().toLowerCase().split(" "),
 			  		"comments": $("#comments").val()});
 		  

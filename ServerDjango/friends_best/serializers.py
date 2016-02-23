@@ -138,8 +138,8 @@ class RecommendationSerializer(serializers.Serializer):
 
         recommendation_json = {
             'id': recommendation.id,
-            'thing': thing,
-            'thingtype': recommendation.thing.thingType,
+            'detail': detail,
+            'type': recommendation.thing.thingType,
             'comments': recommendation.comments,
             'tags': [rt.tag for rt in rec_tags],
             'user': UserSerializer(recommendation.user).data
@@ -148,22 +148,24 @@ class RecommendationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         user = validated_data.get('user')
-        desc = validated_data.get('description')
+        detail = validated_data.get('detail')
         comments = validated_data.get('comments')
         tags = validated_data.get('tags')
-        thing = validated_data.get('thing')
-        return createRecommendation(user, desc, comments, *tags, thing)
+        thingtype = validated_data.get('type')
+        return createRecommendation(user, detail, thingtype, comments, *tags)
 
     # Return - validated data in a dictionary
     def validate(self, data):
         if 'user' not in data:
             raise serializers.ValidationError("user is missing")
-        elif 'description' not in data:
-            raise serializers.ValidationError("description is missing")
+        elif 'detail' not in data:
+            raise serializers.ValidationError("detail is missing")
+        elif 'type' not in data:
+            raise serializers.ValidationError("type is missing")
         elif 'comments' not in data:
             raise serializers.ValidationError("comments are missing")
         elif 'tags' not in data:
-            raise serializers.ValidationError("missing tags")
+            raise serializers.ValidationError("tags are missing")
 
         user = User.objects.filter(id=data['user'])
         if not user.exists():
