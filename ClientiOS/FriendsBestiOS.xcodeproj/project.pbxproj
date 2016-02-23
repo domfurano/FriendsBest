@@ -12,6 +12,7 @@
 		CE22F3BB1C45F19B00AD2BFB /* QueryHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */; };
 		CE278D9A1C6A7A7D00B546C5 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE278D991C6A7A7D00B546C5 /* AppSettings.swift */; };
 		CE278D9E1C6AC7C500B546C5 /* PromptCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE278D9D1C6AC7C500B546C5 /* PromptCardView.swift */; };
+		CE2BE2161C7CE2D200769D5C /* FacebookProfileImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2BE2151C7CE2D200769D5C /* FacebookProfileImage.swift */; };
 		CE391DDF1C4E06EB002FD2A1 /* SolutionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */; };
 		CE3967221C4DA82D00F1BB71 /* SolutionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */; };
 		CE53AE951C62F04000008F4A /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53AE941C62F04000008F4A /* Timer.swift */; };
@@ -81,6 +82,7 @@
 		CE22F3BA1C45F19B00AD2BFB /* QueryHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueryHistoryViewController.swift; sourceTree = "<group>"; };
 		CE278D991C6A7A7D00B546C5 /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		CE278D9D1C6AC7C500B546C5 /* PromptCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptCardView.swift; sourceTree = "<group>"; };
+		CE2BE2151C7CE2D200769D5C /* FacebookProfileImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookProfileImage.swift; sourceTree = "<group>"; };
 		CE391DDE1C4E06EB002FD2A1 /* SolutionDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionDetailViewController.swift; sourceTree = "<group>"; };
 		CE3967211C4DA82D00F1BB71 /* SolutionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolutionsViewController.swift; sourceTree = "<group>"; };
 		CE53AE941C62F04000008F4A /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				CE53AE941C62F04000008F4A /* Timer.swift */,
 				CEBAA2821C4C4B450062B38F /* DataController.swift */,
 				CE67F1B11C59156A001056C3 /* Extensions.swift */,
+				CE2BE2151C7CE2D200769D5C /* FacebookProfileImage.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -495,6 +498,7 @@
 				CEBAA2851C4C584F0062B38F /* MainScreenViewController.swift in Sources */,
 				CE6468461C459FB0002F73A0 /* FriendsBestiOS.xcdatamodeld in Sources */,
 				CE9288971C588BAE009A580F /* FAKFoundationIcons.m in Sources */,
+				CE2BE2161C7CE2D200769D5C /* FacebookProfileImage.swift in Sources */,
 				CE55B5A91C667AA500289811 /* Queue.swift in Sources */,
 				CE5D17D31C6AD35100256331 /* BaseCardView.swift in Sources */,
 				CE22F3B81C45D0A000AD2BFB /* NetworkDAO.swift in Sources */,
