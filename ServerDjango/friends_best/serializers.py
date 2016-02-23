@@ -50,18 +50,22 @@ class PromptSerializer(serializers.ModelSerializer):
     
     def to_representation(self, prompt):
         
-        recommendation_json = {
+        account = SocialAccount.objects.filter(user=prompt.query.user).first()
+        
+        return {
             'id': prompt.id,
-            # We might want a more detailed representation of a friend
-            'friend': prompt.query.user.first_name + " " + prompt.query.user.last_name,
+            # Copied from FriendshipSerializer
+            'friend': {
+                'fbid': account.uid,
+                'id': prompt.query.user.id,
+                'name': prompt.query.user.first_name + " " + prompt.query.user.last_name
+            },
             'tags': [t.tag for t in prompt.query.tags.all()],
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
             # but we'll need some good NLP
             'article': 'a'
         }
-        return recommendation_json
-        
     
     class Meta:
         model = Prompt
@@ -71,8 +75,9 @@ class PromptSerializer(serializers.ModelSerializer):
 class FriendshipSerializer(serializers.ModelSerializer):
     
     def to_representation(self, friend):
-        
+        account = SocialAccount.objects.filter(user=friend.userTwo).first()
         return {
+            'fbid': account.uid,
             'id': friend.userTwo.id,
             'name': friend.userTwo.first_name + " " + friend.userTwo.last_name,
             'muted': friend.muted
@@ -208,7 +213,6 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
         fields = ('id', 'tags', )
-
 
 class PinSerializer(serializers.ModelSerializer):
     

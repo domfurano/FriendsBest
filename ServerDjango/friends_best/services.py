@@ -159,7 +159,9 @@ def getAllFriendUsers(user):
 # private (returns a set, not a list)
 def getAllFriendsFacebookUserIds(user):
     allFriends = set()
-    for friendship in Friendship.objects.filter(userOne=user, muted=False):
+    #for friendship in Friendship.objects.filter(userOne=user, muted=False):
+    # when using the previous where muted=False, login fails because we try to re-add users that are just muted...
+    for friendship in Friendship.objects.filter(userOne=user):
         allFriends.add(SocialAccount.objects.filter(user=friendship.userTwo).first().uid)
     print(allFriends)
     return allFriends
@@ -264,7 +266,7 @@ def createFriendship(user1, user2):
     f1.save()
     f2.save()
     
-# Returns friendship or false if friendship does not exist
+# Returns friendship or false if friendship doesn not exist.
 def getFriendship(user1, user2ID):
     # Check to see if user2 exists
     friend = User.objects.filter(id=user2ID)

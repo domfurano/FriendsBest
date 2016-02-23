@@ -9,8 +9,10 @@
 import Foundation
 
 class Queue<T> {
-    private var first: Node<T>? = nil
-    private var last: Node<T>? = nil
+    private(set) var first: Node<T>? = nil
+    private(set) var last: Node<T>? = nil
+    
+    private(set) var count: Int = 0
     
     func enqueue(item: T) -> Void {
         if self.first == nil {
@@ -20,15 +22,29 @@ class Queue<T> {
             self.last!.next = Node(item: item)
             self.last = self.last!.next
         }
+        self.count++
     }
     
     func dequeue() -> T? {
         if self.first != nil {
             let item: T = first!.item
             self.first = self.first!.next
+            self.count--
             return item
         }
         return nil
+    }
+    
+    func push(item: T) -> Void {
+        if self.first == nil {
+            self.last = Node(item: item)
+            self.first = self.last
+        } else {
+            let node: Node = Node(item: item)
+            node.next = self.first
+            self.first = node
+        }
+        self.count++
     }
 }
 

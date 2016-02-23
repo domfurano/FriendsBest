@@ -36,11 +36,23 @@ class QueryViewSet(viewsets.ModelViewSet):
     serializer_class = QuerySerializer
     permission_classes = (permissions.IsAuthenticated, Owner)
 
+    # POST
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data["user"] = request.user.id
+        serializer = QuerySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(data, status.HTTP_400_BAD_REQUEST)
+
+    # GET
     def list(self, request):
          history = getQueryHistory(request.user.id)
          serializer = QuerySerializer(history, many=True)
          return Response(serializer.data)
-         
+    
+    # GET id   
     def retrieve(self, request, pk=None):
         instance = self.get_object()
         
@@ -52,15 +64,13 @@ class QueryViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = request.data
-        data["user"] = request.user.id
-        serializer = QuerySerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(data, status.HTTP_400_BAD_REQUEST)
+    
+    # PUT id to change tags
+    # DOES NOTHING!
+    def update(self, request, pk=None, **kwargs):
+        query = self.get_object()
+        serializer = self.get_serializer(query)
+        return Response(serializer.data)
 
 class ThingViewSet(viewsets.ModelViewSet):
     queryset = Thing.objects.order_by('thingType')
@@ -94,6 +104,7 @@ class PromptViewSet(mixins.RetrieveModelMixin,
     serializer_class = PromptSerializer
     permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
     
+    # GET
     def list(self, request):
          prompts = getPrompts(request.user)
          serializer = PromptSerializer(prompts, many=True)
@@ -101,9 +112,10 @@ class PromptViewSet(mixins.RetrieveModelMixin,
          
     # When deleting a prompt now, we rely on default behavior.
     # In the future we might want to hide prompts so that
-    # friends can't get spammed by a repeat query.
+    # friends can't get spammed by a repeat query...
     # def destroy(self, request):
-    
+
+# Limited to GET PUT HEAD DELETE OPTIONS
 class FriendViewSet(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
@@ -111,12 +123,13 @@ class FriendViewSet(mixins.RetrieveModelMixin,
     serializer_class = FriendshipSerializer
     queryset = Friendship.objects
     
+    # GET
     def list(self, request):
         friends = Friendship.objects.filter(userOne=request.user).all()
         serializer = FriendshipSerializer(friends, many=True)
         return Response(serializer.data)
     
-    # GET friendship
+    # GET id
     def retrieve(self, request, pk=None):
         friendship = getFriendship(request.user, pk)
         if friendship:
@@ -125,7 +138,7 @@ class FriendViewSet(mixins.RetrieveModelMixin,
             return Response(serializer.data)
         return Response({'detail': 'not found'}, status.HTTP_404_NOT_FOUND)
         
-    # PUT to change muted
+    # PUT id to change muted
     def update(self, request, pk=None, **kwargs):
         friendship = getFriendship(request.user, pk)
         if friendship:
