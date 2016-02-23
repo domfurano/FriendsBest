@@ -30,7 +30,8 @@ class CurrentSocialUserView(APIView):
 		serializer = UserSocialSerializer(accounts)
 		return Response(serializer.data)
 
-class QueryViewSet(viewsets.ModelViewSet):
+class QueryViewSet(mixins.RetrieveModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
     permission_classes = (permissions.IsAuthenticated, Owner)
@@ -115,7 +116,7 @@ class PromptViewSet(mixins.RetrieveModelMixin,
     # def destroy(self, request):
 
 # Limited to GET PUT HEAD DELETE OPTIONS
-class FriendViewSet(mixins.RetrieveModelMixin,
+class FriendshipViewSet(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
@@ -130,27 +131,33 @@ class FriendViewSet(mixins.RetrieveModelMixin,
     
     # GET id
     def retrieve(self, request, pk=None):
-        friendship = getFriendship(request.user, pk)
-        if friendship:
-            # Serialize and return friendship
-            serializer = FriendshipSerializer(friendship.first(), many=False)
-            return Response(serializer.data)
+        # convert fbid to django id
+        socialuser = SocialAccount.objects.filter(uid=pk).first()
+        if socialuser:
+            friendship = getFriendship(request.user, socialuser.user.id)
+            if friendship:
+                # Serialize and return friendship
+                serializer = FriendshipSerializer(friendship.first(), many=False)
+                return Response(serializer.data)
         return Response({'detail': 'not found'}, status.HTTP_404_NOT_FOUND)
         
     # PUT id to change muted
     def update(self, request, pk=None, **kwargs):
-        friendship = getFriendship(request.user, pk)
-        if friendship:
-            partial = kwargs.pop('partial', False)
-            
-            # in the event we got an empty put, unmute
-            if "muted" not in request.data.keys():
-                request.data["muted"] = False
+        # convert fbid to django id
+        socialuser = SocialAccount.objects.filter(uid=pk).first()
+        if socialuser:
+            friendship = getFriendship(request.user, socialuser.user.id)
+            if friendship:
+                partial = kwargs.pop('partial', False)
                 
-            serializer = self.get_serializer(friendship.first(), data=request.data, partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
+                # in the event we got an empty put, unmute
+                if "muted" not in request.data.keys():
+                    request.data["muted"] = False
+                    
+                serializer = self.get_serializer(friendship.first(), data=request.data, partial=partial)
+                serializer.is_valid(raise_exception=True)
+                self.perform_update(serializer)
+                return Response(serializer.data)
         return Response({'detail': 'not found'}, status.HTTP_404_NOT_FOUND)
     
 #     def update(request, *args, **kwargs):

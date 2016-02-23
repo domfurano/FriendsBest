@@ -19,13 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
         account = SocialAccount.objects.filter(user=user).first()
         
         return {
-            'id': user.id,
             'name': user.first_name + " " + user.last_name,
-            'email': user.email,
-            'fbid': account.uid
+            'id': account.uid
         }
 
-    
     class Meta:
         model = User
         fields = '__all__'
@@ -67,11 +64,7 @@ class PromptSerializer(serializers.ModelSerializer):
         return {
             'id': prompt.id,
             # Copied from FriendshipSerializer
-            'friend': {
-                'fbid': account.uid,
-                'id': prompt.query.user.id,
-                'name': prompt.query.user.first_name + " " + prompt.query.user.last_name
-            },
+            'friend': UserSerializer(prompt.query.user).data,
             'tags': [t.tag for t in prompt.query.tags.all()],
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
@@ -87,14 +80,10 @@ class PromptSerializer(serializers.ModelSerializer):
 class FriendshipSerializer(serializers.ModelSerializer):
     
     def to_representation(self, friend):
-        account = SocialAccount.objects.filter(user=friend.userTwo).first()
-        return {
-            'fbid': account.uid,
-            'id': friend.userTwo.id,
-            'name': friend.userTwo.first_name + " " + friend.userTwo.last_name,
-            'muted': friend.muted
-        }
-        
+        user = UserSerializer(friend.userTwo).data
+        user["muted"] = friend.muted
+        return user
+
     class Meta:
         model = Friendship
         fields = '__all__'
@@ -138,13 +127,22 @@ class RecommendationSerializer(serializers.Serializer):
     # data -Recommendation object new comment
     def to_representation(self, recommendation):
         rec_tags = recommendation.tags.all()
-        text_thing = TextThing.objects.filter(thing=recommendation.thing).get()
+        
+        detail = ""
+        if recommendation.thing.thingType.lower() == 'text':
+            thing = TextThing.objects.filter(thing=recommendation.thing).get()
+            detail = thing.description
+        if recommendation.thing.thingType.lower() == 'place':
+            thing = PlaceThing.objects.filter(thing=recommendation.thing).get()
+            detail = thing.placeId
 
         recommendation_json = {
             'id': recommendation.id,
-            'description': text_thing.description,
+            'thing': thing,
+            'thingtype': recommendation.thing.thingType,
             'comments': recommendation.comments,
-            'tags': [rt.tag for rt in rec_tags]
+            'tags': [rt.tag for rt in rec_tags],
+            'user': UserSerializer(recommendation.user).data
         }
         return recommendation_json
 
@@ -153,7 +151,8 @@ class RecommendationSerializer(serializers.Serializer):
         desc = validated_data.get('description')
         comments = validated_data.get('comments')
         tags = validated_data.get('tags')
-        return createRecommendation(user, desc, comments, *tags)
+        thing = validated_data.get('thing')
+        return createRecommendation(user, desc, comments, *tags, thing)
 
     # Return - validated data in a dictionary
     def validate(self, data):
@@ -198,9 +197,17 @@ class QuerySerializer(serializers.ModelSerializer):
             'taghash': query.taghash,
         }
         for sol in solutions['solutions']:
-            name = sol.description
-            recommendations = [rec for rec in sol.userComments]
-            solution_collection['solutions'].append({'name': name, 'recommendation': recommendations})
+            recommendations = []
+            for rec in sol.recommendations:
+                if isFriendsWith(query.user, rec.user) or query.user == rec.user:
+                    recommendations.append({"comment": rec.comments, "user": UserSerializer(rec.user).data})
+                else:
+                    recommendations.append({"comment": rec.comments})
+            solution_collection['solutions'].append({
+                'detail': sol.detail,
+                'solutionType': sol.solutionType,
+                'recommendations': recommendations
+            })
         return solution_collection
 
     def create(self, validated_data):    
@@ -224,6 +231,8 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
         fields = ('id', 'tags', )
+        
+
 
 class PinSerializer(serializers.ModelSerializer):
     

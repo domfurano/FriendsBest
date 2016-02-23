@@ -6,7 +6,6 @@ from .models import Query
 from .models import Thing
 from .models import TextThing
 from .models import PlaceThing
-from .models import PlaceThing
 from .models import Recommendation
 from .models import Prompt
 # from .models import RecommendationTag
@@ -119,34 +118,23 @@ def getQuerySolutions(query):
     # compile solutions (each solution is a thing as well as the userName and comments of each associated recommendation)
     solutionsWithTags = {'tags': [tag.tag for tag in tags], 'solutions': [], 'count': len(recommendations)}
     for thing in things:
-        description = ""  # for a text thing this is the description; for a place thing this is the placeId
-        if thing.thingType == 'Text':
-            description = TextThing.objects.filter(thing_id=thing.id)[0].description
-        elif thing.thingType == 'Place':
-            description = PlaceThing.objects.filter(thing_id=thing.id)[0].placeId
+        detail = ""  # for a text thing this is the description; for a place thing this is the placeId
+        if thing.thingType.lower() == 'text':
+            detail = TextThing.objects.filter(thing_id=thing.id)[0].description
+        elif thing.thingType.lower() == 'place':
+            detail = PlaceThing.objects.filter(thing_id=thing.id)[0].placeId
         recommendations = Recommendation.objects.filter(thing=thing)
-        userComments = []
         recommendedByFriend = False  # thing is recommended by at least one friend
         for recommendation in recommendations:
-            recommendedByFriend = recommendedByFriend or isFriendsWith(query.user, recommendation.user)
-            firstName = recommendation.user.first_name
-            lastName = recommendation.user.last_name
-            comments = recommendation.comments
-            dictionary = {}
-            dictionary['name'] = firstName + " " + lastName
-            
-            account = SocialAccount.objects.filter(user=recommendation.user).first()
-            dictionary['fbid'] = account.uid
-            
-            dictionary['id'] = recommendation.user.id
-            dictionary['comment'] = comments
-            userComments.append(dictionary)
+            if isFriendsWith(query.user, recommendation.user):
+                recommendedByFriend = True
+                break
 
         # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
         if recommendedByFriend:
-            solutionsWithTags['solutions'].insert(0, Solution(description=description, userComments=userComments, thingType=thing.thingType))
+            solutionsWithTags['solutions'].insert(0, Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType))
         else:
-            solutionsWithTags['solutions'].append(Solution(description=description, userComments=userComments, thingType=thing.thingType))
+            solutionsWithTags['solutions'].append(Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType))
 
     return solutionsWithTags
 
@@ -330,7 +318,6 @@ def createRecommendation(user, description, comments, *tags, thingType):
          
     return recommendation
 
-
 # for class demo tag cloud
 #def getRecommendationTagCounts():
 #    tags = RecommendationTag.objects.values_list("tag", flat=True)
@@ -365,9 +352,9 @@ def createPin():
 
 
 class Solution:
-    def __init__(self, description, userComments, thingType):
-        self.description = description
-        self.userComments = userComments
-        self.thingType = thingType
+    def __init__(self, detail, recommendations, solutionType):
+        self.detail = detail
+        self.recommendations = recommendations
+        self.solutionType = solutionType
 
 
