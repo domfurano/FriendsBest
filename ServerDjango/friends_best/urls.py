@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register(r'query', QueryViewSet, base_name='api')
 router.register(r'recommend', RecommendationViewSet)
 router.register(r'prompt', PromptViewSet)
+router.register(r'friend', FriendViewSet)
 
 # Tag cloud
 router.register(r'recommendationtag', RecommendationTagViewSet)

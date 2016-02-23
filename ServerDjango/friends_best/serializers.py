@@ -67,14 +67,21 @@ class PromptSerializer(serializers.ModelSerializer):
         model = Prompt
         fields = '__all__'
         depth = 1
-
+        
+class FriendshipSerializer(serializers.ModelSerializer):
     
-# class RecommendationTagSerializer(serializers.ModelSerializer):
-# 
-#     class Meta:
-#         model = RecommendationTag
-#         fields = '__all__'
-
+    def to_representation(self, friend):
+        
+        return {
+            'id': friend.userTwo.id,
+            'name': friend.userTwo.first_name + " " + friend.userTwo.last_name,
+            'muted': friend.muted
+        }
+        
+    class Meta:
+        model = Friendship
+        fields = '__all__'
+        depth = 1
 
 class TagSerializer(serializers.ModelSerializer):
 
