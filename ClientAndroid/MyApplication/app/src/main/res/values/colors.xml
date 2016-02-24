@@ -7,6 +7,5 @@
     <color name="appGreen">#00E676</color>
     <color name="white">#ffffff</color>
     <color name="gray200">#B0BEC5</color>
-    <color name="card_grad_top">#E8EDEF</color>
-    <color name="card_grad_bottom">#F1F4F5</color>
+    <color name="card_grad_top">#CFD8DC</color>
 </resources>

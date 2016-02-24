@@ -1,4 +1,4 @@
-package app.friendsbest.net.view.fragment;
+package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;

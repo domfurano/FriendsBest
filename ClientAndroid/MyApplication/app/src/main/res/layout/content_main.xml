@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingTop="15dp"
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              app:layout_behavior="@string/appbar_scrolling_view_behavior"
               tools:context="net.friendsbest.app.fbest.MainActivity"
               tools:showIn="@layout/activity_main">
     <RelativeLayout
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0">
+        android:layout_height="0dp"
+        android:layout_weight="1">
         <ImageButton
             android:id="@+id/historyButton"
             android:layout_width="wrap_content"
@@ -41,93 +38,17 @@
     <RelativeLayout
         android:id="@+id/prompt_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="4">
-        <android.support.v7.widget.CardView
-            android:id="@+id/prompt_card"
+        android:layout_marginBottom="15dp"
+        android:layout_height="0dp"
+        android:layout_weight="8">
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="@color/gray200">
-            <RelativeLayout
-                android:layout_gravity="top"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/prompt_card_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top|center"
-                    android:paddingTop="10dp"
-                    android:textSize="26dp"
-                    android:text="@string/prompt_title"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/prompt_card_tag"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="50dp"
-                    android:text="@string/prompt_tag"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_gravity="bottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/prompt_card_asker"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom|center"
-                    android:paddingBottom="20dp"
-                    android:textSize="15dp"
-                    android:text="@string/prompt_asker"/>
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:paddingTop="15dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left">
-            <ImageButton
-                android:id="@+id/settings_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/setting"
-                android:text="@string/back"/>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-            <ImageButton
-                android:id="@+id/profile_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_account_circle_black_48dp"
-                android:text="@string/back"/>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right">
-            <ImageButton
-                android:id="@+id/recommendation_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_add_circle_black_48dp"
-                android:tint="@color/appGreen"
-                android:text="@string/back"/>
-        </RelativeLayout>
+            android:layout_centerVertical="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:background="@drawable/card_gradient"
+            android:textSize="30dp"
+            android:text="@string/app_name"/>
     </RelativeLayout>
 </LinearLayout>

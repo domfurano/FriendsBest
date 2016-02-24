@@ -24,7 +24,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="@color/gray200">
+                app:cardBackgroundColor="@color/card_grad_top">
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package app.friendsbest.net.view;
+package app.friendsbest.net.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;

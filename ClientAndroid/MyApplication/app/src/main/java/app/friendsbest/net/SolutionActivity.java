@@ -21,7 +21,7 @@ import app.friendsbest.net.data.model.QuerySolution;
 import app.friendsbest.net.data.model.Solution;
 import app.friendsbest.net.data.model.UserProfile;
 
-public class SolutionActivity  extends AppCompatActivity{
+public class SolutionActivity  extends AppCompatActivity {
 
     private ListView _listView;
     private ArrayAdapter<Solution> _adapter;

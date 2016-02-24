@@ -1,9 +1,9 @@
-package app.friendsbest.net.view;
+package app.friendsbest.net.ui.view;
 
 import com.facebook.login.widget.LoginButton;
 
 public interface LoginView {
     void goToMainView();
-    LoginButton registerFacebookCallback();
+    void registerFacebookCallback();
     void displayMessage(String message);
 }

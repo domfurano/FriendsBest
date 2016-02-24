@@ -2,15 +2,6 @@ package app.friendsbest.net.data.services;
 
 import android.util.Log;
 
-import com.facebook.AccessToken;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.login.LoginResult;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +13,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BaseRepository implements FacebookCallback<LoginResult> {
+public class BaseRepository {
 
     private final BasePresenter _presenter;
     private final BaseService _service;
@@ -102,39 +93,5 @@ public class BaseRepository implements FacebookCallback<LoginResult> {
                 Log.e("Could get authenticate", t.getMessage(), t);
             }
         });
-    }
-
-    @Override
-    public void onSuccess(LoginResult loginResult) {
-        AccessToken accessToken = loginResult.getAccessToken();
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put(PreferencesUtility.FACEBOOK_TOKEN_KEY, accessToken.getToken());
-        _presenter.sendToPresenter(tokenMap);
-
-        new GraphRequest(
-                accessToken,
-                "/" + accessToken.getUserId(),
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-                        Map<String, String> userMap = new HashMap<>();
-                        userMap.put(
-                                PreferencesUtility.USER_PROFILE_KEY,
-                                response.getJSONObject().toString());
-                        _presenter.sendToPresenter(userMap);
-                    }
-                }).executeAsync();
-    }
-
-    @Override
-    public void onCancel() {
-        Log.i("Facebook Login", "user canceled");
-    }
-
-    @Override
-    public void onError(FacebookException error) {
-        Log.e("Login Error", error.toString(), error);
     }
 }

@@ -12,13 +12,12 @@ import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.data.model.UserProfile;
 import app.friendsbest.net.presenter.interfaces.LoginPresenter;
-import app.friendsbest.net.view.LoginView;
+import app.friendsbest.net.ui.view.LoginView;
 
 public class AppLoginPresenter implements LoginPresenter {
 
     private LoginView _loginView;
     private PreferencesUtility _preferencesUtility;
-    private CallbackManager _callbackManager;
     private BaseRepository _repository;
 
     public AppLoginPresenter(LoginView loginView, Context context){
@@ -29,13 +28,11 @@ public class AppLoginPresenter implements LoginPresenter {
 
     @Override
     public void onStart() {
-        _callbackManager = CallbackManager.Factory.create();
         if (getLoginStatus())
-            _loginView.goToMainView();
+            onUserLogin();
         else {
             _repository = new BaseRepository(this, null);
-            LoginButton loginButton = _loginView.registerFacebookCallback();
-            loginButton.registerCallback(_callbackManager, _repository);
+            _loginView.registerFacebookCallback();
         }
     }
 
@@ -61,6 +58,7 @@ public class AppLoginPresenter implements LoginPresenter {
             String value;
             if ((value = responseData.get(PreferencesUtility.ACCESS_TOKEN_KEY)) != null){
                 _preferencesUtility.saveToken(value);
+                onUserLogin();
             }
             else if ((value = responseData.get(PreferencesUtility.USER_PROFILE_KEY)) != null) {
                 UserProfile profile = new Gson().fromJson(value, UserProfile.class);
@@ -70,5 +68,6 @@ public class AppLoginPresenter implements LoginPresenter {
                 _repository.getAuthToken(responseData);
             }
         }
+        onLoginFail();
     }
 }

@@ -36,6 +36,6 @@ public interface BaseService {
     @POST("recommend")
     public void postRecommendation(@Body UserRecommendation recommendation);
 
-    @POST("facebook")
+    @POST("facebook/")
     Call<Map<String, String>> getAuthToken(@Body Map<String, String> facebookToken);
 }
