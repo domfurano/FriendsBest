@@ -496,7 +496,7 @@ class NetworkDAO {
                     prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: validFriend, ID: validID))
                 }
                 
-                User.instance.prompts = prompts
+                User.instance.prompts.prompts = prompts
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     self?.networkDAODelegate?.promptsFetched()
@@ -589,15 +589,24 @@ class NetworkDAO {
             var recommendations: [Recommendation] = []
             
             for recommendation: NSDictionary in validRecommendationArray {
-                let comment: String? = recommendation["comment"] as? String
                 let userName: String? = recommendation["name"] as? String
+                let djangoID: Int? = recommendation["id"] as? Int
+                let facebookID: String? = recommendation["fbid"] as? String
+                let comment: String? = recommendation["comment"] as? String
                 
-                guard let validComment = comment, validUserName = userName else {
+                guard let
+                    validUserName = userName,
+                    validDjangoID = djangoID,
+                    validFacebookID = facebookID,
+                    validComment = comment
+                    else {
                     NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
                     return nil
                 }
                 
-                let newRecommendation: Recommendation = Recommendation(userName: validUserName, comment: validComment)
+                let newFriend: Friend = Friend(facebookID: validFacebookID, djangoID: validDjangoID, name: validUserName)
+                
+                let newRecommendation: Recommendation = Recommendation(friend: newFriend, comment: validComment)
                 recommendations.append(newRecommendation)
             }
             
