@@ -1,45 +1,41 @@
 package app.friendsbest.net.presenter;
 
 import android.content.Context;
-import android.view.MotionEvent;
-import android.view.View;
 
-import java.util.ArrayDeque;
-import java.util.List;
-import java.util.Queue;
-
-import app.friendsbest.net.data.model.PromptCard;
-import app.friendsbest.net.data.services.BaseRepository;
-import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.Presenter;
-import app.friendsbest.net.presenter.interfaces.PromptPresenter;
 import app.friendsbest.net.ui.MainActivity;
-import app.friendsbest.net.ui.view.BaseView;
-import app.friendsbest.net.ui.view.CardView;
+import app.friendsbest.net.ui.view.MainView;
 
 
 public class MainPresenter implements Presenter {
 
-    private BaseView _baseView;
+    private MainView _mainView;
 
 
-    public MainPresenter(BaseView baseView, Context context){
-        _baseView = baseView;
+    public MainPresenter(MainView baseView, Context context){
+        _mainView = baseView;
+        onStart();
+    }
+
+    @Override
+    public void onStart() {
+        _mainView.setContentFragment(MainActivity.PROMPT_CARD_ID);
+        _mainView.setNavigationFragment(MainActivity.NAVIGATION_ID);
     }
 
     @Override
     public void onHistoryClicked() {
-        _baseView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.SEARCH_HISTORY_ID);
+        _mainView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.SEARCH_HISTORY_ID);
     }
 
     @Override
     public void onProfileClicked() {
-        _baseView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.PROFILE_ID);
+        _mainView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.PROFILE_ID);
     }
 
     @Override
     public void onRecommendationClicked() {
-        _baseView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.ADD_RECOMMENDATION_ID);
+        _mainView.replaceView(MainActivity.PROMPT_CARD_ID, MainActivity.ADD_RECOMMENDATION_ID);
     }
 
     @Override

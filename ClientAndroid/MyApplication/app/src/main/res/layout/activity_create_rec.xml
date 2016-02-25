@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical" android:layout_width="match_parent"
               android:layout_height="match_parent">
     <android.support.v7.widget.Toolbar
@@ -27,27 +28,28 @@
         android:paddingLeft="10dp"
         android:paddingRight="15dp">
         <TextView
-            android:id="@+id/rec_tags_input_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rec_tags_label"
-            android:paddingTop="15dp"/>
-        <EditText
-            android:id="@+id/rec_tags_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="restaurant,exercise,recipe,etc"/>
-        <TextView
             android:id="@+id/rec_title_input_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/rec_title_label"
             android:paddingTop="15dp"/>
-        <EditText
-            android:id="@+id/rec_title_input"
+        <fragment
+            android:id="@+id/place_autocomplete_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="A business, place, product, etc"/>
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            tools:layout="@layout/place_autocomplete_fragment"/>
+        <TextView
+        android:id="@+id/rec_tags_input_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rec_tags_label"
+        android:paddingTop="15dp"/>
+        <EditText
+        android:id="@+id/rec_tags_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="restaurant,exercise,recipe,etc"/>
         <TextView
             android:id="@+id/rec_comments_label"
             android:layout_width="wrap_content"
@@ -58,6 +60,6 @@
             android:id="@+id/rec_comments_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tell us why you recommend it"/>
+            android:hint="Why do you recommend it"/>
     </LinearLayout>
 </LinearLayout>

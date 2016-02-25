@@ -37,7 +37,7 @@ public class HistoryActivity extends AppCompatActivity implements SearchHistoryV
 
         _layout = (LinearLayout) findViewById(R.id.history_layout);
         _progressBar = (ProgressBar) findViewById(R.id.history_progress_bar);
-        _listView = (ListView) findViewById(R.id.history_items);
+        _listView = (ListView) findViewById(android.R.id.list);
         _adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_2, android.R.id.text1);
         setListener();
         new QueryHistoryPresenter(this, getApplicationContext());

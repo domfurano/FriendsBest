@@ -12,7 +12,7 @@ public class PromptCard {
     private String tagstring;
     @SerializedName("tags")
     @Expose
-    private List<String> tags = new ArrayList<String>();
+    private List<String> tags = new ArrayList<>();
     @SerializedName("id")
     @Expose
     private int id;

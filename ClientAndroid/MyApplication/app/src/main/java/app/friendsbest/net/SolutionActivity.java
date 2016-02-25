@@ -101,7 +101,7 @@ public class SolutionActivity  extends AppCompatActivity {
         @Override
         protected List<Solution> doInBackground(Void... params) {
 
-            String data = APIUtility.getResponse("query/" + _queryId, _token);
+            String data = null;
             Gson gson = new Gson();
             QuerySolution querySolution = gson.fromJson(data, QuerySolution.class);
 

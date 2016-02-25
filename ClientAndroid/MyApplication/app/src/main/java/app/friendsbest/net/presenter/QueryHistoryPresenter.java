@@ -18,7 +18,7 @@ public class QueryHistoryPresenter implements QueryPresenter {
     public QueryHistoryPresenter(SearchHistoryView view, Context context){
         _view = view;
         _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
-
+        onStart();
     }
 
     @Override

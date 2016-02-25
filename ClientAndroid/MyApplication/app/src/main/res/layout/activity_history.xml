@@ -3,6 +3,7 @@
               android:id="@+id/history_layout"
               android:orientation="vertical" android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:descendantFocusability="blocksDescendants"
               android:fitsSystemWindows="true">
     <android.support.v7.widget.Toolbar
         android:id="@+id/history_toolbar"
@@ -16,5 +17,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"/>
-    <include layout="@layout/content_history"/>
+    <include layout="@layout/history_fragment_list"/>
 </LinearLayout>

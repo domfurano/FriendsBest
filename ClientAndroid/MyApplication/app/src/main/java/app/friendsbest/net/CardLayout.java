@@ -1,17 +1,22 @@
 package app.friendsbest.net;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.view.View;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CardLayout extends RelativeLayout {
+public class CardLayout extends LinearLayout {
 
-    private View rootView;
-    private TextView _cardTitleText;
-    private TextView _tagTitleText;
-    private TextView _authorTitleText;
+    private final String TITLE = "Do you have a recommendation for";
+    private final String FRIEND_TEXT = "Based on a search by ";
+
+    private TextView _cardTagText;
+    private TextView _cardFriendText;
 
     public CardLayout(Context context) {
         super(context);
@@ -24,7 +29,18 @@ public class CardLayout extends RelativeLayout {
     }
 
     private void init(Context context){
-        // TODO: Implement
+    }
 
+    private float convertDipToPixel(int dip) {
+        Resources resources = getResources();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
+    }
+
+    public void setCardTagText(String tagString) {
+        _cardTagText.setText(tagString);
+    }
+
+    public void setCardFriendText(String friendName) {
+        Log.i("Caller", "Set Card Text");
     }
 }
