@@ -52,6 +52,61 @@
 		text-shadow: none;
 	}
 	
+	header.profile {
+    	background-color: #3b5998;
+		color: #ffffff;
+	}
+	
+	header.profile i {
+    	color: #ffffff;
+		text-shadow: none;
+	}
+	
+	.profilemenu {
+	}
+	
+	header.profile .photo {
+    	text-align: center;
+	}
+	
+	header.profile .photo img {
+        width: 150px;
+        height: 150px;
+    }
+	
+	.profilemenu .button {
+		padding: 10px 15px 10px 20px;
+		margin: 10px 0 0 0;
+		border-radius: 4px;
+		font-size: 22px;
+	}
+	
+	.profilemenu .button .text {
+    	padding: 0;
+    	text-align: left;
+	}
+	
+    .profilemenu .button .arrow {
+    	padding: 0;
+    	text-align: right;
+	}
+	
+	
+	.profilemenu .recommendations {
+        background-color: #59c939;
+		color: #fff;
+	}
+
+	.profilemenu .friends {
+    	background-color: #3b5998;
+		color: #fff;
+	}
+	
+    .profilemenu .dim {
+    	background-color: #abb4ba;
+		color: #000;
+	}
+	
 	header.results {
 	}
 	

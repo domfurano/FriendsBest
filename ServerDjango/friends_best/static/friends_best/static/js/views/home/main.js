@@ -4,14 +4,13 @@ define([
   'backbone',
   'app',
   'views/recommend/add',
-  'views/search/results',
   'models/query',
   'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html',
   'text!templates/home/info.html'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, infoHTML){
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -21,7 +20,8 @@ define([
         that = this;
       
 		var menuTemplate = _.template( menuHTML, {} );
-		this.$el.html(menuTemplate);
+		console.log("Photo for " + FB.getAuthResponse().userID);
+		this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
 		
 		this.collection = new PromptsCollection();
 		
@@ -128,10 +128,15 @@ define([
 		// Logout (TEMP)
 		$("#facebookCircleIcon").click(function() {
 
+/*
 			FB.logout(function(response) {
  				document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
  				location.reload();
 			});
+*/
+
+            // Load profile menu instead via profile route
+            
 			
 		});
  

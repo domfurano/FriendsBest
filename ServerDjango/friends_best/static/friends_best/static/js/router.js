@@ -18,7 +18,8 @@ define([
 			"search/:queryid/:sid":	"search",			// #search/id
 			"search":				"searchhistory",	// #search
 			"recommend":			"recommend",		// #recommend
-			"login":				"login"				// #login
+			"login":				"login",			// #login
+			"profile":				"profile"			// #profile
 		},
 		render: function(view) {
 			// Close the current view
