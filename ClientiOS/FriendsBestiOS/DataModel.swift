@@ -17,9 +17,10 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     private(set) var queryHistory: QueryHistory = QueryHistory()
-    var prompts: [Prompt] = []
-    
-    
+    private(set) var prompts: Prompts = Prompts()
+    private(set) var friends: [Friend] = []
+
+
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
@@ -54,6 +55,19 @@ class User: NetworkDAODelegate {
     /* Serialization */
     private func serialize() {
         
+    }
+}
+
+
+class Friend {
+    private(set) var facebookID: String
+    private(set) var djangoID: Int
+    private(set) var name: String
+    
+    init(facebookID: String, djangoID: Int, name: String) {
+        self.facebookID = facebookID
+        self.djangoID = djangoID
+        self.name = name
     }
 }
 
@@ -190,23 +204,58 @@ class Solution {
 
 
 class Recommendation {
-    private(set) var userName: String
+    private(set) var friend: Friend
     private(set) var comment: String
     
-    init(userName: String, comment: String) {
-        self.userName = userName
+    init(friend: Friend, comment: String) {
+        self.friend = friend
         self.comment = comment
     }
 }
 
-class Prompt {
+class Prompts {
+    private var _prompts: Set<Prompt>
+    
+    var prompts: [Prompt] {
+        get {
+            return Array(self._prompts)
+        }
+        set(prompts) {
+            for prompt in prompts {
+                self._prompts.insert(prompt)
+            }
+        }
+    }
+    
+    init() {
+        self._prompts = Set<Prompt>()
+    }
+    
+    func deletePrompt(ID: Int) {
+        for prompt in self._prompts {
+            if prompt.ID == ID {
+                self._prompts.remove(prompt)
+                // TODO: Call network function to delete prompt
+                return
+            }
+        }
+        assert(false)
+    }
+    
+}
+
+class Prompt: Equatable, Hashable {
     private(set) var article: String
     private(set) var tags: [String]
     private(set) var tagString: String
-    private(set) var friend: String
+    private(set) var friend: Friend
     private(set) var ID: Int
+    
+    var hashValue: Int {
+        return self.ID
+    }
 
-    init(article: String, tags: [String], tagString: String, friend: String, ID: Int) {
+    init(article: String, tags: [String], tagString: String, friend: Friend, ID: Int) {
         self.article = article
         self.tags = tags
         self.tagString = tagString
@@ -214,6 +263,12 @@ class Prompt {
         self.ID = ID
     }
 }
+
+func ==(lhs: Prompt, rhs: Prompt)-> Bool {
+    return lhs.ID == rhs.ID
+}
+
+
 
 
 
