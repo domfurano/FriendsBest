@@ -30,7 +30,11 @@ define([
 	  $('.submit').click(function() {
 
         // Delete the prompt
-        prompt.destroy();
+        if (typeof prompt != 'undefined') {
+          prompt.destroy();
+        }
+      
+        
 
         // Create a Recommend model
         r = new RecommendModel();

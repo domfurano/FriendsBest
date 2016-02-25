@@ -8,7 +8,7 @@ define([
   'views/recommend/add',
   'views/search/results',
   'views/home/login',
-  'views/profile/menu',
+  'views/profile/profile',
 ], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu){
 	
 	var AppRouter = Backbone.Router.extend({

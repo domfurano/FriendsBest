@@ -21,7 +21,10 @@ class CurrentUserViewSet(viewsets.GenericViewSet):
         user = request.user
         accounts = SocialAccount.objects.get(user=user)
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        me = serializer.data
+        me["friends"] = Friendship.objects.filter(userOne=user).count()
+        me["recommendations"] = Recommendation.objects.filter(user=user).count()
+        return Response(me)
     
 class CurrentSocialUserView(APIView):
 	def get(self, request):

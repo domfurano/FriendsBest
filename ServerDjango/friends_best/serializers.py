@@ -32,14 +32,6 @@ class UserSocialSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialAccount
         fields = '__all__'
-
-
-class FriendsSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Friendship
-        fields = '__all__'
-
     
 class ThingSerializer(serializers.ModelSerializer):
     
