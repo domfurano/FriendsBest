@@ -410,7 +410,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         
         let comments = commentsField.text == nil ? "" : commentsField.text!
         let tags = tagsString.characters.split{ $0 == " " }.map(String.init)
-        NetworkDAO.instance.postNewRecommendtaion(description, comments: comments, recommendationTags: tags)
+        FBNetworkDAO.instance.postNewRecommendtaion(description, type: Solution.SolutionType.TEXT.rawValue, comments: comments, recommendationTags: tags) // TODO: handle multiple types
         navigationController?.popViewControllerAnimated(true)
     }
     

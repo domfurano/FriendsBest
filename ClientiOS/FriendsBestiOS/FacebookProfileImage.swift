@@ -44,7 +44,7 @@ class FacebookProfileImage {
     
     
     init(profileID: String? = nil) {
-        self.profilePictureView = FBSDKProfilePictureView(frame: CGRectMake(0,0,100,100))
+        self.profilePictureView = FBSDKProfilePictureView(frame: CGRectMake(0,0,200,200))
         if profileID != nil {
             // The default ID is the user who is logged in using this app
             self.profilePictureView.profileID = profileID

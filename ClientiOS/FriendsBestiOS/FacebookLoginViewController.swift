@@ -29,7 +29,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         loginButton.readPermissions = ["public_profile", "email", "user_friends"]
         loginButton.delegate = self
         
-        NetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
+        FBNetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
             self.navigationController?.popViewControllerAnimated(true)
         }
     }
@@ -39,7 +39,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 
         if error == nil && FBSDKAccessToken.currentAccessToken() != nil {
             // Authenticate with FriendsBest
-            NetworkDAO.instance.postFacebookTokenAndAuthenticate()
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
         }
     }
     

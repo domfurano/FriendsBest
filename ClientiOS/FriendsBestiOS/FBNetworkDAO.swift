@@ -20,10 +20,10 @@ protocol NetworkDAODelegate: class {
 }
 
 
-class NetworkDAO {
+class FBNetworkDAO {
     
     /* Singleton instance */
-    static let instance: NetworkDAO = NetworkDAO()
+    static let instance: FBNetworkDAO = FBNetworkDAO()
     
     /* Instance members */
     #if DEBUG
@@ -81,12 +81,12 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let queriesArray: NSArray = NetworkDAO.getNSArrayFromJSONdata(data, funcName: "getQueries") else {
+                guard let queriesArray: NSArray = FBNetworkDAO.getNSArrayFromJSONdata(data, funcName: "getQueries") else {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
@@ -115,11 +115,10 @@ class NetworkDAO {
                     queries.append(Query(tags: validTags, tagHash: tags!.joinWithSeparator(""), tagString: tags!.joinWithSeparator(" "), ID: validId, timestamp: validTimestamp))
                 }
                 
-                for query in queries {
-                    User.instance.queryHistory.appendQuery(query)
-                }
-                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    for query in queries {
+                        User.instance.queryHistory.appendQuery(query)
+                    }
                     self?.networkDAODelegate?.queriesFetched()
                     NetworkQueue.instance.dequeue()
                 })
@@ -160,65 +159,30 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQuerySolutions") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQuerySolutions") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let validQueryDict = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "getQuerySolutions") else {
+                guard let validQueryDict = FBNetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "getQuerySolutions") else {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let solutionsDict = validQueryDict["solutions"] as? [NSDictionary] else {
+                guard let solutionsDictArray = validQueryDict["solutions"] as? [NSDictionary] else {
                     NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                var solutions: [Solution] = []
-                
-                for solutionDict in solutionsDict {
-                    guard let validSolutionDict: NSDictionary = solutionDict else {
-                        NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON object")
-                        NetworkQueue.instance.tryAgain()
-                        return
-                    }
-                    
-                    let solutionName: String? = validSolutionDict["name"] as? String
-                    let recommendationArray: [NSDictionary]? = validSolutionDict["recommendation"] as? [NSDictionary]
-                    
-                    guard let validSolutionName = solutionName, let validRecommendationArray = recommendationArray else {
-                        NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
-                        NetworkQueue.instance.tryAgain()
-                        return
-                    }
-                    
-                    var recommendations: [Recommendation] = []
-                    
-                    for recommendation: NSDictionary in validRecommendationArray {
-                        let userName: String? = recommendation["name"] as? String
-                        let facebookID: String? = recommendation["id"] as? String
-                        let comment: String? = recommendation["comment"] as? String
-                        
-                        guard let validUserName = userName, validComment = comment, validFacebookID = facebookID else {
-                            NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
-                            NetworkQueue.instance.tryAgain()
-                            return
-                        }
-                        
-                        let friend: Friend = Friend(facebookID: validFacebookID, name: validUserName)
-                        
-                        let newRecommendation: Recommendation = Recommendation(friend: friend, comment: validComment)
-                        recommendations.append(newRecommendation)
-                    }
-                    
-                    solutions.append(Solution(name: validSolutionName, recommendations: recommendations))
+                guard let solutions: [Solution] = self?.parseSolutions(solutionsDictArray, funcName: "getQuerySolutions") else {
+                    NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
+                    NetworkQueue.instance.tryAgain()
+                    return
                 }
                 
-                User.instance.queryHistory.setQuerySolutionsForQueryID(solutions, queryID: queryID)
-                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    User.instance.queryHistory.setQuerySolutionsForQueryID(solutions, queryID: queryID)
                     self?.networkDAODelegate?.querySolutionsFetched(forQueryID: queryID)
                     NetworkQueue.instance.dequeue()
                 })
@@ -272,12 +236,12 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewQuery") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewQuery") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let queryDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
+                guard let queryDict: NSDictionary = FBNetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
@@ -331,9 +295,9 @@ class NetworkDAO {
                 
                 let newQuery: Query = Query(tags: tags, tagHash: tagHash, tagString: tagString, ID: id, timestamp: timestamp)
                 newQuery.solutions = solutions
-                User.instance.queryHistory.appendQuery(newQuery)
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    User.instance.queryHistory.appendQuery(newQuery)
                     self?.networkDAODelegate?.newQueryFetched(newQuery.ID)
                     NetworkQueue.instance.dequeue()
                 })
@@ -341,14 +305,14 @@ class NetworkDAO {
         
     }
     
-    func postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
+    func postNewRecommendtaion(detail: String, type: String, comments: String, recommendationTags: [String]) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._postNewRecommendtaion(description, comments: comments, recommendationTags: recommendationTags)
+            self?._postNewRecommendtaion(detail, type: type, comments: comments, recommendationTags: recommendationTags)
             }, description: "postNewRecommendtaion()"))
     }
     
-    private func _postNewRecommendtaion(description: String, comments: String, recommendationTags: [String]) {
+    private func _postNewRecommendtaion(detail: String, type: String, comments: String, recommendationTags: [String]) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
             NetworkQueue.instance.tryAgain()
@@ -364,7 +328,7 @@ class NetworkDAO {
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
-        let json = ["description": description, "comments" : comments, "tags": recommendationTags, ]
+        let json = ["detail": detail, "type": type, "comments" : comments, "tags": recommendationTags]
         let jsonData: NSData
         do {
             jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
@@ -379,7 +343,7 @@ class NetworkDAO {
         
         session.dataTaskWithRequest(request,
             completionHandler: {
-                //                [weak self]
+                // [weak self]
                 (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
                 
                 if let error = error {
@@ -388,42 +352,16 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewRecommendation") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewRecommendation") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                //                guard let recommendationDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postNewRecommendation") else {
-                //                    return
-                //                }
-                //
-                //                guard let recommendationIdDict: NSDictionary = recommendationDict["recommendationId"] as? NSDictionary else {
-                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - recommendationId not in JSON dictionary")
-                //                    return
-                //                }
-                //
-                //                guard let description: String = recommendationIdDict["description"] as? String else {
-                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - decription not in JSON dictionary")
-                //                    return
-                //                }
-                //
-                //                guard let tags: [String] = recommendationIdDict["tags"] as? [String] else {
-                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - tags not in JSON dictionary")
-                //                    return
-                //                }
-                //
-                //                guard let comments: String = recommendationIdDict["comments"] as? String else {
-                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - comments not in JSON dictionary")
-                //                    return
-                //                }
-                //
-                //                guard let id: Int = recommendationIdDict["id"] as? Int else {
-                //                    NSLog("Error - FriendsBest API - postNewRecommendation() - id not in JSON dictionary")
-                //                    return
-                //                }
+                // TODO: Could save response data here.
                 
-                // TODO: Do something?
-                NetworkQueue.instance.dequeue()
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    NetworkQueue.instance.dequeue()
+                })
                 
         }).resume()
     }
@@ -465,12 +403,12 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getPrompts") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getPrompts") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let promptArray: NSArray = NetworkDAO.getNSArrayFromJSONdata(data, funcName: "getPrompts") else {
+                guard let promptArray: NSArray = FBNetworkDAO.getNSArrayFromJSONdata(data, funcName: "getPrompts") else {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
@@ -516,9 +454,8 @@ class NetworkDAO {
                     prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: friend, ID: validPromptID))
                 }
                 
-                User.instance.prompts.prompts = prompts
-                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    User.instance.prompts.prompts = prompts
                     self?.networkDAODelegate?.promptsFetched()
                     NetworkQueue.instance.dequeue()
                 })
@@ -563,12 +500,12 @@ class NetworkDAO {
                     return
                 }
                 
-                if !NetworkDAO.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "postFacebookToken") {
+                if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "postFacebookToken") {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
                 
-                guard let keyDict: NSDictionary = NetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postFacebookToken") else {
+                guard let keyDict: NSDictionary = FBNetworkDAO.getNSDictionaryFromJSONdata(data, funcName: "postFacebookToken") else {
                     NetworkQueue.instance.tryAgain()
                     return
                 }
@@ -579,14 +516,17 @@ class NetworkDAO {
                     return
                 }
                 
-                self?.friendsBestToken = "Token " + (key as String)
-                
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self?.friendsBestToken = "Token " + (key as String)
                     self?.authenticatedWithFriendsBestServerDelegate()
                     NetworkQueue.instance.dequeue()
                 })
                 
             }).resume()
+    }
+    
+    private func _getFacebookPicture(facebookID: String) {
+        
     }
     
     private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> [Solution]? {
@@ -598,10 +538,11 @@ class NetworkDAO {
                 return nil
             }
             
-            let solutionName: String? = validSolutionDict["name"] as? String
+            let solutionDetail: String? = validSolutionDict["detail"] as? String
+            let solutionType: String? = validSolutionDict["type"] as? String
             let recommendationArray: [NSDictionary]? = validSolutionDict["recommendation"] as? [NSDictionary]
             
-            guard let validSolutionName = solutionName, let validRecommendationArray = recommendationArray else {
+            guard let validSolutionDetail = solutionDetail, let validSolutionType = solutionType, let validRecommendationArray = recommendationArray else {
                 NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
                 return nil
             }
@@ -609,15 +550,18 @@ class NetworkDAO {
             var recommendations: [Recommendation] = []
             
             for recommendation: NSDictionary in validRecommendationArray {
-                let userName: String? = recommendation["name"] as? String
-                let facebookID: String? = recommendation["id"] as? String
+                let userDict: NSDictionary? = recommendation["user"] as? NSDictionary
                 let comment: String? = recommendation["comment"] as? String
                 
-                guard let
-                    validUserName = userName,
-                    validFacebookID = facebookID,
-                    validComment = comment
-                    else {
+                guard let validUserDict = userDict, validComment = comment else {
+                    NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
+                    return nil
+                }
+                
+                let userName: String? = validUserDict["name"] as? String
+                let facebookID: String? = validUserDict["id"] as? String
+                
+                guard let validUserName = userName, let validFacebookID = facebookID else {
                     NSLog("Error - FriendsBest API - \(funcName)() - Invalid JSON")
                     return nil
                 }
@@ -628,13 +572,13 @@ class NetworkDAO {
                 recommendations.append(newRecommendation)
             }
             
-            solutions.append(Solution(name: validSolutionName, recommendations: recommendations))
+            solutions.append(Solution(type: Solution.SolutionType(rawValue: validSolutionType.uppercaseString)!, detail: validSolutionDetail, recommendations: recommendations))
         }
         
         return solutions
     }
     
-    private static func responseHasExpectedStatusCode(response: NSURLResponse?, expectedStatusCode: Int, funcName: String) -> Bool {
+    func responseHasExpectedStatusCode(response: NSURLResponse?, expectedStatusCode: Int, funcName: String) -> Bool {
         guard let response = response else {
             NSLog("Error - FriendsBest API - \(funcName)() - No response")
             return false

@@ -11,7 +11,7 @@ import FBSDKCoreKit
 
 class ProfileViewController: UIViewController {
     
-    let profileImageView: UIImageView = FacebookProfileImage().imageView
+    var profileImageView: UIImageView? = nil
     
 //    let facebookProfilePictureView: FBSDKProfilePictureView = FBSDKProfilePictureView(frame: CGRectMake(0, 0, 256, 256))
 //    var pictureView: UIView?
@@ -32,38 +32,41 @@ class ProfileViewController: UIViewController {
         
 //        self.view.addSubview(pictureView!)
         
-//        facebookProfilePictureView.translatesAutoresizingMaskIntoConstraints = false
-        
-//        addConstraints()
-
-        self.view.addSubview(profileImageView)
-
+        FacebookNetworkDAO.instance.getFacebookProfileImageView(User.instance.facebookID!) {
+                [weak self] (profileImageView) -> Void in
+                self?.profileImageView = profileImageView
+//                self?.profileImageView?.translatesAutoresizingMaskIntoConstraints = false
+                self?.view.addSubview((self?.profileImageView)!)
+//                self?.addConstraints()
+//                self?.view.setNeedsDisplay()
+//                self?.profileImageView?.setNeedsDisplay()
+        }
     }
     
     private func addConstraints() {
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: profileImageView,
+                item: profileImageView!,
                 attribute: NSLayoutAttribute.CenterY,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self.view,
                 attribute: NSLayoutAttribute.CenterY,
-                multiplier: 0.4,
+                multiplier: 1.0,
                 constant: 0.0))
+        
+//        self.view.addConstraint(
+//            NSLayoutConstraint(
+//                item: profileImageView!,
+//                attribute: NSLayoutAttribute.Width,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: self.view,
+//                attribute: NSLayoutAttribute.Width,
+//                multiplier: 0.7,
+//                constant: 0.0))
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: profileImageView,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: self.view,
-                attribute: NSLayoutAttribute.Width,
-                multiplier: 0.7,
-                constant: 0.0))
-        
-        self.view.addConstraint(
-            NSLayoutConstraint(
-                item: profileImageView,
+                item: profileImageView!,
                 attribute: NSLayoutAttribute.CenterX,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self.view,

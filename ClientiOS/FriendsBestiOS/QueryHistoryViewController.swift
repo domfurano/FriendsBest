@@ -46,7 +46,7 @@ class QueryHistoryViewController: UITableViewController {
         /* Toolbar */
         navigationController?.toolbarHidden = true
         
-        NetworkDAO.instance.getQueries()
+        FBNetworkDAO.instance.getQueries()
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

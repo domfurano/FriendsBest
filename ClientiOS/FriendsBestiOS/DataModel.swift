@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FBSDKCoreKit
 
 
 class User: NetworkDAODelegate {
@@ -19,18 +20,19 @@ class User: NetworkDAODelegate {
     private(set) var queryHistory: QueryHistory = QueryHistory()
     private(set) var prompts: Prompts = Prompts()
     private(set) var friends: [Friend] = []
+    var facebookID: String? = nil
 
 
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
-    var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
+    var querySolutionsUpdatedClosure: (queryID: Int) -> Void = { _ in }
     var promptsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
     private init() {
         // Delegate assignment
-        NetworkDAO.instance.networkDAODelegate = self
+        FBNetworkDAO.instance.networkDAODelegate = self
     }
     
     
@@ -191,11 +193,17 @@ func ==(lhs: Query, rhs: Query) -> Bool {
 
 
 class Solution {
-    private(set) var name: String
+    enum SolutionType: String {
+        case TEXT
+    }
+    
+    private(set) var type: SolutionType
+    private(set) var detail: String
     private(set) var recommendations: [Recommendation]
     
-    init(name: String, recommendations: [Recommendation]) {
-        self.name = name
+    init(type: SolutionType, detail: String, recommendations: [Recommendation]) {
+        self.type = type
+        self.detail = detail
         self.recommendations = recommendations
     }
 }

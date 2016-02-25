@@ -29,6 +29,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         /* Facebook */
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
+        } else {
+            User.instance.facebookID = FBSDKAccessToken.currentAccessToken().userID
         }
     }
     
@@ -81,7 +83,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     override func viewWillAppear(animated: Bool) {
-        NetworkDAO.instance.getPrompts()
+        FBNetworkDAO.instance.getPrompts()
 
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
@@ -218,7 +220,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
-            NetworkDAO.instance.postNewQuery(tags)
+            FBNetworkDAO.instance.postNewQuery(tags)
 //            let query: Query? = User.instance.queryHistory.getQueryFromTags(tags)
             navigationController?.pushViewController(SolutionsViewController(tags: tags), animated: true)
         }
