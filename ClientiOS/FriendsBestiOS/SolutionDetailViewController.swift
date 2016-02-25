@@ -41,7 +41,7 @@ class SolutionDetailViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
         let recommendation: Recommendation = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![solutionIndex!].recommendations[indexPath.row]
-        cell.textLabel?.text = recommendation.userName
+        cell.textLabel?.text = recommendation.friend.name
         cell.detailTextLabel?.text = recommendation.comment
         cell.detailTextLabel?.numberOfLines = 10 // Hackity hack
         return cell

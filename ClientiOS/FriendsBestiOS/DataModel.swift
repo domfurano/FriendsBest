@@ -61,12 +61,10 @@ class User: NetworkDAODelegate {
 
 class Friend {
     private(set) var facebookID: String
-    private(set) var djangoID: Int
     private(set) var name: String
     
-    init(facebookID: String, djangoID: Int, name: String) {
+    init(facebookID: String, name: String) {
         self.facebookID = facebookID
-        self.djangoID = djangoID
         self.name = name
     }
 }

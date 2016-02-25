@@ -81,7 +81,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     override func viewWillAppear(animated: Bool) {
-        NetworkDAO.instance.getPrompt()
+        NetworkDAO.instance.getPrompts()
 
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
@@ -149,7 +149,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func showPromptCards() {
-        for prompt in User.instance.prompts {
+        for prompt in User.instance.prompts.prompts {
             for promptAndCard in self.cardViews {
                 if prompt.ID == promptAndCard.prompt.ID {
                     return

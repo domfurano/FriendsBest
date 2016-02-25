@@ -197,16 +197,19 @@ class NetworkDAO {
                     var recommendations: [Recommendation] = []
                     
                     for recommendation: NSDictionary in validRecommendationArray {
-                        let comment: String? = recommendation["comment"] as? String
                         let userName: String? = recommendation["name"] as? String
+                        let facebookID: String? = recommendation["id"] as? String
+                        let comment: String? = recommendation["comment"] as? String
                         
-                        guard let validComment = comment, validUserName = userName else {
+                        guard let validUserName = userName, validComment = comment, validFacebookID = facebookID else {
                             NSLog("Error - FriendsBest API - getQuerySolutions() - Invalid JSON")
                             NetworkQueue.instance.tryAgain()
                             return
                         }
                         
-                        let newRecommendation: Recommendation = Recommendation(userName: validUserName, comment: validComment)
+                        let friend: Friend = Friend(facebookID: validFacebookID, name: validUserName)
+                        
+                        let newRecommendation: Recommendation = Recommendation(friend: friend, comment: validComment)
                         recommendations.append(newRecommendation)
                     }
                     
@@ -425,14 +428,14 @@ class NetworkDAO {
         }).resume()
     }
     
-    func getPrompt() {
+    func getPrompts() {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._getPrompt()
+            self?._getPrompts()
             }, description: "getPrompts()"))
     }
     
-    private func _getPrompt() {
+    private func _getPrompts() {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
             NetworkQueue.instance.tryAgain()
@@ -483,17 +486,34 @@ class NetworkDAO {
                     
                     let article: String? = promptDict["article"] as? String
                     let tags: [String]? = promptDict["tags"] as? [String]
-                    let friend: String? = promptDict["friend"] as? String
-                    let ID: Int? = promptDict["id"] as? Int
+                    let friendDict: NSDictionary? = promptDict["friend"] as? NSDictionary
+                    let promptID: Int? = promptDict["id"] as? Int
                     let tagString: String? = promptDict["tagstring"] as? String
                     
-                    guard let validArticle = article, let validTags = tags, let validFriend = friend, let validID = ID, let validTagString = tagString else {
+                    guard let validArticle = article, let validTags = tags, let validPromptID = promptID, let validTagString = tagString else {
                         NSLog("Error - FriendsBest API - getPrompts() - Invalid JSON")
                         NetworkQueue.instance.tryAgain()
                         return
                     }
                     
-                    prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: validFriend, ID: validID))
+                    guard let validFriendDict: NSDictionary = friendDict else {
+                        NSLog("Error - FriendsBest API - getPrompts() - Error unwrapping friend dictionary")
+                        NetworkQueue.instance.tryAgain()
+                        return
+                    }
+                    
+                    let facebookID: String? = validFriendDict["id"] as? String
+                    let userName: String? = validFriendDict["name"] as? String
+                    
+                    guard let validFacebookID = facebookID, let validUserName = userName else {
+                        NSLog("Error - FriendsBest API - getPrompts() - Friend dictionary elements invalid")
+                        NetworkQueue.instance.tryAgain()
+                        return
+                    }
+                    
+                    let friend: Friend = Friend(facebookID: validFacebookID, name: validUserName)
+                    
+                    prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: friend, ID: validPromptID))
                 }
                 
                 User.instance.prompts.prompts = prompts
@@ -590,13 +610,11 @@ class NetworkDAO {
             
             for recommendation: NSDictionary in validRecommendationArray {
                 let userName: String? = recommendation["name"] as? String
-                let djangoID: Int? = recommendation["id"] as? Int
-                let facebookID: String? = recommendation["fbid"] as? String
+                let facebookID: String? = recommendation["id"] as? String
                 let comment: String? = recommendation["comment"] as? String
                 
                 guard let
                     validUserName = userName,
-                    validDjangoID = djangoID,
                     validFacebookID = facebookID,
                     validComment = comment
                     else {
@@ -604,7 +622,7 @@ class NetworkDAO {
                     return nil
                 }
                 
-                let newFriend: Friend = Friend(facebookID: validFacebookID, djangoID: validDjangoID, name: validUserName)
+                let newFriend: Friend = Friend(facebookID: validFacebookID, name: validUserName)
                 
                 let newRecommendation: Recommendation = Recommendation(friend: newFriend, comment: validComment)
                 recommendations.append(newRecommendation)

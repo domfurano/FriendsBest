@@ -58,9 +58,9 @@ class PromptCardView: UIView {
         
         subTitleLabel.font = UIFont(name: "Helvetica Neue", size: 10.0)
         
-        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "based on a search by \(prompt!.friend)")
+        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "based on a search by \(prompt!.friend.name)")
         attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 20))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt!.friend.characters.count))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt!.friend.name.characters.count))
         
         titleLabel.text = "Do you have a\nrecommendation for a"
         tagLabel.text = self.prompt?.tagString
