@@ -18,7 +18,7 @@
       this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
       
       var profileMenuTemplate = _.template( profileMenuHTML );
-      this.$el.append(profileMenuTemplate({id: FB.getAuthResponse().userID, name: "Name Here"}));
+      this.$el.append(profileMenuTemplate({id: FB.getAuthResponse().userID, name: ""}));
       
  
     },

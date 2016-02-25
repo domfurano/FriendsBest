@@ -14,6 +14,8 @@ define([
     el: $(".view"),
 
     render: function(){
+        
+        console.log("rendering login view");
       
 		var loginTemplate = _.template( loginHTML, {} );
 		this.$el.html(loginTemplate);

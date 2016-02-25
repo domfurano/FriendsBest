@@ -83,9 +83,7 @@ define([
 		// Check login status
 		FB.getLoginStatus(function(response) {
 			console.log(response);
-			
-			
-			
+
 			// Navigate to login if not authorized
 			if(response.status === "connected") {
 				// Logged in
@@ -113,8 +111,8 @@ define([
 			} else {
 				console.log("not authorized.");
 				// Start routing
-				Backbone.history.start();
-				app_router.navigate("login", {trigger: true});
+				window.location = "#login";
+                Backbone.history.start();
 			}
 			
 		}, true);
