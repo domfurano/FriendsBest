@@ -56,17 +56,20 @@ define([
     			axis: "x",
     			scroll: false,
     			stop: function(event, ui) {	
+        			// Left: delete prompt
     				if(ui.position.left < -distance) {
     					ui.helper.animate({left: "-=600"}, 200, function() {
     						ui.helper.parent().remove();
     						prompts.get(ui.helper.attr("id")).destroy();
     					});
+    				// Right: recommend
     				} else if(ui.position.left > distance) {
     					ui.helper.animate({left: "+=600"}, 200, function() {
-        					prompts.get(ui.helper.attr("id")).destroy();
+        					//prompts.get(ui.helper.attr("id")).destroy();
     						require(['app'],function(App){
-    							r = new Recommend()
-    							r.tags = ui.helper.children(".topic").html();
+    							r = new Recommend();
+    							r.prompt = prompts.get(ui.helper.attr("id"));
+    							//r.tags = ui.helper.children(".topic").html();
     							App.router.navigate('recommend');
     							App.router.render(r);
     						});

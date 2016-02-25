@@ -207,7 +207,7 @@ class QuerySerializer(serializers.ModelSerializer):
                     recommendations.append({"comment": rec.comments})
             solution_collection['solutions'].append({
                 'detail': sol.detail,
-                'solutionType': sol.solutionType,
+                'type': sol.solutionType,
                 'recommendations': recommendations
             })
         return solution_collection
