@@ -9,8 +9,9 @@ define([
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html',
+  'text!templates/home/deck.html',
   'text!templates/home/info.html'
-], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, infoHTML){
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -20,8 +21,10 @@ define([
         that = this;
       
 		var menuTemplate = _.template( menuHTML, {} );
-		console.log("Photo for " + FB.getAuthResponse().userID);
 		this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
+		
+		var deckTemplate = _.template( deckHTML, {} );
+		this.$el.append(deckTemplate());
 		
 		this.collection = new PromptsCollection();
 		
@@ -36,9 +39,11 @@ define([
     			el.append(promptcard);
     		});
     		
+/*
     		infoTemplate = _.template(infoHTML);
     		infoCard = infoTemplate();
     		el.append(infoCard);
+*/
     		
     		
             // Prompts

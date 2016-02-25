@@ -1,32 +1,37 @@
 <section class="profilemenu">
 	<div class="container">
         <div class="row photo">
-            <img src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=large" alt="" class="img-circle">
-        </div>    	
-    	<div class="row button recommendations">
-        	<div class="col-xs-10 col-md-10 text">
-        		Your Recommendations
+            <img src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=large" alt="" class="img-circle" width="200px" height="200px">
+        </div>
+        <div class="row title">
+        	<div class="col-xs-12 col-md-12 text-center">
+        		<%= name %>
         	</div>
-        	<div class="col-xs-2 col-md-2 arrow">
+        </div>
+    	<div class="row button recommendations">
+        	<div class="col-xs-8 text">
+        		Recommendations
+        	</div>
+        	<div class="col-xs-4 arrow">
+            	<span>0</span>
         		<i class="fa fa-chevron-right fa-lg"></i>
         	</div>
         </div>
     	<div class="row button friends">
-            <div class="col-xs-10 col-md-10 text">
-        		Mute Friends
+            <div class="col-xs-8 text">
+                Friends
         	</div>
-        	<div class="col-xs-2 col-md-2 arrow">
+        	<div class="col-xs-4 arrow">
+            	<span>0</span>
         		<i class="fa fa-chevron-right fa-lg"></i>
         	</div>
         </div>
         <div class="row">
-            <div class="col-xs-12 text-center">
-                <div class="button dim">Log out</div>
+            <div class="col-xs-6 text-center left">
+                <div class="button dim">Log out</div>                
             </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 text-center">
-                <div class="button dim">Delete Account</div>
+            <div class="col-xs-6 text-center right">
+                <div class="button dim">Remove Account</div>
             </div>
         </div>
 	</div>

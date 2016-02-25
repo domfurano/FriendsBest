@@ -2,9 +2,10 @@
   'jquery',
   'underscore',
   'backbone',
+  'text!templates/home/menu.html',
   'text!templates/profile/back.html',
   'text!templates/profile/menu.html',
-], function($, _, Backbone, backHTML, menuHTML){
+], function($, _, Backbone, menuHTML, backHTML, profileMenuHTML){
 
   var view = Backbone.View.extend({
     el: $(".view"),
@@ -13,11 +14,12 @@
       
       console.log("render profile view")
       
-      var backTemplate = _.template( backHTML, {} );
-      this.$el.append(backTemplate({name: "Test Name"}));
+      var menuTemplate = _.template( menuHTML, {} );
+      this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
       
-      var menuTemplate = _.template( menuHTML );
-      this.$el.append(menuTemplate({id: FB.getAuthResponse().userID}));
+      var profileMenuTemplate = _.template( profileMenuHTML );
+      this.$el.append(profileMenuTemplate({id: FB.getAuthResponse().userID, name: "Name Here"}));
+      
  
     },
     
