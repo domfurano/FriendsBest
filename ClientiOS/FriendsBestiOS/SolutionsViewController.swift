@@ -47,7 +47,7 @@ class SolutionsViewController: UITableViewController {
     
     override func viewWillAppear(animated: Bool) {
         if self.queryID != nil {
-            NetworkDAO.instance.getQuerySolutions(self.queryID!)
+            FBNetworkDAO.instance.getQuerySolutions(self.queryID!)
         }
     }
     
@@ -66,7 +66,7 @@ class SolutionsViewController: UITableViewController {
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
         if self.queryID != nil {
             let solution: Solution = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row]
-            cell.textLabel?.text = solution.name
+            cell.textLabel?.text = solution.detail
         }
         return cell
     }
@@ -74,7 +74,7 @@ class SolutionsViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if self.queryID != nil {
             let solution: Solution = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row]
-            navigationController?.pushViewController(SolutionDetailViewController(title: solution.name, queryID: self.queryID!, solutionIndex: indexPath.row), animated: true)
+            navigationController?.pushViewController(SolutionDetailViewController(title: solution.detail, queryID: self.queryID!, solutionIndex: indexPath.row), animated: true)
         }
     }
     

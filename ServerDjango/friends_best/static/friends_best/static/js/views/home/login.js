@@ -14,6 +14,8 @@ define([
     el: $(".view"),
 
     render: function(){
+        
+        console.log("rendering login view");
       
 		var loginTemplate = _.template( loginHTML, {} );
 		this.$el.html(loginTemplate);
@@ -26,13 +28,14 @@ define([
 					FB.api('/me', function(response) {
 						console.log('Good to see you, ' + response.name + '.');
 						require(['app'],function(App){
-							App.router.navigate('', {trigger: true, replace: true});
+							// App.router.navigate('', {trigger: true, replace: true});
+							window.location.href = "/";
 						});
 					});
 				} else {
 					console.log('User cancelled login or did not fully authorize.');
 				}
-			});
+			}, {scope: 'public_profile,email,user_friends'});
 		});
       
     },

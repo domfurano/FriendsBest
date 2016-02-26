@@ -70,3 +70,20 @@ target/
 .DS_Store
 /build
 /captures
+
+# Emacs
+*~
+*#
+
+# XCode
+*.xcuserstate
+*.xcbkptlist
+xcuserdata/
+
+*.pbxproj
+
+*.pbxproj
+
+ServerDjango/db.sqlite3
+
+*.sqlite3

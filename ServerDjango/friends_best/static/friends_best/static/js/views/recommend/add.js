@@ -17,6 +17,11 @@ define([
       var backTemplate = _.template( backHTML, {} );
       this.$el.append(backTemplate);
       
+      var prompt = this.prompt;
+      if (typeof prompt != 'undefined') {
+          this.tags = prompt.get("tagstring");
+      }
+      
       var formTemplate = _.template( formHTML );
       this.$el.append(formTemplate({tags: this.tags}));
  
@@ -24,23 +29,30 @@ define([
 	  
 	  $('.submit').click(function() {
 
-		  // Create a Recommend model
-		  r = new RecommendModel();
-		  
-		  // Pull the data
-		  r.set({
-			  		"description": $("#description").val(),
-			  		"tags": $("#tags").val().toLowerCase().split(" "),
-			  		"comments": $("#comments").val()});
-		  
-		  console.log(r);
-		  
-		  // Sync the model
-		  r.save();
-		  
-		  // Go back in history
-		  parent.history.go(-1);
-		  return false;
+        // Delete the prompt
+        if (typeof prompt != 'undefined') {
+          prompt.destroy();
+        }
+      
+        
+
+        // Create a Recommend model
+        r = new RecommendModel();
+        
+        // Pull the data
+        r.set({
+            "detail": $("#description").val(),
+            "tags": $("#tags").val().toLowerCase().split(" "),
+            "comments": $("#comments").val()
+        });
+        
+        // Sync the model
+        r.save();
+        
+        // Go back in history
+        parent.history.go(-1);
+        return false;
+
 	  });
  
     },

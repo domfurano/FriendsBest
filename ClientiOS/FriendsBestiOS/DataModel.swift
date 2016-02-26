@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FBSDKCoreKit
 
 
 class User: NetworkDAODelegate {
@@ -17,17 +18,21 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     private(set) var queryHistory: QueryHistory = QueryHistory()
-    
-    
+    private(set) var prompts: Prompts = Prompts()
+    private(set) var friends: [Friend] = []
+    var facebookID: String? = nil
+
+
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
-    var querySolutionsUpdatedClosure: (queryID: Int) -> Void = {_ in }
+    var querySolutionsUpdatedClosure: (queryID: Int) -> Void = { _ in }
+    var promptsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
     private init() {
         // Delegate assignment
-        NetworkDAO.instance.networkDAODelegate = self
+        FBNetworkDAO.instance.networkDAODelegate = self
     }
     
     
@@ -44,10 +49,25 @@ class User: NetworkDAODelegate {
         querySolutionsUpdatedClosure(queryID: queryID)
     }
     
+    func promptsFetched() {
+        promptsFetchedClosure()
+    }
+    
     
     /* Serialization */
     private func serialize() {
         
+    }
+}
+
+
+class Friend {
+    private(set) var facebookID: String
+    private(set) var name: String
+    
+    init(facebookID: String, name: String) {
+        self.facebookID = facebookID
+        self.name = name
     }
 }
 
@@ -84,6 +104,15 @@ class QueryHistory {
         return nil
     }
     
+    func getQueryFromTagHash(tagHash: String) -> Query? {
+        for query in self._queries {
+            if query.tagHash == tagHash {
+                return query
+            }
+        }
+        return nil
+    }
+    
     func getQueryFromTags(tags: [String]) -> Query? {
         for query in self._queries {
             if tagsEqual(query.tags, tag2: tags) {
@@ -110,14 +139,38 @@ class QueryHistory {
         }
         return tagsEqual
     }
+    
+    func setQuerySolutionsForQueryID(solutions: [Solution], queryID: Int) {
+        for query in self._queries {
+            if query.ID == queryID {
+                query.solutions = solutions
+                break
+            }
+        }
+    }
 }
 
 
 class Query: Hashable, Equatable {
     private(set) var tags: [String]
+    private(set) var tagHash: String
+    private(set) var tagString: String
     private(set) var ID: Int
     private(set) var timestamp: NSDate
-    var solutions: [Solution]?
+    private var _solutions: [Solution]?
+    var solutions: [Solution]? {
+        get {
+            if let solutions = self._solutions {
+                return solutions
+            } else {
+                return nil
+            }
+        }
+        set (solutions) {
+            // TODO: only insert solution if it doesn't exist in order to demarcate new from old solutions
+            self._solutions = solutions
+        }
+    }
     
     var hashValue: Int {
         get {
@@ -125,8 +178,10 @@ class Query: Hashable, Equatable {
         }
     }
     
-    init(tags: [String], ID: Int, timestamp: NSDate) {
+    init(tags: [String], tagHash: String, tagString: String, ID: Int, timestamp: NSDate) {
         self.tags = tags
+        self.tagHash = tagHash
+        self.tagString = tagString
         self.ID = ID
         self.timestamp = timestamp
     }
@@ -138,22 +193,115 @@ func ==(lhs: Query, rhs: Query) -> Bool {
 
 
 class Solution {
-    private(set) var name: String
+    enum SolutionType: String {
+        case TEXT
+    }
+    
+    private(set) var type: SolutionType
+    private(set) var detail: String
     private(set) var recommendations: [Recommendation]
     
-    init(name: String, recommendations: [Recommendation]) {
-        self.name = name
+    init(type: SolutionType, detail: String, recommendations: [Recommendation]) {
+        self.type = type
+        self.detail = detail
         self.recommendations = recommendations
     }
 }
 
 
 class Recommendation {
-    private(set) var userName: String
+    private(set) var friend: Friend
     private(set) var comment: String
     
-    init(userName: String, comment: String) {
-        self.userName = userName
+    init(friend: Friend, comment: String) {
+        self.friend = friend
         self.comment = comment
     }
 }
+
+class Prompts {
+    private var _prompts: Set<Prompt>
+    
+    var prompts: [Prompt] {
+        get {
+            return Array(self._prompts)
+        }
+        set(prompts) {
+            for prompt in prompts {
+                self._prompts.insert(prompt)
+            }
+        }
+    }
+    
+    init() {
+        self._prompts = Set<Prompt>()
+    }
+    
+    func deletePrompt(ID: Int) {
+        for prompt in self._prompts {
+            if prompt.ID == ID {
+                self._prompts.remove(prompt)
+                // TODO: Call network function to delete prompt
+                return
+            }
+        }
+        assert(false)
+    }
+    
+}
+
+class Prompt: Equatable, Hashable {
+    private(set) var article: String
+    private(set) var tags: [String]
+    private(set) var tagString: String
+    private(set) var friend: Friend
+    private(set) var ID: Int
+    
+    var hashValue: Int {
+        return self.ID
+    }
+
+    init(article: String, tags: [String], tagString: String, friend: Friend, ID: Int) {
+        self.article = article
+        self.tags = tags
+        self.tagString = tagString
+        self.friend = friend
+        self.ID = ID
+    }
+}
+
+func ==(lhs: Prompt, rhs: Prompt)-> Bool {
+    return lhs.ID == rhs.ID
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

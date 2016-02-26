@@ -8,16 +8,20 @@
 
 import UIKit
 
-class NewRecommendationView: UIView {
+class NewRecommendationView: UIScrollView {
     
     override func drawRect(rect: CGRect) {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-        CGContextSetFillColorWithColor(context, UIColor.lightGrayColor().CGColor)
-        CGContextFillRect(context, bounds)
+        CommonUIElements.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0xfefefe).CGColor,
+                UIColor.colorFromHex(0xc8ced0).CGColor
+            ],
+            frame: self.frame,
+            context: context
+        )
     }
-
-    
     
 }

@@ -1,9 +1,9 @@
 <section class="scrollable">
-    <div class="container prompt swipable">
+    <div class="container prompt swipable" id='<%= id %>'>
 	    <div class="row head text-center">Do you have a<br>recommendation for a</div>
-	    <div class="row topic text-center"><%= item %></div>
-	    <% if (typeof user !== "undefined") { %>
-	    	<div class="row foot text-center">based on a search by <b><%= user %></b></div>
+	    <div class="row topic text-center"><%= tagstring %></div>
+	    <% if (typeof friend !== "undefined") { %>
+	    	<div class="row foot text-center">based on a search by <b><%= friend.name %></b></div>
 	    <% } else { %>
 	    	<div class="row foot text-center">based on a search</div>
 	    <% } %>

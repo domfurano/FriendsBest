@@ -2,10 +2,14 @@
   <div class="container">
   	  <div class="row">
         <div class="col-xs-2 text-center">
-	        <i class="fa fa-cog fa-2x" style="color:#646d77"></i>
+            <a href="#">
+    	        <i class="fa fa-home fa-2x" style="color:#646d77"></i>
+            </a>
         </div>
         <div class="col-xs-8 text-center">
-			<i id="facebookCircleIcon" class="fa fa-circle fa-2x" style="color:#3b5998"></i>
+            <a href="#profile">
+                <img src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=small" alt="" class="img-circle profilebutton" width="30" height="30">
+            </a>
 		</div>
         <div class="col-xs-2 text-center">
 	        <a href="#recommend">
@@ -15,11 +19,3 @@
       </div>
   </div> 
 </footer>
-
-<section class="">
-    <div class="container loadmore">
-	    <div class="row head text-center">&nbsp;</div>
-	    <div class="row topic text-center light">Friends<strong>Best</strong></div>
-	    <div class="row foot text-center">&nbsp;</div>
-    </div>
-</section>

@@ -51,9 +51,9 @@ define([
 			_.each(model.get("solutions"), function(solution, index) {
 				s = {
 								id: index,
-								name: solution.name.split("\n")[0].trim(),
-								longname: solution.name.split("\n").join("<br>"),
-								recommendation: solution.recommendation
+								name: solution.detail.split("\n")[0].trim(),
+								longname: solution.detail.split("\n").join("<br>"),
+								recommendations: solution.recommendations
 							};
 				solutions.push(s);
 				list.append(itemTemplate(s));

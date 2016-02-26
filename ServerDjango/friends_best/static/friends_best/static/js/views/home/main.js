@@ -4,35 +4,87 @@ define([
   'backbone',
   'app',
   'views/recommend/add',
-  'views/search/results',
   'models/query',
+  'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
-  'text!templates/home/menu.html'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, searchHTML, promptHTML, menuHTML){
+  'text!templates/home/menu.html',
+  'text!templates/home/deck.html',
+  'text!templates/home/info.html'
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
 
     render: function(){
       
+        that = this;
+      
 		var menuTemplate = _.template( menuHTML, {} );
-		this.$el.html(menuTemplate);
+		this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
 		
-		var promptTemplate = _.template(promptHTML);
+		var deckTemplate = _.template( deckHTML, {} );
+		this.$el.append(deckTemplate());
 		
-		prompts = 	_.shuffle([
-						{item : "Wireless Mouse", user: "Jim de St. Germain"},
-						{item : "Gym", user: "Dominic Furano"},
-						{item : "Coffee Shop", user: "Ray Phillips"},
-						{item : "Sushi Restaurant", user: "Umair Naveed"},
-						{item : "Fantasy Novel", user: "Paul Hanson"},
-					]);
+		this.collection = new PromptsCollection();
 		
-		_.each(prompts, function(prompt) {
-			this.$el.append(promptTemplate(prompt));
-		}, this);
-		
+		this.collection.fetch({success: function(prompts, response, options){
+    		
+            promptTemplate = _.template(promptHTML);
+			
+			el = that.$el;
+			
+			prompts.each(function(prompt) {
+    			promptcard = promptTemplate(prompt.toJSON());
+    			el.append(promptcard);
+    		});
+    		
+/*
+    		infoTemplate = _.template(infoHTML);
+    		infoCard = infoTemplate();
+    		el.append(infoCard);
+*/
+    		
+    		
+            // Prompts
+    		$('.swipable').each( function(index, item) {
+    			d = Math.random() * 3 - 1.5;
+    			$(item).css({'transform': 'rotate('+d+'deg)'});
+    		});
+    		
+    		distance = 30;
+    		$('.swipable').draggable({
+    			revert: function(ui, ui2) {
+    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
+    				else return true;
+    			},
+    			axis: "x",
+    			scroll: false,
+    			stop: function(event, ui) {	
+        			// Left: delete prompt
+    				if(ui.position.left < -distance) {
+    					ui.helper.animate({left: "-=600"}, 200, function() {
+    						ui.helper.parent().remove();
+    						prompts.get(ui.helper.attr("id")).destroy();
+    					});
+    				// Right: recommend
+    				} else if(ui.position.left > distance) {
+    					ui.helper.animate({left: "+=600"}, 200, function() {
+        					//prompts.get(ui.helper.attr("id")).destroy();
+    						require(['app'],function(App){
+    							r = new Recommend();
+    							r.prompt = prompts.get(ui.helper.attr("id"));
+    							//r.tags = ui.helper.children(".topic").html();
+    							App.router.navigate('recommend');
+    							App.router.render(r);
+    						});
+    					});
+    				}
+    			}
+    		});
+			
+		}});
+						
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
@@ -60,7 +112,7 @@ define([
 			tags = _.map(tags, String.toLowerCase);
 			
 			// create query
-			var query = new QueryModel({user: 2, tags: tags});
+			var query = new QueryModel({tags: tags});
 			// save query
 			query.save(null, {
 				success: function(model, response, options) {
@@ -78,45 +130,19 @@ define([
 			return false;
 		});
 		
-		// Prompts
-		$('.swipable').each( function(index, item) {
-			d = Math.random() * 3 - 1.5;
-			$(item).css({'transform': 'rotate('+d+'deg)'});
-		});
-		
-		distance = 30;
-		$('.swipable').draggable({
-			revert: function(ui, ui2) {
-				if($(this).position().left < -distance || $(this).position().left > distance) return false;
-				else return true;
-			},
-			axis: "x",
-			scroll: false,
-			stop: function(event, ui) {	
-				if(ui.position.left < -distance) {
-					ui.helper.animate({left: "-=600"}, 200, function() {
-						ui.helper.parent().remove();
-					});
-				} else if(ui.position.left > distance) {
-					ui.helper.animate({left: "+=600"}, 200, function() {
-						require(['app'],function(App){
-							r = new Recommend()
-							r.tags = ui.helper.children(".topic").html();
-							App.router.navigate('recommend');
-							App.router.render(r);
-						});
-					});
-				}
-			}
-		});
-		
 		// Logout (TEMP)
-		// fblo_1519942364964737
-		// fblo_1519942364964737
 		$("#facebookCircleIcon").click(function() {
-			FB.logout(function() {
-				location.reload();
+
+/*
+			FB.logout(function(response) {
+ 				document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+ 				location.reload();
 			});
+*/
+
+            // Load profile menu instead via profile route
+            
+			
 		});
  
     },

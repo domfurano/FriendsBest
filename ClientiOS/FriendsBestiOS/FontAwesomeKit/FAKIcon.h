@@ -14,7 +14,7 @@
 /**
  *  The background color of the image while drawing. If you do not specify this property, no background color is drawn.
  */
-@property (strong, nonatomic) UIColor *drawingBackgroundColor;
+@property (strong, nonatomic) UIColor* drawingBackgroundColor;
 
 /**
  *  The icon font size for the icon.
