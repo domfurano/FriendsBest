@@ -1,19 +1,19 @@
 package app.friendsbest.net.swipecards;
 
 public class Data {
-    String description;
-    String imagePath;
+    String friend;
+    String tagString;
 
-    public Data(String imagePath, String description){
-        this.description = description;
-        this.imagePath = imagePath;
+    public Data(String tagString, String friend){
+        this.friend = friend;
+        this.tagString = tagString;
     }
 
-    public String getDescription(){
-        return description;
+    public String getFriend(){
+        return friend;
     }
 
-    public String getImagePath(){
-        return imagePath;
+    public String getTagString(){
+        return tagString;
     }
 }

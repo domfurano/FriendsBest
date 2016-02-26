@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
-import app.friendsbest.net.ui.fragment.CardFragment;
+import app.friendsbest.net.ui.MainActivity;
 
 public class FlingCardListener implements View.OnTouchListener {
 
@@ -67,7 +67,7 @@ public class FlingCardListener implements View.OnTouchListener {
 
                 // from http://android-developers.blogspot.com/2010/06/making-sense-of-multitouch.html
                 // Save the ID of this pointer
-                CardFragment.removeBackground();
+                MainActivity.removeBackground();
 
 
                 _invalidPointerId = event.getPointerId(0);

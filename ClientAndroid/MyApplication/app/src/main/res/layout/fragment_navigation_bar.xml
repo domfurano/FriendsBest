@@ -1,54 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/navigation_container"
               android:orientation="horizontal"
+              android:gravity="bottom"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
-        <ImageButton
+        <TextView
             android:id="@+id/nav_profile_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_account_circle_black_48dp"/>
+            android:gravity="bottom"
+            android:textSize="40dp"
+            android:text="@string/fa_icon_home"/>
     </RelativeLayout>
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
-        <ImageButton
+        <TextView
             android:id="@+id/nav_recommend_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_add_circle_black_48dp"/>
+            android:textSize="40dp"
+            android:text="@string/fa_icon_history"/>
     </RelativeLayout>
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <ImageButton
+        android:layout_weight="1"
+        android:gravity="center">
+        <TextView
             android:id="@+id/nav_home_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_account_circle_black_48dp"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_add_circle_black_48dp"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_account_circle_black_48dp"/>
+            android:textColor="@color/appGreen"
+            android:textSize="40dp"
+            android:text="@string/fa_icon_plus"/>
     </RelativeLayout>
 </LinearLayout>

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:paddingTop="15dp"
               android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -32,30 +33,21 @@
             android:layout_alignParentRight="true"
             />
     </RelativeLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></FrameLayout>
     <RelativeLayout
-        android:id="@+id/prompt_layout"
         android:layout_width="match_parent"
-        android:layout_marginBottom="15dp"
         android:layout_height="0dp"
-        android:layout_weight="8"
-        android:background="@drawable/rounded_corner">
-        <TextView
-            android:id="@+id/content_main_logo1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textSize="30dp"
-            android:text="@string/logo_1"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_toRightOf="@id/content_main_logo1"
-            android:textSize="30dp"
-            android:textStyle="bold"
-            android:text="@string/logo_2"/>
+        android:layout_weight="7">
+        <app.friendsbest.net.swipecards.SwipeFlingAdapterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:rotation_degrees="15.5"
+            android:id="@+id/swipe_card"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/navigation_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <include layout="@layout/fragment_navigation_bar"/>
     </RelativeLayout>
 </LinearLayout>

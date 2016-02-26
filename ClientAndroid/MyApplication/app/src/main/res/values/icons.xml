@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fa_icon_home">&#xf015;</string>
+    <string name="fa_icon_plus">&#xf0fe;</string>
+    <string name="fa_icon_history">&#xf1da;</string>
+    <string name="fa_icon_search">&#xf002;</string>
+</resources>
