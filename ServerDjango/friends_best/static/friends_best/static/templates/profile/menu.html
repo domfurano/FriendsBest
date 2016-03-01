@@ -1,37 +1,41 @@
 <section class="profilemenu">
 	<div class="container">
         <div class="row photo">
-            <img src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=large" alt="" class="img-circle" width="200px" height="200px">
+
         </div>
         <div class="row title">
         	<div class="col-xs-12 col-md-12 text-center">
         		<%= name %>
         	</div>
         </div>
-    	<div class="row button recommendations">
-        	<div class="col-xs-8 text">
-        		Recommendations
-        	</div>
-        	<div class="col-xs-4 arrow">
-            	<span><%= recommendations %></span>
-        		<i class="fa fa-chevron-right fa-lg"></i>
-        	</div>
-        </div>
-    	<div class="row button friends">
-            <div class="col-xs-8 text">
-                Friends
-        	</div>
-        	<div class="col-xs-4 arrow">
-            	<span><%= friends %></span>
-        		<i class="fa fa-chevron-right fa-lg"></i>
-        	</div>
-        </div>
+        <a href="#profile/recommendations">
+	    	<div class="row button recommendations">
+	        	<div class="col-xs-8 text">
+	        		Recommendations
+	        	</div>
+	        	<div class="col-xs-4 arrow">
+	            	<span><%= recommendations %></span>
+	        		<i class="fa fa-chevron-right fa-lg"></i>
+	        	</div>
+	        </div>
+        </a>
+        <a href="#profile/friends">
+	    	<div class="row button friends">
+	            <div class="col-xs-8 text">
+	                Friends
+	        	</div>
+	        	<div class="col-xs-4 arrow">
+	            	<span><%= friends %></span>
+	        		<i class="fa fa-chevron-right fa-lg"></i>
+	        	</div>
+	        </div>
+        </a>
         <div class="row">
             <div class="col-xs-6 text-center left">
-                <div class="button dim">Log out</div>                
+                <div class="button dim disabled">Log out</div>                
             </div>
             <div class="col-xs-6 text-center right">
-                <div class="button dim">Remove Account</div>
+                <div class="button dim disabled">Remove Account</div>
             </div>
         </div>
 	</div>

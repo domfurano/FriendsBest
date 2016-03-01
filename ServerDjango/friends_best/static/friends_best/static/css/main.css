@@ -87,7 +87,7 @@
 		border-radius: 5px;
 		font-size: 20px;
 		cursor: pointer;
-		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		box-shadow: 1px 1px 1px rgba(45, 50, 61, 0.50);
 	}
 	
 	.profilemenu .button .text {
@@ -174,7 +174,8 @@
 	}
 	
 	section.list {
-		bottom: 0;
+		bottom: 90px;
+		margin: 0;
 		padding: 0;
 		overflow-x: scroll;
 	}
@@ -280,7 +281,6 @@
 	
 	footer {
 	  position: absolute;
-	  top: 0;
 	  bottom: 0;
 	  max-height: 860px;
 	  font-size: 15px;

@@ -4,7 +4,7 @@ define([
   'models/query',
 ], function(_, Backbone, QueryModel){
   
-	var QueriesCollection = Backbone.Collection.extend({
+	var collection = Backbone.Collection.extend({
 		url: '/fb/api/query/',
 		model: QueryModel,
 		defaults: {
@@ -16,6 +16,6 @@ define([
 		}
 	});
 	
-	return QueriesCollection;
+	return collection;
 	
 });
