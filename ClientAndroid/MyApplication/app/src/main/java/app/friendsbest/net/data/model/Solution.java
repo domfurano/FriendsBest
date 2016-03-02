@@ -1,94 +1,48 @@
 package app.friendsbest.net.data.model;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Solution {
-    @SerializedName("recommendation")
-    private ArrayList<UserRecommendation> _recommendation;
+    @SerializedName("type")
+    @Expose
+    private String _type;
+    @SerializedName("recommendations")
+    @Expose
+    private List<RecommendationItem> _recommendations = new ArrayList<>();
+    @SerializedName("detail")
+    @Expose
+    private String _detail;
 
-    @SerializedName("name")
-    private String _name;
-
-    @SerializedName("tags")
-    private String[] _tags;
-
-    @SerializedName("taghash")
-    private String _tagHash;
-
-    @SerializedName("tagstring")
-    private String _tagString;
-
-    @SerializedName("id")
-    private int _id;
-
-    @SerializedName("timestamp")
-    private String _timeStamp;
-
-
-    public ArrayList<UserRecommendation> getRecommendation() {
-        return _recommendation;
+    public String getType() {
+        return _type;
     }
 
-    public void setRecommendation(ArrayList<UserRecommendation> recommendation) {
-        _recommendation = recommendation;
+    public void setType(String type) {
+        _type = type;
     }
 
-    public void setName(String name) {
-        _name = name;
+    public List<RecommendationItem> getRecommendations() {
+        return _recommendations;
     }
 
-    public String[] getTags() {
-        return _tags;
+    public void setRecommendations(List<RecommendationItem> recommendations) {
+        _recommendations = recommendations;
     }
 
-    public void setTags(String[] tags) {
-        _tags = tags;
+    public String getDetail() {
+        return _detail;
     }
 
-    public String getTagHash() {
-        return _tagHash;
-    }
-
-    public void setTagHash(String tagHash) {
-        _tagHash = tagHash;
-    }
-
-    public String getTagString() {
-        return _tagString;
-    }
-
-    public void setTagString(String tagString) {
-        _tagString = tagString;
-    }
-
-    public int getId() {
-        return _id;
-    }
-
-    public void setId(int id) {
-        _id = id;
-    }
-
-    public String getTimeStamp() {
-        return _timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        _timeStamp = timeStamp;
+    public void setDetail(String detail) {
+        _detail = detail;
     }
 
     @Override
-    public String toString(){
-        String[] nameParts = this._name.split("\r\n");
-        return nameParts[0];
-    }
-    public String getName(){
-        return this._name;
-    }
-
-    public ArrayList<UserRecommendation> getRecommendations(){
-        return this._recommendation;
+    public String toString() {
+        return _detail;
     }
 }

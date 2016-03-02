@@ -4,10 +4,10 @@
     <string name="logo_2">Best</string>
     <string name="facebook_app_id">1519942364964737</string>
     <string name="title_activity_main">Home</string>
-    <string name="title_activity_history">Search History</string>
-    <string name="title_activity_profile">Profile</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="title_activity_recommendation">New Recommendation</string>
+    <string name="title_history">Search History</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_recommendation">New Recommendation</string>
     <string name="title_activity_login">Login</string>
     <string name="add_recommendation">Add Recommendation</string>
     <string name="rec_title_label">Recommendation</string>

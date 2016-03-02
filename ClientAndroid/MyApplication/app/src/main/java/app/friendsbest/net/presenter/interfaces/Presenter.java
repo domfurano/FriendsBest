@@ -1,11 +1,7 @@
 package app.friendsbest.net.presenter.interfaces;
 
-import android.content.Context;
+import app.friendsbest.net.data.model.QueryResult;
 
-public interface Presenter {
-    void onStart();
-    void onHistoryClicked();
-    void onProfileClicked();
-    void onRecommendationClicked();
-    void onQueryClicked(String query);
+public interface Presenter extends BasePresenter<QueryResult> {
+    void onStart(String startingClass, String payload);
 }

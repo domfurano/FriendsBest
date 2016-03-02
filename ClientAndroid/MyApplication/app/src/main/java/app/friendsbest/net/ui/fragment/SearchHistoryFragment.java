@@ -14,16 +14,16 @@ import java.util.List;
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.presenter.QueryHistoryPresenter;
-import app.friendsbest.net.ui.MainActivity;
-import app.friendsbest.net.ui.view.SearchHistoryView;
+import app.friendsbest.net.ui.DualFragmentActivity;
+import app.friendsbest.net.ui.view.FragmentView;
 
 public class SearchHistoryFragment extends ListFragment implements
-                                                                    SearchHistoryView,
-                                                                    AdapterView.OnItemClickListener {
+        FragmentView<List<Query>>,
+        AdapterView.OnItemClickListener {
 
+    private OnFragmentChangeListener _listener;
     private ArrayAdapter<Query> _adapter;
     private ProgressBar _progressBar;
-    private QueryHistoryPresenter _presenter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -32,36 +32,42 @@ public class SearchHistoryFragment extends ListFragment implements
                 android.R.layout.simple_expandable_list_item_1);
         setListAdapter(_adapter);
         getListView().setOnItemClickListener(this);
-        _presenter = new QueryHistoryPresenter(this, getActivity().getApplicationContext());
+        _listener = (OnFragmentChangeListener) getActivity();
+        new QueryHistoryPresenter(this, getActivity().getApplicationContext());
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.history_fragment_list, container, false);
+        View contentView = inflater.inflate(R.layout.query_history_list, container, false);
         _progressBar = (ProgressBar) contentView.findViewById(R.id.history_fragment_progressbar);
         return contentView;
     }
 
     @Override
-    public void displaySearchHistory(List<Query> queries) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Query query = _adapter.getItem(position);
+        Bundle bundle = new Bundle();
+        bundle.putInt(SolutionFragment.SOLUTION_ID_TAG, query.getId());
+        _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
+    }
+
+    @Override
+    public void displayContent(List<Query> queries) {
         _adapter.addAll(queries);
     }
 
     @Override
-    public void showProgress() {
+    public void showProgressBar() {
         _progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideProgress() {
+    public void hideProgressBar() {
         _progressBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Query query = _adapter.getItem(position);
-        int queryId = query.getId();
-        MainActivity activity = (MainActivity) getActivity();
+    public void displayMessage(String message) {
     }
 }

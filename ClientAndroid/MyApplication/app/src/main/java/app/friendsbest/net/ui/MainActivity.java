@@ -23,29 +23,32 @@ import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.CardPresenter;
-import app.friendsbest.net.swipecards.Data;
-import app.friendsbest.net.swipecards.FlingCardListener;
-import app.friendsbest.net.swipecards.SwipeFlingAdapterView;
+import app.friendsbest.net.ui.swipecards.FlingCardListener;
+import app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView;
 
 public class MainActivity extends FragmentActivity implements
         View.OnClickListener,
-        View.OnTouchListener,
         View.OnFocusChangeListener,
+        View.OnTouchListener,
         FlingCardListener.ActionDownInterface {
 
-    public static String TAG = "classname";
+    public static String CLASS_TAG = "classname";
+    public static String CONTENT_TAG = "content";
+    public static int RESULT_PASS = 0;
+    public static int RESULT_FAIL = -1;
+    public static final int REQUEST_CODE = 5115;
     public static ViewContainer _viewContainer;
     public static CardAdapter _cardAdapter;
 
     private SwipeFlingAdapterView _adapterView;
     private CardPresenter _cardPresenter;
-    private ImageButton _historyBtn;
+    private TextView _historyBtn;
     private ImageButton _searchBtn;
     private EditText _searchField;
     private TextView _homeBtn;
     private TextView _profileBtn;
     private TextView _addRecommendBtn;
-    private ArrayList<Data> _cards;
+    private List<PromptCard> _cards;
 
 
     public static void removeBackground() {
@@ -61,10 +64,11 @@ public class MainActivity extends FragmentActivity implements
         Typeface typeface = FontManager
                 .getTypeface(getApplicationContext(), FontManager.FONT_AWESOME);
         FontManager.markAsIconContainer(findViewById(R.id.navigation_container), typeface);
+        FontManager.markAsIconContainer(findViewById(R.id.query_layout), typeface);
         _adapterView = (SwipeFlingAdapterView) findViewById(R.id.swipe_card);
         _cardPresenter = new CardPresenter(this, getApplicationContext());
 
-        _historyBtn = (ImageButton) findViewById(R.id.query_results_button);
+        _historyBtn = (TextView) findViewById(R.id.query_results_button);
         _searchField = (EditText) findViewById(R.id.query_field);
         _searchBtn = (ImageButton) findViewById(R.id.submit_query_button);
 
@@ -78,24 +82,26 @@ public class MainActivity extends FragmentActivity implements
         super.onStart();
         _historyBtn.setOnClickListener(this);
         _searchBtn.setOnClickListener(this);
-        _searchField.setOnTouchListener(this);
+        _searchField.setOnFocusChangeListener(this);
         _addRecommendBtn.setOnClickListener(this);
         _profileBtn.setOnClickListener(this);
         _cardPresenter.getPrompts();
-        displayCards(null);
     }
 
-    public void displayCards(PromptCard card) {
-        _cards = new ArrayList<>();
-        _cards.add(new Data("Mexican Restaurant", "John Doe"));
-        _cards.add(new Data("Chinese Restaurant", "Jane Doe"));
-        _cards.add(new Data("Greek Restaurant", "Bob Doe"));
-        _cards.add(new Data("Indian Restaurant", "John Doe"));
-        _cards.add(new Data("Italian Restaurant", "John Doe"));
-        _cards.add(new Data("Mongolian Restaurant", "John Doe"));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (_cards == null)
+            _cards = new ArrayList<>();
+        displayCards(_cards);
+    }
+
+    public void displayCards(List<PromptCard> cards) {
+        _cards = cards;
 
         _cardAdapter = new CardAdapter(_cards, MainActivity.this);
         _adapterView.setAdapter(_cardAdapter);
+        _cardAdapter.notifyDataSetChanged();
         _adapterView.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
@@ -104,14 +110,14 @@ public class MainActivity extends FragmentActivity implements
 
             @Override
             public void onLeftCardExit(Object dataObject) {
-                _cards.remove(0);
-                _cardAdapter.notifyDataSetChanged();
+                deleteCard();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                _cards.remove(0);
-                _cardAdapter.notifyDataSetChanged();
+                Intent intent = new Intent(MainActivity.this, DualFragmentActivity.class);
+                intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
+                startActivityForResult(intent, REQUEST_CODE);
             }
 
             @Override
@@ -127,19 +133,30 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, DualActivity.class);
-        if (v == _historyBtn) {
-            intent.putExtra(TAG, DualActivity.SEARCH_HISTORY_ID);
-        }
-        else if (v == _addRecommendBtn){
-            intent.putExtra(TAG, DualActivity.ADD_RECOMMENDATION_ID);
-        }
-        startActivity(intent);
-    }
+        if (v != _homeBtn) {
+            // Ensures data is valid before sending it with intent
+            boolean okayToSend = true;
+            Intent intent = new Intent(this, DualFragmentActivity.class);
+            if (v == _historyBtn) {
+                intent.putExtra(CLASS_TAG, DualFragmentActivity.SEARCH_HISTORY_ID);
+            } else if (v == _addRecommendBtn) {
+                intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
+            } else if (v == _profileBtn) {
+                intent.putExtra(CLASS_TAG, DualFragmentActivity.PROFILE_ID);
+            } else if (v == _searchBtn) {
+                String searchText = _searchField.getText().toString();
+                if (_cardPresenter.isValidQuery(searchText)){
+                    intent.putExtra(CLASS_TAG, DualFragmentActivity.SEARCH_HISTORY_ID);
+                    intent.putExtra(CONTENT_TAG, searchText);
+                }
+                else {
+                    okayToSend = false;
+                }
+            }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return false;
+            if (okayToSend)
+                startActivity(intent);
+        }
     }
 
     @Override
@@ -148,13 +165,34 @@ public class MainActivity extends FragmentActivity implements
             InputMethodManager methodManager = (InputMethodManager)
                     getApplicationContext().
                     getSystemService(Context.INPUT_METHOD_SERVICE);
-//            methodManager.hideSoftInputFromWindow(_searchField.getWindowToken(), 0);
+            methodManager.hideSoftInputFromWindow(_searchField.getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_PASS) {
+                deleteCard();
+            }
         }
     }
 
     @Override
     public void onActionDownPerform() {
 
+    }
+
+    private void deleteCard() {
+        PromptCard deletedCard =_cards.remove(0);
+        _cardAdapter.notifyDataSetChanged();
+        _cardPresenter.deletePromptCard(deletedCard.getId());
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
     }
 
     public static class ViewContainer {
@@ -165,17 +203,17 @@ public class MainActivity extends FragmentActivity implements
 
     public class CardAdapter extends BaseAdapter {
 
-        public List<Data> parkingList;
-        public Context context;
+        public List<PromptCard> _promptCards;
+        public Context _context;
 
-        private CardAdapter(List<Data> apps, Context context) {
-            this.parkingList = apps;
-            this.context = context;
+        private CardAdapter(List<PromptCard> apps, Context context) {
+            _promptCards = apps;
+            _context = context;
         }
 
         @Override
         public int getCount() {
-            return parkingList.size();
+            return _promptCards.size();
         }
 
         @Override
@@ -206,8 +244,9 @@ public class MainActivity extends FragmentActivity implements
                 _viewContainer = (ViewContainer) convertView.getTag();
             }
 
-            _viewContainer.friendText.setText(parkingList.get(position).getFriend() + "");
-            _viewContainer.tagStringText.setText(parkingList.get(position).getTagString());
+            String basedOnSearch = "Based on a search by ";
+            _viewContainer.friendText.setText(basedOnSearch + _promptCards.get(position).getFriend().getName());
+            _viewContainer.tagStringText.setText(_promptCards.get(position).getTagstring());
             return rowView;
         }
     }

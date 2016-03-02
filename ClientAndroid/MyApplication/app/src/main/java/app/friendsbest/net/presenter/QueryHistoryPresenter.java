@@ -7,36 +7,41 @@ import java.util.List;
 import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
-import app.friendsbest.net.presenter.interfaces.QueryPresenter;
-import app.friendsbest.net.ui.view.SearchHistoryView;
+import app.friendsbest.net.presenter.interfaces.ListFragmentPresenter;
+import app.friendsbest.net.ui.view.FragmentView;
 
-public class QueryHistoryPresenter implements QueryPresenter {
+public class QueryHistoryPresenter implements ListFragmentPresenter<List<Query>> {
 
-    private SearchHistoryView _view;
+    private FragmentView _view;
     private BaseRepository _repository;
 
-    public QueryHistoryPresenter(SearchHistoryView view, Context context){
+    public QueryHistoryPresenter(FragmentView view, Context context){
         _view = view;
         _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
         onStart();
     }
 
-    @Override
-    public void onStart() {
-        _view.showProgress();
-        getQueryHistory();
+    private void onStart() {
+        _view.showProgressBar();
+        getData();
     }
 
+
     @Override
-    public void getQueryHistory() {
+    public void getData() {
         _repository.getQueries();
     }
 
     @Override
-    public void sendToPresenter(List<Query> responseData) {
-        if (responseData != null){
-            _view.hideProgress();
-            _view.displaySearchHistory(responseData);
-        }
+    public void getData(List<Query> content) {
+        getData();
     }
+
+    @Override
+    public void sendToPresenter(List<Query> responseData) {
+        _view.hideProgressBar();
+        if (responseData != null)
+            _view.displayContent(responseData);
+    }
+
 }

@@ -1,7 +1,5 @@
 package app.friendsbest.net.presenter.interfaces;
 
-import android.app.ListFragment;
-
 import java.util.List;
 
 import app.friendsbest.net.data.model.Query;

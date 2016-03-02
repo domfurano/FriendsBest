@@ -9,7 +9,10 @@ public class PreferencesUtility {
     public static final String ACCESS_TOKEN_KEY = "key";
     public static final String USER_NAME_KEY = "user_name";
     public static final String FACEBOOK_TOKEN_KEY = "access_token";
-    public static final String USER_PROFILE_KEY = "user_profile";
+    public static final String PROFILE_PICTURE_URI = "user_picture";
+    public static final String LOGIN_VALIDITY_KEY = "login_validity";
+    public static final String INVALID = "invalid";
+    public static final String VALID = "valid";
 
     public static PreferencesUtility _instance = null;
     private SharedPreferences _preferences;
@@ -44,6 +47,11 @@ public class PreferencesUtility {
 
     public boolean saveUserName(String fullName){
         _editor.putString(USER_NAME_KEY, fullName);
+        return _editor.commit();
+    }
+
+    public boolean saveProfilePicture(String uri) {
+        _editor.putString(PROFILE_PICTURE_URI, uri);
         return _editor.commit();
     }
 

@@ -1,19 +1,23 @@
 package app.friendsbest.net.data.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Query {
-    public void setId(int id) {
-        this.id = id;
-    }
+    @SerializedName("timestamp")
+    @Expose
+    private String timestamp;
 
-    public List<String> getTags() {
-        return tags;
-    }
+    @SerializedName("tags")
+    @Expose
+    private List<String> _tags = new ArrayList<String>();
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
+    @SerializedName("id")
+    @Expose
+    private int _id;
 
     public String getTimestamp() {
         return timestamp;
@@ -23,20 +27,27 @@ public class Query {
         this.timestamp = timestamp;
     }
 
-    private int id;
-    private List<String> tags;
-    private String timestamp;
+    public List<String> getTags() {
+        return _tags;
+    }
+
+    public void setTags(List<String> tags) {
+        _tags = tags;
+    }
 
     public int getId() {
-        return this.id;
+        return _id;
+    }
+
+    public void setId(int id) {
+        _id = id;
     }
 
     @Override
     public String toString(){
-        StringBuilder builder = new StringBuilder();
-        for(String tag : tags){
-            builder.append(tag).append(" ");
-        }
-        return builder.toString();
+        String tagString = "";
+        for (String tag : _tags)
+            tagString += tag + " ";
+        return tagString;
     }
 }

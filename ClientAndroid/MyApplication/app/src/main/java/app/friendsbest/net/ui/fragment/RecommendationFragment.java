@@ -1,56 +1,67 @@
 package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.RecommendationPresenter;
 import app.friendsbest.net.presenter.interfaces.RecommendPresenter;
+import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.MainActivity;
 import app.friendsbest.net.ui.view.RecommendView;
 
-public class RecommendationFragment extends Fragment implements RecommendView {
-    private TextView _recommendTitle;
-    private TextView _tagsTitle;
-    private TextView _commentTitle;
+public class RecommendationFragment extends Fragment implements
+        RecommendView,
+        View.OnClickListener {
+
+    public static final String BUNDLE_KEY = "addRecommendationKey";
+    private RecommendPresenter _presenter;
     private EditText _editTags;
     private EditText _editComment;
+//    private TextView _submitButton;
     private Button _submitButton;
-    private RecommendPresenter _presenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.activity_create_rec, container, false);
-        _recommendTitle = (TextView) fragmentView.findViewById(R.id.rec_title_input_label);
-        _tagsTitle = (TextView) fragmentView.findViewById(R.id.rec_tags_input_label);
-        _commentTitle = (TextView) fragmentView.findViewById(R.id.rec_comments_label);
+        View fragmentView = inflater.inflate(R.layout.fragment_recommend, container, false);
+        FontManager.markAsIconContainer(fragmentView.findViewById(R.id.add_recommendation_toolbar), DualFragmentActivity._typeFace);
 
         _editTags = (EditText) fragmentView.findViewById(R.id.rec_tags_input);
         _editComment = (EditText) fragmentView.findViewById(R.id.rec_comments_input);
 
         _submitButton = (Button) fragmentView.findViewById(R.id.add_recommendation_button);
+        _submitButton.setOnClickListener(this);
+
+        Toolbar toolbar = (Toolbar) fragmentView.findViewById(R.id.add_recommendation_toolbar);
+        toolbar.setTitle(R.string.add_recommendation);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         return fragmentView;
     }
 
@@ -81,11 +92,26 @@ public class RecommendationFragment extends Fragment implements RecommendView {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            startMainActivity(false);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void startMainActivity(boolean posted) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra(BUNDLE_KEY, posted);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == _submitButton) {
+            String hello = "hello";
+        }
     }
 }

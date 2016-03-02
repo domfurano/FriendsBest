@@ -8,16 +8,17 @@
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin">
     <RelativeLayout
-        android:id="@+id/searchLayout"
+        android:id="@+id/query_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <ImageButton
+        <TextView
             android:id="@+id/query_results_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/ic_history_black_36dp" />
+            android:text="@string/fa_icon_history"
+            android:textSize="30dp"
+            android:layout_marginRight="5dp"/>
         <EditText
             android:id="@+id/query_field"
             android:layout_width="match_parent"
@@ -37,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7">
-        <app.friendsbest.net.swipecards.SwipeFlingAdapterView
+        <app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:rotation_degrees="15.5"
@@ -48,6 +49,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <include layout="@layout/fragment_navigation_bar"/>
+        <include layout="@layout/navigation_bar"/>
     </RelativeLayout>
 </LinearLayout>

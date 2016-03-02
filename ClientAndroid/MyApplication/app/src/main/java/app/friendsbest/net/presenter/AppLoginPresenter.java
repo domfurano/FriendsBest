@@ -2,15 +2,12 @@ package app.friendsbest.net.presenter;
 
 import android.content.Context;
 
-import com.facebook.CallbackManager;
-import com.facebook.login.widget.LoginButton;
-import com.google.gson.Gson;
+import com.facebook.Profile;
 
 import java.util.Map;
 
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
-import app.friendsbest.net.data.model.UserProfile;
 import app.friendsbest.net.presenter.interfaces.LoginPresenter;
 import app.friendsbest.net.ui.view.LoginView;
 
@@ -28,17 +25,12 @@ public class AppLoginPresenter implements LoginPresenter {
 
     @Override
     public void onStart() {
-        if (getLoginStatus())
-            onUserLogin();
-        else {
-            _repository = new BaseRepository(this, null);
-            _loginView.registerFacebookCallback();
-        }
+        checkLoginStatus();
     }
 
     @Override
     public void onUserLogin() {
-        _loginView.goToMainView();
+        _loginView.startMainView();
     }
 
     @Override
@@ -47,9 +39,16 @@ public class AppLoginPresenter implements LoginPresenter {
     }
 
     @Override
-    public boolean getLoginStatus() {
+    public void checkLoginStatus() {
         String token = _preferencesUtility.getToken();
-        return token != null;
+        if (token != null) {
+            _repository = new BaseRepository(this, token);
+            _repository.getFriends();
+        }
+        else {
+            _repository = new BaseRepository(this, null);
+            _loginView.registerFacebookCallback();
+        }
     }
 
     @Override
@@ -58,16 +57,30 @@ public class AppLoginPresenter implements LoginPresenter {
             String value;
             if ((value = responseData.get(PreferencesUtility.ACCESS_TOKEN_KEY)) != null){
                 _preferencesUtility.saveToken(value);
+                _loginView.getUserProfile();
                 onUserLogin();
-            }
-            else if ((value = responseData.get(PreferencesUtility.USER_PROFILE_KEY)) != null) {
-                UserProfile profile = new Gson().fromJson(value, UserProfile.class);
-                _preferencesUtility.saveUserName(profile.getFullName());
             }
             else if (responseData.containsKey(PreferencesUtility.FACEBOOK_TOKEN_KEY)) {
                 _repository.getAuthToken(responseData);
             }
+            else if ((value = responseData.get(PreferencesUtility.LOGIN_VALIDITY_KEY)) != null) {
+                if (value.equals(PreferencesUtility.VALID)) {
+                    _loginView.startMainView();
+                }
+                else {
+                    _preferencesUtility.deleteStoredData();
+                    _repository = null;
+                    onStart();
+                }
+            }
         }
-        onLoginFail();
+        else {
+            onLoginFail();
+        }
+    }
+
+    public void saveFacebookProfile(Profile profile) {
+        _preferencesUtility.saveProfilePicture(profile.getProfilePictureUri(50, 80).toString());
+        _preferencesUtility.saveUserName(profile.getName());
     }
 }

@@ -20,7 +20,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/ic_history_black_36dp" />
+                android:background="@drawable/ic_search_black_36dp" />
             <EditText
                 android:id="@+id/query_field"
                 android:layout_width="match_parent"
@@ -53,6 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="app.friendsbest.net.ui.fragment.NavigationFragment"
-            tools:layout="@layout/fragment_navigation_bar"/>
+            tools:layout="@layout/navigation_bar"/>
     </FrameLayout>
 </LinearLayout>

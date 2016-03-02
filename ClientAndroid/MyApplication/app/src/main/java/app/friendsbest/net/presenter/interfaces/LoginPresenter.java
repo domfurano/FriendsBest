@@ -7,7 +7,7 @@ public interface LoginPresenter extends BasePresenter<Map<String, String>> {
     void onStart();
     void onUserLogin();
     void onLoginFail();
-    boolean getLoginStatus();
+    void checkLoginStatus();
 
     @Override
     void sendToPresenter(Map<String, String> responseData);

@@ -1,65 +1,66 @@
 package app.friendsbest.net.data.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PromptCard {
 
     @SerializedName("tagstring")
     @Expose
-    private String tagstring;
+    private String _tagstring;
     @SerializedName("tags")
     @Expose
-    private List<String> tags = new ArrayList<>();
+    private List<String> _tags = new ArrayList<>();
     @SerializedName("id")
     @Expose
-    private int id;
+    private int _id;
     @SerializedName("friend")
     @Expose
-    private String friend;
+    private Friend _friend;
     @SerializedName("article")
     @Expose
-    private String article;
+    private String _article;
 
     public String getTagstring() {
-        return tagstring;
+        return _tagstring;
     }
 
     public void setTagstring(String tagstring) {
-        this.tagstring = tagstring;
+        this._tagstring = tagstring;
     }
 
     public List<String> getTags() {
-        return tags;
+        return _tags;
     }
 
     public void setTags(List<String> tags) {
-        this.tags = tags;
+        this._tags = tags;
     }
 
     public int getId() {
-        return id;
+        return _id;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this._id = id;
     }
 
-    public String getFriend() {
-        return friend;
+    public Friend getFriend() {
+        return _friend;
     }
 
-    public void setFriend(String friend) {
-        this.friend = friend;
+    public void setFriend(Friend friend) {
+        this._friend = friend;
     }
 
     public String getArticle() {
-        return article;
+        return _article;
     }
 
     public void setArticle(String article) {
-        this.article = article;
+        this._article = article;
     }
 }
