@@ -3,10 +3,7 @@ package app.friendsbest.net.ui.fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,7 +11,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
@@ -29,10 +29,12 @@ public class SolutionFragment extends ListFragment implements
         FragmentView<QueryResult>,
         AdapterView.OnItemClickListener {
 
-    public static final String SOLUTION_TAG = "solutionTag";
+    public static final String SOLUTION_TAGS = "solutionTag";
     public static final String SOLUTION_ID_TAG = "solutionId";
 
-    private OnFragmentChangeListener _listener;
+    private final String _fragmentTitleTag = "fragmentTitle";
+    private final String _solutionBundleTag = "solutionBundle";
+    private OnFragmentInteractionListener _listener;
     private ArrayAdapter<Solution> _arrayAdapter;
     private ListFragmentPresenter _presenter;
     private QueryResult _queryResult;
@@ -44,15 +46,7 @@ public class SolutionFragment extends ListFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_solution, container, false);
         init(getArguments());
-
         _progressBar = (ProgressBar) rootView.findViewById(R.id.solution_progress_bar);
-
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.solution_toolbar);
-        toolbar.setTitle(_queryResult.getTagString());
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         return rootView;
     }
 
@@ -63,24 +57,23 @@ public class SolutionFragment extends ListFragment implements
                 android.R.layout.simple_expandable_list_item_1);
         setListAdapter(_arrayAdapter);
         getListView().setOnItemClickListener(this);
-        _listener = (OnFragmentChangeListener) getActivity();
+        _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.onFragmentTitleChange(_queryResult.getTagString());
         _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
         _presenter.getData(_queryResult);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            _listener.onFragmentChangeResult(null);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        List<Solution> solutions = new ArrayList<>();
+        for (int i = 0; i < _arrayAdapter.getCount(); i++)
+            solutions.add(_arrayAdapter.getItem(i));
 
-    private void init(Bundle bundle) {
-        int solutionId = bundle.getInt(SOLUTION_ID_TAG);
-        _queryResult = new QueryResult();
-        _queryResult.setId(solutionId);
+        Type type = new TypeToken<List<Solution>>(){}.getType();
+        String solutionJson = new Gson().toJson(solutions, type);
+        outState.putString(_fragmentTitleTag, _queryResult.getTagString());
+        outState.putString(_solutionBundleTag, solutionJson);
     }
 
     @Override
@@ -111,6 +104,13 @@ public class SolutionFragment extends ListFragment implements
 
     @Override
     public void displayMessage(String message) {
+    }
 
+    private void init(Bundle bundle) {
+        int solutionId = bundle.getInt(SOLUTION_ID_TAG);
+        String tagString = bundle.getString(SOLUTION_TAGS);
+        _queryResult = new QueryResult();
+        _queryResult.setId(solutionId);
+        _queryResult.setTagString(tagString);
     }
 }

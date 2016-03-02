@@ -21,7 +21,7 @@ public class SearchHistoryFragment extends ListFragment implements
         FragmentView<List<Query>>,
         AdapterView.OnItemClickListener {
 
-    private OnFragmentChangeListener _listener;
+    private OnFragmentInteractionListener _listener;
     private ArrayAdapter<Query> _adapter;
     private ProgressBar _progressBar;
 
@@ -32,9 +32,9 @@ public class SearchHistoryFragment extends ListFragment implements
                 android.R.layout.simple_expandable_list_item_1);
         setListAdapter(_adapter);
         getListView().setOnItemClickListener(this);
-        _listener = (OnFragmentChangeListener) getActivity();
+        _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.onFragmentTitleChange("");
         new QueryHistoryPresenter(this, getActivity().getApplicationContext());
-
     }
 
     @Override
@@ -48,7 +48,11 @@ public class SearchHistoryFragment extends ListFragment implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Query query = _adapter.getItem(position);
         Bundle bundle = new Bundle();
+        String tagString = "";
+        for (String tag : query.getTags())
+            tagString += tag + " ";
         bundle.putInt(SolutionFragment.SOLUTION_ID_TAG, query.getId());
+        bundle.putString(SolutionFragment.SOLUTION_TAGS, tagString);
         _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
     }
 

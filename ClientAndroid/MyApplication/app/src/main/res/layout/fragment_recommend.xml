@@ -3,35 +3,6 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical" android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/add_recommendation_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/appGreen"
-        android:elevation="4dp"
-        android:theme="@style/ToolbarStyleLight">
-        <Button
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:id="@+id/add_recommendation_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:textColor="@color/white"
-            android:background="@color/appGreen"
-            android:textSize="25dp"
-            android:text="@string/fa_icon_plus"
-            />
-        <!--<TextView-->
-            <!--android:id="@+id/add_recommendation_button"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="right"-->
-            <!--android:textColor="@color/white"-->
-            <!--android:textSize="25dp"-->
-            <!--android:paddingRight="20dp"-->
-            <!--android:text="@string/fa_icon_plus"-->
-            <!--/>-->
-    </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -5,13 +5,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:fitsSystemWindows="true">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/solution_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gray200"
-        android:elevation="4dp"
-        app:theme="@style/ToolbarStyleLight"/>
     <ProgressBar
         android:id="@+id/solution_progress_bar"
         android:layout_width="wrap_content"

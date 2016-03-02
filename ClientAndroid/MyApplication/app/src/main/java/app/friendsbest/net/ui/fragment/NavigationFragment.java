@@ -3,7 +3,6 @@ package app.friendsbest.net.ui.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import app.friendsbest.net.ui.DualFragmentActivity;
 
 public class NavigationFragment extends Fragment implements View.OnClickListener {
 
-    private OnFragmentChangeListener _listener;
+    private OnFragmentInteractionListener _listener;
     private TextView _profileButton;
     private TextView _recommendButton;
     private TextView _homeButton;
@@ -27,14 +26,14 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
         _profileButton.setOnClickListener(this);
         _recommendButton.setOnClickListener(this);
         _homeButton.setOnClickListener(this);
-        _listener = (OnFragmentChangeListener) getActivity();
+        _listener = (OnFragmentInteractionListener) getActivity();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.navigation_bar, container, false);
-        FontManager.markAsIconContainer(contentView.findViewById(R.id.navigation_container), DualFragmentActivity._typeFace);
+        FontManager.markAsIconContainer(contentView.findViewById(R.id.navigation_container), DualFragmentActivity.TYPEFACE);
         _profileButton = (TextView) contentView.findViewById(R.id.nav_profile_button);
         _homeButton = (TextView) contentView.findViewById(R.id.nav_home_button);
         _recommendButton = (TextView) contentView.findViewById(R.id.nav_recommend_button);
@@ -48,14 +47,11 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        if (v == _profileButton) {
-            Log.i("OnClick", "clicked profile button");
-        }
-        else if (v == _recommendButton) {
-            _listener.onFragmentChange(DualFragmentActivity.ADD_RECOMMENDATION_ID);
-        }
-        else if (v == _homeButton) {
-            Log.i("OnClick", "clicked home button");
-        }
+        if (v == _profileButton)
+            _listener.onFragmentChange(DualFragmentActivity.PROFILE_ID);
+        else if (v == _recommendButton)
+            _listener.onFragmentChange(DualFragmentActivity.VIEW_GOOGLE_PLACES);
+        else if (v == _homeButton)
+            _listener.onFragmentChangeResult(null);
     }
 }

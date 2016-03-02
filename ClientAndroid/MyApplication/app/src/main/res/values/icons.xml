@@ -5,4 +5,5 @@
     <string name="fa_icon_history">&#xf1da;</string>
     <string name="fa_icon_search">&#xf002;</string>
     <string name="fa_icon_profile">&#xf007;</string>
+    <string name="fa_icon_map_marker">&#xf041;</string>
 </resources>

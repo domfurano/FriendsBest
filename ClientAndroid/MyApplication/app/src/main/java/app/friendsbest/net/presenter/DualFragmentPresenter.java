@@ -62,7 +62,7 @@ public class DualFragmentPresenter implements Presenter {
     @Override
     public void sendToPresenter(QueryResult solution) {
         String solutionJson = new Gson().toJson(solution, QueryResult.class);
-        String key = SolutionFragment.SOLUTION_TAG;
+        String key = SolutionFragment.SOLUTION_TAGS;
         Bundle bundle = new Bundle();
         bundle.putString(key, solutionJson);
         _dualFragmentView.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);

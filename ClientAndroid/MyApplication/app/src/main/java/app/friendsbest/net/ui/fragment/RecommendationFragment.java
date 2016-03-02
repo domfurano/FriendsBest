@@ -32,35 +32,21 @@ public class RecommendationFragment extends Fragment implements
         View.OnClickListener {
 
     public static final String BUNDLE_KEY = "addRecommendationKey";
+    private OnFragmentInteractionListener _listener;
     private RecommendPresenter _presenter;
     private EditText _editTags;
     private EditText _editComment;
 //    private TextView _submitButton;
     private Button _submitButton;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_recommend, container, false);
-        FontManager.markAsIconContainer(fragmentView.findViewById(R.id.add_recommendation_toolbar), DualFragmentActivity._typeFace);
+//        FontManager.markAsIconContainer(fragmentView.findViewById(R.id.add_recommendation_toolbar), DualFragmentActivity.TYPEFACE);
 
         _editTags = (EditText) fragmentView.findViewById(R.id.rec_tags_input);
         _editComment = (EditText) fragmentView.findViewById(R.id.rec_comments_input);
-
-        _submitButton = (Button) fragmentView.findViewById(R.id.add_recommendation_button);
-        _submitButton.setOnClickListener(this);
-
-        Toolbar toolbar = (Toolbar) fragmentView.findViewById(R.id.add_recommendation_toolbar);
-        toolbar.setTitle(R.string.add_recommendation);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return fragmentView;
     }
@@ -68,13 +54,16 @@ public class RecommendationFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.onFragmentTitleChange("Add Recommendation");
+        _listener.onFragmentToolbarChange(R.color.appGreen);
         _presenter = new RecommendationPresenter(this, getActivity().getApplicationContext());
-        _submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("Add Recommendation", "Clicked submit button");
-            }
-        });
+//        _submitButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i("Add Recommendation", "Clicked submit button");
+//            }
+//        });
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -93,10 +82,6 @@ public class RecommendationFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            startMainActivity(false);
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
