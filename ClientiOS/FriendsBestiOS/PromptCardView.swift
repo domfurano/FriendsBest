@@ -34,9 +34,10 @@ class PromptCardView: UIView {
         
         /* Rotate */
         
-        let angleInRadians: CGFloat = CGFloat((Int32(random()) - INT32_MAX / 2) % (INT32_MAX / 32)) / CGFloat(INT32_MAX)
-        let transform: CGAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, angleInRadians)
-        self.transform = transform
+//        let angleInRadians: CGFloat = CGFloat((Int32(random()) - INT32_MAX / 2) % (INT32_MAX / 32)) / CGFloat(INT32_MAX)
+//        let transform: CGAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, angleInRadians)
+        
+
         
         /* Rounded corners */
         

@@ -456,8 +456,9 @@ class FBNetworkDAO {
                 
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                     User.instance.prompts.prompts = prompts
-                    self?.networkDAODelegate?.promptsFetched()
+                    // The queue doesn't have to wait on the delegate...
                     NetworkQueue.instance.dequeue()
+                    self?.networkDAODelegate?.promptsFetched()
                 })
                 
             }).resume()
