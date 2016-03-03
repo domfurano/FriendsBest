@@ -1,8 +1,10 @@
 package app.friendsbest.net.ui.fragment;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.data.model.OnListItemClickListener;
 import app.friendsbest.net.data.model.QueryResult;
 import app.friendsbest.net.data.model.Solution;
+import app.friendsbest.net.data.model.SolutionAdapter;
 import app.friendsbest.net.presenter.SolutionPresenter;
 import app.friendsbest.net.presenter.interfaces.ListFragmentPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.FragmentView;
 
-public class SolutionFragment extends ListFragment implements
+public class SolutionFragment extends Fragment implements
         FragmentView<QueryResult>,
-        AdapterView.OnItemClickListener {
+        OnListItemClickListener<Solution> {
 
     public static final String SOLUTION_TAGS = "solutionTag";
     public static final String SOLUTION_ID_TAG = "solutionId";
@@ -35,10 +39,12 @@ public class SolutionFragment extends ListFragment implements
     private final String _fragmentTitleTag = "fragmentTitle";
     private final String _solutionBundleTag = "solutionBundle";
     private OnFragmentInteractionListener _listener;
-    private ArrayAdapter<Solution> _arrayAdapter;
-    private ListFragmentPresenter _presenter;
+    private SolutionAdapter _adapter;
+    private RecyclerView _recyclerView;
+    private List<Solution> _solutions = new ArrayList<>();
     private QueryResult _queryResult;
     private ProgressBar _progressBar;
+    private ListFragmentPresenter _presenter;
 
 
     @Nullable
@@ -47,28 +53,38 @@ public class SolutionFragment extends ListFragment implements
         View rootView = inflater.inflate(R.layout.fragment_solution, container, false);
         init(getArguments());
         _progressBar = (ProgressBar) rootView.findViewById(R.id.solution_progress_bar);
+        _recyclerView = (RecyclerView) rootView.findViewById(R.id.solution_recycler_view);
+        _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        _adapter = new SolutionAdapter(getActivity(), _solutions, this);
+        _recyclerView.setAdapter(_adapter);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        _arrayAdapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
-                android.R.layout.simple_expandable_list_item_1);
-        setListAdapter(_arrayAdapter);
-        getListView().setOnItemClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.onFragmentTitleChange(_queryResult.getTagString());
-        _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
-        _presenter.getData(_queryResult);
+
+        if (savedInstanceState != null) {
+            String title = savedInstanceState.getString(_fragmentTitleTag);
+            String solutionJson = savedInstanceState.getString(_solutionBundleTag);
+            Type type = new TypeToken<List<Solution>>(){}.getType();
+            _solutions = new Gson().fromJson(solutionJson, type);
+            _listener.onFragmentTitleChange(title);
+        }
+        else {
+            _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
+            _presenter.getData(_queryResult);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         List<Solution> solutions = new ArrayList<>();
-        for (int i = 0; i < _arrayAdapter.getCount(); i++)
-            solutions.add(_arrayAdapter.getItem(i));
+        for (Solution solution : solutions)
+            solutions.add(solution);
 
         Type type = new TypeToken<List<Solution>>(){}.getType();
         String solutionJson = new Gson().toJson(solutions, type);
@@ -77,19 +93,9 @@ public class SolutionFragment extends ListFragment implements
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Solution solution = _arrayAdapter.getItem(position);
-        String itemJson = new Gson().toJson(solution, Solution.class);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(RecommendationItemFragment.TAG, itemJson);
-        _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ITEM_ID, bundle);
-    }
-
-    @Override
     public void displayContent(QueryResult solution) {
-        List<Solution> recommendations = solution.getSolutions();
-        _arrayAdapter.addAll(recommendations);
+        _solutions = solution.getSolutions();
+        _recyclerView.setAdapter(new SolutionAdapter(getActivity(), _solutions, this));
     }
 
     @Override
@@ -112,5 +118,14 @@ public class SolutionFragment extends ListFragment implements
         _queryResult = new QueryResult();
         _queryResult.setId(solutionId);
         _queryResult.setTagString(tagString);
+    }
+
+    @Override
+    public void onListItemClick(Solution item) {
+        String itemJson = new Gson().toJson(item, Solution.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(RecommendationItemFragment.TAG, itemJson);
+        _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ITEM_ID, bundle);
     }
 }

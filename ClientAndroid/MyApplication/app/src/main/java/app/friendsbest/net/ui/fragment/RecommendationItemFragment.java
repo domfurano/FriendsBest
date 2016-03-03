@@ -1,12 +1,13 @@
 package app.friendsbest.net.ui.fragment;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import com.google.gson.Gson;
 
@@ -14,22 +15,29 @@ import java.util.List;
 
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.RecommendationItem;
+import app.friendsbest.net.data.model.RecommendationItemAdapter;
 import app.friendsbest.net.data.model.Solution;
 
-public class RecommendationItemFragment extends ListFragment {
+public class RecommendationItemFragment extends Fragment {
 
     public static final String TAG = "solutionItemTag";
 
-    private OnFragmentInteractionListener _listener;
     private List<RecommendationItem> _recommendations;
+    private OnFragmentInteractionListener _listener;
+    private RecyclerView _recyclerView;
+    private RecommendationItemAdapter _adapter;
     private String _toolbarTitle;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_solution_item, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_recommendation_item, container, false);
         init(getArguments());
+        _recyclerView = (RecyclerView) rootView.findViewById(R.id.solution_item_recycler_view);
+        _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        _adapter = new RecommendationItemAdapter(getActivity(), _recommendations);
+        _recyclerView.setAdapter(_adapter);
         return rootView;
     }
 
@@ -43,11 +51,6 @@ public class RecommendationItemFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter<RecommendationItem> adapter =
-                new ArrayAdapter<>(getActivity().getApplicationContext(),
-                android.R.layout.simple_expandable_list_item_1);
-        setListAdapter(adapter);
-        adapter.addAll(_recommendations);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.onFragmentTitleChange(_toolbarTitle);
     }

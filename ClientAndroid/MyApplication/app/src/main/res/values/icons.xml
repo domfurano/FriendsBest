@@ -6,4 +6,5 @@
     <string name="fa_icon_search">&#xf002;</string>
     <string name="fa_icon_profile">&#xf007;</string>
     <string name="fa_icon_map_marker">&#xf041;</string>
+    <string name="fa_chevron_right">&#xf054;</string>
 </resources>

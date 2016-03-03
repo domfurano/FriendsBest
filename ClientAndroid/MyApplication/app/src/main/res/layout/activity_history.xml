@@ -9,7 +9,7 @@
         android:id="@+id/history_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/gray200"
+        android:background="@color/blue_gray200"
         android:elevation="4dp"
         android:theme="@style/ToolbarStyleLight"/>
     <ProgressBar
