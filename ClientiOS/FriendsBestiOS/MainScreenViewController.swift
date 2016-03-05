@@ -58,7 +58,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
 //        refreshControl.tintColor = UIColor.whiteColor()
 //        self.view.addSubview(refreshControl)
         
-        /* Gesture recognizers */
+//         Gesture recognizers 
         self.leftSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeLeft")
         self.rightSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeRight")
         self.leftSwipeGR!.direction = .Left
@@ -66,6 +66,9 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         self.view.addGestureRecognizer(self.leftSwipeGR!)
         self.view.addGestureRecognizer(self.rightSwipeGR!)
+        
+//        let pgr: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
+//        self.view.addGestureRecognizer(pgr)
         
         baseCard.translatesAutoresizingMaskIntoConstraints = false
         
@@ -80,6 +83,17 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         addConstraints()
         
 
+    }
+    
+    func handlePan(sender: UIPanGestureRecognizer) {
+        if (sender.state == UIGestureRecognizerState.Changed) {
+            var center = sender.view?.center
+            let translation = sender.translationInView(sender.view)
+            center = CGPointMake(center!.x + translation.x, center!.y + translation.y)
+            cardViews.last?.view.center = center!
+//            sender.view?.center = center!
+//            sender.setTranslation(CGPointZero, inView: self.view)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -137,11 +151,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             },
             completion: {
                 (Bool) -> Void in
-                let promptAndCard = self.cardViews.removeLast()
-                promptAndCard.view.removeFromSuperview()
+//                let promptAndCard = self.cardViews.removeLast()
+//                promptAndCard.view.removeFromSuperview()
                 
                 let newController = NewRecommendationViewController()
-                newController.tagsField.text = promptAndCard.0.tagString
+                newController.tagsField.text = self.cardViews.last!.0.tagString
 //                newController.tagsField.enabled = false
                 // TODO: Fix NewRecommendationViewController so it doesn't crash when 
                 //       tagsField is disabled
@@ -170,8 +184,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func repositionCards() {
         for (var i = 0; i < self.cardViews.count; i++) {
-            let scale: CGAffineTransform = CGAffineTransformMakeScale(CGFloat(0.9), CGFloat(0.9))
-            let translation: CGAffineTransform = CGAffineTransformMakeTranslation(0, CGFloat(i * 4))
+            let scale: CGAffineTransform = CGAffineTransformMakeScale(1 + CGFloat(i) * 0.005, 1 + CGFloat(i) * 0.005)
+            let translation: CGAffineTransform = CGAffineTransformMakeTranslation(0, CGFloat((self.cardViews.count - i) * 5))
             let transform: CGAffineTransform = CGAffineTransformConcat(scale, translation)
             
             cardViews[i].view.transform = transform
@@ -267,7 +281,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func newRecommendationButtonPressed() {
         NSLog("New recommnedation button pressed")
-        navigationController?.pushViewController(NewRecommendationViewController(), animated: true)
+        navigationController?.pushViewController(GooglePlacesViewController(), animated: false)
+//        navigationController?.pushViewController(NewRecommendationViewController(), animated: true)
     }
     
     private func setToolbarItems() {

@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import FBSDKCoreKit
+import GoogleMaps
 
 
 @UIApplicationMain
@@ -37,6 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Facebook
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        // Google
+        GMSServices.provideAPIKey("AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8")
         
         return true
     }

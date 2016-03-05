@@ -25,8 +25,8 @@ class PromptCardView: UIView {
         
         CommonUIElements.drawGradientForContext(
             [
-                UIColor.colorFromHex(0x0056dc).CGColor,
-                UIColor.colorFromHex(0x0046cc).CGColor
+                UIColor.colorFromHex(0x6eafca).CGColor,
+                UIColor.colorFromHex(0x337792).CGColor
             ],
             frame: self.frame,
             context: context
