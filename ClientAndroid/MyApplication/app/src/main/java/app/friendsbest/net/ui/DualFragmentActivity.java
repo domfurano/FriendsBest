@@ -20,9 +20,8 @@ import app.friendsbest.net.R;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.DualFragmentPresenter;
 import app.friendsbest.net.ui.fragment.NavigationFragment;
-import app.friendsbest.net.ui.fragment.PlaceFragment;
 import app.friendsbest.net.ui.fragment.ProfileFragment;
-import app.friendsbest.net.ui.fragment.RecommendationFragment;
+import app.friendsbest.net.ui.fragment.PostRecommendationFragment;
 import app.friendsbest.net.ui.fragment.SearchHistoryFragment;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 import app.friendsbest.net.ui.fragment.RecommendationItemFragment;
@@ -34,11 +33,11 @@ public class DualFragmentActivity extends AppCompatActivity implements
 
     public static final String ADD_RECOMMENDATION_ID = "addRecommendation";
     public static final String SEARCH_HISTORY_ID = "queryHistory";
-    public static final String VIEW_GOOGLE_PLACES = "placePicker";
     public static final String VIEW_SOLUTION_ID = "viewSolution";
     public static final String VIEW_SOLUTION_ITEM_ID = "viewSolutionItem";
     public static final String PROFILE_ID = "profile";
     public static final String NAVIGATION_ID = "navigationBar";
+    public static final String REMOVE_FRAGMENT = "remove";
     public static Typeface TYPEFACE;
 
     private DualFragmentPresenter _fragmentPresenter;
@@ -67,6 +66,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
+
         _fragmentPresenter = new DualFragmentPresenter(this, getApplicationContext());
         _fragmentPresenter.setContentClass(className, payload);
         TYPEFACE = FontManager
@@ -91,7 +91,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
     @Override
     public void setContentFragment(String fragmentId) {
         Fragment fragment = getFragmentTypeByTag(fragmentId);
-        startFragment(fragment);
+        startFragment(fragment, fragmentId);
     }
 
     @Override
@@ -123,28 +123,37 @@ public class DualFragmentActivity extends AppCompatActivity implements
     @Override
     public void onFragmentChange(String fragmentTag) {
         Fragment fragment = getFragmentTypeByTag(fragmentTag);
-        startFragment(fragment);
+        startFragment(fragment, fragmentTag);
     }
 
     @Override
     public void onFragmentChange(String fragmentTag, Bundle bundle) {
         Fragment fragment = getFragmentTypeByTag(fragmentTag);
         fragment.setArguments(bundle);
-        startFragment(fragment);
+        startFragment(fragment, fragmentTag);
     }
 
     @Override
-    public void onFragmentChangeResult(Bundle bundle) {
+    public void onFragmentResult(Bundle bundle) {
         Intent intent = new Intent(DualFragmentActivity.this, MainActivity.class);
-        if (bundle != null)
+        if (bundle != null) {
+            if (bundle.containsKey(PostRecommendationFragment.BUNDLE_KEY)) {
+                boolean posted = bundle.getBoolean(PostRecommendationFragment.BUNDLE_KEY);
+                int resultCode = posted ? MainActivity.RESULT_PASS : MainActivity.RESULT_FAIL;
+                setResult(resultCode, intent);
+                finish();
+
+            }
             intent.putExtra(MainActivity.CONTENT_TAG, bundle);
+        }
         startActivity(intent);
+        finish();
     }
 
     private Fragment getFragmentTypeByTag(String fragmentTag){
         switch (fragmentTag) {
             case ADD_RECOMMENDATION_ID:
-                return new RecommendationFragment();
+                return new PostRecommendationFragment();
             case SEARCH_HISTORY_ID:
                 return new SearchHistoryFragment();
             case VIEW_SOLUTION_ID:
@@ -153,8 +162,6 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 return new RecommendationItemFragment();
             case PROFILE_ID:
                 return new ProfileFragment();
-            case VIEW_GOOGLE_PLACES:
-                return new PlaceFragment();
             case NAVIGATION_ID:
                 return new NavigationFragment();
             default:
@@ -162,10 +169,20 @@ public class DualFragmentActivity extends AppCompatActivity implements
         }
     }
 
-    private void startFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.dual_fragment_content_frame, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+    private void startFragment(Fragment fragment, String fragmentTag) {
+        FragmentManager manager = getFragmentManager();
+        if (fragment == null) {
+            manager.popBackStack();
+        }
+        else {
+            Fragment backStackFragment = manager.findFragmentByTag(fragmentTag);
+
+            if (backStackFragment == null || !backStackFragment.isVisible()) {
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.replace(R.id.dual_fragment_content_frame, fragment, fragmentTag);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        }
     }
 }

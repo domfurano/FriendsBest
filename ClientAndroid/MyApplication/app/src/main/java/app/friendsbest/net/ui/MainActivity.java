@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -46,8 +48,9 @@ public class MainActivity extends FragmentActivity implements
     private ImageButton _searchBtn;
     private EditText _searchField;
     private TextView _homeBtn;
-    private TextView _profileBtn;
+//    private TextView _profileBtn;
     private TextView _addRecommendBtn;
+    private RelativeLayout _emptyPromptLayout;
     private List<PromptCard> _cards;
 
 
@@ -74,7 +77,8 @@ public class MainActivity extends FragmentActivity implements
 
         _addRecommendBtn = (TextView) findViewById(R.id.nav_recommend_button);
         _homeBtn = (TextView) findViewById(R.id.nav_home_button);
-        _profileBtn = (TextView) findViewById(R.id.nav_profile_button);
+        _emptyPromptLayout = (RelativeLayout) findViewById(R.id.empty_card_layout);
+//        _profileBtn = (TextView) findViewById(R.id.nav_profile_button);
     }
 
     @Override
@@ -84,7 +88,7 @@ public class MainActivity extends FragmentActivity implements
         _searchBtn.setOnClickListener(this);
         _searchField.setOnFocusChangeListener(this);
         _addRecommendBtn.setOnClickListener(this);
-        _profileBtn.setOnClickListener(this);
+//        _profileBtn.setOnClickListener(this);
         _cardPresenter.getPrompts();
     }
 
@@ -97,38 +101,46 @@ public class MainActivity extends FragmentActivity implements
     }
 
     public void displayCards(List<PromptCard> cards) {
-        _cards = cards;
+        if (cards.size() == 0) {
+//            _emptyPromptLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+//            _emptyPromptLayout.setVisibility(View.INVISIBLE);
+            _cards = cards;
 
-        _cardAdapter = new CardAdapter(_cards, MainActivity.this);
-        _adapterView.setAdapter(_cardAdapter);
-        _cardAdapter.notifyDataSetChanged();
-        _adapterView.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
-            @Override
-            public void removeFirstObjectInAdapter() {
+            _cardAdapter = new CardAdapter(_cards, MainActivity.this);
+            _adapterView.setAdapter(_cardAdapter);
+            _cardAdapter.notifyDataSetChanged();
+            _adapterView.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+                @Override
+                public void removeFirstObjectInAdapter() {
 
-            }
+                }
 
-            @Override
-            public void onLeftCardExit(Object dataObject) {
-                deleteCard();
-            }
+                @Override
+                public void onLeftCardExit(Object dataObject) {
+                    deleteCard();
+                }
 
-            @Override
-            public void onRightCardExit(Object dataObject) {
-                Intent intent = new Intent(MainActivity.this, DualFragmentActivity.class);
-                intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
+                @Override
+                public void onRightCardExit(Object dataObject) {
+                    PromptCard card = _cards.get(0);
+                    Intent intent = new Intent(MainActivity.this, DualFragmentActivity.class);
+                    intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
+                    intent.putExtra(CONTENT_TAG, card.getTagstring());
+                    startActivityForResult(intent, REQUEST_CODE);
+                }
 
-            @Override
-            public void onAdapterAboutToEmpty(int itemsInAdapter) {
+                @Override
+                public void onAdapterAboutToEmpty(int itemsInAdapter) {
 
-            }
+                }
 
-            @Override
-            public void onScroll(float scrollProgressPercent) {
-            }
-        });
+                @Override
+                public void onScroll(float scrollProgressPercent) {
+                }
+            });
+        }
     }
 
     @Override
@@ -141,12 +153,10 @@ public class MainActivity extends FragmentActivity implements
                 intent.putExtra(CLASS_TAG, DualFragmentActivity.SEARCH_HISTORY_ID);
             } else if (v == _addRecommendBtn) {
                 intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
-            } else if (v == _profileBtn) {
-                intent.putExtra(CLASS_TAG, DualFragmentActivity.PROFILE_ID);
             } else if (v == _searchBtn) {
                 String searchText = _searchField.getText().toString();
                 if (_cardPresenter.isValidQuery(searchText)){
-                    intent.putExtra(CLASS_TAG, DualFragmentActivity.SEARCH_HISTORY_ID);
+                    intent.putExtra(CLASS_TAG, DualFragmentActivity.VIEW_SOLUTION_ID);
                     intent.putExtra(CONTENT_TAG, searchText);
                 }
                 else {

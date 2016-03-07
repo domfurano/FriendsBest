@@ -40,6 +40,11 @@ public class PreferencesUtility {
         return fullName;
     }
 
+    public String getProfilePictureUri() {
+        String uri = _preferences.getString(PROFILE_PICTURE_URI, null);
+        return uri;
+    }
+
     public boolean saveToken(String token) {
         _editor.putString(ACCESS_TOKEN_KEY, token);
         return _editor.commit();
@@ -58,6 +63,7 @@ public class PreferencesUtility {
     public void deleteStoredData(){
         _editor.remove(ACCESS_TOKEN_KEY);
         _editor.remove(USER_NAME_KEY);
+        _editor.remove(PROFILE_PICTURE_URI);
         _editor.commit();
     }
 }

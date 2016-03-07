@@ -2,6 +2,9 @@ package app.friendsbest.net.ui.view;
 
 public interface RecommendView {
 
-    void startMainActivity(boolean posted);
-
+    void sendFragmentResult(boolean posted);
+    void displayDetailValidation(String message);
+    void hideDetailValidation();
+    void displayTagsValidation(String message);
+    void hideTagsValidation();
 }

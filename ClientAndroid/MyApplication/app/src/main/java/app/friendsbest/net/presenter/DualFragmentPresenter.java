@@ -14,6 +14,7 @@ import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.Presenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
+import app.friendsbest.net.ui.MainActivity;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 import app.friendsbest.net.ui.view.DualFragmentView;
 
@@ -36,14 +37,18 @@ public class DualFragmentPresenter implements Presenter {
     @Override
     public void onStart(String startingClass, String payload) {
         if (payload != null) {
-            if (startingClass.equals(DualFragmentActivity.SEARCH_HISTORY_ID)) {
+            if (startingClass.equals(DualFragmentActivity.VIEW_SOLUTION_ID)) {
                 submitQuery(payload);
             }
             else if (startingClass.equals(DualFragmentActivity.ADD_RECOMMENDATION_ID)) {
-
+                Bundle bundle = new Bundle();
+                bundle.putString(MainActivity.CONTENT_TAG, payload);
+                _dualFragmentView.onFragmentChange(startingClass, bundle);
             }
         }
-        _dualFragmentView.setContentFragment(startingClass);
+        else {
+            _dualFragmentView.setContentFragment(startingClass);
+        }
         _dualFragmentView.setNavigationFragment(DualFragmentActivity.NAVIGATION_ID);
     }
 
@@ -61,11 +66,14 @@ public class DualFragmentPresenter implements Presenter {
 
     @Override
     public void sendToPresenter(QueryResult solution) {
-        String solutionJson = new Gson().toJson(solution, QueryResult.class);
-        String key = SolutionFragment.SOLUTION_TAGS;
-        Bundle bundle = new Bundle();
-        bundle.putString(key, solutionJson);
-        _dualFragmentView.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
+        if (solution != null) {
+            String solutionJson = new Gson().toJson(solution, QueryResult.class);
+            String key = SolutionFragment.SOLUTION_TAGS;
+            Bundle bundle = new Bundle();
+            bundle.putInt(SolutionFragment.SOLUTION_ID_TAG, solution.getId());
+            bundle.putString(key, solutionJson);
+            _dualFragmentView.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
+        }
     }
 }
 

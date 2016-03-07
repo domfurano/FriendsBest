@@ -19,16 +19,15 @@
             android:text="@string/fa_icon_home"/>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/navigation_center_icon_layout"
         android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
-        <TextView
+        <ImageView
             android:id="@+id/nav_profile_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="40sp"
-            android:text="@string/fa_icon_profile"/>
+            android:layout_height="wrap_content"/>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="0dp"

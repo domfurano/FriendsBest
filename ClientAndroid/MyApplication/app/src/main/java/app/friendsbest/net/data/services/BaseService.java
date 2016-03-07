@@ -9,6 +9,7 @@ import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.data.model.Recommendation;
 import app.friendsbest.net.data.model.RecommendationItem;
 import app.friendsbest.net.data.model.QueryResult;
+import app.friendsbest.net.data.model.RecommendationPost;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -25,22 +26,19 @@ public interface BaseService {
     Call<QueryResult> getQuery(@Path("queryId") int id);
 
     @POST("query")
-    Call<QueryResult> postQuery(@Body Map<String, List<String>> tags);
+    Call<List<Object>> postQuery(@Body Map<String, List<String>> tags);
 
     @GET("prompt")
     Call<List<PromptCard>> getPrompts();
 
-    @DELETE("prompt/{id}")
-    Call deletePrompt(int id);
+    @DELETE("prompt/{id}/")
+    Call<Void> deletePrompt(@Path("id") int id);
 
     @GET("recommend")
-    Call<List<RecommendationItem>> getRecommendations();
-
-    @GET("recommend/{recommendId}")
-    Call<RecommendationItem> getRecommendation(@Path("recommendId") int id);
+    Call<List<Recommendation>> getRecommendations();
 
     @POST("recommend")
-    Call<Recommendation> postRecommendation(@Body Recommendation recommendation);
+    Call<List<Recommendation>> postRecommendation(@Body RecommendationPost recommendation);
 
     @POST("facebook/")
     Call<Map<String, String>> getAuthToken(@Body Map<String, String> facebookToken);

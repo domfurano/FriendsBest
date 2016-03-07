@@ -43,7 +43,7 @@ public class AppLoginPresenter implements LoginPresenter {
         String token = _preferencesUtility.getToken();
         if (token != null) {
             _repository = new BaseRepository(this, token);
-            _repository.getFriends();
+            _repository.checkStatus();
         }
         else {
             _repository = new BaseRepository(this, null);
@@ -80,7 +80,7 @@ public class AppLoginPresenter implements LoginPresenter {
     }
 
     public void saveFacebookProfile(Profile profile) {
-        _preferencesUtility.saveProfilePicture(profile.getProfilePictureUri(50, 80).toString());
+        _preferencesUtility.saveProfilePicture(profile.getProfilePictureUri(300, 300).toString());
         _preferencesUtility.saveUserName(profile.getName());
     }
 }

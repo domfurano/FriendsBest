@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical" android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/place_picker_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/place_picker_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="50sp"
+            android:textColor="@color/red900"
+            android:text="@string/fa_icon_map_marker"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,36 +27,58 @@
             android:id="@+id/rec_title_input_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/rec_title_label"
-            android:paddingTop="15dp"/>
-        <fragment
-            android:id="@+id/place_autocomplete_fragment"
+            android:paddingTop="15dp"
+            android:text="@string/rec_title_label"/>
+        <TextView
+            android:id="@+id/rec_title_invalid_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red900"
+            android:textSize="16sp"/>
+        <EditText
+            android:id="@+id/rec_tags_title_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-            tools:layout="@layout/place_autocomplete_fragment"/>
+            android:imeOptions="actionNext"
+            android:hint="What do you recommend"/>
         <TextView
-        android:id="@+id/rec_tags_input_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/rec_tags_label"
-        android:textStyle="bold"
-        android:paddingTop="15dp"/>
+            android:id="@+id/rec_tags_input_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:text="@string/rec_tags_label"/>
+        <TextView
+            android:id="@+id/rec_tags_invalid_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red900"
+            android:textSize="16sp"/>
         <EditText
-        android:id="@+id/rec_tags_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="restaurant, exercise, recipe, etc"/>
+            android:id="@+id/rec_tags_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
+            android:hint="restaurant, exercise, recipe, etc"/>
+
         <TextView
             android:id="@+id/rec_comments_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/rec_comments_label"
-            android:paddingTop="15dp"/>
+            android:paddingTop="15dp"
+            android:text="@string/rec_comments_label"/>
+
         <EditText
             android:id="@+id/rec_comments_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionSend"
             android:hint="Why do you recommend it"/>
+        <Button
+            android:id="@+id/recommendation_submit"
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Submit"/>
     </LinearLayout>
 </LinearLayout>

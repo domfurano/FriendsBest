@@ -2,13 +2,15 @@ package app.friendsbest.net.ui.fragment;
 
 import java.util.List;
 
-import app.friendsbest.net.data.model.Recommendation;
+import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.ui.view.FragmentView;
 
-public class RecommendationFragment implements FragmentView<List<Recommendation>> {
+public class FriendFragment implements FragmentView<List<Friend>> {
+
+
 
     @Override
-    public void displayContent(List<Recommendation> content) {
+    public void displayContent(List<Friend> content) {
 
     }
 

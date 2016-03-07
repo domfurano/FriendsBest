@@ -20,4 +20,7 @@
     <string name="prompt_title">Do you have a recommendation for</string>
     <string name="prompt_tag">Restaurant</string>
     <string name="prompt_asker">Based on a search by</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="logout">Log out</string>
 </resources>

@@ -10,4 +10,5 @@
     <color name="card_grad_top">#CFD8DC</color>
     <color name="gray200">#eeeeee</color>
     <color name="gray400">#bdbdbd</color>
+    <color name="red900">#b71c1c</color>
 </resources>

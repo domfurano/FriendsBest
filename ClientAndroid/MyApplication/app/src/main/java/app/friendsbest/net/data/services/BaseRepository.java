@@ -9,9 +9,9 @@ import java.util.Map;
 import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.data.model.Query;
-import app.friendsbest.net.data.model.Recommendation;
-import app.friendsbest.net.data.model.RecommendationItem;
 import app.friendsbest.net.data.model.QueryResult;
+import app.friendsbest.net.data.model.Recommendation;
+import app.friendsbest.net.data.model.RecommendationPost;
 import app.friendsbest.net.presenter.interfaces.BasePresenter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,31 +59,31 @@ public class BaseRepository {
     }
 
     public void getRecommendations() {
-        _service.getRecommendations().enqueue(new Callback<List<RecommendationItem>>() {
+        _service.getRecommendations().enqueue(new Callback<List<Recommendation>>() {
             @Override
-            public void onResponse(Call<List<RecommendationItem>> call, Response<List<RecommendationItem>> response) {
-                List<RecommendationItem> recommendations = null;
+            public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
+                List<Recommendation> recommendations = null;
                 if (response.isSuccess())
                     recommendations = response.body();
                 _presenter.sendToPresenter(recommendations);
             }
 
             @Override
-            public void onFailure(Call<List<RecommendationItem>> call, Throwable t) {
+            public void onFailure(Call<List<Recommendation>> call, Throwable t) {
                 logError("Get Recommendations", t);
             }
         });
     }
 
-    public void postRecommendation(Recommendation recommendation) {
-        _service.postRecommendation(recommendation).enqueue(new Callback<Recommendation>() {
+    public void postRecommendation(RecommendationPost recommendation) {
+        _service.postRecommendation(recommendation).enqueue(new Callback<List<Recommendation>>() {
             @Override
-            public void onResponse(Call<Recommendation> call, Response<Recommendation> response) {
+            public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
                 _presenter.sendToPresenter(response.body());
             }
 
             @Override
-            public void onFailure(Call<Recommendation> call, Throwable t) {
+            public void onFailure(Call<List<Recommendation>> call, Throwable t) {
                 logError("Post Recommendation", t);
             }
         });
@@ -124,17 +124,17 @@ public class BaseRepository {
     }
 
     public void postQuery(Map<String, List<String>> tags) {
-        _service.postQuery(tags).enqueue(new Callback<QueryResult>() {
+        _service.postQuery(tags).enqueue(new Callback<List<Object>>() {
             @Override
-            public void onResponse(Call<QueryResult> call, Response<QueryResult> response) {
-                QueryResult solution = null;
+            public void onResponse(Call<List<Object>> call, Response<List<Object>> response) {
+                List<Object> solution = null;
                 if (response.isSuccess())
                     solution = response.body();
                 _presenter.sendToPresenter(solution);
             }
 
             @Override
-            public void onFailure(Call<QueryResult> call, Throwable t) {
+            public void onFailure(Call<List<Object>> call, Throwable t) {
                 logError("Post Query", t);
             }
         });
@@ -158,6 +158,23 @@ public class BaseRepository {
     }
 
     public void getFriends() {
+        _service.getFriends().enqueue(new Callback<List<Friend>>() {
+            @Override
+            public void onResponse(Call<List<Friend>> call, Response<List<Friend>> response) {
+                List<Friend> friendList = null;
+                if (response.isSuccess())
+                    friendList = response.body();
+                _presenter.sendToPresenter(friendList);
+            }
+
+            @Override
+            public void onFailure(Call<List<Friend>> call, Throwable t) {
+                Log.e("Friends", t.getMessage(), t);
+            }
+        });
+    }
+
+    public void checkStatus() {
         _service.getFriends().enqueue(new Callback<List<Friend>>() {
             @Override
             public void onResponse(Call<List<Friend>> call, Response<List<Friend>> response) {

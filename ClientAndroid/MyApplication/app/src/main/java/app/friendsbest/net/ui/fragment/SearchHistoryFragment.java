@@ -40,7 +40,7 @@ public class SearchHistoryFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         _listener = (OnFragmentInteractionListener) getActivity();
-        _listener.onFragmentTitleChange("");
+        _listener.onFragmentTitleChange("Search History");
     }
 
     @Override

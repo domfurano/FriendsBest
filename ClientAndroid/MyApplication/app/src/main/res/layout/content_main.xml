@@ -39,11 +39,40 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7">
-        <app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView
+        <RelativeLayout
+            android:id="@+id/empty_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_corner">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/content_main_logo_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/logo_1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_toRightOf="@id/content_main_logo_left"
+                    android:text="@string/logo_2"/>
+            </RelativeLayout>
+            <app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:rotation_degrees="15.5"
             android:id="@+id/swipe_card"/>
+        </RelativeLayout>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/navigation_layout"
