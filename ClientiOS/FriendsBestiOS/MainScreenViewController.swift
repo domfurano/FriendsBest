@@ -114,6 +114,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 // Runs on main thread (UIThread)
                 let promptAndCard = self.cardViews.removeLast()
                 promptAndCard.view.removeFromSuperview()
+                self.repositionCards()
             }
         )
     }
@@ -163,6 +164,18 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self.view.addSubview(cardView)
             cardView.translatesAutoresizingMaskIntoConstraints = false
             addCardConstraints(cardView)
+        }
+        self.repositionCards()
+    }
+    
+    func repositionCards() {
+        for (var i = 0; i < self.cardViews.count; i++) {
+            let scale: CGAffineTransform = CGAffineTransformMakeScale(CGFloat(0.9), CGFloat(0.9))
+            let translation: CGAffineTransform = CGAffineTransformMakeTranslation(0, CGFloat(i * 4))
+            let transform: CGAffineTransform = CGAffineTransformConcat(scale, translation)
+            
+            cardViews[i].view.transform = transform
+            cardViews[i].view.setNeedsDisplay()
         }
     }
     

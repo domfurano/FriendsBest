@@ -19,9 +19,11 @@ define([
     render: function(){
       
         that = this;
+/*
       
 		var menuTemplate = _.template( menuHTML, {} );
 		this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
+*/
 		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());

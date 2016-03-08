@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   'collections/queries',
-  'text!templates/search/history/back.html',
+  'text!templates/standard/back.html',
   'text!templates/search/history/items.html',
 ], function($, _, Backbone, QueriesCollection, backHTML, itemsHTML){
 
@@ -18,13 +18,12 @@ define([
       
 		that = this;
 		
-		var backTemplate = _.template( backHTML, {} );
-		this.$el.append(backTemplate);
-		$(".back-button").click(function() {
-			console.log("going back");
-			parent.history.go(-1);
-			return false;
-		});
+		var backTemplate = _.template( backHTML );
+		this.$el.append(backTemplate({
+			color: "#ffffff",
+			background: "#abb4ba",
+			title: "Search History"
+		}));
       
 		this.collection = new QueriesCollection();
 		this.collection.fetch({success: function(collection, response, options){

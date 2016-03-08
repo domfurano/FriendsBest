@@ -3,30 +3,48 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'views/home/menu',
   'views/home/main',
   'views/search/history',
   'views/recommend/add',
   'views/search/results',
   'views/home/login',
   'views/profile/profile',
-], function($, _, Backbone, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu){
+  'views/profile/recommendations',
+  'views/profile/friends'
+], function($, _, Backbone, MenuView, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu, RecommendationsView, FriendsView){
 	
 	var AppRouter = Backbone.Router.extend({
 	    routes: {
-			"": 					"main",				// #
-			"search/:queryid":		"search",			// #search/id
-			"search/:queryid/:sid":	"search",			// #search/id
-			"search":				"searchhistory",	// #search
-			"recommend":			"recommend",		// #recommend
-			"login":				"login",			// #login
-			"profile":				"profile"			// #profile
+			"": 						"main",				// #
+			"search/:queryid":			"search",			// #search/id
+			"search/:queryid/:sid":		"search",			// #search/id
+			"search":					"searchhistory",	// #search
+			"recommend":				"recommend",		// #recommend
+			"login":					"login",			// #login
+			"profile":					"profile",			// #profile
+			"profile/recommendations":	"recommendations",	// #profile/recommendations
+			"profile/friends":			"friends"			// #profile/friends
 		},
-		render: function(view) {
+		initialize: function() {
+		},
+		render: function(view, menu) {
+			
+			if(typeof this.menu === "undefined") {
+				// Setup nav menu
+				this.menu = new MenuView();
+				this.menu.render();
+			}
+			
 			// Close the current view
 	        if (this.currentView) {
 		        console.log("remove exisiting view");
 	            this.currentView.remove();
+	        } else {
+		        $(".view").html("");
 	        }
+	        
+	        menu ? this.menu.show() : this.menu.hide();
 	
 	        // Render the new view
 	        view.render();
@@ -57,15 +75,15 @@ define([
 		var app_router = new AppRouter;
 		
 		app_router.on('route:main', function(){
-			this.render(new HomeView());
+			this.render(new HomeView(), true);
 		});
 		
 		app_router.on('route:searchhistory', function(){
-			this.render(new HistoryView());
+			this.render(new HistoryView(), true);
 		});
 		
 		app_router.on('route:search', function(queryid){
-			this.render(new ResultsView({id: queryid}));
+			this.render(new ResultsView({id: queryid}), true);
 		});
 		
 		app_router.on('route:recommend', function(){
@@ -77,7 +95,15 @@ define([
 		});
 		
 		app_router.on('route:profile', function(){
-			this.render(new ProfileMenu());
+			this.render(new ProfileMenu(), true);
+		});
+		
+		app_router.on('route:recommendations', function(page){
+			this.render(new RecommendationsView(), true);
+		});
+		
+		app_router.on('route:friends', function(page){
+			this.render(new FriendsView(), true);
 		});
 		
 		// Check login status
@@ -87,8 +113,11 @@ define([
 			// Navigate to login if not authorized
 			if(response.status === "connected") {
 				// Logged in
-				// Submit the token to API
 				
+				// Get the Facebook Photo
+				FB.image = $("<img>").attr("src", "https://graph.facebook.com/v2.5/" + response.authResponse.userID + "/picture?type=large");
+				
+				// Submit the token to API
 				$.post("/fb/api/facebook/", {'access_token' : response.authResponse.accessToken}, function(data) {
 					token = data.key;
 					

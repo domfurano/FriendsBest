@@ -34,6 +34,7 @@ class CurrentSocialUserView(APIView):
 		return Response(serializer.data)
 
 class QueryViewSet(mixins.RetrieveModelMixin,
+					mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
