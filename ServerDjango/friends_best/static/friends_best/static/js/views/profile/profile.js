@@ -3,66 +3,35 @@
   'underscore',
   'backbone',
   'text!templates/home/menu.html',
-  'text!templates/profile/back.html',
   'text!templates/profile/menu.html',
-  'text!templates/profile/recommendation.html',
   'models/me',
-  'collections/recommendations',
-], function($, _, Backbone, menuHTML, backHTML, profileMenuHTML, recommendationHTML, meModel, RecommendationsCollection){
+], function($, _, Backbone, menuHTML, profileMenuHTML, meModel){
 
   var view = Backbone.View.extend({
     el: $(".view"),
+    visible: true,
 
-	initialize: function(options) {
-		this.page = options.page;
-		console.log(typeof this.page);
+	initialize: function() {
+		this.visible = true;
+		this.model = new meModel();
+		this.model.on("change", this.menu, this);
+		this.model.fetch();
 	},
-
-    render: function(){
-		
-		switch(this.page) {
-			case "recommendations":
-				this.recommendations();
-				break;
-			default:
-				this.main();
-		}
- 
-    },
     
-    main: function() {
-	    that = this;
-		me = new meModel();
-		me.fetch({success: function(me, response, options){
+    menu: function() {
+	    
+	    if(this.visible) {
 		    var profileMenuTemplate = _.template( profileMenuHTML );
-		    that.$el.append(profileMenuTemplate(me.toJSON()));
+		    this.$el.append(profileMenuTemplate(this.model.toJSON()));
 		    image = FB.image.clone().width(150).height(150).addClass("img-circle");
-			that.$el.find(".photo").append(image);
-		}});
-    },
-    
-    recommendations: function() {
-	    that = this;
-		recs = new RecommendationsCollection();
-		recs.fetch({success: function(collection, response, options){
-			
-			// Create the list continer
-			list = $("<section>").addClass("list scrollable");
-			
-			// Add elements to the list
-		    var itemTemplate = _.template( recommendationHTML );
-		    collection.each(function(rec, index) {
-			    list.append(itemTemplate(rec.toJSON()));
-		    });
-		    
-		    // Add list to view
-		    that.$el.append(list);
-		    
-		}});
+			this.$el.find(".photo").append(image);
+		}
+		
     },
     
     remove: function() {
 	    this.$el.html("");
+	    this.visible = false;
     }
 
   });

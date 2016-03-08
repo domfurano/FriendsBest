@@ -10,7 +10,9 @@ define([
   'views/search/results',
   'views/home/login',
   'views/profile/profile',
-], function($, _, Backbone, MenuView, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu){
+  'views/profile/recommendations',
+  'views/profile/friends'
+], function($, _, Backbone, MenuView, HomeView, HistoryView, RecommendView, ResultsView, LoginView, ProfileMenu, RecommendationsView, FriendsView){
 	
 	var AppRouter = Backbone.Router.extend({
 	    routes: {
@@ -21,7 +23,8 @@ define([
 			"recommend":				"recommend",		// #recommend
 			"login":					"login",			// #login
 			"profile":					"profile",			// #profile
-			"profile/:page":			"profile"			// #profile/page
+			"profile/recommendations":	"recommendations",	// #profile/recommendations
+			"profile/friends":			"friends"			// #profile/friends
 		},
 		initialize: function() {
 		},
@@ -89,8 +92,16 @@ define([
 			this.render(new LoginView());
 		});
 		
-		app_router.on('route:profile', function(page){
-			this.render(new ProfileMenu({page: page}), true);
+		app_router.on('route:profile', function(){
+			this.render(new ProfileMenu(), true);
+		});
+		
+		app_router.on('route:recommendations', function(page){
+			this.render(new RecommendationsView(), true);
+		});
+		
+		app_router.on('route:friends', function(page){
+			this.render(new FriendsView(), true);
 		});
 		
 		// Check login status
