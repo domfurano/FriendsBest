@@ -213,19 +213,32 @@
 	}
 	
 	.list .item {
+		margin-top: -1px;
 		margin-bottom: 10px;
 		background-color: #fff;
 		padding: 5px 8px 5px 8px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
+		-webkit-border-top-left-radius: 0;
 	}
 	
-	.list .item div {
+	.list .line {
+		margin-bottom: 5px;
+		background-color: #fff;
+		padding: 8px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+	}
+	
+	.list .line.unpadded {
 		padding: 0;
 	}
 	
-	.list .item .tags span {
-		padding: 0px 3px;
+	.list .line div {
+		padding: 0;
+	}
+	
+	.list .line .tags span {
+		padding: 2px 5px;
 		margin-right: 3px;
 		-webkit-border-radius: 3px;
 		border: 1px solid #d9d9d9;
@@ -233,32 +246,52 @@
 	}
 	
 	.list .tabs {
-		padding-left: 5px;
 		overflow: hidden;
 		white-space: nowrap;
 	}
 	
 	.list .tabs span {
-		padding: 0px 3px;
-		margin-left: 3px;
+		padding: 0px 4px;
+		margin-right: 2px;
 		-webkit-border-top-left-radius: 3px;
 		-webkit-border-top-right-radius: 3px;
-		border: 1px solid #d9d9d9;
-		border-bottom: none;
-		background-color: #ededed;
+		background-color: #abb4ba;
+		color: #eee;
+		font-size: 12px;
 	}
 	
-	.list .item .name {
+	.list .line .name {
 		font-size: 30px;
 		line-height: 30px;
 	}
 	
-	.list .item .count {
+	.list .item .detail {
+		margin-top: 3px;
+		font-size: 20px;
+		line-height: 20px;
+	}
+	
+	.list .line .detail {
+		margin-top: 3px;
+		font-size: 18px;
+		line-height: 37px;
+	}
+	
+	.list .line img {
+		background-color: #abb4ba;
+	}
+	
+	.list .line .count {
 		text-align: right;
 	}
 	
-	.list .text {
-		text-align: center;
+	.list .line .mute {
+		text-align: right;
+		padding: 10px;
+	}
+	
+	.list .line i {
+		text-shadow: none;
 	}
 	
 	.list .solution {

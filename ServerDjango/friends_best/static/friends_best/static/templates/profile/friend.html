@@ -1,8 +1,11 @@
-	<div class="item container">
-		<div class="col-xs-2">
-			<img class="img-circle" width="26px" height="26px" src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=square">	
-		</div>
-		<div class="col-xs-8">
-			<h4 class="list-group-item-heading"><%= name %></h4>
-		</div>
+<div class="line unpadded container">
+	<div class="col-xs-2">
+		<img width="40px" height="40px" src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=square">	
 	</div>
+	<div class="col-xs-8">
+		<div class="detail"><%= name %></div>
+	</div>
+	<div class="col-xs-2 mute">
+		<i class="fa fa-fw fa-volume-down" style="color:#333"></i>
+	</div>
+</div>
