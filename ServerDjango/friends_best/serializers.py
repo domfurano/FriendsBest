@@ -194,9 +194,9 @@ class QuerySerializer(serializers.ModelSerializer):
             recommendations = []
             for rec in sol.recommendations:
                 if isFriendsWith(query.user, rec.user) or query.user == rec.user:
-                    recommendations.append({"comment": rec.comments, "user": UserSerializer(rec.user).data})
+                    recommendations.append({"id": rec.id, "comment": rec.comments, "user": UserSerializer(rec.user).data})
                 else:
-                    recommendations.append({"comment": rec.comments})
+                    recommendations.append({"id": rec.id, "comment": rec.comments})
             solution_collection['solutions'].append({
                 'detail': sol.detail,
                 'type': sol.solutionType,
