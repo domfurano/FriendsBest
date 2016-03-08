@@ -2,6 +2,8 @@ package app.friendsbest.net.presenter;
 
 import android.content.Context;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
 
 import java.util.Map;
@@ -36,6 +38,9 @@ public class AppLoginPresenter implements LoginPresenter {
     @Override
     public void onLoginFail() {
         _loginView.displayMessage("Error, unable to log in.");
+        _preferencesUtility.deleteStoredData();
+        _loginView.forceLogout();
+        onStart();
     }
 
     @Override
@@ -43,12 +48,22 @@ public class AppLoginPresenter implements LoginPresenter {
         String token = _preferencesUtility.getToken();
         if (token != null) {
             _repository = new BaseRepository(this, token);
-            _repository.checkStatus();
+            _repository.checkLoginStatus();
         }
         else {
             _repository = new BaseRepository(this, null);
             _loginView.registerFacebookCallback();
         }
+    }
+
+    @Override
+    public void getAuthToken(Map<String, String> facebookToken) {
+        _repository.getAuthToken(facebookToken);
+    }
+
+    public void saveFacebookProfile(Profile profile) {
+        _preferencesUtility.saveProfilePicture(profile.getProfilePictureUri(300, 300).toString());
+        _preferencesUtility.saveUserName(profile.getName());
     }
 
     @Override
@@ -68,19 +83,12 @@ public class AppLoginPresenter implements LoginPresenter {
                     _loginView.startMainView();
                 }
                 else {
-                    _preferencesUtility.deleteStoredData();
-                    _repository = null;
-                    onStart();
+                    onLoginFail();
                 }
             }
         }
         else {
             onLoginFail();
         }
-    }
-
-    public void saveFacebookProfile(Profile profile) {
-        _preferencesUtility.saveProfilePicture(profile.getProfilePictureUri(300, 300).toString());
-        _preferencesUtility.saveUserName(profile.getName());
     }
 }

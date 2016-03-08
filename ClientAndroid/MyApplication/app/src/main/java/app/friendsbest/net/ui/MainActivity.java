@@ -101,11 +101,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     public void displayCards(List<PromptCard> cards) {
-        if (cards.size() == 0) {
-//            _emptyPromptLayout.setVisibility(View.VISIBLE);
-        }
-        else {
-//            _emptyPromptLayout.setVisibility(View.INVISIBLE);
+        if (cards.size() > 0) {
             _cards = cards;
 
             _cardAdapter = new CardAdapter(_cards, MainActivity.this);

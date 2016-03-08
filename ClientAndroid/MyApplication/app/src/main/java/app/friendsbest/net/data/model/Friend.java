@@ -17,6 +17,8 @@ public class Friend {
     @Expose
     private boolean _muted;
 
+    private transient String _pictureUri;
+
     public String getName() {
         return _name;
     }
@@ -39,5 +41,13 @@ public class Friend {
 
     public void setMuted(boolean muted) {
         _muted = muted;
+    }
+
+    public void setPictureUri(String uri) {
+        _pictureUri = uri;
+    }
+
+    public String getPictureUri() {
+        return _pictureUri;
     }
 }

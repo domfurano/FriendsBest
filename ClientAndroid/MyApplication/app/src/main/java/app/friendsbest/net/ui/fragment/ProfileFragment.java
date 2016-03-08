@@ -12,20 +12,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.services.CircleTransform;
+import app.friendsbest.net.data.services.ImageService;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.ProfilePresenter;
-import app.friendsbest.net.presenter.interfaces.LoginPresenter;
+import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.LoginActivity;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
@@ -40,6 +34,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private TextView _friendsCount;
     private TextView _profileGreeting;
     private PreferencesUtility _preferencesUtility;
+    private String _storedFriendsList;
+    private String _storedRecommendationList;
 
     @Nullable
     @Override
@@ -66,11 +62,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _presenter = new ProfilePresenter(this, getActivity().getApplicationContext());
         _preferencesUtility = PreferencesUtility.getInstance(getActivity().getApplicationContext());
         _profileGreeting.setText(_preferencesUtility.getUserName());
-        Glide.with(getActivity())
-                .load(_preferencesUtility.getProfilePictureUri())
-                .override(150, 150)
-                .transform(new CircleTransform(getActivity().getApplicationContext()))
-                .into(_profilePicture);
+        _friendsCard.setOnClickListener(this);
+        String uri = _preferencesUtility.getProfilePictureUri();
+        ImageService.getInstance(getActivity().getApplicationContext())
+                .retrieveImage(_profilePicture, uri, 100, 100);
     }
 
     public void setRecommendationsCount(int count) {
@@ -81,6 +76,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _friendsCount.setText(Integer.toString(count));
     }
 
+    public void saveFriendsList(String friend) {
+        _storedFriendsList = friend;
+    }
+
+    public void saveRecommendationsList(String recommendations) {
+        _storedRecommendationList = recommendations;
+    }
+
     @Override
     public void onClick(View v) {
         if (v == _logoutButton) {
@@ -88,6 +91,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             _preferencesUtility.deleteStoredData();
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
+        }
+        else if (v == _friendsCard) {
+            if (_storedFriendsList != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(FriendFragment.BUNDLE_KEY, _storedFriendsList);
+                _listener.onFragmentChange(DualFragmentActivity.FRIENDS_ID, bundle);
+            }
         }
     }
 }

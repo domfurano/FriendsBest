@@ -13,6 +13,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -31,10 +32,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     private CoordinatorLayout _coordinatorLayout;
     private AppLoginPresenter _presenter;
     private CallbackManager _callbackManager;
-    private AccessToken _accessToken;
     private LoginButton _loginButton;
     private Map<String, String> _facebookTokenMap;
-    private Map<String, String> _facebookProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +46,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         _loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_friends"));
 
         _coordinatorLayout = (CoordinatorLayout) findViewById(R.id.login_coordinator_layout);
-
         _facebookTokenMap = new HashMap<>();
-        _facebookProfile = new HashMap<>();
-
         _presenter = new AppLoginPresenter(this, getApplicationContext());
     }
 
@@ -70,9 +66,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         _loginButton.registerCallback(_callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                _accessToken = loginResult.getAccessToken();
-                _facebookTokenMap.put(PreferencesUtility.FACEBOOK_TOKEN_KEY, _accessToken.getToken());
-                _presenter.sendToPresenter(_facebookTokenMap);
+                AccessToken accessToken = loginResult.getAccessToken();
+                _facebookTokenMap.put(PreferencesUtility.FACEBOOK_TOKEN_KEY, accessToken.getToken());
+                _presenter.getAuthToken(_facebookTokenMap);
             }
 
             @Override
@@ -90,6 +86,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Override
     public void getUserProfile() {
         _presenter.saveFacebookProfile(Profile.getCurrentProfile());
+    }
+
+    @Override
+    public void forceLogout() {
+        LoginManager.getInstance().logOut();
     }
 
     @Override

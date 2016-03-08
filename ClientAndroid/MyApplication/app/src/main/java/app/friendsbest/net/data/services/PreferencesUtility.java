@@ -11,8 +11,8 @@ public class PreferencesUtility {
     public static final String FACEBOOK_TOKEN_KEY = "access_token";
     public static final String PROFILE_PICTURE_URI = "user_picture";
     public static final String LOGIN_VALIDITY_KEY = "login_validity";
-    public static final String INVALID = "invalid";
     public static final String VALID = "valid";
+    public static final String INVALID = "invalid";
 
     public static PreferencesUtility _instance = null;
     private SharedPreferences _preferences;
@@ -55,6 +55,11 @@ public class PreferencesUtility {
         return _editor.commit();
     }
 
+    /**
+     * Save a URI of user's Facebook profile picture.
+     * @param uri - String representation of profile picture URI
+     * @return - Result of committing to SharedPreferences
+     */
     public boolean saveProfilePicture(String uri) {
         _editor.putString(PROFILE_PICTURE_URI, uri);
         return _editor.commit();

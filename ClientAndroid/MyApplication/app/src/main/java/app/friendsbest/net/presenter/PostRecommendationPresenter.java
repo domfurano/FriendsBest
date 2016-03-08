@@ -49,8 +49,6 @@ public class PostRecommendationPresenter implements RecommendPresenter {
         _recommendView.sendFragmentResult(recommendation != null);
     }
 
-    public void hello(){}
-
     private boolean isValidInput(String title, String tags) {
         boolean valid = true;
         if (title == null || title.trim().length() == 0) {

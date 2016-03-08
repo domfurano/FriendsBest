@@ -15,6 +15,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface BaseService {
@@ -45,4 +46,7 @@ public interface BaseService {
 
     @GET("friend")
     Call<List<Friend>> getFriends();
+
+    @PUT("friend/{id}")
+    Call<Void> changeMuteState(@Path("id") String id, @Body Friend friend);
 }

@@ -19,6 +19,7 @@ import com.google.android.gms.location.places.Places;
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.DualFragmentPresenter;
+import app.friendsbest.net.ui.fragment.FriendFragment;
 import app.friendsbest.net.ui.fragment.NavigationFragment;
 import app.friendsbest.net.ui.fragment.ProfileFragment;
 import app.friendsbest.net.ui.fragment.PostRecommendationFragment;
@@ -37,6 +38,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
     public static final String VIEW_SOLUTION_ITEM_ID = "viewSolutionItem";
     public static final String PROFILE_ID = "profile";
     public static final String NAVIGATION_ID = "navigationBar";
+    public static final String FRIENDS_ID = "friends";
     public static final String REMOVE_FRAGMENT = "remove";
     public static Typeface TYPEFACE;
 
@@ -164,6 +166,8 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 return new ProfileFragment();
             case NAVIGATION_ID:
                 return new NavigationFragment();
+            case FRIENDS_ID:
+                return new FriendFragment();
             default:
                 return null;
         }

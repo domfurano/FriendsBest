@@ -85,6 +85,7 @@ public class BaseRepository {
             @Override
             public void onFailure(Call<List<Recommendation>> call, Throwable t) {
                 logError("Post Recommendation", t);
+                _presenter.sendToPresenter(null);
             }
         });
     }
@@ -152,6 +153,7 @@ public class BaseRepository {
 
             @Override
             public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                _presenter.sendToPresenter(null);
                 logError("Get Auth", t);
             }
         });
@@ -170,23 +172,40 @@ public class BaseRepository {
             @Override
             public void onFailure(Call<List<Friend>> call, Throwable t) {
                 Log.e("Friends", t.getMessage(), t);
+                _presenter.sendToPresenter(null);
             }
         });
     }
 
-    public void checkStatus() {
+    public void changeMuteState(Friend friend) {
+        _service.changeMuteState(friend.getId(), friend).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                _presenter.sendToPresenter(response.isSuccess());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                _presenter.sendToPresenter(false);
+            }
+        });
+    }
+
+    public void checkLoginStatus() {
+        final HashMap<String, String> resultMap = new HashMap<>();
         _service.getFriends().enqueue(new Callback<List<Friend>>() {
             @Override
             public void onResponse(Call<List<Friend>> call, Response<List<Friend>> response) {
-                Map<String, String> responseMap = new HashMap<>();
-                String result = response.isSuccess() ? PreferencesUtility.VALID : PreferencesUtility.INVALID;
-                responseMap.put(PreferencesUtility.LOGIN_VALIDITY_KEY, result);
-                _presenter.sendToPresenter(responseMap);
+                String validity = response.isSuccess() ? PreferencesUtility.VALID : PreferencesUtility.INVALID;
+                resultMap.put(PreferencesUtility.LOGIN_VALIDITY_KEY, validity);
+                _presenter.sendToPresenter(resultMap);
             }
 
             @Override
             public void onFailure(Call<List<Friend>> call, Throwable t) {
-
+                Log.e("Login invlaid", t.getMessage(), t);
+                resultMap.put(PreferencesUtility.LOGIN_VALIDITY_KEY, PreferencesUtility.INVALID);
+                _presenter.sendToPresenter(resultMap);
             }
         });
     }
