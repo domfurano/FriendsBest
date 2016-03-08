@@ -372,6 +372,12 @@
 		padding: 0;
 	}
 	
+	.container.loading {
+		margin-top: 50%;
+		text-align: center;
+		color: #abb4ba;
+	}
+	
 	label .light {
         color: #999;
 	}
@@ -440,7 +446,7 @@
 	}
 	
 	i {
-		text-shadow: 1px 1px 1px #dee5e9;
+		//text-shadow: 1px 1px 1px #dee5e9;
 	}
 	
 	.card {

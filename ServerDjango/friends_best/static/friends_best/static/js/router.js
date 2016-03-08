@@ -40,6 +40,8 @@ define([
 	        if (this.currentView) {
 		        console.log("remove exisiting view");
 	            this.currentView.remove();
+	        } else {
+		        $(".view").html("");
 	        }
 	        
 	        menu ? this.menu.show() : this.menu.hide();
