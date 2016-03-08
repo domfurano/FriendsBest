@@ -187,7 +187,7 @@ class QuerySerializer(serializers.ModelSerializer):
             'tags':solutions['tags'],
             'tagstring':query.tagstring,
             'solutions': [],
-            'timestamp': query.timestamp,
+            'accessed': query.timestamp,
             'taghash': query.taghash,
         }
         for sol in solutions['solutions']:
