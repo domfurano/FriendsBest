@@ -29,7 +29,7 @@
 		this.$el.append(backTemplate({
 			color: "#ffffff",
 			background: "#3b5998",
-			title: "Your Friends"
+			title: "Facebook Friends"
 		}));
 	    
 	    // List

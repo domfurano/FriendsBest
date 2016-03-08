@@ -1,5 +1,9 @@
-	<div class="item container">
-		<h4 class="list-group-item-heading"><%= detail %></h4>
-		<p class="list-group-item-text"><%= tags.join(' ') %></p>
-		<p class="list-group-item-text"><%= comments %></p>
-	</div>
+<div class="tabs container">
+	<% _.each(tags, function(tag) { %>
+		<span><%= tag %></span>
+	<% }) %>
+</div>
+<div class="item container">
+	<div class="detail"><%= detail %></div>
+	<div class="comments"><%= comments %></div>
+</div>
