@@ -11,7 +11,7 @@ define([
 			tags: []
 		},
 		comparator: function(model) {
-    		stamp = (new Date(model.get("timestamp")).getTime()/1000);
+    		stamp = (new Date(model.get("accessed")).getTime()/1000);
             return -stamp; // Note the minus!
 		}
 	});
