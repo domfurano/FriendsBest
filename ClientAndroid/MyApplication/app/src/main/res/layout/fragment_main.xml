@@ -1,57 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <FrameLayout
-        android:id="@+id/search_frame"
-        android:layout_width="match_parent"
-        android:paddingTop="10dp"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <RelativeLayout
-            android:id="@+id/searchLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/query_history_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/ic_search_black_36dp" />
-            <EditText
-                android:id="@+id/query_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/query_history_button"
-                android:layout_toLeftOf="@id/submit_query_button"
-                android:layout_weight="1"
-                android:hint="Search for something..."/>
-            <ImageButton
-                android:id="@+id/submit_query_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_search_black_36dp"
-                android:layout_alignParentRight="true"
-                />
-        </RelativeLayout>
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8">
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/navigation_frame"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="15dp">
+
+    <RelativeLayout
+        android:id="@+id/fragment_main_query_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <fragment
+
+        <TextView
+            android:id="@+id/fragment_main_query_results_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="@string/fa_icon_history"
+            android:textSize="30dp"/>
+
+        <EditText
+            android:id="@+id/fragment_main_query_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="app.friendsbest.net.ui.fragment.NavigationFragment"
-            tools:layout="@layout/navigation_bar"/>
-    </FrameLayout>
+            android:layout_toLeftOf="@+id/fragment_main_submit_query_button"
+            android:layout_toRightOf="@id/fragment_main_query_results_button"
+            android:layout_weight="1"
+            android:hint="Search for something..."/>
+
+        <ImageButton
+            android:id="@+id/fragment_main_submit_query_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_search_black_36dp"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7">
+
+        <RelativeLayout
+            android:id="@+id/fragment_main_empty_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:background="@drawable/rounded_corner"
+                android:layout_marginBottom="32dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/fragment_main_content_main_logo_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/logo_1"
+                    android:textSize="20sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/fragment_main_content_main_logo_left"
+                    android:text="@string/logo_2"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </RelativeLayout>
+
+            <app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView
+                android:id="@+id/fragment_main_swipe_card"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:rotation_degrees="15.5"/>
+        </RelativeLayout>
+    </RelativeLayout>
 </LinearLayout>

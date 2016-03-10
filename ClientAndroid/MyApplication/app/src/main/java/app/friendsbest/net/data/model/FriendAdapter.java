@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -65,9 +66,8 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
         public void bind(final Friend friend, final OnListItemClickListener listener) {
 
-            String muteText = friend.isMuted() ? "Unmute" : "Mute";
             _friendNameTextView.setText(friend.getName());
-            _muteTextView.setText(muteText);
+            _muteTextView.setText(getSwitchText(friend.isMuted()));
             _muteSwitchView.setChecked(friend.isMuted());
 
             ImageService.getInstance(_context)
@@ -75,12 +75,18 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
                             _profileImageView,
                             friend.getId(),
                             ImageService.PictureSize.MEDIUM);
-            itemView.setOnClickListener(new View.OnClickListener() {
+            _muteSwitchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View v) {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    friend.setMuted(isChecked);
+                    _muteTextView.setText(getSwitchText(isChecked));
                     listener.onListItemClick(friend);
                 }
             });
+        }
+
+        private String getSwitchText(boolean state) {
+            return state ? "Unmute" : "Mute";
         }
     }
 }

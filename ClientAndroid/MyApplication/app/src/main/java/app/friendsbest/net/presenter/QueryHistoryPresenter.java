@@ -7,10 +7,10 @@ import java.util.List;
 import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
-import app.friendsbest.net.presenter.interfaces.ListFragmentPresenter;
+import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.view.FragmentView;
 
-public class QueryHistoryPresenter implements ListFragmentPresenter<List<Query>> {
+public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
 
     private FragmentView _view;
     private BaseRepository _repository;

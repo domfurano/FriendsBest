@@ -33,7 +33,8 @@ public class FriendFragment extends Fragment implements OnListItemClickListener<
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         DualFragmentView view = (DualFragmentView) getActivity();
-        view.onFragmentTitleChange("Friends");
+        view.onFragmentTitleChange("Facebook Friends");
+        view.onFragmentToolbarChange(R.color.blue900);
         _presenter = new FriendPresenter(getActivity().getApplicationContext(), this);
     }
 
@@ -57,8 +58,6 @@ public class FriendFragment extends Fragment implements OnListItemClickListener<
 
     @Override
     public void onListItemClick(Friend item) {
-        boolean muteState = item.isMuted();
-        item.setMuted(!muteState);
         _presenter.changeMuteState(item);
     }
 }

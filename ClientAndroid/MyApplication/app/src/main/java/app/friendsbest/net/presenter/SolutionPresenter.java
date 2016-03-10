@@ -5,10 +5,10 @@ import android.content.Context;
 import app.friendsbest.net.data.model.QueryResult;
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
-import app.friendsbest.net.presenter.interfaces.ListFragmentPresenter;
+import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.view.FragmentView;
 
-public class SolutionPresenter implements ListFragmentPresenter<QueryResult> {
+public class SolutionPresenter implements ListPresenter<QueryResult> {
 
     private BaseRepository _repository;
     private FragmentView _solutionView;

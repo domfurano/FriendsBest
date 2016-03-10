@@ -45,7 +45,7 @@ public class PostRecommendationPresenter implements RecommendPresenter {
     }
 
     @Override
-    public void sendToPresenter(List<Recommendation> recommendation) {
+    public void sendToPresenter(Recommendation recommendation) {
         _recommendView.sendFragmentResult(recommendation != null);
     }
 

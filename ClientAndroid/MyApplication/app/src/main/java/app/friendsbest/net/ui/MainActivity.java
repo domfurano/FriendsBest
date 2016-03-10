@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -36,9 +36,9 @@ public class MainActivity extends FragmentActivity implements
 
     public static String CLASS_TAG = "classname";
     public static String CONTENT_TAG = "content";
-    public static int RESULT_PASS = 0;
-    public static int RESULT_FAIL = -1;
-    public static final int REQUEST_CODE = 5115;
+    public static final int RESULT_PASS = 200;
+    public static final int RESULT_FAIL = 100;
+    public static final int REQUEST_CODE = 300;
     public static ViewContainer _viewContainer;
     public static CardAdapter _cardAdapter;
 
@@ -48,7 +48,7 @@ public class MainActivity extends FragmentActivity implements
     private ImageButton _searchBtn;
     private EditText _searchField;
     private TextView _homeBtn;
-//    private TextView _profileBtn;
+    private ImageView _profileBtn;
     private TextView _addRecommendBtn;
     private RelativeLayout _emptyPromptLayout;
     private List<PromptCard> _cards;
@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
         _addRecommendBtn = (TextView) findViewById(R.id.nav_recommend_button);
         _homeBtn = (TextView) findViewById(R.id.nav_home_button);
         _emptyPromptLayout = (RelativeLayout) findViewById(R.id.empty_card_layout);
-//        _profileBtn = (TextView) findViewById(R.id.nav_profile_button);
+        _profileBtn = (ImageView) findViewById(R.id.nav_profile_button);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class MainActivity extends FragmentActivity implements
         _searchBtn.setOnClickListener(this);
         _searchField.setOnFocusChangeListener(this);
         _addRecommendBtn.setOnClickListener(this);
-//        _profileBtn.setOnClickListener(this);
+        _profileBtn.setOnClickListener(this);
         _cardPresenter.getPrompts();
     }
 
@@ -149,6 +149,8 @@ public class MainActivity extends FragmentActivity implements
                 intent.putExtra(CLASS_TAG, DualFragmentActivity.SEARCH_HISTORY_ID);
             } else if (v == _addRecommendBtn) {
                 intent.putExtra(CLASS_TAG, DualFragmentActivity.ADD_RECOMMENDATION_ID);
+            } else if (v == _profileBtn) {
+                intent.putExtra(CLASS_TAG, DualFragmentActivity.PROFILE_ID);
             } else if (v == _searchBtn) {
                 String searchText = _searchField.getText().toString();
                 if (_cardPresenter.isValidQuery(searchText)){

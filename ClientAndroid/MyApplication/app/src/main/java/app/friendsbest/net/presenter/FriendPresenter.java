@@ -2,6 +2,9 @@ package app.friendsbest.net.presenter;
 
 import android.content.Context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;

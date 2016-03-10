@@ -3,54 +3,63 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    android:background="@drawable/friend_item_row"
-    android:orientation="vertical">
+    android:layout_marginTop="10dp"
+    android:padding="8dp"
+    android:background="@drawable/rounded_rect"
+    android:elevation="2dp"
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/friend_item_row_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/friend_item_picture_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/friend_item_friend_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray800"
+            android:gravity="center_vertical"
+            android:textSize="16dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:layout_weight="1">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/friend_item_picture_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/friend_item_friend_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:layout_toRightOf="@+id/friend_item_picture_view"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:padding="10dp">
-
+            android:orientation="vertical">
             <TextView
                 android:id="@+id/friend_item_mute_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textColor="@color/gray800"
                 android:text="Mute"/>
-
             <Switch
                 android:id="@+id/friend_item_mute_switch"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/friend_item_mute_text"/>
-        </RelativeLayout>
+                android:layout_height="wrap_content"/>
+        F</LinearLayout>
     </RelativeLayout>
 </LinearLayout>

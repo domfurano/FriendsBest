@@ -4,6 +4,6 @@ import java.util.List;
 
 import app.friendsbest.net.data.model.Recommendation;
 
-public interface RecommendPresenter extends BasePresenter<List<Recommendation>> {
+public interface RecommendPresenter extends BasePresenter<Recommendation> {
     void submitRecommendation(String title, String tags, String comment, String type);
 }

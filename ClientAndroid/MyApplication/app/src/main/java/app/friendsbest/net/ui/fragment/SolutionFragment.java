@@ -8,8 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
@@ -25,7 +23,7 @@ import app.friendsbest.net.data.model.QueryResult;
 import app.friendsbest.net.data.model.Solution;
 import app.friendsbest.net.data.model.SolutionAdapter;
 import app.friendsbest.net.presenter.SolutionPresenter;
-import app.friendsbest.net.presenter.interfaces.ListFragmentPresenter;
+import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.FragmentView;
 
@@ -44,7 +42,7 @@ public class SolutionFragment extends Fragment implements
     private List<Solution> _solutions = new ArrayList<>();
     private QueryResult _queryResult;
     private ProgressBar _progressBar;
-    private ListFragmentPresenter _presenter;
+    private ListPresenter _presenter;
 
 
     @Nullable

@@ -21,11 +21,13 @@ import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.DualFragmentPresenter;
 import app.friendsbest.net.ui.fragment.FriendFragment;
 import app.friendsbest.net.ui.fragment.NavigationFragment;
-import app.friendsbest.net.ui.fragment.ProfileFragment;
 import app.friendsbest.net.ui.fragment.PostRecommendationFragment;
+import app.friendsbest.net.ui.fragment.ProfileFragment;
+import app.friendsbest.net.ui.fragment.PromptFragment;
+import app.friendsbest.net.ui.fragment.RecommendationFragment;
+import app.friendsbest.net.ui.fragment.RecommendationItemFragment;
 import app.friendsbest.net.ui.fragment.SearchHistoryFragment;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
-import app.friendsbest.net.ui.fragment.RecommendationItemFragment;
 import app.friendsbest.net.ui.view.DualFragmentView;
 
 public class DualFragmentActivity extends AppCompatActivity implements
@@ -36,6 +38,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
     public static final String SEARCH_HISTORY_ID = "queryHistory";
     public static final String VIEW_SOLUTION_ID = "viewSolution";
     public static final String VIEW_SOLUTION_ITEM_ID = "viewSolutionItem";
+    public static final String VIEW_RECOMMENDATIONS_ID = "viewRecommendations";
     public static final String PROFILE_ID = "profile";
     public static final String NAVIGATION_ID = "navigationBar";
     public static final String FRIENDS_ID = "friends";
@@ -140,11 +143,11 @@ public class DualFragmentActivity extends AppCompatActivity implements
         Intent intent = new Intent(DualFragmentActivity.this, MainActivity.class);
         if (bundle != null) {
             if (bundle.containsKey(PostRecommendationFragment.BUNDLE_KEY)) {
+                Intent resultIntent = new Intent();
                 boolean posted = bundle.getBoolean(PostRecommendationFragment.BUNDLE_KEY);
-                int resultCode = posted ? MainActivity.RESULT_PASS : MainActivity.RESULT_FAIL;
-                setResult(resultCode, intent);
+                resultIntent.putExtra("Result", posted);
+                setResult(MainActivity.RESULT_PASS, resultIntent);
                 finish();
-
             }
             intent.putExtra(MainActivity.CONTENT_TAG, bundle);
         }
@@ -168,6 +171,8 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 return new NavigationFragment();
             case FRIENDS_ID:
                 return new FriendFragment();
+            case VIEW_RECOMMENDATIONS_ID:
+                return new PromptFragment();
             default:
                 return null;
         }

@@ -6,6 +6,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -26,6 +27,9 @@ public class ServiceGenerator {
     public static <S> S createService(Class<S> serviceClass, final String authToken){
         if (authToken != null) {
             final String token = "Token " + authToken;
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClient.addInterceptor(interceptor);
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {

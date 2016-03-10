@@ -18,7 +18,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
-public interface BaseService {
+public interface RestClientService {
 
     @GET("query")
     Call<List<Query>> getQueryHistory();
@@ -26,8 +26,11 @@ public interface BaseService {
     @GET("query/{queryId}")
     Call<QueryResult> getQuery(@Path("queryId") int id);
 
-    @POST("query")
+    @POST("query/")
     Call<List<Object>> postQuery(@Body Map<String, List<String>> tags);
+
+    @DELETE("query/{queryId}/")
+    Call<Void> deleteQuery (@Path("queryId") int id);
 
     @GET("prompt")
     Call<List<PromptCard>> getPrompts();
@@ -38,8 +41,8 @@ public interface BaseService {
     @GET("recommend")
     Call<List<Recommendation>> getRecommendations();
 
-    @POST("recommend")
-    Call<List<Recommendation>> postRecommendation(@Body RecommendationPost recommendation);
+    @POST("recommend/")
+    Call<Recommendation> postRecommendation(@Body RecommendationPost recommendation);
 
     @POST("facebook/")
     Call<Map<String, String>> getAuthToken(@Body Map<String, String> facebookToken);
@@ -47,6 +50,6 @@ public interface BaseService {
     @GET("friend")
     Call<List<Friend>> getFriends();
 
-    @PUT("friend/{id}")
-    Call<Void> changeMuteState(@Path("id") String id, @Body Friend friend);
+    @PUT("friend/{id}/")
+    Call<Friend> changeMuteState(@Path("id") String id, @Body Friend friend);
 }

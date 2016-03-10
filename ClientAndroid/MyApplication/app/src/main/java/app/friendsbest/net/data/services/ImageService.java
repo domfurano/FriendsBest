@@ -6,6 +6,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import app.friendsbest.net.R;
+
 public class ImageService {
 
     private static final String FACEBOOK_URL = "https://graph.facebook.com/";
@@ -41,7 +43,10 @@ public class ImageService {
         String uri = FACEBOOK_URL + id + "/picture?type=" + size._sizeText;
         Glide.with(_context)
                 .load(uri)
+                .placeholder(R.drawable.ic_person_black_24dp)
+                .error(R.drawable.ic_person_black_24dp)
                 .transform(new CircleTransform(_context))
+                .crossFade()
                 .into(view);
     }
 

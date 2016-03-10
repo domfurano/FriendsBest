@@ -11,4 +11,6 @@
     <color name="gray200">#eeeeee</color>
     <color name="gray400">#bdbdbd</color>
     <color name="red900">#b71c1c</color>
+    <color name="gray800">#424242</color>
+    <color name="blue900">#0d47a1</color>
 </resources>

@@ -16,6 +16,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.services.ImageService;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.ProfilePresenter;
@@ -25,7 +26,6 @@ import app.friendsbest.net.ui.LoginActivity;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener _listener;
-    private ProfilePresenter _presenter;
     private Button _logoutButton;
     private ImageView _profilePicture;
     private CardView _recommendationCard;
@@ -59,10 +59,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.onFragmentTitleChange("Profile");
         _listener.onFragmentToolbarChange(R.color.blue_gray200);
-        _presenter = new ProfilePresenter(this, getActivity().getApplicationContext());
+        new ProfilePresenter(this, getActivity().getApplicationContext());
         _preferencesUtility = PreferencesUtility.getInstance(getActivity().getApplicationContext());
         _profileGreeting.setText(_preferencesUtility.getUserName());
         _friendsCard.setOnClickListener(this);
+        _recommendationCard.setOnClickListener(this);
         String uri = _preferencesUtility.getProfilePictureUri();
         ImageService.getInstance(getActivity().getApplicationContext())
                 .retrieveImage(_profilePicture, uri, 100, 100);
@@ -97,6 +98,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 Bundle bundle = new Bundle();
                 bundle.putString(FriendFragment.BUNDLE_KEY, _storedFriendsList);
                 _listener.onFragmentChange(DualFragmentActivity.FRIENDS_ID, bundle);
+            }
+        }
+        else if (v == _recommendationCard) {
+            if (_storedRecommendationList != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(RecommendationFragment.BUNDLE_KEY, _storedRecommendationList);
+                _listener.onFragmentChange(DualFragmentActivity.VIEW_RECOMMENDATIONS_ID, bundle);
             }
         }
     }

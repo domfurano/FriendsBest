@@ -20,11 +20,11 @@ import retrofit2.Response;
 public class BaseRepository {
 
     private final BasePresenter _presenter;
-    private final BaseService _service;
+    private final RestClientService _service;
 
     public BaseRepository(BasePresenter presenter, String token){
         _presenter = presenter;
-        _service = ServiceGenerator.createService(BaseService.class, token);
+        _service = ServiceGenerator.createService(RestClientService.class, token);
     }
 
     public void getPrompts() {
@@ -76,14 +76,14 @@ public class BaseRepository {
     }
 
     public void postRecommendation(RecommendationPost recommendation) {
-        _service.postRecommendation(recommendation).enqueue(new Callback<List<Recommendation>>() {
+        _service.postRecommendation(recommendation).enqueue(new Callback<Recommendation>() {
             @Override
-            public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
+            public void onResponse(Call<Recommendation> call, Response<Recommendation> response) {
                 _presenter.sendToPresenter(response.body());
             }
 
             @Override
-            public void onFailure(Call<List<Recommendation>> call, Throwable t) {
+            public void onFailure(Call<Recommendation> call, Throwable t) {
                 logError("Post Recommendation", t);
                 _presenter.sendToPresenter(null);
             }
@@ -178,14 +178,14 @@ public class BaseRepository {
     }
 
     public void changeMuteState(Friend friend) {
-        _service.changeMuteState(friend.getId(), friend).enqueue(new Callback<Void>() {
+        _service.changeMuteState(friend.getId(), friend).enqueue(new Callback<Friend>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Friend> call, Response<Friend> response) {
                 _presenter.sendToPresenter(response.isSuccess());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Friend> call, Throwable t) {
                 _presenter.sendToPresenter(false);
             }
         });
