@@ -41,9 +41,6 @@ def userTest(user):
     account = SocialAccount.objects.filter(user=user).first()
     token = SocialToken.objects.filter(account=account).first()
 
-    print(account.uid)
-    print(token.token)
-
 
 def getUserFacebookToken(user):
     account = SocialAccount.objects.filter(user=user).first()
@@ -162,35 +159,24 @@ def getAllFriendsFacebookUserIds(user):
     # when using the previous where muted=False, login fails because we try to re-add users that are just muted...
     for friendship in Friendship.objects.filter(userOne=user):
         allFriends.add(SocialAccount.objects.filter(user=friendship.userTwo).first().uid)
-    print(allFriends)
     return allFriends
 
 
 def getCurrentFriendsListFromFacebook(user):
-    print("getCurrentFriendsListFromFacebook")
     
     facebookUserId = SocialAccount.objects.filter(user=user).first().uid
-    print("uid " + facebookUserId)
-    
 
     # this will only include friends who have a friendsbest account
     payload = {'access_token': getUserFacebookToken(user)}
     url = _baseFacebookURL + "/" + facebookUserId + "/friends?access_token=" + getUserFacebookToken(user)
-    print("url " + url)
     r = requests.get(url)
     if r.status_code != 200:
-        print("Error")
+        print("failed to get user's friends")
         return "error: failed to get user's friends"    
     jsonDict = json.loads(r.text)  # convert json response to dictionary
     allFriends = []
     allFriendsFacebookIds = getAllFriendsFacebookUserIds(user)  # this is retrieved from the db (not Facebook.com)
     for friend in jsonDict['data']:
-        print("friend: " + friend['name'])
-#         d = {}
-#         d['firstName'] = friend['first_name']
-#         d['lastName'] = friend['last_name']
-        # d['picture'] = friend['picture']
-        #allFriends.append(d)
 
         # update Friendship table  (friend['id'] is the facebookuserid)
         friendId = friend['id']
