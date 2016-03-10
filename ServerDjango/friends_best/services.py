@@ -242,15 +242,16 @@ def getFacebookUserIdFromFacebook(user):
 
 def getQueryHistory(user):
     # Order-by done to return the queries in the right order (from oldest run to newest)
-    return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all() 
+    return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
     # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
     # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
     # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
 
+def getRecommendations(user):
+    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
 
 def getQuery(user, queryId):
     return Query.objects.filter(user=user, id=queryId).prefetch_related('tags')
-
 
 #def createUser(userName):
 #    user = User(userName=userName)

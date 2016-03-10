@@ -41,13 +41,6 @@ define([
     			el.append(promptcard);
     		});
     		
-/*
-    		infoTemplate = _.template(infoHTML);
-    		infoCard = infoTemplate();
-    		el.append(infoCard);
-*/
-    		
-    		
             // Prompts
     		$('.swipable').each( function(index, item) {
     			d = Math.random() * 3 - 1.5;
