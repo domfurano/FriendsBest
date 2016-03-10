@@ -38,6 +38,7 @@ define([
 		_.each(this.solution.recommendations, function(recommendation, index) {
     		console.log(recommendation);
 			r = { name: recommendation.user.name.trim(),
+    			  id: recommendation.user.id,
 				  comment: recommendation.comment.split("\n").join("<br>")};
 			list.append(commentTemplate(r));
 		});
