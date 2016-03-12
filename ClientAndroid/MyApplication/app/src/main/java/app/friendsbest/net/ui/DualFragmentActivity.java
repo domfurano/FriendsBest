@@ -3,13 +3,14 @@ package app.friendsbest.net.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -39,6 +40,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
     public static final String VIEW_SOLUTION_ID = "viewSolution";
     public static final String VIEW_SOLUTION_ITEM_ID = "viewSolutionItem";
     public static final String VIEW_RECOMMENDATIONS_ID = "viewRecommendations";
+    public static final String PROMPT_QUERY_ID = "promptQuery";
     public static final String PROFILE_ID = "profile";
     public static final String NAVIGATION_ID = "navigationBar";
     public static final String FRIENDS_ID = "friends";
@@ -48,22 +50,13 @@ public class DualFragmentActivity extends AppCompatActivity implements
     private DualFragmentPresenter _fragmentPresenter;
     private Toolbar _toolbar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-        String className = intent.getStringExtra(MainActivity.CLASS_TAG);
-        String payload = null;
-        if (intent.hasExtra(MainActivity.CONTENT_TAG))
-            payload = intent.getStringExtra(MainActivity.CONTENT_TAG);
-
         setContentView(R.layout.activity_dual_fragment);
-
         _toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(_toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         new GoogleApiClient
                 .Builder(this)
@@ -73,7 +66,8 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 .build();
 
         _fragmentPresenter = new DualFragmentPresenter(this, getApplicationContext());
-        _fragmentPresenter.setContentClass(className, payload);
+        _fragmentPresenter.setContentClass(PROMPT_QUERY_ID);
+        hideSupportActionBar();
         TYPEFACE = FontManager
                 .getTypeface(getApplicationContext(), FontManager.FONT_AWESOME);
     }
@@ -90,7 +84,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
             }
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
@@ -139,20 +133,20 @@ public class DualFragmentActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentResult(Bundle bundle) {
-        Intent intent = new Intent(DualFragmentActivity.this, MainActivity.class);
-        if (bundle != null) {
-            if (bundle.containsKey(PostRecommendationFragment.BUNDLE_KEY)) {
-                Intent resultIntent = new Intent();
-                boolean posted = bundle.getBoolean(PostRecommendationFragment.BUNDLE_KEY);
-                resultIntent.putExtra("Result", posted);
-                setResult(MainActivity.RESULT_PASS, resultIntent);
-                finish();
-            }
-            intent.putExtra(MainActivity.CONTENT_TAG, bundle);
+    public void hideSupportActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null && actionBar.isShowing())
+            actionBar.hide();
+    }
+
+    @Override
+    public void showSupportActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null && !actionBar.isShowing()) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.show();
         }
-        startActivity(intent);
-        finish();
     }
 
     private Fragment getFragmentTypeByTag(String fragmentTag){
@@ -172,6 +166,8 @@ public class DualFragmentActivity extends AppCompatActivity implements
             case FRIENDS_ID:
                 return new FriendFragment();
             case VIEW_RECOMMENDATIONS_ID:
+                return new RecommendationFragment();
+            case PROMPT_QUERY_ID:
                 return new PromptFragment();
             default:
                 return null;

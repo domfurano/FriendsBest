@@ -30,38 +30,14 @@ public class DualFragmentPresenter implements Presenter {
         _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
     }
 
-    public void setContentClass(String startingClass, String payload) {
-        onStart(startingClass, payload);
+    public void setContentClass(String startingClass) {
+        onStart(startingClass);
     }
 
     @Override
-    public void onStart(String startingClass, String payload) {
-        if (payload != null) {
-            if (startingClass.equals(DualFragmentActivity.VIEW_SOLUTION_ID)) {
-                submitQuery(payload);
-            }
-            else if (startingClass.equals(DualFragmentActivity.ADD_RECOMMENDATION_ID)) {
-                Bundle bundle = new Bundle();
-                bundle.putString(MainActivity.CONTENT_TAG, payload);
-                _dualFragmentView.onFragmentChange(startingClass, bundle);
-            }
-        }
-        else {
-            _dualFragmentView.setContentFragment(startingClass);
-        }
+    public void onStart(String startingClass) {
+        _dualFragmentView.setContentFragment(startingClass);
         _dualFragmentView.setNavigationFragment(DualFragmentActivity.NAVIGATION_ID);
-    }
-
-    private void submitQuery(String payload) {
-        String[] tags = payload.split("\\s|,");
-        List<String> tagsList = new ArrayList<>();
-        HashMap<String, List<String>> tagsMap = new HashMap<>();
-        for(String tag : tags) {
-            tagsList.add(tag.trim());
-        }
-
-        tagsMap.put("tags", tagsList);
-        _repository.postQuery(tagsMap);
     }
 
     @Override

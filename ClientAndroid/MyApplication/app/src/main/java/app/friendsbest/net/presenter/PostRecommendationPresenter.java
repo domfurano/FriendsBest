@@ -31,14 +31,12 @@ public class PostRecommendationPresenter implements RecommendPresenter {
             for(String tag : tagsArray)
                 tagsList.add(tag.trim());
 
-            if (type == null)
-                type = "TEXT";
-
             RecommendationPost post = new RecommendationPost();
             post.setDetail(title);
             post.setTags(tagsList);
             post.setType(type);
             post.setComments(comment);
+
 
             _repository.postRecommendation(post);
         }

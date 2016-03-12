@@ -57,6 +57,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         _logoutButton.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Profile");
         _listener.onFragmentToolbarChange(R.color.blue_gray200);
         new ProfilePresenter(this, getActivity().getApplicationContext());

@@ -49,7 +49,7 @@ public class SolutionFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_solution, container, false);
-        init(getArguments());
+        initialize(getArguments());
         _progressBar = (ProgressBar) rootView.findViewById(R.id.solution_progress_bar);
         _recyclerView = (RecyclerView) rootView.findViewById(R.id.solution_recycler_view);
         _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -62,7 +62,9 @@ public class SolutionFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.showSupportActionBar();
         _listener.onFragmentTitleChange(_queryResult.getTagString());
+        _listener.onFragmentToolbarChange(R.color.blue_gray200);
 
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString(_fragmentTitleTag);
@@ -110,7 +112,7 @@ public class SolutionFragment extends Fragment implements
     public void displayMessage(String message) {
     }
 
-    private void init(Bundle bundle) {
+    private void initialize(Bundle bundle) {
         int solutionId = bundle.getInt(SOLUTION_ID_TAG);
         String tagString = bundle.getString(SOLUTION_TAGS);
         _queryResult = new QueryResult();

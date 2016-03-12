@@ -23,4 +23,6 @@
     <string name="recommendations">Recommendations</string>
     <string name="delete_account">Delete Account</string>
     <string name="logout">Log out</string>
+    <string name="search">Search</string>
+    <string name="submit">submit</string>
 </resources>

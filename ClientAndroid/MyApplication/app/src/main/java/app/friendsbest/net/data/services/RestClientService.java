@@ -27,7 +27,7 @@ public interface RestClientService {
     Call<QueryResult> getQuery(@Path("queryId") int id);
 
     @POST("query/")
-    Call<List<Object>> postQuery(@Body Map<String, List<String>> tags);
+    Call<QueryResult> postQuery(@Body Map<String, List<String>> tags);
 
     @DELETE("query/{queryId}/")
     Call<Void> deleteQuery (@Path("queryId") int id);

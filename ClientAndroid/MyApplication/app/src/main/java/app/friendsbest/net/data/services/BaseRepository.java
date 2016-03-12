@@ -125,17 +125,17 @@ public class BaseRepository {
     }
 
     public void postQuery(Map<String, List<String>> tags) {
-        _service.postQuery(tags).enqueue(new Callback<List<Object>>() {
+        _service.postQuery(tags).enqueue(new Callback<QueryResult>() {
             @Override
-            public void onResponse(Call<List<Object>> call, Response<List<Object>> response) {
-                List<Object> solution = null;
+            public void onResponse(Call<QueryResult> call, Response<QueryResult> response) {
+                QueryResult solution = null;
                 if (response.isSuccess())
                     solution = response.body();
                 _presenter.sendToPresenter(solution);
             }
 
             @Override
-            public void onFailure(Call<List<Object>> call, Throwable t) {
+            public void onFailure(Call<QueryResult> call, Throwable t) {
                 logError("Post Query", t);
             }
         });

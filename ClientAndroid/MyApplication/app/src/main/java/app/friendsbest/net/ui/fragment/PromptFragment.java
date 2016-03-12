@@ -34,6 +34,7 @@ public class PromptFragment extends Fragment implements
         View.OnTouchListener,
         FlingCardListener.ActionDownInterface {
 
+    public static final String BUNDLE_TAG = "promptFragmentTag";
     public static IViewContainer _viewContainer;
     public static ICardAdapter _cardAdapter;
 
@@ -44,7 +45,12 @@ public class PromptFragment extends Fragment implements
     private EditText _searchField;
     private ImageButton _searchBtn;
     private List<PromptCard> _cards = new ArrayList<>();
+    boolean _deleteRecommendation = false;
 
+    public static void removeBackground() {
+        _viewContainer.background.setVisibility(View.GONE);
+        _cardAdapter.notifyDataSetChanged();
+    }
 
     @Nullable
     @Override
@@ -53,9 +59,10 @@ public class PromptFragment extends Fragment implements
 
         Typeface typeface = FontManager
                 .getTypeface(getActivity().getApplicationContext(), FontManager.FONT_AWESOME);
+        initialize(getArguments());
+        setHasOptionsMenu(true);
         FontManager.markAsIconContainer(view.findViewById(R.id.fragment_main_query_layout), typeface);
         _adapterView = (SwipeFlingAdapterView) view.findViewById(R.id.fragment_main_swipe_card);
-
         _historyBtn = (TextView) view.findViewById(R.id.fragment_main_query_results_button);
         _searchField = (EditText) view.findViewById(R.id.fragment_main_query_field);
         _searchBtn = (ImageButton) view.findViewById(R.id.fragment_main_submit_query_button);
@@ -69,6 +76,7 @@ public class PromptFragment extends Fragment implements
         _searchField.setOnClickListener(this);
         _searchBtn.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.hideSupportActionBar();
         _presenter = new DemoPresenter(this, getActivity());
     }
 
@@ -79,7 +87,12 @@ public class PromptFragment extends Fragment implements
 
     @Override
     public void onClick(View v) {
-
+        if (v == _searchBtn) {
+            String searchText = _searchField.getText().toString();
+            _presenter.submitQuery(searchText);
+        } else if (v == _historyBtn) {
+            _listener.onFragmentChange(DualFragmentActivity.SEARCH_HISTORY_ID);
+        }
     }
 
     @Override
@@ -96,6 +109,11 @@ public class PromptFragment extends Fragment implements
     public void displayContent(List<PromptCard> cards) {
         if (cards.size() > 0) {
             _cards = cards;
+            if (_deleteRecommendation)
+                deleteCard();
+
+            if (_cards.size() == 1)
+                _presenter.getData();
 
             _cardAdapter = new ICardAdapter(_cards, getActivity());
             _adapterView.setAdapter(_cardAdapter);
@@ -114,7 +132,9 @@ public class PromptFragment extends Fragment implements
                 @Override
                 public void onRightCardExit(Object dataObject) {
                     PromptCard card = _cards.get(0);
-                    _listener.onFragmentChange(DualFragmentActivity.ADD_RECOMMENDATION_ID);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BUNDLE_TAG, card.getTagstring());
+                    _listener.onFragmentChange(DualFragmentActivity.ADD_RECOMMENDATION_ID, bundle);
                 }
 
                 @Override
@@ -126,6 +146,12 @@ public class PromptFragment extends Fragment implements
                 public void onScroll(float scrollProgressPercent) {
                 }
             });
+        }
+    }
+
+    private void initialize(Bundle arguments) {
+        if (arguments != null) {
+            _deleteRecommendation = arguments.getBoolean(PostRecommendationFragment.BUNDLE_KEY);
         }
     }
 
@@ -141,8 +167,12 @@ public class PromptFragment extends Fragment implements
     public void displayMessage(String message) {
     }
 
+    public void changeFragment(String fragmentTag, Bundle payload) {
+        _listener.onFragmentChange(fragmentTag, payload);
+    }
+
     private void deleteCard() {
-        PromptCard deletedCard =_cards.remove(0);
+        PromptCard deletedCard = _cards.remove(0);
         _cardAdapter.notifyDataSetChanged();
         _presenter.deletePromptCard(deletedCard.getId());
     }
@@ -191,8 +221,7 @@ public class PromptFragment extends Fragment implements
                 _viewContainer.friendText = (TextView) rowView.findViewById(R.id.bookText1);
                 _viewContainer.background = (FrameLayout) rowView.findViewById(R.id.background);
                 rowView.setTag(_viewContainer);
-            }
-            else {
+            } else {
                 _viewContainer = (IViewContainer) convertView.getTag();
             }
 

@@ -52,6 +52,7 @@ public class RecommendationItemFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         _listener = (OnFragmentInteractionListener) getActivity();
+        _listener.showSupportActionBar();
         _listener.onFragmentTitleChange(_toolbarTitle);
     }
 }

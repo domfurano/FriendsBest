@@ -8,19 +8,18 @@
     android:layout_marginTop="10dp"
     android:background="@drawable/rounded_rect"
     android:elevation="2dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingTop="10dp"
-        android:paddingLeft="10dp">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <ImageView
             android:id="@+id/recommendation_row_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -39,6 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18dp"
+                android:text="hello"
                 android:textColor="@color/gray800"
                 android:textStyle="bold"/>
 

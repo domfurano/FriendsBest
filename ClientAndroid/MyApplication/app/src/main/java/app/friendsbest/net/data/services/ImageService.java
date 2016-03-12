@@ -43,8 +43,8 @@ public class ImageService {
         String uri = FACEBOOK_URL + id + "/picture?type=" + size._sizeText;
         Glide.with(_context)
                 .load(uri)
-                .placeholder(R.drawable.ic_person_black_24dp)
-                .error(R.drawable.ic_person_black_24dp)
+                .placeholder(R.drawable.empty_avatar)
+                .error(R.drawable.empty_avatar)
                 .transform(new CircleTransform(_context))
                 .crossFade()
                 .into(view);
@@ -60,7 +60,6 @@ public class ImageService {
 
     private int dipToPixel(int measure) {
         DisplayMetrics metrics = _context.getResources().getDisplayMetrics();
-        int px = Math.round(measure * (metrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
+        return Math.round(measure * (metrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

@@ -5,18 +5,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <RelativeLayout
-        android:id="@+id/place_picker_button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:id="@+id/place_picker_layout"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:elevation="2dp"
+        android:layout_gravity="center"
+        android:background="@drawable/rounded_rect_blue_gray">
+
         <TextView
             android:id="@+id/place_picker_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="50sp"
-            android:textColor="@color/red900"
-            android:text="@string/fa_icon_map_marker"/>
-    </RelativeLayout>
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:text="Pick from map"
+            android:textColor="@color/white"
+            android:textSize="18dp"/>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="8dp"
+            android:background="@drawable/ic_map_white_24px"/>
+        </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,23 +39,29 @@
         android:paddingLeft="10dp"
         android:paddingRight="15dp">
         <TextView
-            android:id="@+id/rec_title_input_label"
-            android:layout_width="wrap_content"
+            android:id="@+id/rec_places_address"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:text="@string/rec_title_label"/>
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"/>
         <TextView
             android:id="@+id/rec_title_invalid_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/red900"
             android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/rec_title_input_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:text="@string/rec_title_label"/>
         <EditText
             android:id="@+id/rec_tags_title_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionNext"
-            android:hint="What do you recommend"/>
+            android:imeOptions="actionNext"/>
         <TextView
             android:id="@+id/rec_tags_input_label"
             android:layout_width="wrap_content"
@@ -52,13 +73,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/red900"
+            android:visibility="gone"
             android:textSize="16sp"/>
         <EditText
             android:id="@+id/rec_tags_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
-            android:hint="restaurant, exercise, recipe, etc"/>
+            android:hint="A product, place, business, etc"/>
 
         <TextView
             android:id="@+id/rec_comments_label"
@@ -72,13 +94,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionSend"
-            android:hint="Why do you recommend it"/>
-        <Button
-            android:id="@+id/recommendation_submit"
-            android:layout_marginTop="30dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Submit"/>
+            android:hint="Explain why you're making this recommendation"/>
     </LinearLayout>
 </LinearLayout>

@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void startMainView() {
-        startActivity(new Intent(LoginActivity.this ,MainActivity.class));
+        startActivity(new Intent(LoginActivity.this, DualFragmentActivity.class));
         finish();
     }
 

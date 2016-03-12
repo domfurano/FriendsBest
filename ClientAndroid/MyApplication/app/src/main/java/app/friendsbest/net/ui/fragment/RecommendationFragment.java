@@ -31,6 +31,7 @@ public class RecommendationFragment extends Fragment implements OnListItemClickL
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         DualFragmentView view = (DualFragmentView) getActivity();
+        view.showSupportActionBar();
         view.onFragmentTitleChange("Your Recommendations");
         view.onFragmentToolbarChange(R.color.appGreen);
     }

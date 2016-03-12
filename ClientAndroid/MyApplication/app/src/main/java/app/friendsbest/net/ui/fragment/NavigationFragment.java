@@ -57,6 +57,6 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
         else if (v == _recommendButton)
             _listener.onFragmentChange(DualFragmentActivity.ADD_RECOMMENDATION_ID);
         else if (v == _homeButton)
-            _listener.onFragmentResult(null);
+            _listener.onFragmentChange(DualFragmentActivity.PROMPT_QUERY_ID);
     }
 }
