@@ -56,7 +56,7 @@ define([
 								recommendations: solution.recommendations
 							};
 				solutions.push(s);
-				list.append(itemTemplate(s));
+				list.prepend(itemTemplate(s));
 			});
 			
 			$(".solution").click(function() {

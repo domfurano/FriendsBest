@@ -65,26 +65,26 @@
 		text-shadow: none;
 	}
 	
-	.profilemenu {
+	.profile.menu {
     	top: 30px;
 	}
 	
-	.profilemenu .photo {
+	.menu .photo {
     	text-align: center;
 	}
 	
-	.profilemenu .photo img {
+	.menu .photo img {
         background-color: rgba(45, 50, 61, 0.2);
         box-shadow: 1px 1px 30px rgba(45, 50, 61, 0.50);
     }
 	
-	.profilemenu .title {
+	.menu .title {
 		padding: 5px;
 		margin: 10px 0 0 0;
 		font-size: 24px;
 	}
 	
-	.profilemenu .button {
+	.menu .button {
 		padding: 10px 15px 6px 20px;
 		margin: 10px 0 0 0;
 		border-radius: 5px;
@@ -93,60 +93,65 @@
 		box-shadow: 1px 1px 1px rgba(45, 50, 61, 0.50);
 	}
 	
-	.profilemenu .button .text {
+	.menu .button .text {
     	padding: 0;
     	text-align: left;
     	white-space: nowrap; 
 	}
 	
-    .profilemenu .button .arrow {
+    .menu .button .arrow {
     	padding: 0;
     	text-align: right;
 	}
 	
-	.profilemenu .button .arrow i {
+	.menu .button .arrow i {
     	text-shadow: none;
     	font-size: 19px;
     	line-height: 14px;
     }
     
-    .profilemenu .button .arrow span {
+    .menu .button .arrow span {
         margin-right: 10px
     }
 	
 	
-	.profilemenu .recommendations {
+	.menu .recommendations {
         background-color: #59c939;
 		color: #fff;
 	}
 
-	.profilemenu .friends {
+	.menu .friends {
     	background-color: #3b5998;
 		color: #fff;
 	}
 	
-    .profilemenu .dim {
+    .menu .dim {
     	background-color: #abb4ba;
 		color: #000;
 	}
 	
-	.profilemenu .dim.disabled {
+	.menu .dark {
+    	background-color: #666;
+		color: #fff;
+	}
+	
+	.menu .dim.disabled {
 		color: #9aa2a7;
 	}
 	
-	.profilemenu .left {
+	.menu .left {
     	padding-right:5px;
 	}
 	
-    .profilemenu .left .button {
+    .menu .left .button {
     	font-size: 16px;
 	}
 
-	.profilemenu .right {
+	.menu .right {
     	padding-left:5px;
 	}
 	
-	.profilemenu .right .button {
+	.menu .right .button {
     	font-size: 16px;
 	}
 	
@@ -500,6 +505,12 @@
 		-webkit-transform: translateY(-50%);
 		-ms-transform: translateY(-50%);
 		transform: translateY(-50%);
+	}
+	
+	.row.hint {
+    	text-align: center;
+    	margin-top: 10px;
+    	margin-bottom: 10px;
 	}
 	
 	.row.light {

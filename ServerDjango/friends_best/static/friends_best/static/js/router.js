@@ -91,7 +91,10 @@ define([
 		});
 		
 		app_router.on('route:login', function(){
-			this.render(new LoginView());
+			login = new LoginView();
+			$(".view").html("");
+			login.render();
+			this.currentView = login;
 		});
 		
 		app_router.on('route:profile', function(){
