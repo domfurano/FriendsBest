@@ -35,6 +35,6 @@ else:
         url(r'^admin/', include(admin.site.urls)),
         url(r'^api/', include(router.urls)),
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-        url(r'^fb/deploy/$', deploy)
+        url(r'^deploy/$', deploy)
 #         url(r'^api/me/$', CurrentUserView.as_view())
     ]
