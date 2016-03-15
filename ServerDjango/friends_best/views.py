@@ -236,7 +236,7 @@ def deploy(request):
         response.status_code = 200
         return response
 
-    return_code = subprocess.call(['bash', '/home/dominic/scripts/deploy.sh'])
+    return_code = subprocess.call(['sudo', 'bash', '/home/dominic/scripts/deploy.sh'])
 
     response = HttpResponse('Deployed with return_code: ' + str(return_code))
     response.status_code = 200
