@@ -202,4 +202,10 @@ class FacebookLogin(SocialLoginView):
         getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
         return SocialLoginView.login(self)
         
+from django.http import HttpResponse
+import json
 
+def deploy(request):
+    print(request.body)
+
+    return HttpResponse("Shit")
