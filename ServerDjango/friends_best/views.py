@@ -8,6 +8,11 @@ from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
+from django.http import HttpResponse
+import hmac
+import os
+import json
+import subprocess
 
 from friends_best.serializers import *
 from friends_best.services import *
@@ -195,23 +200,47 @@ class PinViewSet(viewsets.ModelViewSet):
     queryset = Pin.objects.order_by('thing')
     serializer_class = PinSerializer
     
+
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
     
     def login(self):
         getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
         return SocialLoginView.login(self)
-        
-from django.http import HttpResponse
-import hashlib
-import os
+
 
 def deploy(request):
+    if request.method != 'POST':
+        response = HttpResponse('Invalid method')
+        response.status_code = 405
+        return response
 
-    valid_signature = 'sha1=' + hashlib.sha1(os.environ['GitHubWebHookSecret'])
-    request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
+    try:
+        #hmac.new(os.environ['GitHubWebHookSecret']
+        valid_signature = 'sha1=' + hmac.new('mfci19034hg708btyv78nc19pr8jm1c49nvt'.encode(), request.body, 'sha1').hexdigest()
+        request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
 
-    if valid_signature != request_signature:
-        return HttpResponse('Nice try')
-    else:
-        return HttpResponse('Signatures match! ')
+        if hmac.compare_digest(valid_signature, request_signature):
+            response = HttpResponse('Keys do not match')
+            response.status_code = 401
+            return response
+
+    except KeyError:
+        response = HttpResponse('Missing key')
+        response.status_code = 400
+        return response
+
+
+    # Signature is valid
+    json_data = json.loads(request.body.decode())
+    if json_data["ref"].find('master') == -1:
+        response = HttpResponse('Not master branch')
+        response.status_code = 200
+        return response
+
+    return_code = subprocess.call('/home/dominic/scripts/deploy.sh')
+
+    response = HttpResponse('Deployed with return_code: ' + return_code)
+    response.status_code = 200
+    return response
+
