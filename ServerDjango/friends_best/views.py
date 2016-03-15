@@ -232,7 +232,7 @@ def deploy(request):
     # Signature is valid
     json_data = json.loads(request.body.decode())
     if json_data["ref"].find('master') == -1:
-        response = HttpResponse('Not master branch')
+        response = HttpResponse('Not master branch') 
         response.status_code = 200
         return response
 
