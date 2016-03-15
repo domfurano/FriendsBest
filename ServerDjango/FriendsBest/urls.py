@@ -27,7 +27,7 @@ if settings.DEBUG:
         url(r'^fb/api/', include(router.urls)),
         url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-        url(r'^fb/deploy/$', deploy)
+        url(r'^fb/deploy/$', deploy) 
 #         url(r'^fb/api/me/$', CurrentUserView.as_view())
     ]
 else:
