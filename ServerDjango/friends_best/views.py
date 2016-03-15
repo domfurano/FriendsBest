@@ -220,7 +220,7 @@ def deploy(request):
         request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
 
         if hmac.compare_digest(valid_signature, request_signature):
-            response = HttpResponse('Keys do not match')
+            response = HttpResponse('Keys do not match:' + valid_signature + ' ' + request_signature)
             response.status_code = 401
             return response
 
@@ -232,13 +232,12 @@ def deploy(request):
     # Signature is valid
     json_data = json.loads(request.body.decode())
     if json_data["ref"].find('master') == -1:
-        response = HttpResponse('Not master branch') 
+        response = HttpResponse('Not master branch')
         response.status_code = 200
         return response
 
     return_code = subprocess.call('/home/dominic/scripts/deploy.sh')
 
-    response = HttpResponse('Deployed with return_code: ' + return_code)
+    response = HttpResponse('Deployed with return_code: ' + str(return_code))
     response.status_code = 200
     return response
-
