@@ -205,6 +205,7 @@ class FacebookLogin(SocialLoginView):
 from django.http import HttpResponse
 import json
 
+@csrf_exempt
 def deploy(request):
     print(request.body)
 
