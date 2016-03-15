@@ -77,7 +77,7 @@ class FacebookNetworkDAO {
                         NetworkQueue.instance.dequeue()
                     }
                 )
-            }).resume()
+        }).resume()
     }
     
     func getFacebookUserID() {

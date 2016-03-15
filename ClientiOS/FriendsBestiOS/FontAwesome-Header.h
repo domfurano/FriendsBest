@@ -10,6 +10,6 @@
 #define FontAwesome_Header_h
 
 #import "FontAwesomeKit/FAKFontAwesome.h"
-
+#import "FontAwesomeKit/FAKIcon.h"
 
 #endif /* FontAwesome_Header_h */

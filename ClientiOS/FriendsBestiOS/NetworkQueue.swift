@@ -15,6 +15,7 @@ class NetworkQueue {
     private var queue: Queue<NetworkTask> = Queue<NetworkTask>()
     private var executing: Bool = false
     private var timer: Timer? = nil
+    private var retries: Int = 5
     
     private init() {        
         self.timer = Timer(timesPerSecond: 8, closure: { () -> Void in
@@ -55,6 +56,9 @@ class NetworkQueue {
     
     func tryAgain() {
         self.executing = false
+        if --self.retries == 0 {
+            self.dequeue()
+        }
         // TODO: Slow down timer until task is dequeued
     }
 }

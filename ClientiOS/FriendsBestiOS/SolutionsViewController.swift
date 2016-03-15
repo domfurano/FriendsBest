@@ -8,26 +8,33 @@
 
 import UIKit
 
-class SolutionsViewController: UITableViewController {
-    
-//    var TITLE: String?
-    var queryID: Int?
-    var tags: [String]?
-    
-    convenience init(tags: [String]) {//(title: String, queryID: Int) {
-        self.init()
-//        self.TITLE = title
-//        self.queryID = queryID
-        self.tags = tags
-        self.queryID = User.instance.queryHistory.getQueryFromTags(tags)?.ID;
-    }
-    
-    override func loadView() {
-        view = UITableView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+class SolutionsView: UITableView {
+    override func drawRect(rect: CGRect) {
+        /* Background gradient */
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
         
-        /* Tableview datasource and delegate */        
-        tableView.dataSource = self
-        tableView.delegate = self
+        CommonUIElements.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0xfefefe).CGColor,
+                UIColor.colorFromHex(0xc8ced0).CGColor
+            ],
+            frame: frame,
+            context: context
+        )
+    }
+}
+
+class SolutionsViewController: UITableViewController {
+
+    var queryID: Int?
+    var tags: [String] = []
+    
+    convenience init(tags: [String]) {
+        self.init()
+
+        self.queryID = User.instance.queryHistory.getQueryFromTags(tags)?.ID;
+        self.tags = tags
         
         User.instance.querySolutionsUpdatedClosure = {
             [weak self] (queryID: Int) -> Void in
@@ -40,9 +47,23 @@ class SolutionsViewController: UITableViewController {
         }
     }
     
-    override func viewDidLoad() {        
-//        title = TITLE
-        title = tags?.joinWithSeparator(" ")
+    override func loadView() {
+        view = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+        
+        /* Tableview datasource and delegate */        
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    override func viewDidLoad() {
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: FAKFontAwesome.chevronLeftIconWithSize(32.0).imageWithSize(CGSize(width: 32.0, height: 32.0)),
+            style: .Plain,
+            target: self,
+            action: Selector("back")
+        )
+        title = "Solutions"
+        tableView.separatorStyle = .None
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -51,7 +72,15 @@ class SolutionsViewController: UITableViewController {
         }
     }
     
+    func back() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        }
+        
         if self.queryID != nil {
             if let solutionCount = User.instance.queryHistory.getQueryByID(queryID!)?.solutions?.count {
                 return solutionCount
@@ -63,22 +92,33 @@ class SolutionsViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
-        if self.queryID != nil {
-            let solution: Solution = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row]
-            cell.textLabel?.text = solution.detail
+        if indexPath.section == 0 {
+            return SolutionsTagCell(tags: tags, style: .Default, reuseIdentifier: nil)
+        } else {
+            let cell: SolutionCell = SolutionCell(detail: User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail, style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
+            if self.queryID != nil {
+//                cell.textLabel?.text = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail
+            }
+            return cell
         }
-        return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            return
+        }
+        
         if self.queryID != nil {
-            let solution: Solution = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row]
-            navigationController?.pushViewController(SolutionDetailViewController(title: solution.detail, queryID: self.queryID!, solutionIndex: indexPath.row), animated: true)
+            let detail: String = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail
+            navigationController?.pushViewController(SolutionDetailViewController(title: detail, queryID: self.queryID!, solutionIndex: indexPath.row), animated: true)
         }
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 2
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 60.0
     }
 }

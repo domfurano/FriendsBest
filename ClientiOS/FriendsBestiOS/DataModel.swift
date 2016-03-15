@@ -27,6 +27,8 @@ class User: NetworkDAODelegate {
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = { _ in }
     var promptsFetchedClosure: () -> Void = {}
+    var newSolutionAlert: () -> Void = {}
+    var newRecommendationAlert: () -> Void = {}
     
     
     /* Private constructor */
@@ -95,6 +97,15 @@ class QueryHistory {
         self._queries.insert(query)
     }
     
+    func deleteQueryByID(queryID: Int) {
+        for query in self._queries {
+            if query.ID == queryID {
+                self._queries.remove(query)
+                break
+            }
+        }
+    }
+    
     func getQueryByID(ID: Int) -> Query? {
         for query in self._queries {
             if query.ID == ID {
@@ -140,15 +151,16 @@ class QueryHistory {
         return tagsEqual
     }
     
-    func setQuerySolutionsForQueryID(solutions: [Solution], queryID: Int) {
+    func setQuerySolutionsForQueryID(solutions: Set<Solution>, queryID: Int) {
         for query in self._queries {
             if query.ID == queryID {
-                query.solutions = solutions
+                query.setSolutions(solutions)
                 break
             }
         }
     }
 }
+
 
 
 class Query: Hashable, Equatable {
@@ -157,18 +169,41 @@ class Query: Hashable, Equatable {
     private(set) var tagString: String
     private(set) var ID: Int
     private(set) var timestamp: NSDate
-    private var _solutions: [Solution]?
+    private var _solutions: Set<Solution>?
     var solutions: [Solution]? {
         get {
-            if let solutions = self._solutions {
-                return solutions
-            } else {
+            guard self._solutions != nil else {
                 return nil
             }
+            return Array(self._solutions!)
         }
-        set (solutions) {
-            // TODO: only insert solution if it doesn't exist in order to demarcate new from old solutions
-            self._solutions = solutions
+    }
+    
+    func setSolutions (newSolutions: Set<Solution>) {
+        if self._solutions == nil {
+            self._solutions = Set(newSolutions)
+        } else {
+            for newSolution in newSolutions {
+                if self._solutions!.contains(newSolution) { // The solution is not new, but it may have new recommendations.
+                    let existingSolutionArray: [Solution]? = self._solutions?.filter({ (solution: Solution) -> Bool in
+                        solution == newSolution // They have the same detail
+                    })
+                    let existingSolution: Solution = existingSolutionArray!.first!
+                    
+                    for recommendation in newSolution.recommendations {
+                        if !existingSolution.recommendations.contains(recommendation) {
+                            // Insert it and trigger the alert
+                            existingSolution.insertRecommendation(recommendation)
+                            User.instance.newRecommendationAlert()
+                        }
+                    }
+                    
+                } else { // The solution is new!
+                    // Insert it and trigger the alert.
+                    self._solutions!.insert(newSolution)
+                    User.instance.newSolutionAlert()
+                }
+            }
         }
     }
     
@@ -192,32 +227,67 @@ func ==(lhs: Query, rhs: Query) -> Bool {
 }
 
 
-class Solution {
-    enum SolutionType: String {
+class Solution: Equatable, Hashable {
+    private(set) var _recommendations: Set<Recommendation>
+    private(set) var detail: String
+    private(set) var type: Recommendation.RecommendationType
+    
+    var recommendations: [Recommendation] {
+        get {
+            return Array(_recommendations)
+        }
+    }
+    
+    func insertRecommendation(recommendation: Recommendation) {
+        _recommendations.insert(recommendation)
+    }
+    
+    var hashValue: Int {
+        return self.detail.hash
+    }
+    
+    init(recommendations: Set<Recommendation>, detail: String, type: Recommendation.RecommendationType) {
+        self._recommendations = recommendations
+        self.detail = detail
+        self.type = type
+    }
+}
+
+func ==(lhs: Solution, rhs: Solution) -> Bool {
+    return lhs.detail == rhs.detail
+}
+
+
+class Recommendation: Equatable, Hashable {
+    enum RecommendationType: String {
         case TEXT
     }
     
-    private(set) var type: SolutionType
-    private(set) var detail: String
-    private(set) var recommendations: [Recommendation]
-    
-    init(type: SolutionType, detail: String, recommendations: [Recommendation]) {
-        self.type = type
-        self.detail = detail
-        self.recommendations = recommendations
-    }
-}
-
-
-class Recommendation {
     private(set) var friend: Friend
     private(set) var comment: String
+    private(set) var detail: String
+    private(set) var type: RecommendationType
+    var ID: Int
+    var tags: [String]?
+    var new: Bool?
     
-    init(friend: Friend, comment: String) {
+    var hashValue: Int {
+        return self.ID
+    }
+    
+    init(friend: Friend, comment: String, detail: String, type: RecommendationType, ID: Int) {
         self.friend = friend
         self.comment = comment
+        self.detail = detail
+        self.type = type
+        self.ID = ID
     }
 }
+
+func ==(lhs: Recommendation, rhs: Recommendation) -> Bool {
+    return lhs.ID == rhs.ID
+}
+
 
 class Prompts {
     private var _prompts: Set<Prompt>
@@ -250,12 +320,14 @@ class Prompts {
     
 }
 
+
 class Prompt: Equatable, Hashable {
     private(set) var article: String
     private(set) var tags: [String]
     private(set) var tagString: String
     private(set) var friend: Friend
     private(set) var ID: Int
+    var new: Bool
     
     var hashValue: Int {
         return self.ID
@@ -267,6 +339,7 @@ class Prompt: Equatable, Hashable {
         self.tagString = tagString
         self.friend = friend
         self.ID = ID
+        self.new = true
     }
 }
 

@@ -8,6 +8,23 @@
 
 import UIKit
 
+class SolutionDetailView: UITableView {
+    override func drawRect(rect: CGRect) {
+        /* Background gradient */
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
+        
+        CommonUIElements.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0xfefefe).CGColor,
+                UIColor.colorFromHex(0xc8ced0).CGColor
+            ],
+            frame: frame,
+            context: context
+        )
+    }
+}
+
 class SolutionDetailViewController: UITableViewController {
     
     var TITLE: String?
@@ -23,7 +40,7 @@ class SolutionDetailViewController: UITableViewController {
     }
     
     override func loadView() {
-        view = UITableView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+        view = SolutionDetailView(frame: CGRectZero, style: UITableViewStyle.Grouped)
         
         /* Tableview datasource and delegate */
         tableView.dataSource = self
