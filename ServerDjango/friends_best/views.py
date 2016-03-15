@@ -219,8 +219,8 @@ def deploy(request):
         valid_signature = 'sha1=' + hmac.new(os.environ['GitHubWebHookSecret'].encode(), request.body, 'sha1').hexdigest()
         request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
 
-        if hmac.compare_digest(valid_signature, request_signature):
-            response = HttpResponse('Keys do not match:' + valid_signature + ' ' + request_signature)
+        if not hmac.compare_digest(valid_signature, request_signature):
+            response = HttpResponse('Keys do not match:\n' + valid_signature + '\n' + request_signature)
             response.status_code = 401
             return response
 
