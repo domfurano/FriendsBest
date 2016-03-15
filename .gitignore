@@ -87,3 +87,6 @@ xcuserdata/
 ServerDjango/db.sqlite3
 
 *.sqlite3
+
+#GoogleMaps
+GoogleMaps
