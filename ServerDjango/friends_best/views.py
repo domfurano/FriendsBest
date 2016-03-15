@@ -203,10 +203,15 @@ class FacebookLogin(SocialLoginView):
         return SocialLoginView.login(self)
         
 from django.http import HttpResponse
-import json
-
+import hashlib
+import os
 
 def deploy(request):
-    print(request.body)
 
-    return HttpResponse("Shit")
+    valid_signature = 'sha1=' + hashlib.sha1(os.environ['GitHubWebHookSecret'])
+    request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
+
+    if valid_signature != request_signature:
+        return HttpResponse('Nice try')
+    else:
+        return HttpResponse('Signatures match!')
