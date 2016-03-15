@@ -216,8 +216,7 @@ def deploy(request):
         return response
 
     try:
-        #hmac.new(os.environ['GitHubWebHookSecret']
-        valid_signature = 'sha1=' + hmac.new('mfci19034hg708btyv78nc19pr8jm1c49nvt'.encode(), request.body, 'sha1').hexdigest()
+        valid_signature = 'sha1=' + hmac.new(os.environ['GitHubWebHookSecret'].encode(), request.body, 'sha1').hexdigest()
         request_signature = request.environ['HTTP_X_HUB_SIGNATURE']
 
         if hmac.compare_digest(valid_signature, request_signature):
@@ -230,9 +229,8 @@ def deploy(request):
         response.status_code = 400
         return response
 
-
     # Signature is valid
-    json_data = json.loads(request.body.decode()) 
+    json_data = json.loads(request.body.decode())
     if json_data["ref"].find('master') == -1:
         response = HttpResponse('Not master branch')
         response.status_code = 200
