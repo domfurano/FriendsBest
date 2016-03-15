@@ -214,4 +214,4 @@ def deploy(request):
     if valid_signature != request_signature:
         return HttpResponse('Nice try')
     else:
-        return HttpResponse('Signatures match!')
+        return HttpResponse('Signatures match! ')
