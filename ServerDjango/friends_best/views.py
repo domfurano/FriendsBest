@@ -240,4 +240,4 @@ def deploy(request):
 
     response = HttpResponse('Deployed with return_code: ' + str(return_code))
     response.status_code = 200
-    return response # hello
+    return response
