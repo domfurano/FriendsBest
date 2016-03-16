@@ -223,17 +223,23 @@ def deploy(request):
             response = HttpResponse('Keys do not match:\n' + valid_signature + '\n' + request_signature)
             response.status_code = 401
             return response
-
     except KeyError:
         response = HttpResponse('Missing key')
         response.status_code = 400
         return response
 
     # Signature is valid
+
     json_data = json.loads(request.body.decode())
-    if json_data["ref"].find('master') == -1:
-        response = HttpResponse('Not master branch')
-        response.status_code = 200
+
+    try:
+        if json_data['ref'].find('master') == -1:
+            response = HttpResponse('Not master branch')
+            response.status_code = 200
+            return response
+    except KeyError:
+        response = HttpResponse('Can\'t find branch data')
+        response.status_code = 400
         return response
 
     subprocess.Popen(['bash', '/home/dominic/scripts/deploy.sh'])
