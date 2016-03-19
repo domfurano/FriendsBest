@@ -41,9 +41,9 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     var searchController: UISearchController = UISearchController(searchResultsController: nil)
 
     /* Gesture recognizers */
-    var panGR: UIPanGestureRecognizer?
-    var leftSwipeGR: UISwipeGestureRecognizer?
-    var rightSwipeGR : UISwipeGestureRecognizer?
+//    var panGR: UIPanGestureRecognizer?
+//    var leftSwipeGR: UISwipeGestureRecognizer?
+//    var rightSwipeGR : UISwipeGestureRecognizer?
     
     /* Subviews */
     let baseCard = BaseCardView()
@@ -62,6 +62,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func loadView() {
         view = MainView()
+        view.multipleTouchEnabled = true
         
         /* Facebook */ // TODO: Add this to a "loading" viewcontroller
         if FBSDKAccessToken.currentAccessToken() == nil {
@@ -112,15 +113,15 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         /* Gesture recognizers */
         
-        panGR = UIPanGestureRecognizer(target: self, action: "didPan")
-        leftSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeLeft")
-        rightSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeRight")
-        leftSwipeGR!.direction = .Left
-        rightSwipeGR!.direction = .Right
-
-        view.addGestureRecognizer(panGR!)
-        view.addGestureRecognizer(leftSwipeGR!)
-        view.addGestureRecognizer(rightSwipeGR!)
+//        panGR = UIPanGestureRecognizer(target: self, action: "didPan")
+//        leftSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeLeft")
+//        rightSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeRight")
+//        leftSwipeGR!.direction = .Left
+//        rightSwipeGR!.direction = .Right
+//
+//        view.addGestureRecognizer(panGR!)
+//        view.addGestureRecognizer(leftSwipeGR!)
+//        view.addGestureRecognizer(rightSwipeGR!)
         
         
         /* Subviews */
@@ -190,9 +191,46 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         
-        if recommendingCard != nil {
-            recommendingCard = nil
+//        if recommendingCard != nil {
+//            recommendingCard = nil
+//        }
+    }
+    
+    
+    
+    let previousPoint: CGPoint = CGPoint()
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        let touch: UITouch = touches.first!
+        let touchPoint: CGPoint = touch.locationInView(view)
+        NSLog("touchesBegan: \(touchPoint)")
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        let touch: UITouch = touches.first!
+        let touchPoint: CGPoint = touch.locationInView(view)
+        
+        let dX = previousPoint.
+        
+        let topCard: PromptCardView = cardViews.last!
+        
+        if topCard.pointInside(touchPoint, withEvent: event) {
+            
         }
+        
+        NSLog("touchesMoved: \(touchPoint)")
+    }
+    
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        let touch: UITouch = touches!.first!
+        let touchPoint: CGPoint = touch.locationInView(view)
+        NSLog("touchesCancelled: \(touchPoint)")
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        let touch: UITouch = touches.first!
+        let touchPoint: CGPoint = touch.locationInView(view)
+        NSLog("touchesEnded: \(touchPoint)")
     }
     
     func showAlert() {
@@ -278,91 +316,78 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /************************************************************************************************************************/
     // Gesture handlers
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        super.touchesMoved(touches, withEvent: event)
-        let touch: UITouch = touches.first
-        let location: CGPoint = touch.locationInView(self)
-        
-//        var touch: UITouch = touches as anyObject
-//        CGPoint location = [aTouch locationInView:self];
-//        CGPoint previousLocation = [aTouch previousLocationInView:self];
-//        self.frame = CGRectOffset(self.frame, (location.x - previousLocation.x), (location.y - previousLocation.y));
-        NSLog(touches.description)
-        NSLog(event!.description)
-    }
-    
-    func didPan() {
-        if self.cardViews.count < 1 || recommendationPickerShown {
-            return
-        }
-        
-        let topCard: PromptCardView = cardViews.last!
-        if !topCard.pointInside(panGR!.locationInView(topCard), withEvent: nil) {
-            return
-        }
-    }
-    
-    func didSwipeLeft() {
-        if self.cardViews.count < 1 || recommendationPickerShown {
-            return
-        }
-        
-        let topCard: PromptCardView = self.cardViews.last!
-        if !topCard.pointInside(self.leftSwipeGR!.locationInView(topCard), withEvent: nil) {
-            return
-        }
-        
-        UIView.animateWithDuration(
-            NSTimeInterval(0.33),
-            animations: {
-                () -> Void in
-                // Runs on main thread (UIThread)
-                topCard.frame = topCard.frame.offsetBy(dx: -UIScreen.mainScreen().bounds.width, dy: 0)
-            },
-            completion: {
-                (Bool) -> Void in
-                // Runs on main thread (UIThread)
-                let promptAndCard = self.cardViews.removeLast()
-                promptAndCard.removeFromSuperview()
-//                self.repositionCards()
-            }
-        )
-    }
-    
-    var recommendingCard: PromptCardView?
-    func didSwipeRight() {
-        if self.cardViews.count < 1 || recommendationPickerShown {
-            return
-        }
-        
-        let topCard: PromptCardView = self.cardViews.last!
-        if !topCard.pointInside(self.rightSwipeGR!.locationInView(topCard), withEvent: nil) {
-            return
-        }
-        
-        UIView.animateWithDuration(
-            NSTimeInterval(0.33),
-            animations: {
-                () -> Void in
-                topCard.frame = topCard.frame.offsetBy(dx: UIScreen.mainScreen().bounds.width, dy: 0)
-            },
-            completion: {
-                (successful) -> Void in
-                self.recommendingCard = self.cardViews.removeLast()
-                self.recommendingCard!.removeFromSuperview()
-                
-//                let newController = NewRecommendationViewController()
-//                newController.tagsField.text = self.recommendingCard!.prompt!.tagString
-//                newController.tagsField.enabled = false
-                // TODO: Fix NewRecommendationViewController so it doesn't crash when 
-                //       tagsField is disabled
-                
-//                self.navigationController?.pushViewController(newController, animated: true)
-                
-//                self.showNewRecommendationViews()
-            }
-        )
-    }
+//    func didPan() {
+//        if self.cardViews.count < 1 || recommendationPickerShown {
+//            return
+//        }
+//        
+//        let topCard: PromptCardView = cardViews.last!
+//        if !topCard.pointInside(panGR!.locationInView(topCard), withEvent: nil) {
+//            return
+//        }
+//    }
+//    
+//    func didSwipeLeft() {
+//        if self.cardViews.count < 1 || recommendationPickerShown {
+//            return
+//        }
+//        
+//        let topCard: PromptCardView = self.cardViews.last!
+//        if !topCard.pointInside(self.leftSwipeGR!.locationInView(topCard), withEvent: nil) {
+//            return
+//        }
+//        
+//        UIView.animateWithDuration(
+//            NSTimeInterval(0.33),
+//            animations: {
+//                () -> Void in
+//                // Runs on main thread (UIThread)
+//                topCard.frame = topCard.frame.offsetBy(dx: -UIScreen.mainScreen().bounds.width, dy: 0)
+//            },
+//            completion: {
+//                (Bool) -> Void in
+//                // Runs on main thread (UIThread)
+//                let promptAndCard = self.cardViews.removeLast()
+//                promptAndCard.removeFromSuperview()
+////                self.repositionCards()
+//            }
+//        )
+//    }
+//    
+//    var recommendingCard: PromptCardView?
+//    func didSwipeRight() {
+//        if self.cardViews.count < 1 || recommendationPickerShown {
+//            return
+//        }
+//        
+//        let topCard: PromptCardView = self.cardViews.last!
+//        if !topCard.pointInside(self.rightSwipeGR!.locationInView(topCard), withEvent: nil) {
+//            return
+//        }
+//        
+//        UIView.animateWithDuration(
+//            NSTimeInterval(0.33),
+//            animations: {
+//                () -> Void in
+//                topCard.frame = topCard.frame.offsetBy(dx: UIScreen.mainScreen().bounds.width, dy: 0)
+//            },
+//            completion: {
+//                (successful) -> Void in
+//                self.recommendingCard = self.cardViews.removeLast()
+//                self.recommendingCard!.removeFromSuperview()
+//                
+////                let newController = NewRecommendationViewController()
+////                newController.tagsField.text = self.recommendingCard!.prompt!.tagString
+////                newController.tagsField.enabled = false
+//                // TODO: Fix NewRecommendationViewController so it doesn't crash when 
+//                //       tagsField is disabled
+//                
+////                self.navigationController?.pushViewController(newController, animated: true)
+//                
+////                self.showNewRecommendationViews()
+//            }
+//        )
+//    }
     
     /************************************************************************************************************************/
     
@@ -375,9 +400,9 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 }
             }
             
-            let cardView: PromptCardView = PromptCardView()
+            let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
             self.cardViews.append(cardView)
-            cardView.prompt = prompt // Ugh... Get the prompt outta there; TODO: remove data model object from PromptCardView class
+//            cardView.prompt = prompt // Ugh... Get the prompt outta there; TODO: remove data model object from PromptCardView class
             
             view.insertSubview(cardView, belowSubview: recommendationPicker)
 //            view.addSubview(cardView)

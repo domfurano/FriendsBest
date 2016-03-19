@@ -16,29 +16,20 @@ class PromptCardView: UIView {
     
     //    var userPicture: UIView?
     
-    var prompt: Prompt? // TODO: remove this property. Data model objects don't belong in the view.
+    var prompt: Prompt?
     
-    override func drawRect(rect: CGRect) {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    convenience init(frame: CGRect, prompt: Prompt) {
+        self.init(frame: frame)
         
-        let context: CGContext = UIGraphicsGetCurrentContext()!
-        CGContextClearRect(context, self.bounds)
-        
-        CommonUIElements.drawGradientForContext(
-            [
-                UIColor.colorFromHex(0x6eafca).CGColor,
-                UIColor.colorFromHex(0x337792).CGColor
-            ],
-            frame: self.frame,
-            context: context
-        )
-        
-        /* Rotate */
-        
-//        let angleInRadians: CGFloat = CGFloat((Int32(random()) - INT32_MAX / 2) % (INT32_MAX / 32)) / CGFloat(INT32_MAX)
-        
-//        let transform: CGAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, angleInRadians)
         self.layer.transform = CATransform3DMakeRotation(0.2, 0, 0, 0)
-
+        
+        self.prompt = prompt
+        
         
         /* Rounded corners */
         
@@ -60,12 +51,12 @@ class PromptCardView: UIView {
         
         subTitleLabel.font = UIFont(name: "Helvetica Neue", size: 10.0)
         
-        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "based on a search by \(prompt!.friend.name)")
+        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "based on a search by \(prompt.friend.name)")
         attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 20))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt!.friend.name.characters.count))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt.friend.name.characters.count))
         
         titleLabel.text = "Do you have a\nrecommendation for a"
-        tagLabel.text = self.prompt?.tagString
+        tagLabel.text = self.prompt!.tagString
         subTitleLabel.attributedText = attributedString
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -136,5 +127,52 @@ class PromptCardView: UIView {
                 multiplier: 1.9,
                 constant: 0.0))
     }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func drawRect(rect: CGRect) {
+        
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, self.bounds)
+        
+        CommonUIElements.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0x6eafca).CGColor,
+                UIColor.colorFromHex(0x337792).CGColor
+            ],
+            frame: self.frame,
+            context: context
+        )
+    }
+    
+    
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
