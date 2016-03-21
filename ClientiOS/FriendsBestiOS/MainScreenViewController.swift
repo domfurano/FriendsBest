@@ -10,6 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 import GoogleMaps
+import Koloda
 
 
 class MainView: UIView {
@@ -31,19 +32,18 @@ class MainView: UIView {
 }
 
 
-class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate {
+class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate, KolodaViewDataSource, KolodaViewDelegate {
     
     /* Google */
     let placesClient: GMSPlacesClient = GMSPlacesClient()
     var placePicker: GMSPlacePicker?
     var currentPlace: GMSPlace? = nil // TODO: Move this to possible the User class
     
+    /* KolodaView */
+    var kolodaView: KolodaView = KolodaView()
+    
+    /* Search Controller */
     var searchController: UISearchController = UISearchController(searchResultsController: nil)
-
-    /* Gesture recognizers */
-//    var panGR: UIPanGestureRecognizer?
-//    var leftSwipeGR: UISwipeGestureRecognizer?
-//    var rightSwipeGR : UISwipeGestureRecognizer?
     
     /* Subviews */
     let baseCard = BaseCardView()
@@ -62,17 +62,16 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func loadView() {
         view = MainView()
-        view.multipleTouchEnabled = true
-        
+    }
+    
+    override func viewDidLoad() {
         /* Facebook */ // TODO: Add this to a "loading" viewcontroller
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
             User.instance.facebookID = FBSDKAccessToken.currentAccessToken().userID
         }
-    }
-    
-    override func viewDidLoad() {
+        
         /* ViewController */
         
         definesPresentationContext = true
@@ -109,31 +108,26 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             forControlEvents: .TouchUpInside
         )
         navigationItem.leftBarButtonItem = historyIconBarButtonPlain
-
         
-        /* Gesture recognizers */
         
-//        panGR = UIPanGestureRecognizer(target: self, action: "didPan")
-//        leftSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeLeft")
-//        rightSwipeGR = UISwipeGestureRecognizer(target: self, action: "didSwipeRight")
-//        leftSwipeGR!.direction = .Left
-//        rightSwipeGR!.direction = .Right
-//
-//        view.addGestureRecognizer(panGR!)
-//        view.addGestureRecognizer(leftSwipeGR!)
-//        view.addGestureRecognizer(rightSwipeGR!)
+        /* Koloda */
+        
+        kolodaView.dataSource = self
+        kolodaView.delegate = self
         
         
         /* Subviews */
         
         baseCard.translatesAutoresizingMaskIntoConstraints = false
         recommendationPicker.translatesAutoresizingMaskIntoConstraints = false
+        kolodaView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(baseCard)
         view.addSubview(recommendationPicker)
         view.addSubview(recommendationPicker.customTypeButton)
         view.addSubview(recommendationPicker.linkTypeButton)
         view.addSubview(recommendationPicker.placeTypeButton)
+        view.addSubview(kolodaView)
         
         
         /* Actions */
@@ -190,48 +184,49 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-        
-//        if recommendingCard != nil {
-//            recommendingCard = nil
-//        }
     }
     
     
+    /*** Koloda ***/
+     
+    // delegate
     
-    let previousPoint: CGPoint = CGPoint()
-    
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        let touch: UITouch = touches.first!
-        let touchPoint: CGPoint = touch.locationInView(view)
-        NSLog("touchesBegan: \(touchPoint)")
+    func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+        //Example: loading more cards
+        //            if index >= 3 {
+        //                numberOfCards = 6
+        //                kolodaView.reloadData()
+        //            }
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        let touch: UITouch = touches.first!
-        let touchPoint: CGPoint = touch.locationInView(view)
-        
-        let dX = previousPoint.
-        
-        let topCard: PromptCardView = cardViews.last!
-        
-        if topCard.pointInside(touchPoint, withEvent: event) {
-            
-        }
-        
-        NSLog("touchesMoved: \(touchPoint)")
+    func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
+        //Example: reloading
+        kolodaView.resetCurrentCardNumber()
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        let touch: UITouch = touches!.first!
-        let touchPoint: CGPoint = touch.locationInView(view)
-        NSLog("touchesCancelled: \(touchPoint)")
+    func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
+        UIApplication.sharedApplication().openURL(NSURL(string: "http://yalantis.com/")!)
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        let touch: UITouch = touches.first!
-        let touchPoint: CGPoint = touch.locationInView(view)
-        NSLog("touchesEnded: \(touchPoint)")
+    // datasource
+    
+    func koloda(kolodaNumberOfCards koloda:KolodaView) -> UInt {
+        return UInt(cardViews.count)
     }
+    
+    func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
+//        let view: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+//        view.backgroundColor = UIColor.redColor()
+//        return view
+        return cardViews[Int(index)]
+    }
+    
+    func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
+        return nil
+    }
+    
+    /*** end Koloda ***/
+    
     
     func showAlert() {
         let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
@@ -404,17 +399,18 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self.cardViews.append(cardView)
 //            cardView.prompt = prompt // Ugh... Get the prompt outta there; TODO: remove data model object from PromptCardView class
             
-            view.insertSubview(cardView, belowSubview: recommendationPicker)
+//            view.insertSubview(cardView, belowSubview: recommendationPicker)
 //            view.addSubview(cardView)
             cardView.translatesAutoresizingMaskIntoConstraints = false
+            kolodaView.addSubview(cardView)
             addCardConstraints(cardView)
-            
-            cardView.frame = cardView.frame.offsetBy(dx: 0, dy: UIScreen.mainScreen().bounds.height)
         }
         
 //        self.cardsToAnimate = self.cardViews.filter { (cardView) -> Bool in
 //            return cardView.prompt!.new
 //        }
+        
+        kolodaView.reloadData()
         
 //        animateCardPresentation()
 //        self.repositionCards()
@@ -426,7 +422,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 item: card,
                 attribute: NSLayoutAttribute.CenterX,
                 relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
+                toItem: kolodaView,
                 attribute: NSLayoutAttribute.CenterX,
                 multiplier: 1.0,
                 constant: 0.0))
@@ -436,7 +432,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 item: card,
                 attribute: NSLayoutAttribute.CenterY,
                 relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
+                toItem: kolodaView,
                 attribute: NSLayoutAttribute.CenterY,
                 multiplier: 1.0,
                 constant: 0.0))
@@ -446,7 +442,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 item: card,
                 attribute: NSLayoutAttribute.Width,
                 relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
+                toItem: kolodaView,
                 attribute: NSLayoutAttribute.Width,
                 multiplier: 0.7,
                 constant: 0.0))
@@ -456,7 +452,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 item: card,
                 attribute: NSLayoutAttribute.Height,
                 relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
+                toItem: kolodaView,
                 attribute: NSLayoutAttribute.Height,
                 multiplier: 0.7,
                 constant: 0.0))
@@ -610,6 +606,46 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
                 multiplier: 0.2,
+                constant: 0.0))
+        
+        view.addConstraint(
+            NSLayoutConstraint(
+                item: kolodaView,
+                attribute: NSLayoutAttribute.Width,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.Width,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        view.addConstraint(
+            NSLayoutConstraint(
+                item: kolodaView,
+                attribute: NSLayoutAttribute.Height,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.Height,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        view.addConstraint(
+            NSLayoutConstraint(
+                item: kolodaView,
+                attribute: NSLayoutAttribute.CenterX,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.CenterX,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        view.addConstraint(
+            NSLayoutConstraint(
+                item: kolodaView,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
                 constant: 0.0))
     }
 }
