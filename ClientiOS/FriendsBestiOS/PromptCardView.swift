@@ -24,10 +24,7 @@ class PromptCardView: UIView {
     }
     
     convenience init(frame: CGRect, prompt: Prompt) {
-        self.init(frame: frame)
-        
-        self.layer.transform = CATransform3DMakeRotation(0.2, 0, 0, 0)
-        
+        self.init(frame: frame)        
         self.prompt = prompt
         
         
@@ -36,10 +33,12 @@ class PromptCardView: UIView {
         self.layer.masksToBounds = true
         self.layer.cornerRadius = 8.0
         
+        
         /* Border */
         
         self.layer.borderWidth = 1.5
         self.layer.borderColor = UIColor.colorFromHex(0xaaaaaa).CGColor
+        
         
         /* UILabels */
         
@@ -66,6 +65,9 @@ class PromptCardView: UIView {
         self.addSubview(titleLabel)
         self.addSubview(tagLabel)
         self.addSubview(subTitleLabel)
+        
+        
+        /* Layout contstraints */
         
         self.addConstraint(
             NSLayoutConstraint(

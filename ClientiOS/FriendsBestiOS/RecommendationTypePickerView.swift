@@ -28,7 +28,7 @@ class RecommendationTypePickerView: UIView {
     convenience init() {
         self.init(frame: CGRectZero)
         
-        backgroundColor = UIColor.grayColor()
+        backgroundColor = UIColor.blackColor()
         alpha = 0.0
         customTypeButton.alpha = 0.0
         linkTypeButton.alpha = 0.0
@@ -73,7 +73,7 @@ class RecommendationTypePickerView: UIView {
         
         superview!.removeConstraints(hiddenConstraints!)
         superview!.addConstraints(visibleContstraints!)
-        alpha = 0.0
+        alpha = 0.5
         customTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         linkTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         placeTypeButton.alpha = BUTTON_VISIBLE_ALPHA

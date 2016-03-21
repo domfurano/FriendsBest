@@ -46,7 +46,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     var searchController: UISearchController = UISearchController(searchResultsController: nil)
     
     /* Subviews */
-    let baseCard = BaseCardView()
+    let baseCard: BaseCardView = BaseCardView()
     let recommendationPicker: RecommendationTypePickerView = RecommendationTypePickerView()
     var cardViews: [PromptCardView] = []
     
@@ -123,11 +123,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         kolodaView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(baseCard)
+        view.addSubview(kolodaView)
         view.addSubview(recommendationPicker)
         view.addSubview(recommendationPicker.customTypeButton)
         view.addSubview(recommendationPicker.linkTypeButton)
         view.addSubview(recommendationPicker.placeTypeButton)
-        view.addSubview(kolodaView)
         
         
         /* Actions */
@@ -201,7 +201,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
         //Example: reloading
-        kolodaView.resetCurrentCardNumber()
+//        kolodaView.resetCurrentCardNumber()
     }
     
     func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
@@ -215,9 +215,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
-//        let view: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-//        view.backgroundColor = UIColor.redColor()
-//        return view
         return cardViews[Int(index)]
     }
     
@@ -269,6 +266,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
 
     
     var newRecommendationButton: UIBarButtonItem? = nil
+    var fa_plus_square_image: UIImage? = nil
     func setToolbarItems() {
         let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         
@@ -296,7 +294,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
         let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(32)
-        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
+        fa_plus_square_image = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
         newRecommendationButton = UIBarButtonItem(
             image: fa_plus_square_image,
             style: .Plain,
@@ -309,84 +307,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     /************************************************************************************************************************/
-    // Gesture handlers
     
-//    func didPan() {
-//        if self.cardViews.count < 1 || recommendationPickerShown {
-//            return
-//        }
-//        
-//        let topCard: PromptCardView = cardViews.last!
-//        if !topCard.pointInside(panGR!.locationInView(topCard), withEvent: nil) {
-//            return
-//        }
-//    }
-//    
-//    func didSwipeLeft() {
-//        if self.cardViews.count < 1 || recommendationPickerShown {
-//            return
-//        }
-//        
-//        let topCard: PromptCardView = self.cardViews.last!
-//        if !topCard.pointInside(self.leftSwipeGR!.locationInView(topCard), withEvent: nil) {
-//            return
-//        }
-//        
-//        UIView.animateWithDuration(
-//            NSTimeInterval(0.33),
-//            animations: {
-//                () -> Void in
-//                // Runs on main thread (UIThread)
-//                topCard.frame = topCard.frame.offsetBy(dx: -UIScreen.mainScreen().bounds.width, dy: 0)
-//            },
-//            completion: {
-//                (Bool) -> Void in
-//                // Runs on main thread (UIThread)
-//                let promptAndCard = self.cardViews.removeLast()
-//                promptAndCard.removeFromSuperview()
-////                self.repositionCards()
-//            }
-//        )
-//    }
-//    
-//    var recommendingCard: PromptCardView?
-//    func didSwipeRight() {
-//        if self.cardViews.count < 1 || recommendationPickerShown {
-//            return
-//        }
-//        
-//        let topCard: PromptCardView = self.cardViews.last!
-//        if !topCard.pointInside(self.rightSwipeGR!.locationInView(topCard), withEvent: nil) {
-//            return
-//        }
-//        
-//        UIView.animateWithDuration(
-//            NSTimeInterval(0.33),
-//            animations: {
-//                () -> Void in
-//                topCard.frame = topCard.frame.offsetBy(dx: UIScreen.mainScreen().bounds.width, dy: 0)
-//            },
-//            completion: {
-//                (successful) -> Void in
-//                self.recommendingCard = self.cardViews.removeLast()
-//                self.recommendingCard!.removeFromSuperview()
-//                
-////                let newController = NewRecommendationViewController()
-////                newController.tagsField.text = self.recommendingCard!.prompt!.tagString
-////                newController.tagsField.enabled = false
-//                // TODO: Fix NewRecommendationViewController so it doesn't crash when 
-//                //       tagsField is disabled
-//                
-////                self.navigationController?.pushViewController(newController, animated: true)
-//                
-////                self.showNewRecommendationViews()
-//            }
-//        )
-//    }
-    
-    /************************************************************************************************************************/
-    
-//    var cardsToAnimate: [PromptCardView] = []
     func showPromptCards() {
         outerloop: for prompt in User.instance.prompts.prompts {
             for cardView in self.cardViews { // This is some N^2 bullshit
@@ -403,7 +324,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
 //            view.addSubview(cardView)
             cardView.translatesAutoresizingMaskIntoConstraints = false
             kolodaView.addSubview(cardView)
-            addCardConstraints(cardView)
         }
         
 //        self.cardsToAnimate = self.cardViews.filter { (cardView) -> Bool in
@@ -414,48 +334,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
 //        animateCardPresentation()
 //        self.repositionCards()
-    }
-    
-    func addCardConstraints(card: PromptCardView) {
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: card,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: kolodaView,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: card,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: kolodaView,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: card,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: kolodaView,
-                attribute: NSLayoutAttribute.Width,
-                multiplier: 0.7,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: card,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: kolodaView,
-                attribute: NSLayoutAttribute.Height,
-                multiplier: 0.7,
-                constant: 0.0))
     }
     
     
@@ -507,6 +385,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func showNewRecommendationViews() {
         UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
+            fa_plus_square_image
             self.recommendationPicker.show()
             self.view.layoutIfNeeded()
         }
@@ -555,7 +434,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Width,
-                multiplier: 0.7,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(
@@ -565,7 +444,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.7,
+                multiplier: 0.75,
                 constant: 0.0))
         
         view.addConstraint(
@@ -585,7 +464,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.5,
+                multiplier: 1.0,
                 constant: 0.0))
         
         view.addConstraint(
@@ -605,7 +484,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.2,
+                multiplier: 1.0,
                 constant: 0.0))
         
         view.addConstraint(
@@ -615,7 +494,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Width,
-                multiplier: 1.0,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(
@@ -625,7 +504,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 1.0,
+                multiplier: 0.75,
                 constant: 0.0))
         
         view.addConstraint(
