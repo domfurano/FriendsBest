@@ -50,7 +50,7 @@ class CommonUIElements {
     static func searchHistoryButton(alert: Bool) -> UIButton {
         let button: UIButton = UIButton(frame: CGRectMake(0, 0, ICON_SIZE, ICON_SIZE))
         let historyIcon: FAKFontAwesome = FAKFontAwesome.historyIconWithSize(ICON_SIZE)
-        historyIcon.addAttribute(NSForegroundColorAttributeName, value: UIColor.colorFromHex(0x646d77))
+        historyIcon.addAttribute(NSForegroundColorAttributeName, value: UIColor.colorFromHex(0xabb4ba))
         if alert {
             let alertIcon: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(18)
             alertIcon.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor())

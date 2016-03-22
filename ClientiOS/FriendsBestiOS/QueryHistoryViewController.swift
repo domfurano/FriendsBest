@@ -36,17 +36,23 @@ class QueryHistoryViewController: UITableViewController {
         /* Navigation bar */
         
         title = "Search History"
-
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: FAKFontAwesome.chevronLeftIconWithSize(32.0).imageWithSize(CGSize(width: 32.0, height: 32.0)),
+        
+        navigationController?.navigationBar.barTintColor = UIColor.colorFromHex(0xABB4BA)
+        
+        let chevronLeftIcon: FAKFontAwesome = FAKFontAwesome.chevronLeftIconWithSize(32.0)
+        let chevronLeftImage: UIImage = chevronLeftIcon.imageWithSize(CGSize(width: 32.0, height: 32.0))
+        let leftBBItem: UIBarButtonItem = UIBarButtonItem(
+            image: chevronLeftImage,
             style: .Plain,
             target: self,
             action: Selector("back")
         )
+        leftBBItem.tintColor = UIColor.whiteColor()
         
-
-        
+        navigationItem.leftBarButtonItem = leftBBItem
+                
         setToolbarItems()
+        
         
         /* Tableview datasource and delegate */
         

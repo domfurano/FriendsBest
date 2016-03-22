@@ -6,9 +6,10 @@
 //  Copyright © 2016 Dominic Furano. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import Koloda
 
-class PromptCardView: UIView {
+class PromptCardView: KolodaView {
 
     var titleLabel: UILabel = UILabel()
     var tagLabel: UILabel = UILabel()
@@ -141,8 +142,8 @@ class PromptCardView: UIView {
         
         CommonUIElements.drawGradientForContext(
             [
-                UIColor.colorFromHex(0x6eafca).CGColor,
-                UIColor.colorFromHex(0x337792).CGColor
+                UIColor.colorFromHex(0xD7DBDD).CGColor,
+                UIColor.colorFromHex(0xABB4BA).CGColor
             ],
             frame: self.frame,
             context: context

@@ -70,13 +70,10 @@ class FacebookNetworkDAO {
                 
                 let profileImageView: UIImageView = UIImageView(image: validProfileImage)
                 
-                NSOperationQueue.mainQueue().addOperationWithBlock(
-                    {
-                        () -> Void in
-                        completionHandler(profileImageView: profileImageView)
-                        NetworkQueue.instance.dequeue()
-                    }
-                )
+                NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    completionHandler(profileImageView: profileImageView)
+                    NetworkQueue.instance.dequeue()
+                })
         }).resume()
     }
     

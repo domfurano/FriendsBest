@@ -30,15 +30,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let navigationController: UINavigationController = UINavigationController(rootViewController: MainScreenViewController())
         
-        navigationController.navigationBar.barTintColor = UIColor.colorFromHex(0xfefefe)//(0xABB4BA)
-        navigationController.navigationBar.tintColor = UIColor.whiteColor()
         navigationController.navigationBar.titleTextAttributes = [
             NSFontAttributeName: UIFont(name: "Avenir Next Condensed", size: 28.0)!,
             NSForegroundColorAttributeName: UIColor.whiteColor()
         ]
 
-        navigationController.toolbar.barTintColor = UIColor.colorFromHex(0xc8ced0)//(0xABB4BA)
-        navigationController.toolbar.tintColor = UIColor.whiteColor()
+        navigationController.toolbar.barTintColor = UIColor.colorFromHex(0xE8EDEF)
         
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()

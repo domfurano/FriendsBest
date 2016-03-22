@@ -21,10 +21,10 @@ class MainView: UIView {
         
         CommonUIElements.drawGradientForContext(
             [
-                UIColor.whiteColor().CGColor,
+                UIColor.colorFromHex(0xfefefe).CGColor,
                 UIColor.colorFromHex(0xe8edef).CGColor
             ],
-            frame: self.frame,
+            frame: self.bounds,
             context: context
         )
     }
@@ -45,6 +45,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Search Controller */
     var searchController: UISearchController = UISearchController(searchResultsController: nil)
     
+    /* Toolbars */
+    var regToolBar: [UIBarButtonItem]?
+    var recPickToolBar: [UIBarButtonItem]?
+    
     /* Subviews */
     let baseCard: BaseCardView = BaseCardView()
     let recommendationPicker: RecommendationTypePickerView = RecommendationTypePickerView()
@@ -57,8 +61,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* State */
     var recommendationPickerShown: Bool = false
     
-    
-    /************************************************************************************************************************/
     
     override func loadView() {
         view = MainView()
@@ -77,18 +79,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         definesPresentationContext = true
         
         
-        /* Navigation bar */
-        
-        navigationController?.navigationBar.layer.shadowOpacity = 0.33
-        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
-        navigationController?.navigationBar.layer.shadowRadius = 1.0
-        
-        
         /* Search controller */
         
         searchController.searchBar.delegate = self
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.searchBarStyle = .Prominent
+        searchController.searchBar.searchBarStyle = .Minimal
         searchController.searchBar.placeholder = "Search"
         navigationItem.titleView = searchController.searchBar
         
@@ -129,19 +124,27 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         view.addSubview(recommendationPicker.linkTypeButton)
         view.addSubview(recommendationPicker.placeTypeButton)
         
+        recommendationPicker.hide() // This call must occur after the view has been added to the view hierarchy.
+        
         
         /* Actions */
         
-        recommendationPicker.placeTypeButton.addTarget(
+        recommendationPicker.customTypeButton.addTarget(
             self,
-            action: Selector("pickPlace:"),
-            forControlEvents: UIControlEvents.TouchUpInside
+            action: Selector("pickCustom:"),
+            forControlEvents: .TouchUpInside
         )
         
         recommendationPicker.linkTypeButton.addTarget(
             self,
             action: Selector("pickLink:"),
-            forControlEvents: UIControlEvents.TouchUpInside
+            forControlEvents: .TouchUpInside
+        )
+        
+        recommendationPicker.placeTypeButton.addTarget(
+            self,
+            action: Selector("pickPlace:"),
+            forControlEvents: .TouchUpInside
         )
         
         
@@ -173,25 +176,65 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             }
         }
         
-        setToolbarItems()        
+        setToolbarItems()
         addConstraints()
-        
-        recommendationPicker.hide() // This call must occur after the view has been added to the view hierarchy.
     }
     
     override func viewWillAppear(animated: Bool) {
         FBNetworkDAO.instance.getPrompts()
+        navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
         
-        navigationController?.navigationBarHidden = false
+        if recommendationPickerShown {
+            navigationController?.navigationBarHidden = true
+        } else {
+            navigationController?.navigationBarHidden = false
+        }
         navigationController?.toolbarHidden = false
+    }
+    
+    
+    /*** Delegate implementation ***/
+    
+    func showPromptCards() {
+        outerloop: for prompt in User.instance.prompts.prompts {
+            for cardView in self.cardViews { // This is some N^2 bullshit
+                if cardView.prompt!.ID == prompt.ID {
+                    continue outerloop
+                }
+            }
+            
+            // TODO: Change to koloda view
+            let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
+            self.cardViews.append(cardView)
+            cardView.translatesAutoresizingMaskIntoConstraints = false
+            kolodaView.addSubview(cardView)
+        }
+        
+        kolodaView.reloadData()
+    }
+    
+    func showAlert() {
+        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
+        navigationItem.leftBarButtonItem = historyIconBarButtonAlert
     }
     
     
     /*** Koloda ***/
      
-    // delegate
+    var didSwipeRight: Bool = false
+    
+     // delegate
     
     func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+        
+        if direction == SwipeResultDirection.Left {
+            cardViews[Int(index)].removeFromSuperview()
+        } else if direction == SwipeResultDirection.Right {
+            didSwipeRight = true
+            newRecommendationButtonPressed()
+        } else {
+            fatalError()
+        }
         //Example: loading more cards
         //            if index >= 3 {
         //                numberOfCards = 6
@@ -201,7 +244,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
         //Example: reloading
-//        kolodaView.resetCurrentCardNumber()
+        //        kolodaView.resetCurrentCardNumber()
     }
     
     func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
@@ -219,18 +262,140 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
-        return nil
+        return KolodaOverlayView()
     }
     
     /*** end Koloda ***/
     
     
-    func showAlert() {
-        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
-        navigationItem.leftBarButtonItem = historyIconBarButtonAlert        
+    /* Toolbar */
+    
+    func setToolbarItems() {
+        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+        
+        let home: FAKFontAwesome = FAKFontAwesome.homeIconWithSize(32.0)
+        let home_image: UIImage = home.imageWithSize(CGSize(width: 32, height: 32))
+        let homeButton: UIBarButtonItem = UIBarButtonItem(
+            image: home_image,
+            style: .Plain,
+            target: self,
+            action: Selector("homeButtonPressed")
+        )
+        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
+        
+        let profilePic: UIView = FBSDKProfilePictureView(frame: CGRectMake(0, 0, 32, 32))
+        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
+        profileButton.frame = profilePic.frame
+        profileButton.layer.masksToBounds = true
+        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
+        profileButton.addSubview(profilePic)
+        profileButton.addTarget(
+            self,
+            action: Selector("profileButtonPressed"),
+            forControlEvents: UIControlEvents.TouchUpInside
+        )
+        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
+        
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(32)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
+        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
+            image: fa_plus_square_image,
+            style: .Plain,
+            target: self,
+            action: Selector("newRecommendationButtonPressed")
+        )
+        newRecommendationButton.tintColor = UIColor.colorFromHex(0x00d735)
+        
+        let fa_close: FAKFontAwesome = FAKFontAwesome.closeIconWithSize(32.0)
+        let fa_close_image: UIImage = fa_close.imageWithSize(CGSize(width: 32.0, height: 32.0))
+        let closeRecommendationPickerButton: UIBarButtonItem = UIBarButtonItem(
+            image: fa_close_image,
+            style: .Plain,
+            target: self,
+            action: Selector("closeRecommendationPickerButtonPressed")
+        )
+        closeRecommendationPickerButton.tintColor = UIColor.redColor()
+        
+        regToolBar = [homeButton, flexibleSpace, profileBBItem, flexibleSpace, newRecommendationButton]
+        
+        recPickToolBar = [flexibleSpace, closeRecommendationPickerButton]
+        
+        toolbarItems = regToolBar
+    }
+    
+    
+    /*** Toolbar functions ***/
+    
+    func homeButtonPressed() {
+        NSLog("Home button pressed.")
+    }
+    
+    func profileButtonPressed() {
+        NSLog("Profile button pressed.")
+        
+        let profileViewController: ProfileViewController = ProfileViewController()
+        //        let transition: CATransition = CATransition()
+        //        transition.duration = 0.2;
+        //        transition.type = kCATransitionPush
+        //        transition.subtype = kCATransitionFromTop
+        //        self.navigationController!.view.layer.addAnimation(transition, forKey: kCATransition)
+        
+        navigationController?.pushViewController(profileViewController, animated: true)
+    }
+    
+    func newRecommendationButtonPressed() {
+        navigationController?.navigationBarHidden = true
+        setToolbarItems(recPickToolBar, animated: true)
+        showNewRecommendationViews()
+    }
+    
+    func closeRecommendationPickerButtonPressed() {
+        navigationController?.navigationBarHidden = false
+        setToolbarItems(regToolBar, animated: true)
+        hideNewRecommendationViews(false)
+        if didSwipeRight {
+            kolodaView.revertAction()
+            didSwipeRight = false
+        }
+    }
+    
+    func showNewRecommendationViews() {
+        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
+            self.recommendationPicker.show()
+            self.view.layoutIfNeeded()
+        }
+        recommendationPickerShown = true
+    }
+    
+    func hideNewRecommendationViews(immediately: Bool) {
+        if immediately {
+            recommendationPicker.hide()
+            view.layoutIfNeeded()
+        } else {
+            UIView.animateWithDuration(NSTimeInterval(0.33), animations: { () -> Void in
+                self.recommendationPicker.hide()
+                self.view.layoutIfNeeded()
+            })
+        }
+        recommendationPickerShown = false
+    }
+    
+    
+    /*** Recommendation Picker ***/
+    
+    func pickCustom(sender: UIButton) {
+        navigationController?.pushViewController(NewRecommendationViewController(), animated: true)
+    }
+    
+    func pickLink(sender: UIButton) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
+        navigationController?.pushViewController(WebViewController(), animated: true)
     }
     
     func pickPlace(sender: UIButton) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
         let center = CLLocationCoordinate2DMake(40.7676918, -111.8452524)
         let northEast = CLLocationCoordinate2DMake(center.latitude + 0.001, center.longitude + 0.001)
         let southWest = CLLocationCoordinate2DMake(center.latitude - 0.001, center.longitude - 0.001)
@@ -257,95 +422,17 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 print("No place selected")
             }
         })
-    }
     
-    func pickLink(sender: UIButton) {
-        navigationController?.pushViewController(WebViewController(), animated: true)
-    }
-    
-
-    
-    var newRecommendationButton: UIBarButtonItem? = nil
-    var fa_plus_square_image: UIImage? = nil
-    func setToolbarItems() {
-        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        
-        let profilePic: UIView = FBSDKProfilePictureView(frame: CGRectMake(0, 0, 32, 32))
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = profilePic.frame
-        profileButton.layer.masksToBounds = true
-        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(profilePic)
-        profileButton.addTarget(
-            self,
-            action: Selector("profileButtonPressed"),
-            forControlEvents: UIControlEvents.TouchUpInside
-        )
-        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-        
-        let home: FAKFontAwesome = FAKFontAwesome.homeIconWithSize(32.0)
-        let home_image: UIImage = home.imageWithSize(CGSize(width: 32, height: 32))
-        let homeButton: UIBarButtonItem = UIBarButtonItem(
-            image: home_image,
-            style: .Plain,
-            target: self,
-            action: nil
-        )
-        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
-        
-        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(32)
-        fa_plus_square_image = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
-        newRecommendationButton = UIBarButtonItem(
-            image: fa_plus_square_image,
-            style: .Plain,
-            target: self,
-            action: Selector("newRecommendationButtonPressed")
-        )
-        newRecommendationButton!.tintColor = UIColor.colorFromHex(0x00d735)
-        
-        toolbarItems = [homeButton, flexibleSpace, profileBBItem, flexibleSpace, newRecommendationButton!]
-    }
-    
-    /************************************************************************************************************************/
-    
-    func showPromptCards() {
-        outerloop: for prompt in User.instance.prompts.prompts {
-            for cardView in self.cardViews { // This is some N^2 bullshit
-                if cardView.prompt!.ID == prompt.ID {
-                    continue outerloop
-                }
-            }
-            
-            let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
-            self.cardViews.append(cardView)
-//            cardView.prompt = prompt // Ugh... Get the prompt outta there; TODO: remove data model object from PromptCardView class
-            
-//            view.insertSubview(cardView, belowSubview: recommendationPicker)
-//            view.addSubview(cardView)
-            cardView.translatesAutoresizingMaskIntoConstraints = false
-            kolodaView.addSubview(cardView)
-        }
-        
-//        self.cardsToAnimate = self.cardViews.filter { (cardView) -> Bool in
-//            return cardView.prompt!.new
-//        }
-        
-        kolodaView.reloadData()
-        
-//        animateCardPresentation()
-//        self.repositionCards()
     }
     
     
-    /* Navigation bar */
+    /*** Navigation bar ***/
     
     func queryHistoryButtonClicked() {
         navigationController?.pushViewController(QueryHistoryViewController(), animated: true)
     }
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        
-        
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
             FBNetworkDAO.instance.postNewQuery(tags)
@@ -359,51 +446,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         return true
     }
     
-    
-    /* Toolbar */
-    
-    func profileButtonPressed() {
-        NSLog("Profile button pressed.")
-        
-        let profileViewController: ProfileViewController = ProfileViewController()
-//        let transition: CATransition = CATransition()
-//        transition.duration = 0.2;
-//        transition.type = kCATransitionPush
-//        transition.subtype = kCATransitionFromTop
-//        self.navigationController!.view.layer.addAnimation(transition, forKey: kCATransition)
-        
-        navigationController?.pushViewController(profileViewController, animated: true)
-    }
-    
-    func newRecommendationButtonPressed() {
-        if !recommendationPickerShown {
-            showNewRecommendationViews()
-        } else {
-            hideNewRecommendationViews(false)
-        }
-    }
-    
-    func showNewRecommendationViews() {
-        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
-            fa_plus_square_image
-            self.recommendationPicker.show()
-            self.view.layoutIfNeeded()
-        }
-        recommendationPickerShown = true
-    }
-    
-    func hideNewRecommendationViews(immediately: Bool) {
-        if immediately {
-            recommendationPicker.hide()
-            view.layoutIfNeeded()
-        } else {
-            UIView.animateWithDuration(NSTimeInterval(0.33), animations: { () -> Void in
-                self.recommendationPicker.hide()
-                self.view.layoutIfNeeded()
-            })
-        }
-        recommendationPickerShown = false
-    }
+
+    /*** Constraints ***/
     
     func addConstraints() {
         // TODO: Eliminate this code. Create an abstract "Card" base class and have all card types inherit from it.

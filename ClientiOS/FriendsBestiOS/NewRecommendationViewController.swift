@@ -100,6 +100,8 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     }
     
     override func viewWillAppear(animated: Bool) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = true
         title = "New Recommendation"
         edgesForExtendedLayout = UIRectEdge.None
         setToolbarItems()
