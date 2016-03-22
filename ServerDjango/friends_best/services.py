@@ -190,7 +190,7 @@ def getQuerySolutions(query):
        recs = Recommendation.objects.filter(thing=thing).all()
        matchingLemmaCount = 0
        for rec in recs:
-           for tag in rec.tags:
+           for tag in Tag.objects.filter(recommendation=rec):
                if tag.lemma in lemmas:
                    matchingLemmaCount += 1
        averageLemmaMatch = matchingLemmaCount / recs.count()
