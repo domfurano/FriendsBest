@@ -82,9 +82,7 @@ xcuserdata/
 
 *.pbxproj
 
-*.sqlite3
-
-migrations/
-
 #GoogleMaps
 GoogleMaps
+
+ServerDjango/db.sqlite3
