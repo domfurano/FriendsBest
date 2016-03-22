@@ -6,7 +6,7 @@ define([
   'views/home/menu',
   'views/home/main',
   'views/search/history',
-  'views/recommend/add',
+  'views/recommend/recommend',
   'views/search/results',
   'views/home/login',
   'views/profile/profile',
