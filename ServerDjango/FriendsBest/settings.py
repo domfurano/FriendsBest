@@ -35,13 +35,13 @@ ADMINS = [('Ray', 'ray@bluem33.com'),
           ('Dominic', 'dominicfurano@gmail.com')]
 
 if not DEBUG:
-    EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
     EMAIL_USE_TLS = True
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_PASSWORD = os.environ['GmailPassword']
-    EMAIL_HOST_USER = os.environ['GmailUser']
+    EMAIL_HOST_USER = os.environ['GmailUser'] + '@gmail.com'
     EMAIL_PORT = 587
-    DEFAULT_FROM_EMAIL = os.environ['GmailUser'] + '@gmail.com'
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Application definition
 
