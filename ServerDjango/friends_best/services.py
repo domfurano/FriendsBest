@@ -11,6 +11,7 @@ from .models import Recommendation
 from .models import Prompt
 from .models import Pin
 from .models import Subscription
+from .models import Accolade
 
 # from .models import RecommendationTag
 # from .models import QueryTag
@@ -69,6 +70,8 @@ def getPrompts(user):
    # Get prompts, ordered by query timestamp
    return Prompt.objects.filter(user=user).order_by('query__timestamp')
 
+
+# currently not being used
 def getAllPrompts(user):
    prompts = Prompt.objects.filter(user=user)
    promptList = []
@@ -82,12 +85,16 @@ def getAllPrompts(user):
 
 
 # TODO
+def getAccolades(user):
+    pass
+
+
+# TODO
 def generateAnonymousPrompts(user):
    # get all queries made by users who are not friends with the user
    queries = Query.objects.exclude(Q(user__friendship__userOne=user) | Q(user__friendship__userTwo=user)).all()
 
-   # find most frequently used tags in recent queries and generate prompts accordingly
-   # TODO: how do we keep track of what anonymous prompts have already been sent to the user???
+   # select random query and generate a prompt
 
 
 
@@ -109,11 +116,11 @@ def addSubscription(user, tagString):
 
 
 def removeSubscription(user, tag):
-   Subscription.objects.get(user=user, tag=tag).delete()
+    Subscription.objects.get(user=user, tag=tag).delete()
 
 
 def getAllSubscriptions(user):
-   return Subscription.objects.filter(user=user)
+    return Subscription.objects.filter(user=user)
 # </editor-fold>
 
 
@@ -151,14 +158,16 @@ def submitQuery(user, *tags):
    # (assumes that the user's query will receive all recommendations with at least one matching lemma)
    allFriends = getAllFriendUsers(user)
    for friendUser in allFriends:
-       friendTags = Tag.objects.select_related('lemma').filter(recommendation__user=friendUser).all()
-       lemmaMatch = False
-       for friendTag in friendTags:
-           if friendTag.lemma in lemmas:
-               lemmaMatch = True
-               break
-       if not lemmaMatch:
-           p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
+       # friendTags = Tag.objects.select_related('lemma').filter(recommendation__user=friendUser).all()  # this was an improper use of select_related (might cause an error)
+        friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
+
+        lemmaMatch = False
+        for friendTag in friendTags:
+            if friendTag.lemma in lemmas:
+                lemmaMatch = True
+                break
+        if not lemmaMatch:
+            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
 
 
    # create prompts for subscribed users who are not friends of the user
@@ -330,6 +339,7 @@ def getQueryHistory(user):
    # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
    # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
 
+
 def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
 
@@ -458,6 +468,16 @@ def createRecommendation(user, detail, thingType, comments, *tags):
 #    return tag_count_list
 
 
+def getTextThingAutocompleteSuggestions(string):
+    textThings = TextThing.objects.filter(description__istartswith=string).order_by('description')
+    return [tt.description for tt in textThings]
+
+
+def getUrlThingAutocompleteSuggestions(url):
+    urlThings = UrlThing.objects.filter(url__contains=url).order_by('url')
+    return [ut.url for ut in urlThings]
+
+
 def createTextThing(description):
    thing = Thing(thingType='Text')
    thing.save()
@@ -475,8 +495,8 @@ def createPlaceThing(placeId):
 def createUrlThing(url):
    thing = Thing(thingType="Url")
    thing.save()
-   url = UrlThing(thing=thing, url=url)
-   url.save()
+   u1 = UrlThing(thing=thing, url=url)
+   u1.save()
 
 
 def createPin(thingId, queryId):
@@ -484,6 +504,12 @@ def createPin(thingId, queryId):
    query = Query.objects.filter(id=queryId)[0]
    pin = Pin(thing=thing, query=query)
    pin.save()
+
+   #create accolades
+   recs = Recommendation.objects.select_related('user').filter(thing=thing).all()
+   for rec in recs:
+       a1 = Accolade(user=rec.user, recommendation=rec)
+       a1.save()
 
 
 def deletePinById(pinId):
