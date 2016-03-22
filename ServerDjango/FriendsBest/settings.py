@@ -29,6 +29,11 @@ else:
 
 ALLOWED_HOSTS = ['*']
 
+ADMINS = [('Ray', 'ray@bluem33.com'),
+          ('Paul', 'paulhanson.exe@gmail.com'),
+          ('Umair', 'unaveed@gmail.com'),
+          ('Dominic', 'dominicfurano@gmail.com')]
+
 # Application definition
 
 SITE_ID=2

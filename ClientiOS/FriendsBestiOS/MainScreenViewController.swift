@@ -94,12 +94,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         historyIconButtonAlert.addTarget(
             self,
-            action: Selector("queryHistoryButtonClicked"),
+            action: #selector(MainScreenViewController.queryHistoryButtonClicked),
             forControlEvents: .TouchUpInside
         )
         historyIconButtonPlain.addTarget(
             self,
-            action: Selector("queryHistoryButtonClicked"),
+            action: #selector(MainScreenViewController.queryHistoryButtonClicked),
             forControlEvents: .TouchUpInside
         )
         navigationItem.leftBarButtonItem = historyIconBarButtonPlain
@@ -131,19 +131,19 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         recommendationPicker.customTypeButton.addTarget(
             self,
-            action: Selector("pickCustom:"),
+            action: #selector(MainScreenViewController.pickCustom(_:)),
             forControlEvents: .TouchUpInside
         )
         
         recommendationPicker.linkTypeButton.addTarget(
             self,
-            action: Selector("pickLink:"),
+            action: #selector(MainScreenViewController.pickLink(_:)),
             forControlEvents: .TouchUpInside
         )
         
         recommendationPicker.placeTypeButton.addTarget(
             self,
-            action: Selector("pickPlace:"),
+            action: #selector(MainScreenViewController.pickPlace(_:)),
             forControlEvents: .TouchUpInside
         )
         
@@ -279,7 +279,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             image: home_image,
             style: .Plain,
             target: self,
-            action: Selector("homeButtonPressed")
+            action: #selector(MainScreenViewController.homeButtonPressed)
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
@@ -291,7 +291,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         profileButton.addSubview(profilePic)
         profileButton.addTarget(
             self,
-            action: Selector("profileButtonPressed"),
+            action: #selector(MainScreenViewController.profileButtonPressed),
             forControlEvents: UIControlEvents.TouchUpInside
         )
         let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
@@ -302,7 +302,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             image: fa_plus_square_image,
             style: .Plain,
             target: self,
-            action: Selector("newRecommendationButtonPressed")
+            action: #selector(MainScreenViewController.newRecommendationButtonPressed)
         )
         newRecommendationButton.tintColor = UIColor.colorFromHex(0x00d735)
         
@@ -312,7 +312,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             image: fa_close_image,
             style: .Plain,
             target: self,
-            action: Selector("closeRecommendationPickerButtonPressed")
+            action: #selector(MainScreenViewController.closeRecommendationPickerButtonPressed)
         )
         closeRecommendationPickerButton.tintColor = UIColor.redColor()
         

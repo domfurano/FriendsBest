@@ -61,14 +61,16 @@ class PromptSerializer(serializers.ModelSerializer):
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
             # but we'll need some good NLP
-            'article': 'a'
+            'article': 'a',
+            #'urgent': prompt.query.urgent  # this seems to be causing a problem (not sure why)
         }
     
     class Meta:
         model = Prompt
         fields = '__all__'
         depth = 1
-        
+
+
 class FriendshipSerializer(serializers.ModelSerializer):
     
     def to_representation(self, friend):
@@ -104,6 +106,13 @@ class TextThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TextThing
+        fields = '__all__'
+
+
+class UrlThingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UrlThing
         fields = '__all__'
 
 
@@ -200,7 +209,8 @@ class QuerySerializer(serializers.ModelSerializer):
             solution_collection['solutions'].append({
                 'detail': sol.detail,
                 'type': sol.solutionType,
-                'recommendations': recommendations
+                'recommendations': recommendations,
+                'isPinned': sol.isPinned
             })
         return solution_collection
 
