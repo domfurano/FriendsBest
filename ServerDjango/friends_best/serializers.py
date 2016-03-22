@@ -61,7 +61,8 @@ class PromptSerializer(serializers.ModelSerializer):
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
             # but we'll need some good NLP
-            'article': 'a'
+            'article': 'a',
+            'urgent': prompt.query.urgent
         }
     
     class Meta:
@@ -200,7 +201,8 @@ class QuerySerializer(serializers.ModelSerializer):
             solution_collection['solutions'].append({
                 'detail': sol.detail,
                 'type': sol.solutionType,
-                'recommendations': recommendations
+                'recommendations': recommendations,
+                'isPinned': sol.isPinned
             })
         return solution_collection
 
