@@ -186,11 +186,15 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'error.log'),
             'formatter': 'simple'
-            },
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+    },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file', 'console', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
             },
