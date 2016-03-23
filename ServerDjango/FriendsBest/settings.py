@@ -39,10 +39,10 @@ if not DEBUG:
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_PASSWORD = os.environ['GmailPassword']
-    EMAIL_HOST_USER = os.environ['GmailUser'] + '@gmail.com'
+    EMAIL_HOST_USER = os.environ['GmailUser']
     EMAIL_PORT = 587
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-    SERVER_EMAIL = EMAIL_HOST_USER
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@gmail.com'
+    SERVER_EMAIL = EMAIL_HOST_USER + '@gmail.com'
 
 # Application definition
 
@@ -191,6 +191,7 @@ if not DEBUG:
             },
             'mail_admins': {
                 'level': 'ERROR',
+                'filters': ['require_debug_false'],
                 'class': 'django.utils.log.AdminEmailHandler'
             },
         },
