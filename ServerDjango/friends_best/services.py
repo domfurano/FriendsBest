@@ -29,6 +29,7 @@ import json
 
 from nltk.stem import WordNetLemmatizer
 from django.db.models import Q
+from random import randint
 
 
 
@@ -67,8 +68,16 @@ def getUserFacebookToken(user):
    return token.token
 
 def getPrompts(user):
-   # Get prompts, ordered by query timestamp
-   return Prompt.objects.filter(user=user).order_by('query__timestamp')
+    # Get prompts, ordered by query timestamp
+    prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
+    # if user has no prompts, generate some anonymous prompts and return them
+    if prompts.count == 0:
+        generateAnonymousPrompts(user)
+        return Prompt.objects.filter(user=user).order_by('query__timestamp')
+    else:
+        return prompts
+
+
 
 
 # currently not being used
@@ -84,17 +93,24 @@ def getAllPrompts(user):
    return promptList
 
 
-# TODO
+
 def getAccolades(user):
-    pass
+    return Accolade.objects.filter(user=user).all()
 
 
-# TODO
+def deleteAccolade(accoladeId):
+    Accolade.objects.filter(id=accoladeId).delete()
+
+
 def generateAnonymousPrompts(user):
-   # get all queries made by users who are not friends with the user
-   queries = Query.objects.exclude(Q(user__friendship__userOne=user) | Q(user__friendship__userTwo=user)).all()
+    # get all queries made by users who are not friends with the user
+    queries = Query.objects.exclude(Q(user__friendship__userOne=user) | Q(user__friendship__userTwo=user)).all()
+    queryCount = queries.count()
 
-   # select random query and generate a prompt
+    # select random queries and generate prompts for them
+    for x in range(0, 5):
+        randomIndex = randint(0, queryCount - 1)
+        p, created = Prompt.objects.get_or_create(user=user, query=Query.objects.all()[randomIndex])
 
 
 
@@ -171,7 +187,8 @@ def submitQuery(user, *tags):
 
 
    # create prompts for subscribed users who are not friends of the user
-   subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
+   #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
+   subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
    for su in subscribedUsers:
        p, created = Prompt.objects.get_or_create(user=su, query=q1)
 
