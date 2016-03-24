@@ -24,7 +24,7 @@ define([
 		this.$el.append(deckTemplate());
         
         that = this;
-        $("loadmore").click(function() {
+        $(".loadmore").click(function() {
             that.loadPrompts();
         });
         
