@@ -15,6 +15,7 @@ define([
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
+    visible: true,
 
     render: function(){
       
@@ -22,11 +23,10 @@ define([
 		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
-/*
+
         $(".loadmore").click(function() {
             that.loadPrompts();
         });
-*/
         
         this.loadPrompts();
         
@@ -100,13 +100,20 @@ define([
     
     remove: function() {
 	    this.$el.html("");
+	    this.visible = false;
     },
     
     loadPrompts: function() {
-        
         this.collection = new PromptsCollection();
-		
-		this.collection.fetch({success: function(prompts, response, options){
+        this.collection.on("update", this.showPrompts, this);
+		this.collection.fetch();
+    },
+    
+    showPrompts: function() {
+    		
+		if(this.visible) {
+        		
+            prompts = this.collection;
     		
             promptTemplate = _.template(promptHTML);
 			
@@ -154,8 +161,7 @@ define([
     				}
     			}
     		});
-			
-		}});
+        }
     }
 
   });
