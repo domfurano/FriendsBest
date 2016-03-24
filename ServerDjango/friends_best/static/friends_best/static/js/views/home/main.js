@@ -24,14 +24,13 @@ define([
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
         
+        this.loadPrompts();        
         this.collection.on("update", this.showPrompts, this);
         this.collection.on("destroy", function() {
             if(this.collection.length < 1) {
                 this.loadPrompts();
             }    
         }, this);
-        
-        this.loadPrompts();
         
         this.refresh = setInterval(function() {
             if (that.collection.length < 1) {
