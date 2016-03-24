@@ -22,8 +22,6 @@ define([
 		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
-        
-        that = this;
 /*
         $(".loadmore").click(function() {
             that.loadPrompts();
@@ -32,7 +30,7 @@ define([
         
         this.loadPrompts();
         
-        setTimeout(function() {
+        setInterval(function() {
             if (that.collection.length < 1) {
                 that.loadPrompts();
             }
