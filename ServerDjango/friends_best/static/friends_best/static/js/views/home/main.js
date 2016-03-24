@@ -25,12 +25,6 @@ define([
 		this.$el.append(deckTemplate());
         
         this.loadPrompts();        
-        this.collection.on("update", this.showPrompts, this);
-        this.collection.on("destroy", function() {
-            if(this.collection.length < 1) {
-                this.loadPrompts();
-            }    
-        }, this);
         
         this.refresh = setInterval(function() {
             if (that.collection.length < 1) {
@@ -108,6 +102,7 @@ define([
     
     loadPrompts: function() {
         this.collection = new PromptsCollection();
+        this.collection.on("update", this.showPrompts, this);
 		this.collection.fetch();
     },
     
