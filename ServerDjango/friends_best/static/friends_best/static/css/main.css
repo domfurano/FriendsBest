@@ -302,6 +302,13 @@
 		line-height: 37px;
 	}
 	
+	.list .item .delete {
+		margin: 2px;
+		font-size: 18px;
+        float: right;
+        cursor: pointer;
+	}
+	
 	.list .line img {
 		background-color: #abb4ba;
 	}

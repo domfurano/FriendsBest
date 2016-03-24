@@ -49,9 +49,21 @@
 		    this.collection.each(function(i, index) {
 			    this.$list.append(itemTemplate(i.toJSON()));
 		    }, this);
+		    
+		    that = this;
+		    this.$list.find(".delete").click(function() {
+    		    that.trash($(this).attr("id"));
+		    }) 
+		    
 	    }
 
 	},
+    
+    trash: function(id) {
+        if(confirm("Do you really want to delete this?")) {
+            this.collection.get(id).destroy();
+        }
+    },
     
     remove: function() {
 	    this.$el.html("");
