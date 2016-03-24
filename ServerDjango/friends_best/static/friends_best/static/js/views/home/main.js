@@ -24,11 +24,19 @@ define([
 		this.$el.append(deckTemplate());
         
         that = this;
+/*
         $(".loadmore").click(function() {
             that.loadPrompts();
         });
+*/
         
         this.loadPrompts();
+        
+        setTimeout(function() {
+            if (that.collection.length < 1) {
+                that.loadPrompts();
+            }
+        }, 6000);
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
