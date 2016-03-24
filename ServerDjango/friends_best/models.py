@@ -12,6 +12,9 @@ from django.contrib.auth.models import User
 #         return self.userName
 
 
+# DO NOT COMMIT MIGRATIONS
+
+
 class Friendship(models.Model):
    userOne = models.ForeignKey(User, related_name='userOne_set')
    userTwo = models.ForeignKey(User, related_name='userTwo_set')
@@ -93,6 +96,7 @@ class Recommendation(models.Model):
    def __str__(self):
        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
 
+
 class Query(models.Model):
    user = models.ForeignKey(User)
    tags = models.ManyToManyField(Tag)
@@ -107,12 +111,16 @@ class Query(models.Model):
    class Meta:
        unique_together = (("user", "taghash"),)
 
-class Prompt(models.Model):
-   user = models.ForeignKey(User)  # the user who the prompt is for (not the user who made the associated query)
-   query = models.ForeignKey(Query)  # we can get the user's id from the query
 
-   def __str__(self):
-       return "forUser:%s, fromQuery:%s" % (self.user, self.query)
+class Prompt(models.Model):
+    user = models.ForeignKey(User)  # the user who the prompt is for (not the user who made the associated query)
+    query = models.ForeignKey(Query)  # we can get the user's id from the query
+
+    def __str__(self):
+        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
+
+    class Meta:
+        unique_together = (("user", "query"),)
 
 
 # TODO: do we want to associate these with specific recommendations rather than with Things???
@@ -144,7 +152,7 @@ class Subscription(models.Model):
 
 # TODO: need to implement logic in services
 class Accolade(models.Model):
-   user = models.ForeignKey(User)
+   user = models.ForeignKey(User)  # the user who receives the accolade
    recommendation = models.ForeignKey(Recommendation)
 
    def __str__(self):
