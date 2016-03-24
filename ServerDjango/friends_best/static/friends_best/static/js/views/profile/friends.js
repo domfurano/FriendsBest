@@ -49,6 +49,11 @@
 		    this.collection.each(function(i, index) {
 			    this.$list.append(itemTemplate(i.toJSON()));
 		    }, this);
+		    
+		    $(".mute").click(function() {
+    		    $(this).find("i").toggleClass("fa-volume-up fa-volume-off");
+            });
+		    
 	    }
 
 	},
