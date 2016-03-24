@@ -6,10 +6,11 @@ define([
 	var RecommendModel = Backbone.Model.extend({
 		urlRoot: '/fb/api/recommend/',
 		defaults: {
-			detail: "",
+    		type: null,
+            detail: null,
 			tags: [],
-			comments: "",
-			type: "TEXT"
+			tagstring: "",
+			comments: ""
 		},
 	});
 	

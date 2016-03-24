@@ -1,15 +1,24 @@
 <section class="newrecommendation">
 	<div class="container">
+        <div class="row thing well well-sm">
+            <div class="col-xs-8 text">
+                <% if(type == "TEXT") { %>
+                    <%= detail %>
+                <% } %>
+                <% if(type == "URL") { %>
+                    <%= host %>
+                <% } %>
+            </div>
+            <div class="col-xs-4 arrow">
+            	<i class="fa fa-i-cursor fa-fw"></i>
+            </div>
+    	</div>
 		<div class="row">
 			<div class="col-xs-12 col-md-12">
 				<form>
     				<div class="form-group">
-						<label for="tags">Keywords</label>
-						<input type="text" class="form-control" id="tags" value="<%= tags %>" placeholder="">
-					</div>
-					<div class="form-group">
-						<label for="recommendation">Recommendation</label>
-						<input type="text" class="form-control" id="description" placeholder="A product, place, business, etc.">
+						<label for="tags">Search Keywords</label>
+						<input type="text" class="form-control" id="tags" value="<%= tagstring %>" placeholder="">
 					</div>
 					<div class="form-group">
 						<label for="comments">Comments</label>
