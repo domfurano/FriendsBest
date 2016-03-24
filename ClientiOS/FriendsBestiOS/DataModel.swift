@@ -17,10 +17,12 @@ class User: NetworkDAODelegate {
     
     
     /* Member variables */
+    var name: String? = nil
+    var facebookID: String? = nil
     private(set) var queryHistory: QueryHistory = QueryHistory()
     private(set) var prompts: Prompts = Prompts()
     private(set) var friends: [Friend] = []
-    var facebookID: String? = nil
+    var recommendations: [Recommendation] = []
 
 
     /* Delegation */
@@ -29,12 +31,23 @@ class User: NetworkDAODelegate {
     var promptsFetchedClosure: () -> Void = {}
     var newSolutionAlert: () -> Void = {}
     var newRecommendationAlert: () -> Void = {}
+    var userRecommendationsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
     private init() {
         // Delegate assignment
         FBNetworkDAO.instance.networkDAODelegate = self
+    }
+    
+    
+    func getFriendByID(id: String) -> Friend? {
+        for friend in friends {
+            if friend.facebookID == id {
+                return friend
+            }
+        }
+        return nil
     }
     
     
@@ -55,6 +68,10 @@ class User: NetworkDAODelegate {
         promptsFetchedClosure()
     }
     
+    func userRecommendationsFetched() {
+        userRecommendationsFetchedClosure()
+    }
+    
     
     /* Serialization */
     private func serialize() {
@@ -63,14 +80,30 @@ class User: NetworkDAODelegate {
 }
 
 
-class Friend {
+class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
+    private(set) var squarePicture: UIImage?
+    
+    var hashValue: Int {
+        return facebookID.hashValue
+    }
     
     init(facebookID: String, name: String) {
         self.facebookID = facebookID
         self.name = name
+        
+        FacebookNetworkDAO.instance.getFacebookProfileImage(
+            facebookID,
+            size: FacebookNetworkDAO.FacbookImageSize.square
+        ) { (profileImage: UIImage) in
+            self.squarePicture = profileImage
+        }
     }
+}
+
+func ==(lhs: Friend, rhs: Friend) -> Bool {
+    return lhs.facebookID == rhs.facebookID
 }
 
 
@@ -133,7 +166,7 @@ class QueryHistory {
         return nil
     }
     
-    private func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
+    func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
         if (tag1.count != tag2.count) {
             return false
         }

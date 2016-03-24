@@ -10,16 +10,15 @@ import UIKit
 
 class SolutionDetailView: UITableView {
     override func drawRect(rect: CGRect) {
-        /* Background gradient */
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-        CommonUIElements.drawGradientForContext(
+        CommonUI.drawGradientForContext(
             [
-                UIColor.colorFromHex(0xfefefe).CGColor,
-                UIColor.colorFromHex(0xc8ced0).CGColor
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
             ],
-            frame: frame,
+            frame: self.bounds,
             context: context
         )
     }
@@ -27,16 +26,13 @@ class SolutionDetailView: UITableView {
 
 class SolutionDetailViewController: UITableViewController {
     
-    var TITLE: String?
-    var queryID: Int?
-    var solutionIndex: Int?
+    var SOLUTION: Solution?
     
-    convenience init(title: String, queryID: Int, solutionIndex: Int) {
+    
+    convenience init(solution: Solution) {
         self.init()
         
-        self.TITLE = title
-        self.queryID = queryID
-        self.solutionIndex = solutionIndex
+        self.SOLUTION = solution
     }
     
     override func loadView() {
@@ -49,22 +45,75 @@ class SolutionDetailViewController: UITableViewController {
     
     override func viewDidLoad() {
         tableView.rowHeight = 100.0 // Hacky alpha demo crap
+        
+        let button: UIButton = UIButton(type: .Custom)
+        button.setImage(CommonUI.nbBackChevron, forState: .Normal)
+        button.setTitle(SOLUTION!.detail, forState: .Normal)
+        button.addTarget(
+            self,
+            action: #selector(SolutionDetailViewController.back),
+            forControlEvents: .TouchUpInside
+        )
+        button.sizeToFit()
+        button.tintColor = UIColor.whiteColor()
+        let leftBBItem: UIBarButtonItem = UIBarButtonItem(customView: button)
+        
+        leftBBItem.tintColor = UIColor.whiteColor()
+        leftBBItem.title = SOLUTION!.detail
+        navigationItem.leftBarButtonItem = leftBBItem
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.queryHistory.getQueryByID(queryID!)!.solutions![solutionIndex!].recommendations.count
+    override func viewWillAppear(animated: Bool) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = true
+        
+        navigationController?.navigationBar.barTintColor = CommonUI.sdNavbarBgColor
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
-        let recommendation: Recommendation = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![solutionIndex!].recommendations[indexPath.row]
-        cell.textLabel?.text = recommendation.friend.name
-        cell.detailTextLabel?.text = recommendation.comment
-        cell.detailTextLabel?.numberOfLines = 10 // Hackity hack
-        return cell
+    func back() {
+        navigationController?.popViewControllerAnimated(true)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 2
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        } else {
+            return SOLUTION!.recommendations.count
+        }
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            let cell: UITableViewCell = UITableViewCell(style: .Default, reuseIdentifier: "main")
+            cell.textLabel?.text = SOLUTION!.detail
+            cell.textLabel?.textColor = UIColor.whiteColor()
+            cell.backgroundColor = CommonUI.sdNavbarBgColor
+            cell.userInteractionEnabled = false
+            return cell
+        } else {
+            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
+            let recommendation: Recommendation = SOLUTION!.recommendations[indexPath.row]
+            cell.textLabel?.text = recommendation.friend.name
+            cell.detailTextLabel?.text = recommendation.comment
+            cell.detailTextLabel?.numberOfLines = 10 // Hackity hack
+            cell.imageView?.image = recommendation.friend.squarePicture
+            cell.userInteractionEnabled = false
+            return cell
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -18,7 +18,7 @@ class RecommendationTypePickerView: UIView {
     var hiddenConstraints: [NSLayoutConstraint]? = nil
     
     final let ICON_SIZE: CGFloat = 60.0
-    final let ICON_COLOR: UIColor = UIColor.colorFromHex(0x00d735)
+    final let ICON_COLOR: UIColor = CommonUI.fbGreen
     final let BUTTON_SIZE: CGSize = CGSize(width: 80.0, height: 80.0)
     final let BUTTON_BGCOLOR: UIColor = UIColor.grayColor()
     final let BUTTON_CORNER_RADIUS: CGFloat = 4.0

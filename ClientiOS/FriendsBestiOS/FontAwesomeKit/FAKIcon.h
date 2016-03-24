@@ -154,6 +154,8 @@
  */
 - (UIImage *)imageWithSize:(CGSize)imageSize;
 
+- (UIImage *)imageWithSizeAndColor:(CGSize)imageSize color:(UIColor*)color;
+
 @end
 
 @interface UIImage (FAKAddon)

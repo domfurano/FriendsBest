@@ -10,13 +10,14 @@ import Foundation
 
 class UpdateBullshitter {
     
-    static var instance: UpdateBullshitter = UpdateBullshitter()
+    static let instance: UpdateBullshitter = UpdateBullshitter()
     
     private var timer: Timer? = nil
     
     private init() {
-        self.timer = Timer(timesPerSecond: 1/3, closure: { () -> Void in
-            self.checkForNewRecommendations()
+        self.timer = Timer(timesPerSecond: 1/5, closure: { () -> Void in
+//            self.checkForNewRecommendations()
+            FBNetworkDAO.instance.getPrompts()
         })
         timer?.startTimer()
     }

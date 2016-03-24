@@ -25,8 +25,8 @@ class BaseCardView: UIView {
         /* UILabel */
         
         let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "FriendsBest")
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 22.0)!, range: NSMakeRange(0, 7))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 22.0)!, range: NSMakeRange(7, 4))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Proxima Nova Cond", size: 22.0)!, range: NSMakeRange(0, 7))
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Proxima Nova Semibold", size: 22.0)!, range: NSMakeRange(7, 4))
         
         friendsBestLabel.attributedText = attributedString
         

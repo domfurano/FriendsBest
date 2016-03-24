@@ -8,6 +8,22 @@
 
 import UIKit
 
+class NewRecommendationView: UIScrollView {
+    override func drawRect(rect: CGRect) {
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
+        
+        CommonUI.drawGradientForContext(
+            [
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
+            ],
+            frame: self.bounds,
+            context: context
+        )
+    }
+}
+
 class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
     // TODO: Need different recommendation modes
@@ -34,43 +50,60 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     
     override func loadView() {
         self.view = NewRecommendationView()
-        self.view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
     }
     
     override func viewDidLoad() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: Selector("cancelButtonPressed"))
-        navigationItem.leftBarButtonItem?.tintColor = UIColor.redColor()
+        self.view.autoresizingMask = UIViewAutoresizing.FlexibleHeight
         
-        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(32)
-        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 32, height: 32))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
-        navigationItem.rightBarButtonItem?.tintColor = UIColor.colorFromHex(0x00d735)
+        let fa_times_icon: FAKFontAwesome = FAKFontAwesome.timesIconWithSize(CommonUI.ICON_FLOAT)
+        let fa_times_image: UIImage = fa_times_icon.imageWithSize(CommonUI.ICON_SIZE)
+        let leftBB: UIBarButtonItem = UIBarButtonItem(
+            image: fa_times_image,
+            style: .Plain,
+            target: self,
+            action: #selector(NewRecommendationViewController.cancelButtonPressed)
+        )
+        leftBB.tintColor = UIColor.whiteColor()
+        navigationItem.leftBarButtonItem = leftBB
+        
+        
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(CommonUI.ICON_FLOAT)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CommonUI.ICON_SIZE)
+        let rightBB: UIBarButtonItem = UIBarButtonItem(
+            image: fa_plus_square_image,
+            style: .Plain,
+            target: self,
+            action: #selector(NewRecommendationViewController.createNewRecommendationButtonPressed)
+        )
+        rightBB.tintColor = UIColor.whiteColor()
+        navigationItem.rightBarButtonItem = rightBB
         
         styleControls()
         
         tagsField.delegate = self
         titleField.delegate = self
         commentsField.delegate = self
+        
         NRinputAccessoryView.prevButton!.addTarget(
             self,
-            action: "prevButtonPressed",
+            action: #selector(NewRecommendationViewController.prevButtonPressed),
             forControlEvents: UIControlEvents.TouchUpInside
         )
         NRinputAccessoryView.nextButton!.addTarget(
             self,
-            action: "nextButtonPressed",
+            action: #selector(NewRecommendationViewController.nextButtonPressed),
             forControlEvents: UIControlEvents.TouchUpInside
         )
         NRinputAccessoryView.doneButton!.addTarget(
             self,
-            action: "doneButtonPressed",
+            action: #selector(NewRecommendationViewController.doneButtonPressed),
             forControlEvents: UIControlEvents.TouchUpInside
         )
         
         /* Fonts */
-        tagsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
-        titleField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
-        commentsField.font = UIFont(name: AppSettings.UITextFieldFontName, size: AppSettings.UITextFieldFontSize)
+        tagsField.font = UIFont(name: CommonUI.UITextFieldFontName, size: CommonUI.UITextFieldFontSize)
+        titleField.font = UIFont(name: CommonUI.UITextFieldFontName, size: CommonUI.UITextFieldFontSize)
+        commentsField.font = UIFont(name: CommonUI.UITextFieldFontName, size: CommonUI.UITextFieldFontSize)
         
         view.addSubview(tagsLabel)
         view.addSubview(tagsField)
@@ -96,11 +129,12 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         registerForKeyboardNotifications()
         
         // Recognize touches in background
-        self.scrollView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("doneButtonPressed")))
+        self.scrollView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(NewRecommendationViewController.doneButtonPressed)))
     }
     
     override func viewWillAppear(animated: Bool) {
         navigationController?.navigationBarHidden = false
+        navigationController?.navigationBar.barTintColor = CommonUI.fbGreen
         navigationController?.toolbarHidden = true
         title = "New Recommendation"
         edgesForExtendedLayout = UIRectEdge.None
@@ -154,14 +188,14 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     func registerForKeyboardNotifications() {
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: Selector("keyboardWasShown:"),
+            selector: #selector(NewRecommendationViewController.keyboardWasShown(_:)),
             name: UIKeyboardDidShowNotification,
             object: nil
         )
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: Selector("keyboardWillBeHidden:"),
+            selector: #selector(NewRecommendationViewController.keyboardWillBeHidden(_:)),
             name: UIKeyboardWillHideNotification,
             object: nil
         )
@@ -256,14 +290,14 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     }
     
     private func styleControls() {
-        tagsLabel.text = "Tags"
+        tagsLabel.text = "Keywords"
         tagsField.backgroundColor = UIColor.whiteColor()
         tagsField.borderStyle = UITextBorderStyle.RoundedRect
         tagsField.returnKeyType = UIReturnKeyType.Next
         tagsField.keyboardAppearance = .Dark
         tagsField.inputAccessoryView = NRinputAccessoryView
         
-        titleLabel.text = "Title"
+        titleLabel.text = "Recommendation"
         titleField.backgroundColor = UIColor.whiteColor()
         titleField.borderStyle = UITextBorderStyle.RoundedRect
         titleField.returnKeyType = UIReturnKeyType.Next

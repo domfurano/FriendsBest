@@ -32,7 +32,7 @@ class QueryHistoryTableViewCell: UITableViewCell {
         contentView.addSubview(background)
         
         for tag in tags {
-            let label: UILabel = CommonUIElements.tagLabel(tag)
+            let label: UILabel = CommonUI.tagLabel(tag)
             tagLabels.append(label)
             contentView.addSubview(label)
         }

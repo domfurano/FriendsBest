@@ -148,6 +148,25 @@
 	return iconImage;
 }
 
+- (UIImage *)imageWithSizeAndColor:(CGSize)imageSize color:(UIColor*)color
+{
+    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0);
+    
+    // ---------- begin context ----------
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    [self fillBackgroundForContext:context backgroundSize:imageSize];
+    
+    [self.mutableAttributedString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, self.mutableAttributedString.length)];
+    [self.mutableAttributedString drawInRect:[self drawingRectWithImageSize:imageSize]];
+    UIImage *iconImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    // ---------- end context ----------
+    UIGraphicsEndImageContext();
+    
+    return iconImage;
+}
+
 - (void)fillBackgroundForContext:(CGContextRef)context backgroundSize:(CGSize)size
 {
     if (self.drawingBackgroundColor) {
