@@ -463,6 +463,10 @@
 		-webkit-transform: translateZ(0);
 	}
 	
+	.loadmore .logo {
+        font-size: 30px;
+	}
+	
 	.prompt .item {
 		position: relative;
 		font-size: 25px;

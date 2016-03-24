@@ -19,68 +19,17 @@ define([
     render: function(){
       
         that = this;
-/*
-      
-		var menuTemplate = _.template( menuHTML, {} );
-		this.$el.html(menuTemplate({id: FB.getAuthResponse().userID}));
-*/
 		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
-		
-		this.collection = new PromptsCollection();
-		
-		this.collection.fetch({success: function(prompts, response, options){
-    		
-            promptTemplate = _.template(promptHTML);
-			
-			el = that.$el;
-			
-			prompts.each(function(prompt) {
-    			promptcard = promptTemplate(prompt.toJSON());
-    			el.append(promptcard);
-    		});
-    		
-            // Prompts
-    		$('.swipable').each( function(index, item) {
-    			d = Math.random() * 3 - 1.5;
-    			$(item).css({'transform': 'rotate('+d+'deg)'});
-    		});
-    		
-    		distance = 30;
-    		$('.swipable').draggable({
-    			revert: function(ui, ui2) {
-    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
-    				else return true;
-    			},
-    			axis: "x",
-    			scroll: false,
-    			stop: function(event, ui) {	
-        			// Left: delete prompt
-    				if(ui.position.left < -distance) {
-    					ui.helper.animate({left: "-=600"}, 200, function() {
-    						ui.helper.parent().remove();
-    						prompts.get(ui.helper.attr("id")).destroy();
-    					});
-    				// Right: recommend
-    				} else if(ui.position.left > distance) {
-    					ui.helper.animate({left: "+=600"}, 200, function() {
-        					//prompts.get(ui.helper.attr("id")).destroy();
-    						require(['app'],function(App){
-    							r = new Recommend({
-                                    model: prompts.get(ui.helper.attr("id"))	
-    							});
-    							//r.tags = ui.helper.children(".topic").html();
-    							App.router.navigate('recommend');
-    							App.router.render(r);
-    						});
-    					});
-    				}
-    			}
-    		});
-			
-		}});
-						
+        
+        that = this;
+        $("loadmore").click(function() {
+            that.loadPrompts();
+        });
+        
+        this.loadPrompts();
+
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
@@ -145,6 +94,62 @@ define([
     
     remove: function() {
 	    this.$el.html("");
+    },
+    
+    loadPrompts: function() {
+        
+        this.collection = new PromptsCollection();
+		
+		this.collection.fetch({success: function(prompts, response, options){
+    		
+            promptTemplate = _.template(promptHTML);
+			
+			el = that.$el;
+			
+			prompts.each(function(prompt) {
+    			promptcard = promptTemplate(prompt.toJSON());
+    			el.append(promptcard);
+    		});
+    		
+            // Prompts
+    		$('.swipable').each( function(index, item) {
+    			d = Math.random() * 3 - 1.5;
+    			$(item).css({'transform': 'rotate('+d+'deg)'});
+    		});
+    		
+    		distance = 30;
+    		$('.swipable').draggable({
+    			revert: function(ui, ui2) {
+    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
+    				else return true;
+    			},
+    			axis: "x",
+    			scroll: false,
+    			stop: function(event, ui) {	
+        			// Left: delete prompt
+    				if(ui.position.left < -distance) {
+    					ui.helper.animate({left: "-=600"}, 200, function() {
+    						ui.helper.parent().remove();
+    						prompts.get(ui.helper.attr("id")).destroy();
+    					});
+    				// Right: recommend
+    				} else if(ui.position.left > distance) {
+    					ui.helper.animate({left: "+=600"}, 200, function() {
+        					//prompts.get(ui.helper.attr("id")).destroy();
+    						require(['app'],function(App){
+    							r = new Recommend({
+                                    model: prompts.get(ui.helper.attr("id"))	
+    							});
+    							//r.tags = ui.helper.children(".topic").html();
+    							App.router.navigate('recommend');
+    							App.router.render(r);
+    						});
+    					});
+    				}
+    			}
+    		});
+			
+		}});
     }
 
   });
