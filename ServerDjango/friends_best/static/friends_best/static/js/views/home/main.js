@@ -30,7 +30,7 @@ define([
         
         this.loadPrompts();
         
-        setInterval(function() {
+        this.refresh = setInterval(function() {
             if (that.collection.length < 1) {
                 that.loadPrompts();
             }
@@ -101,6 +101,7 @@ define([
     remove: function() {
 	    this.$el.html("");
 	    this.visible = false;
+	    clearInterval(this.refresh);
     },
     
     loadPrompts: function() {
