@@ -23,10 +23,13 @@ define([
 		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
-
-        $(".loadmore").click(function() {
-            that.loadPrompts();
-        });
+        
+        this.collection.on("update", this.showPrompts, this);
+        this.collection.on("destroy", function() {
+            if(this.collection.length < 1) {
+                this.loadPrompts();
+            }    
+        }, this);
         
         this.loadPrompts();
         
@@ -106,12 +109,11 @@ define([
     
     loadPrompts: function() {
         this.collection = new PromptsCollection();
-        this.collection.on("update", this.showPrompts, this);
 		this.collection.fetch();
     },
     
     showPrompts: function() {
-    		
+        
 		if(this.visible) {
         		
             prompts = this.collection;
