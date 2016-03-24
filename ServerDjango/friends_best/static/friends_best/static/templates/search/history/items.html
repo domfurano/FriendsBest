@@ -4,7 +4,7 @@
 		<a href="#search/<%= model.id %>">
 			<div class="line container">
 				<div class="col-xs-9 col-md-9 tags">
-					<% _.each(model.tags, function(tag) { %>
+					<% _.each(model.tagstring.split(" "), function(tag) { %>
 						<span><%= tag %></span>
 					<% }) %>
 				</div>

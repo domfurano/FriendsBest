@@ -41,7 +41,7 @@ define([
 		this.model.fetch({success: function(model, response, options){
 
 			// Load tags into the search field
-			$("#tags").val(model.get("tags").join(" ")).tokenfield({delimiter : ' '});
+			$("#tags").val(model.get("tagstring")).tokenfield({delimiter : ' '});
 			
 			// Empty the list
 			list.html("");
