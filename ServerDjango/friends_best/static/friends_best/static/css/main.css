@@ -358,7 +358,7 @@
 		color: #000;
 	}
 	
-	.back-button {
+	.back-button, .submit {
 		cursor: pointer;
 		font-size: 15px;
 	}
