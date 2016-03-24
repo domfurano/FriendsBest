@@ -9,6 +9,7 @@ define([
     		type: null,
             detail: null,
 			tags: [],
+			tagstring: "",
 			comments: ""
 		},
 	});

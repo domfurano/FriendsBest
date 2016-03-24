@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   'app',
-  'views/recommend/add',
+  'views/recommend/recommend',
   'models/query',
   'collections/prompts',
   'text!templates/home/search.html',
@@ -67,8 +67,9 @@ define([
     					ui.helper.animate({left: "+=600"}, 200, function() {
         					//prompts.get(ui.helper.attr("id")).destroy();
     						require(['app'],function(App){
-    							r = new Recommend();
-    							r.prompt = prompts.get(ui.helper.attr("id"));
+    							r = new Recommend({
+                                    model: prompts.get(ui.helper.attr("id"))	
+    							});
     							//r.tags = ui.helper.children(".topic").html();
     							App.router.navigate('recommend');
     							App.router.render(r);

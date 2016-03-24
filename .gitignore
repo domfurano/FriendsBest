@@ -86,3 +86,5 @@ xcuserdata/
 GoogleMaps
 
 ServerDjango/db.sqlite3
+
+ServerDjango/runserver
