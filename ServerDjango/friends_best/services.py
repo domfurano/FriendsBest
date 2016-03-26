@@ -67,6 +67,7 @@ def getUserFacebookToken(user):
    token = SocialToken.objects.filter(account=account).first()
    return token.token
 
+
 def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
@@ -76,8 +77,6 @@ def getPrompts(user):
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
     else:
         return prompts
-
-
 
 
 # currently not being used
@@ -104,7 +103,7 @@ def deleteAccolade(accoladeId):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queries = Query.objects.exclude(Q(user__friendship__userOne=user) | Q(user__friendship__userTwo=user)).all()
+    queries = Query.objects.exclude(Q(user__userOne_set__userOne=user) | Q(user__userTwo_set__userTwo=user)).all()
     queryCount = queries.count()
 
     # select random queries and generate prompts for them
@@ -170,6 +169,7 @@ def submitQuery(user, *tags):
    #p, created = Prompt.objects.get_or_create(user=user, query=q1)
 
 
+    #TODO: need to check if friends are muted
    # create prompts for all of user's friends (but only if the friend doesn't already have a relevant recommendation)
    # (assumes that the user's query will receive all recommendations with at least one matching lemma)
    allFriends = getAllFriendUsers(user)
