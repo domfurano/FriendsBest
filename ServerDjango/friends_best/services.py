@@ -17,6 +17,7 @@ from .models import Accolade
 # from .models import QueryTag
 from .models import Tag
 from django.utils import timezone
+from datetime import datetime, timedelta
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
@@ -30,6 +31,7 @@ import json
 from nltk.stem import WordNetLemmatizer
 from django.db.models import Q
 from random import randint
+
 
 
 
@@ -97,7 +99,7 @@ def getAllPrompts(user):
    return promptList
 
 
-# TODO: remember, the devs are all friends so we won't get anonymous prompts for each other's queries
+
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
     queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
@@ -117,6 +119,15 @@ def deletePrompt(promptId):
 def forwardPrompt(user, friendUserId, queryId):
    p, created = Prompt.objects.get_or_create(user=User.objects.get(id=friendUserId), query=Query.objects.get(id=queryId))
    # TODO: how do we tell the client who forwarded the prompt???
+
+
+# this will ensure that new users get normal prompts immediately
+def generatePromptsForNewUser(user):
+    allFriends = getAllFriendUsers(user)
+    recentFriendQueries = Query.objects.filter(user__in=allFriends, created_at__gte=(timezone.now()-timedelta(days=3)))
+    for query in recentFriendQueries:
+        p, created = Prompt.objects.get_or_create(user=user, query=query)
+
 # </editor-fold>
 
 
