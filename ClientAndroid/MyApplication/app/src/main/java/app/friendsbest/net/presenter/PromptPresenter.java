@@ -17,7 +17,7 @@ import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.fragment.PromptFragment;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 
-public class DemoPresenter implements ListPresenter<List<PromptCard>> {
+public class PromptPresenter implements ListPresenter<List<PromptCard>> {
 
     private BaseRepository _repository;
     private PromptFragment _view;
@@ -32,7 +32,7 @@ public class DemoPresenter implements ListPresenter<List<PromptCard>> {
         }
     };
 
-    public DemoPresenter(PromptFragment view, Context context){
+    public PromptPresenter(PromptFragment view, Context context){
         _view = view;
         _token = PreferencesUtility.getInstance(context).getToken();
         _repository = new BaseRepository(this, _token);
