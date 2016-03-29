@@ -14,6 +14,14 @@ class UpdateBullshitter {
     
     private var timer: Timer? = nil
     
+    func STAHP () {
+        self.timer!.cancelTimer()
+    }
+    
+    func start() {
+        self.timer!.startTimer()
+    }
+    
     private init() {
         self.timer = Timer(timesPerSecond: 1/5, closure: { () -> Void in
 //            self.checkForNewRecommendations()
@@ -22,11 +30,13 @@ class UpdateBullshitter {
         timer?.startTimer()
     }
     
-    private func checkForNewRecommendations() {
-        for query in User.instance.queryHistory.queries {
-            FBNetworkDAO.instance.getQuerySolutions(query.ID)
-        }
-    }
+    
+    
+//    private func checkForNewRecommendations() {
+//        for query in User.instance.queryHistory.queries {
+//            FBNetworkDAO.instance._getQuerySolutions(query.ID)
+//        }
+//    }
     
     
 }

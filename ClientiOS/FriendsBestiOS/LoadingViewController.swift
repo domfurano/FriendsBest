@@ -45,12 +45,12 @@ class LoadingViewController: UIViewController {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
             User.instance.facebookID = FBSDKAccessToken.currentAccessToken().userID
-            FacebookNetworkDAO.instance.getFacebookData()            
-            
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
+            FacebookNetworkDAO.instance.getFacebookData()
             FBNetworkDAO.instance.getPrompts()
             
             CommonUI.instance
-            UpdateBullshitter.instance
+            UpdateBullshitter.instance.start()
             
             while CommonUI.largeProfilePicture == nil { }
             while CommonUI.smallProfilePicture == nil { }

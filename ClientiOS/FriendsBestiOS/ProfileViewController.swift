@@ -149,6 +149,7 @@ class ProfileViewController: UIViewController {
     }
     
     func logoutButtonPushed() {
+        UpdateBullshitter.instance.STAHP()
         FBSDKLoginManager().logOut()
         navigationController?.popToRootViewControllerAnimated(true)
     }

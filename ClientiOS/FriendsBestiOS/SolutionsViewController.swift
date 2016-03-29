@@ -43,8 +43,10 @@ class SolutionsViewController: UITableViewController {
                 }
             }
             
-            if self?.QUERY!.ID == queryID {
-                self?.tableView.reloadData()
+            if self?.QUERY != nil {
+                if self?.QUERY!.ID == queryID {
+                    self?.tableView.reloadData()
+                }
             }
         }
     }
@@ -73,7 +75,9 @@ class SolutionsViewController: UITableViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
-        FBNetworkDAO.instance.getQuerySolutions(QUERY!.ID)
+        if QUERY != nil {
+            FBNetworkDAO.instance.getQuerySolutions(QUERY!.ID)
+        }
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         

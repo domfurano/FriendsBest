@@ -174,14 +174,14 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func viewWillAppear(animated: Bool) {
         navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
+        navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
         
         if recommendationPickerShown {
-            navigationController?.navigationBarHidden = true
-        } else {
-            navigationController?.navigationBarHidden = false
+            hideNewRecommendationViews(false)
         }
+        
+        navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-                
         
         setToolbarItems()
     }
@@ -224,7 +224,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
      // delegate
     
     func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
-        
         if direction == SwipeResultDirection.Left {
             cardViews[Int(index)].removeFromSuperview()
         } else if direction == SwipeResultDirection.Right {
@@ -233,11 +232,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         } else {
             fatalError()
         }
-        //Example: loading more cards
-        //            if index >= 3 {
-        //                numberOfCards = 6
-        //                kolodaView.reloadData()
-        //            }
     }
     
     func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
@@ -253,7 +247,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
-        UIApplication.sharedApplication().openURL(NSURL(string: "http://yalantis.com/")!)
+        return
+    }
+    
+    func koloda(kolodaShouldTransparentizeNextCard koloda: KolodaView) -> Bool {
+        return false
     }
     
     // datasource
@@ -361,10 +359,42 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func showNewRecommendationViews() {
-        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
-            self.recommendationPicker.show()
-            self.view.layoutIfNeeded()
+        UIView.animateWithDuration(
+            NSTimeInterval(60.0),
+            delay: NSTimeInterval(0.0),
+            usingSpringWithDamping: 0.1,
+            initialSpringVelocity: 0.33,
+            options: UIViewAnimationOptions.CurveEaseIn,
+            animations: {
+                
+                self.recommendationPicker.show()
+                self.view.layoutIfNeeded()
+        }) { (Bool) in
+                return
         }
+        
+        //        UIView animateWithDuration:0.5
+//        delay:0.5
+//        usingSpringWithDamping:0.7
+//        initialSpringVelocity:0.7
+//        options:0
+//        animations:^{
+//            [self.closeButton layoutIfNeeded];
+//        } completion:NULL];
+//        UIView.animateWithDuration(
+//            NSTimeInterval(0.33),
+//            delay: NSTimeInterval(0.0),
+//            options: UIViewAnimationOptions.TransitionCrossDissolve,
+//            animations: {
+//                self.recommendationPicker.show()
+//                self.view.layoutIfNeeded()
+//        }) { (completed: Bool) in
+//                return
+//        }
+//        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
+//            self.recommendationPicker.show()
+//            self.view.layoutIfNeeded()
+//        }
         recommendationPickerShown = true
     }
     
@@ -406,9 +436,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         placePicker = GMSPlacePicker(config: config)
         
         placePicker?.pickPlaceWithCallback({ (place: GMSPlace?, error: NSError?) -> Void in
-            if self.recommendationPickerShown {
-                self.hideNewRecommendationViews(false)
-            }
+            self.viewWillAppear(false)
             
             if let error = error {
                 print("Pick Place error: \(error.localizedDescription)")
@@ -423,7 +451,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 print("No place selected")
             }
         })
-    
     }
     
     
