@@ -22,14 +22,14 @@ class Queue<T> {
             self.last!.next = Node(item: item)
             self.last = self.last!.next
         }
-        self.count++
+        self.count += 1
     }
     
     func dequeue() -> T? {
         if self.first != nil {
             let item: T = first!.item
             self.first = self.first!.next
-            self.count--
+            self.count -= 1
             return item
         }
         return nil
@@ -44,7 +44,7 @@ class Queue<T> {
             node.next = self.first
             self.first = node
         }
-        self.count++
+        self.count += 1
     }
 }
 

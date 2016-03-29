@@ -19,7 +19,7 @@ class NetworkQueue {
     
     private init() {        
         self.timer = Timer(timesPerSecond: 8, closure: { () -> Void in
-            NSLog("Timer firing!")
+//            NSLog("Timer firing!")
             if !self.executing && self.queue.count > 0 {
                 self.executing = true;
                 let task = self.queue.first!
@@ -38,7 +38,7 @@ class NetworkQueue {
     
     func enqueue(task: NetworkTask) {
         self.queue.enqueue(task)
-        NSLog("Enqueueing network request: " + task.description)
+//        NSLog("Enqueueing network request: " + task.description)
         if self.timer!.stopped {
             self.timer!.startTimer()
         }
@@ -46,8 +46,9 @@ class NetworkQueue {
     
     func dequeue() {
         assert(self.queue.count > 0)
-        let task: NetworkTask = self.queue.dequeue()!
-        NSLog("Dequeueing network request: " + task.description)
+        self.queue.dequeue()
+//        let task: NetworkTask = self.queue.dequeue()!
+//        NSLog("Dequeueing network request: " + task.description)
         if self.queue.count == 0 {
             self.timer!.cancelTimer()
         }
@@ -56,7 +57,8 @@ class NetworkQueue {
     
     func tryAgain() {
         self.executing = false
-        if --self.retries == 0 {
+        self.retries -= 1
+        if self.retries == 0 {
             self.dequeue()
         }
         // TODO: Slow down timer until task is dequeued

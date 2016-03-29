@@ -10,22 +10,33 @@ import Foundation
 
 class UpdateBullshitter {
     
-    static var instance: UpdateBullshitter = UpdateBullshitter()
+    static let instance: UpdateBullshitter = UpdateBullshitter()
     
     private var timer: Timer? = nil
     
+    func STAHP () {
+        self.timer!.cancelTimer()
+    }
+    
+    func start() {
+        self.timer!.startTimer()
+    }
+    
     private init() {
-        self.timer = Timer(timesPerSecond: 1/3, closure: { () -> Void in
-            self.checkForNewRecommendations()
+        self.timer = Timer(timesPerSecond: 1/5, closure: { () -> Void in
+//            self.checkForNewRecommendations()
+            FBNetworkDAO.instance.getPrompts()
         })
         timer?.startTimer()
     }
     
-    private func checkForNewRecommendations() {
-        for query in User.instance.queryHistory.queries {
-            FBNetworkDAO.instance.getQuerySolutions(query.ID)
-        }
-    }
+    
+    
+//    private func checkForNewRecommendations() {
+//        for query in User.instance.queryHistory.queries {
+//            FBNetworkDAO.instance._getQuerySolutions(query.ID)
+//        }
+//    }
     
     
 }

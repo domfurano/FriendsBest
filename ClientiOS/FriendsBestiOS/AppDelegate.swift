@@ -19,23 +19,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
         // Facebook
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         // Google
         GMSServices.provideAPIKey("AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8")
         
-        
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
-        let navigationController: UINavigationController = UINavigationController(rootViewController: MainScreenViewController())
+        let navigationController: UINavigationController = UINavigationController(rootViewController: LoadingViewController())
         
         navigationController.navigationBar.titleTextAttributes = [
-            NSFontAttributeName: UIFont(name: "Avenir Next Condensed", size: 28.0)!,
+            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 28.0)!,
             NSForegroundColorAttributeName: UIColor.whiteColor()
         ]
-
-        navigationController.toolbar.barTintColor = UIColor.colorFromHex(0xE8EDEF)
         
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()

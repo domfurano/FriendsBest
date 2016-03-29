@@ -17,8 +17,17 @@ class RecommendationTypePickerView: UIView {
     var visibleContstraints: [NSLayoutConstraint]? = nil
     var hiddenConstraints: [NSLayoutConstraint]? = nil
     
+    var staticConstraints: [NSLayoutConstraint]? = nil
+    
+    var customButtonVisibleConstraint: NSLayoutConstraint? = nil
+    var customButtonHiddenConstraint: NSLayoutConstraint? = nil
+    var linkButtonVisibleConstraint: NSLayoutConstraint? = nil
+    var linkButtonHiddenConstraint: NSLayoutConstraint? = nil
+    var placeButtonVisibleConstraint: NSLayoutConstraint? = nil
+    var placeButtonHiddenConstraint: NSLayoutConstraint? = nil
+    
     final let ICON_SIZE: CGFloat = 60.0
-    final let ICON_COLOR: UIColor = UIColor.colorFromHex(0x00d735)
+    final let ICON_COLOR: UIColor = CommonUI.fbGreen
     final let BUTTON_SIZE: CGSize = CGSize(width: 80.0, height: 80.0)
     final let BUTTON_BGCOLOR: UIColor = UIColor.grayColor()
     final let BUTTON_CORNER_RADIUS: CGFloat = 4.0
@@ -93,6 +102,39 @@ class RecommendationTypePickerView: UIView {
         customTypeButton.alpha = 0.0
         linkTypeButton.alpha = 0.0
         placeTypeButton.alpha = 0.0
+    }
+    
+    private func generateStaticConstraints() {
+        staticConstraints = []
+        staticConstraints!.appendContentsOf([
+            NSLayoutConstraint(
+                item: linkTypeButton,
+                attribute: .CenterX,
+                relatedBy: .Equal,
+                toItem: superview,
+                attribute: .CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            ),
+            NSLayoutConstraint(
+                item: customTypeButton,
+                attribute: .CenterY,
+                relatedBy: .Equal,
+                toItem: superview,
+                attribute: .CenterY,
+                multiplier: 1.5,
+                constant: 0.0
+            ),
+            NSLayoutConstraint(
+                item: placeTypeButton,
+                attribute: .CenterY,
+                relatedBy: .Equal,
+                toItem: superview,
+                attribute: .CenterY,
+                multiplier: 1.5,
+                constant: 0.0
+            )
+            ])
     }
     
     private func generateVisibleConstraints() {

@@ -140,7 +140,7 @@ class PromptCardView: KolodaView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, self.bounds)
         
-        CommonUIElements.drawGradientForContext(
+        CommonUI.drawGradientForContext(
             [
                 UIColor.colorFromHex(0xD7DBDD).CGColor,
                 UIColor.colorFromHex(0xABB4BA).CGColor

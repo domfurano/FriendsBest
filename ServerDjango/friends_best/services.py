@@ -17,6 +17,7 @@ from .models import Accolade
 # from .models import QueryTag
 from .models import Tag
 from django.utils import timezone
+from datetime import datetime, timedelta
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.models import SocialToken
@@ -30,6 +31,7 @@ import json
 from nltk.stem import WordNetLemmatizer
 from django.db.models import Q
 from random import randint
+
 
 
 
@@ -62,11 +64,17 @@ def userTest(user):
    token = SocialToken.objects.filter(account=account).first()
 
 
-def getUserFacebookToken(user):
-   account = SocialAccount.objects.filter(user=user).first()
-   token = SocialToken.objects.filter(account=account).first()
-   return token.token
+# <editor-fold desc="Accolades">
+def getAccolades(user):
+    return Accolade.objects.filter(user=user).all()
 
+
+def deleteAccolade(accoladeId):
+    Accolade.objects.filter(id=accoladeId).delete()
+# </editor-fold>
+
+
+# <editor-fold desc="Prompts">
 def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
@@ -78,9 +86,7 @@ def getPrompts(user):
         return prompts
 
 
-
-
-# currently not being used
+# currently not being used by serializer
 def getAllPrompts(user):
    prompts = Prompt.objects.filter(user=user)
    promptList = []
@@ -94,24 +100,15 @@ def getAllPrompts(user):
 
 
 
-def getAccolades(user):
-    return Accolade.objects.filter(user=user).all()
-
-
-def deleteAccolade(accoladeId):
-    Accolade.objects.filter(id=accoladeId).delete()
-
-
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queries = Query.objects.exclude(Q(user__friendship__userOne=user) | Q(user__friendship__userTwo=user)).all()
+    queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
     queryCount = queries.count()
 
     # select random queries and generate prompts for them
     for x in range(0, 5):
         randomIndex = randint(0, queryCount - 1)
         p, created = Prompt.objects.get_or_create(user=user, query=Query.objects.all()[randomIndex])
-
 
 
 #client will call for this whenever a prompt is swiped left (or when a recommendation is created after swiping right)
@@ -122,6 +119,16 @@ def deletePrompt(promptId):
 def forwardPrompt(user, friendUserId, queryId):
    p, created = Prompt.objects.get_or_create(user=User.objects.get(id=friendUserId), query=Query.objects.get(id=queryId))
    # TODO: how do we tell the client who forwarded the prompt???
+
+
+# this will ensure that new users get normal prompts immediately
+def generatePromptsForNewUser(user):
+    allFriends = getAllFriendUsers(user)
+    recentFriendQueries = Query.objects.filter(user__in=allFriends, created_at__gte=(timezone.now()-timedelta(days=3)))
+    for query in recentFriendQueries:
+        p, created = Prompt.objects.get_or_create(user=user, query=query)
+
+# </editor-fold>
 
 
 # <editor-fold desc="Subscriptions">
@@ -140,7 +147,7 @@ def getAllSubscriptions(user):
 # </editor-fold>
 
 
-
+# <editor-fold desc="Queries">
 def submitQuery(user, *tags):
    if tags.count == 0:
        return "error: cannot submit query, query must include at least one tag"
@@ -259,30 +266,24 @@ def getQuerySolutions(query):
    return solutionsWithTags
 
 
-# private
-def isFriendsWith(user1, user2):
-  if Friendship.objects.filter(userOne=user1, userTwo=user2).count() >= 1:
-      return True
-  else:
-      return False
+def getQueryHistory(user):
+   # Order-by done to return the queries in the right order (from oldest run to newest)
+   return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
+   # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
+   # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
+   # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
 
 
-# private
-def getAllFriendUsers(user):
-   allFriends = []
-   for friendship in Friendship.objects.filter(userOne=user, muted=False):
-       allFriends.append(friendship.userTwo)
-   return allFriends
+def getQuery(user, queryId):
+   return Query.objects.filter(user=user, id=queryId).prefetch_related('tags')
+# </editor-fold>
 
 
-# private (returns a set, not a list)
-def getAllFriendsFacebookUserIds(user):
-   allFriends = set()
-   #for friendship in Friendship.objects.filter(userOne=user, muted=False):
-   # when using the previous where muted=False, login fails because we try to re-add users that are just muted...
-   for friendship in Friendship.objects.filter(userOne=user):
-       allFriends.add(SocialAccount.objects.filter(user=friendship.userTwo).first().uid)
-   return allFriends
+# <editor-fold desc="Facebook Integration">
+def getUserFacebookToken(user):
+   account = SocialAccount.objects.filter(user=user).first()
+   token = SocialToken.objects.filter(account=account).first()
+   return token.token
 
 
 def getCurrentFriendsListFromFacebook(user):
@@ -347,16 +348,10 @@ def getFacebookUserIdFromFacebook(user):
    userFacebookId = jsonDict['user_id']
 
    return userFacebookId
+# </editor-fold>
 
 
-def getQueryHistory(user):
-   # Order-by done to return the queries in the right order (from oldest run to newest)
-   return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
-   # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
-   # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
-   # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
-
-
+# <editor-fold desc="Recommendations">
 def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
 
@@ -373,55 +368,6 @@ def modifyRecommendation(recId, comments, tags):
 
 def deleteRecommendation(recId):
    Recommendation.objects.filter(id=recId)[0].delete()
-
-
-def getQuery(user, queryId):
-   return Query.objects.filter(user=user, id=queryId).prefetch_related('tags')
-
-#def createUser(userName):
-#    user = User(userName=userName)
-#    user.save()
-
-#    return user.id
-
-
-def createFriendship(user1, user2):
-   f1 = Friendship(userOne=user1, userTwo=user2)
-   f2 = Friendship(userOne=user2, userTwo=user1)
-   f1.save()
-   f2.save()
-
-# Returns friendship or false if friendship doesn not exist.
-def getFriendship(user1, user2ID):
-   # Check to see if user2 exists
-   friend = User.objects.filter(id=user2ID)[0]
-   if friend:
-       # Check to see if friendship exisits
-       friendship = Friendship.objects.filter(userOne=user1, userTwo=friend)
-       if friendship:
-           return friendship
-   return False
-
-
-def muteFriendship(friend1Id, friend2Id):
-   user1 = User.objects.filter(id=friend1Id)[0]
-   user2 = User.objects.filter(id=friend2Id)[0]
-   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
-   friendship.muted = True
-
-
-def unmuteFriendship(friend1Id, friend2Id):
-   user1 = User.objects.filter(id=friend1Id)[0]
-   user2 = User.objects.filter(id=friend2Id)[0]
-   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
-   friendship.muted = False
-
-
-def deleteFriendship(user1, user2):
-   f1 = Friendship.objects.filter(userOne=user1, userTwo=user2).first()
-   f2 = Friendship.objects.filter(userOne=user2, userTwo=user1).first()
-   f1.delete()
-   f2.delete()
 
 
 # if thing is a PlaceThing, put in the placeId as the description
@@ -468,23 +414,51 @@ def createRecommendation(user, detail, thingType, comments, *tags):
        recommendation.tags.add(newtag)
 
    return recommendation
+# </editor-fold>
 
 
-#def createPlaceRecommendation():
-#    pass
+# <editor-fold desc="Friendships/muting">
+def createFriendship(user1, user2):
+   f1 = Friendship(userOne=user1, userTwo=user2)
+   f2 = Friendship(userOne=user2, userTwo=user1)
+   f1.save()
+   f2.save()
+
+# Returns friendship or false if friendship doesn not exist.
+def getFriendship(user1, user2ID):
+   # Check to see if user2 exists
+   friend = User.objects.filter(id=user2ID)[0]
+   if friend:
+       # Check to see if friendship exisits
+       friendship = Friendship.objects.filter(userOne=user1, userTwo=friend)
+       if friendship:
+           return friendship
+   return False
 
 
-# for class demo tag cloud
-#def getRecommendationTagCounts():
-#    tags = RecommendationTag.objects.values_list("tag", flat=True)
-#    tagSet = set(tags)  # put in a set to eliminate duplicates
-#    tag_count_list = []
-#    for tag in tagSet:
-#        count = Tag.objects.filter(tag=tag).count()
-#        tag_count_list.append({'text': tag, 'weight': count})
-#    return tag_count_list
+def muteFriendship(friend1Id, friend2Id):
+   user1 = User.objects.filter(id=friend1Id)[0]
+   user2 = User.objects.filter(id=friend2Id)[0]
+   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
+   friendship.muted = True
 
 
+def unmuteFriendship(friend1Id, friend2Id):
+   user1 = User.objects.filter(id=friend1Id)[0]
+   user2 = User.objects.filter(id=friend2Id)[0]
+   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
+   friendship.muted = False
+
+
+def deleteFriendship(user1, user2):
+   f1 = Friendship.objects.filter(userOne=user1, userTwo=user2).first()
+   f2 = Friendship.objects.filter(userOne=user2, userTwo=user1).first()
+   f1.delete()
+   f2.delete()
+# </editor-fold>
+
+
+# <editor-fold desc="Things/auto-complete">
 def getTextThingAutocompleteSuggestions(string):
     textThings = TextThing.objects.filter(description__istartswith=string).order_by('description')
     return [tt.description for tt in textThings]
@@ -514,8 +488,10 @@ def createUrlThing(url):
    thing.save()
    u1 = UrlThing(thing=thing, url=url)
    u1.save()
+# </editor-fold>
 
 
+# <editor-fold desc="Pins">
 def createPin(thingId, queryId):
    thing = Thing.objects.filter(id=thingId)[0]
    query = Query.objects.filter(id=queryId)[0]
@@ -537,15 +513,50 @@ def deletePin(thingId, queryId):
    thing = Thing.objects.filter(id=thingId)[0]
    query = Query.objects.filter(id=queryId)[0]
    Pin.objects.filter(thing=thing, query=query)[0].delete()
+# </editor-fold>
 
-#def createPrompt():
-#    pass
 
 
 # TODO
 def deleteAccount(userId):
    pass
 
+
+# private
+def isFriendsWith(user1, user2):
+  if Friendship.objects.filter(userOne=user1, userTwo=user2).count() >= 1:
+      return True
+  else:
+      return False
+
+
+# private
+def getAllFriendUsers(user):
+   allFriends = []
+   for friendship in Friendship.objects.filter(userOne=user, muted=False):
+       allFriends.append(friendship.userTwo)
+   return allFriends
+
+
+# private (returns a set, not a list)
+def getAllFriendsFacebookUserIds(user):
+   allFriends = set()
+   #for friendship in Friendship.objects.filter(userOne=user, muted=False):
+   # when using the previous where muted=False, login fails because we try to re-add users that are just muted...
+   for friendship in Friendship.objects.filter(userOne=user):
+       allFriends.add(SocialAccount.objects.filter(user=friendship.userTwo).first().uid)
+   return allFriends
+
+
+# for class demo tag cloud
+#def getRecommendationTagCounts():
+#    tags = RecommendationTag.objects.values_list("tag", flat=True)
+#    tagSet = set(tags)  # put in a set to eliminate duplicates
+#    tag_count_list = []
+#    for tag in tagSet:
+#        count = Tag.objects.filter(tag=tag).count()
+#        tag_count_list.append({'text': tag, 'weight': count})
+#    return tag_count_list
 
 
 class Solution:

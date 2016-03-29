@@ -10,16 +10,15 @@ import UIKit
 
 class SolutionsView: UITableView {
     override func drawRect(rect: CGRect) {
-        /* Background gradient */
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-        CommonUIElements.drawGradientForContext(
+        CommonUI.drawGradientForContext(
             [
-                UIColor.colorFromHex(0xfefefe).CGColor,
-                UIColor.colorFromHex(0xc8ced0).CGColor
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
             ],
-            frame: frame,
+            frame: self.bounds,
             context: context
         )
     }
@@ -27,78 +26,98 @@ class SolutionsView: UITableView {
 
 class SolutionsViewController: UITableViewController {
 
-    var queryID: Int?
-    var tags: [String] = []
+    var QUERY: Query?
     
     convenience init(tags: [String]) {
         self.init()
-
-        self.queryID = User.instance.queryHistory.getQueryFromTags(tags)?.ID;
-        self.tags = tags
+        
+        self.QUERY = User.instance.queryHistory.getQueryFromTags(tags)
         
         User.instance.querySolutionsUpdatedClosure = {
             [weak self] (queryID: Int) -> Void in
-            
-            if self?.queryID == nil {
-                self?.queryID = queryID
+            if self?.QUERY == nil {
+                let query = User.instance.queryHistory.getQueryByID(queryID)!
+                let incomingTags: [String] = query.tags
+                if User.instance.queryHistory.tagsEqual(tags, tag2: incomingTags) {
+                    self?.QUERY = query
+                }
             }
             
-            self?.tableView.reloadData()
+            if self?.QUERY != nil {
+                if self?.QUERY!.ID == queryID {
+                    self?.tableView.reloadData()
+                }
+            }
         }
     }
     
     override func loadView() {
         view = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
-        
-        /* Tableview datasource and delegate */        
-        tableView.dataSource = self
-        tableView.delegate = self
     }
     
     override func viewDidLoad() {
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: FAKFontAwesome.chevronLeftIconWithSize(32.0).imageWithSize(CGSize(width: 32.0, height: 32.0)),
+        
+        /* Tableview datasource and delegate */
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        let leftBBitem: UIBarButtonItem = UIBarButtonItem(
+            image: CommonUI.nbBackChevron,
             style: .Plain,
             target: self,
-            action: Selector("back")
+            action: #selector(SolutionsViewController.back)
         )
+        leftBBitem.tintColor = UIColor.whiteColor()
+        
+        self.navigationItem.leftBarButtonItem = leftBBitem
         title = "Solutions"
         tableView.separatorStyle = .None
     }
     
     override func viewWillAppear(animated: Bool) {
-        if self.queryID != nil {
-            FBNetworkDAO.instance.getQuerySolutions(self.queryID!)
+        if QUERY != nil {
+            FBNetworkDAO.instance.getQuerySolutions(QUERY!.ID)
         }
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
+        
+        navigationController?.navigationBar.barTintColor = CommonUI.navbarGrayColor
+        navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
     }
     
     func back() {
         navigationController?.popViewControllerAnimated(true)
     }
     
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if QUERY == nil {
+            return 0
+        } else {
+            return 2
+        }
+    }
+    
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if QUERY == nil {
+            return 0
+        }
+        
         if section == 0 {
             return 1
         }
         
-        if self.queryID != nil {
-            if let solutionCount = User.instance.queryHistory.getQueryByID(queryID!)?.solutions?.count {
-                return solutionCount
-            } else {
-                return 0
-            }
+        if let solutionCount = QUERY!.solutions?.count {
+            return solutionCount
+        } else {
+            return 0
         }
-        return 0
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return SolutionsTagCell(tags: tags, style: .Default, reuseIdentifier: nil)
+            return SolutionsTagCell(tags: QUERY!.tags, style: .Default, reuseIdentifier: nil)
         } else {
-            let cell: SolutionCell = SolutionCell(detail: User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail, style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
-            if self.queryID != nil {
-//                cell.textLabel?.text = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail
-            }
+            let cell: SolutionCell = SolutionCell(detail: QUERY!.solutions![indexPath.row].detail, style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
             return cell
         }
     }
@@ -107,15 +126,7 @@ class SolutionsViewController: UITableViewController {
         if indexPath.section == 0 {
             return
         }
-        
-        if self.queryID != nil {
-            let detail: String = User.instance.queryHistory.getQueryByID(queryID!)!.solutions![indexPath.row].detail
-            navigationController?.pushViewController(SolutionDetailViewController(title: detail, queryID: self.queryID!, solutionIndex: indexPath.row), animated: true)
-        }
-    }
-    
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY!.solutions![indexPath.row]), animated: true)
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
