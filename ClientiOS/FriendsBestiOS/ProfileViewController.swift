@@ -145,7 +145,7 @@ class ProfileViewController: UIViewController {
     }
     
     func friendsButtonPushed() {
-        
+        navigationController?.pushViewController(FriendsListViewController(), animated: true)
     }
     
     func logoutButtonPushed() {

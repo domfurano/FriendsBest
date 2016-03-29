@@ -18,6 +18,7 @@ protocol NetworkDAODelegate: class {
     func newQueryFetched(queryID: Int)
     func promptsFetched()
     func userRecommendationsFetched()
+    func friendsFetched(friends: [Friend])
 }
 
 
@@ -139,6 +140,84 @@ class FBNetworkDAO {
             }).resume()
     }
     
+    func getFriends() {
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._getFriends()
+            }, description: "getFriends()"))
+    }
+    
+    private func _getFriends() {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate()
+            NetworkQueue.instance.tryAgain()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        let queryString: String = "friend/"
+        let queryURL: NSURL? = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        
+        guard let validQueryURL = queryURL else {
+            NSLog("Error - FriendsBest API - getFriends() - Bad query URL")
+            return
+        }
+        
+        session.dataTaskWithURL(validQueryURL,
+                                completionHandler: {
+                                    [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+                                    
+                                    if let error = error {
+                                        NetworkQueue.instance.tryAgain()
+                                        NSLog("Error - FriendsBest API - getQueries() - \(error)")
+                                        return
+                                    }
+                                    
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
+                                        NetworkQueue.instance.tryAgain()
+                                        return
+                                    }
+                                    
+                                    guard let friendsArray: NSArray = FBNetworkDAO.getNSArrayFromJSONdata(data, funcName: "getQueries") else {
+                                        NetworkQueue.instance.tryAgain()
+                                        return
+                                    }
+                                    
+                                    var friends: [Friend] = []
+                                    
+                                    for friendDict in friendsArray {
+                                        guard let validFriendDict: NSDictionary = friendDict as? NSDictionary else {
+                                            NetworkQueue.instance.tryAgain()
+                                            NSLog("Error - FriendsBest API - getFriends - Invalid JSON object")
+                                            return
+                                        }
+                                        
+                                        guard let name: String = validFriendDict["name"] as? String,
+                                            let id: String = validFriendDict["id"] as? String,
+                                            let muted: Bool = validFriendDict["muted"] as? Bool else {
+                                                NetworkQueue.instance.tryAgain()
+                                                NSLog("Error - FriendsBest API - getFriends - Invalid JSON object")
+                                                return
+                                        }
+                                        
+                                        let f: Friend = Friend(facebookID: id, name: name)
+                                        f.muted = muted
+                                        
+                                        friends.append(f)
+                                    }
+                                    
+                                    NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                                        self?.networkDAODelegate?.friendsFetched(friends)
+                                        NetworkQueue.instance.dequeue()
+                                    })
+                                    
+            }).resume()
+    }
+    
     
     func getQuerySolutions(queryID: Int) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
@@ -254,7 +333,7 @@ class FBNetworkDAO {
                                             NetworkQueue.instance.dequeue()
                                             return
                                         }
-
+                                        
                                         guard let tags: [String] = recDict["tags"] as? [String] else {
                                             NSLog("Error - FriendsBest API - getRecommendationsForUser()")
                                             NetworkQueue.instance.dequeue()
@@ -310,7 +389,7 @@ class FBNetworkDAO {
                                         }
                                         
                                         let friend: Friend = Friend(facebookID: userId, name: userName)
-
+                                        
                                         let recommendation: Recommendation = Recommendation(friend: friend, comment: comments, detail: detail, type: type, ID: id)
                                         recommendation.tags = tags
                                         recommendation.new = true
@@ -318,7 +397,7 @@ class FBNetworkDAO {
                                         userRecommendations.append(recommendation)
                                     }
                                     
-                                    NSOperationQueue.mainQueue().addOperationWithBlock({ 
+                                    NSOperationQueue.mainQueue().addOperationWithBlock({
                                         for recommendation: Recommendation in userRecommendations {
                                             if !User.instance.recommendations.contains(recommendation) {
                                                 User.instance.recommendations.append(recommendation)
@@ -328,7 +407,7 @@ class FBNetworkDAO {
                                         NetworkQueue.instance.dequeue()
                                     })
                                     
-            }).resume()
+        }).resume()
     }
     
     func postNewQuery(queryTags: [String]) {
@@ -815,10 +894,6 @@ class FBNetworkDAO {
                                         })
                                         
             }).resume()
-    }
-    
-    private func _getFacebookPicture(facebookID: String) {
-        
     }
     
     private func parseSolutions(solutionsArray: [NSDictionary], funcName: String) -> Set<Solution>? {

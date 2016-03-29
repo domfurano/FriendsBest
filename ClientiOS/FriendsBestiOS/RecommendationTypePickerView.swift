@@ -82,7 +82,7 @@ class RecommendationTypePickerView: UIView {
         
         superview!.removeConstraints(hiddenConstraints!)
         superview!.addConstraints(visibleContstraints!)
-        alpha = 0.5
+//        alpha = 0.5
         customTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         linkTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         placeTypeButton.alpha = BUTTON_VISIBLE_ALPHA

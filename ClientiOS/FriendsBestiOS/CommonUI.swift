@@ -10,6 +10,23 @@ import UIKit
 import FBSDKCoreKit
 
 
+class GradientTableView: UITableView {
+    override func drawRect(rect: CGRect) {
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
+        
+        CommonUI.drawGradientForContext(
+            [
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
+            ],
+            frame: self.bounds,
+            context: context
+        )
+    }
+}
+
+
 class CommonUI {
     
     static let instance: CommonUI = CommonUI()
@@ -42,6 +59,7 @@ class CommonUI {
     static var friendNormalProfilePictures: Dictionary<Friend, UIImageView> = Dictionary()
     
     static let navbarGrayColor: UIColor = UIColor.colorFromHex(0xABB4BA)
+    static let navbarBlueColor: UIColor = UIColor.colorFromHex(0x3B5998)
     static let toolbarLightColor: UIColor = UIColor.colorFromHex(0xE8EDEF)
     
     // Navigation bar back chevron

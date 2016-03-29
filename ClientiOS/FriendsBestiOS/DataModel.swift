@@ -32,6 +32,7 @@ class User: NetworkDAODelegate {
     var newSolutionAlert: () -> Void = {}
     var newRecommendationAlert: () -> Void = {}
     var userRecommendationsFetchedClosure: () -> Void = {}
+    var friendsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
@@ -72,6 +73,14 @@ class User: NetworkDAODelegate {
         userRecommendationsFetchedClosure()
     }
     
+    func friendsFetched(friends: [Friend]) {
+        for friend in friends {
+            if !self.friends.contains(friend) {
+                self.friends.append(friend)
+            }
+        }
+    }
+    
     
     /* Serialization */
     private func serialize() {
@@ -83,6 +92,7 @@ class User: NetworkDAODelegate {
 class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
+    var muted: Bool?
     private(set) var squarePicture: UIImage?
     
     var hashValue: Int {

@@ -24,8 +24,8 @@ private let backgroundCardFrameAnimationDuration: NSTimeInterval = 0.2
 
 //Opacity values
 private let defaultAlphaValueOpaque: CGFloat = 1.0
-private let defaultAlphaValueTransparent: CGFloat = 0.0
-private let defaultAlphaValueSemiTransparent: CGFloat = 0.7
+private let defaultAlphaValueTransparent: CGFloat = 1.0
+private let defaultAlphaValueSemiTransparent: CGFloat = 1.0
 
 //Animations constants
 private let revertCardAnimationName = "revertCardAlphaAnimation"

@@ -153,5 +153,17 @@ class YourRecommendationsViewController: UITableViewController {
         tableView.beginUpdates()
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
         tableView.endUpdates()
-    }    
+    }
+    
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let button1 = UITableViewRowAction(style: .Default, title: "Delete", handler: { (action, indexPath) in
+            print("button1 pressed!")
+        })
+        button1.backgroundColor = UIColor.redColor()
+        let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
+            print("button2 pressed!")
+        })
+        button2.backgroundColor = UIColor.blueColor()
+        return [button1, button2]
+    }
 }

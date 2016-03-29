@@ -360,17 +360,22 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func showNewRecommendationViews() {
         UIView.animateWithDuration(
-            NSTimeInterval(60.0),
+            NSTimeInterval(0.33)) { 
+                self.recommendationPicker.alpha = 0.66
+        }
+        
+        UIView.animateWithDuration(
+            NSTimeInterval(0.33),
             delay: NSTimeInterval(0.0),
-            usingSpringWithDamping: 0.1,
-            initialSpringVelocity: 0.33,
-            options: UIViewAnimationOptions.CurveEaseIn,
+            usingSpringWithDamping: 0.66,
+            initialSpringVelocity: 1.0,
+            options: UIViewAnimationOptions.CurveEaseOut,
             animations: {
                 
                 self.recommendationPicker.show()
                 self.view.layoutIfNeeded()
         }) { (Bool) in
-                return
+
         }
         
         //        UIView animateWithDuration:0.5
