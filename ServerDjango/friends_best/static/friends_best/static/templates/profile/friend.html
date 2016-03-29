@@ -1,4 +1,4 @@
-<div class="line unpadded container">
+<div class="line unpadded container" id="<%= id %>">
 	<div class="col-xs-2">
 		<img width="40px" height="40px" src="https://graph.facebook.com/v2.5/<%= id %>/picture?type=square">	
 	</div>
@@ -6,6 +6,6 @@
 		<div class="detail"><%= name %></div>
 	</div>
 	<div class="col-xs-2 mute">
-		<i class="fa fa-fw fa-volume-up" style="color:#333"></i>
+		<i class="fa fa-fw <%= (muted) ? 'fa-volume-up' : 'fa-volume-off' %>" style="color:#333"></i>
 	</div>
 </div>

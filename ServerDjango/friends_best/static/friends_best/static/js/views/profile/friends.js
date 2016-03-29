@@ -50,12 +50,23 @@
 			    this.$list.append(itemTemplate(i.toJSON()));
 		    }, this);
 		    
+		    that = this;
 		    $(".mute").click(function() {
     		    $(this).find("i").toggleClass("fa-volume-up fa-volume-off");
+    		    id = $(this).parent().attr("id");
+    		    that.toggleMute(id);
             });
 		    
 	    }
 
+	},
+	
+	toggleMute: function(id) {
+    	console.log(this.collection.get(id));
+    	model = this.collection.get(id);    	
+    	// Toggle muted
+    	model.set("muted", !model.get("muted"));
+    	model.save();
 	},
     
     remove: function() {
