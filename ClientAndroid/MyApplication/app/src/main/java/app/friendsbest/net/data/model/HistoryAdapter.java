@@ -29,7 +29,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
 
     @Override
     public HistoryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = _inflater.inflate(R.layout.history_item_card, parent, false);
+        View view = _inflater.inflate(R.layout.item_history_card, parent, false);
         HistoryItemViewHolder holder = new HistoryItemViewHolder(view);
         return holder;
     }
@@ -75,9 +75,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
                     _textBubbleFirst.setText(queryTags.get(0));
                     _textBubbleSecond.setText(queryTags.get(1));
                     _textBubbleOverflow.setVisibility(View.GONE);
+                    break;
+                case 0:
+                    break;
                 default:
                     _textBubbleFirst.setText(queryTags.get(0));
                     _textBubbleSecond.setText(queryTags.get(1));
+                    break;
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -9,6 +9,7 @@ import java.util.List;
 
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.data.model.QueryResult;
+import app.friendsbest.net.data.model.Recommendation;
 import app.friendsbest.net.data.services.BaseRepository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.BasePresenter;
@@ -20,8 +21,11 @@ import app.friendsbest.net.ui.fragment.SolutionFragment;
 public class PromptPresenter implements ListPresenter<List<PromptCard>> {
 
     private BaseRepository _repository;
+    private BaseRepository _historyRepository;
     private PromptFragment _view;
     private final String _token;
+    private boolean _hasNewRecommendations;
+    private int _recommendationCount;
 
     private BasePresenter<QueryResult> _queryPresenter = new BasePresenter<QueryResult>() {
         @Override
@@ -32,10 +36,22 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
         }
     };
 
+    private BasePresenter<List<Recommendation>> _queryHistoryPresenter = new BasePresenter<List<Recommendation>>() {
+        @Override
+        public void sendToPresenter(List<Recommendation> responseData) {
+            if (responseData != null) {
+                processRecommendationList(responseData);
+            }
+        }
+    };
+
     public PromptPresenter(PromptFragment view, Context context){
         _view = view;
         _token = PreferencesUtility.getInstance(context).getToken();
         _repository = new BaseRepository(this, _token);
+        _historyRepository = new BaseRepository(_queryHistoryPresenter, _token);
+        _recommendationCount = -1;
+        _hasNewRecommendations = false;
         getData();
     }
 
@@ -50,6 +66,24 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
         _view.changeFragment(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
     }
 
+    private void processRecommendationList(List<Recommendation> recommendations) {
+        if (!_hasNewRecommendations) {
+            int listSize = recommendations.size();
+            if (_recommendationCount < 0)
+                _recommendationCount = listSize;
+            if (listSize > _recommendationCount) {
+                _view.hasNewRecommendations(true);
+                _recommendationCount = recommendations.size();
+                _hasNewRecommendations = true;
+            } else {
+                _view.hasNewRecommendations(false);
+            }
+        }
+    }
+
+    public void getQueryUpdates() {
+        _historyRepository.getRecommendations();
+    }
 
     public void submitQuery(String query) {
         if (isValidQuery(query)) {

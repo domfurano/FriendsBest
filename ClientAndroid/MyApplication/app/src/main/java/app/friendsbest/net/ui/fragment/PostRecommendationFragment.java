@@ -1,53 +1,43 @@
 package app.friendsbest.net.ui.fragment;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.presenter.PostRecommendationPresenter;
 import app.friendsbest.net.presenter.interfaces.RecommendPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.RecommendView;
 
-public class PostRecommendationFragment extends Fragment implements
-        RecommendView,
-        View.OnClickListener,
-        TextView.OnEditorActionListener,
-        View.OnFocusChangeListener {
+public class PostRecommendationFragment extends Fragment implements RecommendView {
 
     public static final String BUNDLE_KEY = "addRecommendationKey";
-    private final int PLACE_PICKER_REQUEST = 47;
     private OnFragmentInteractionListener _listener;
     private RecommendPresenter _presenter;
-    private EditText _editDetail;
-    private EditText _editTags;
-    private EditText _editComment;
-    private RelativeLayout _placeLayout;
-    private TextView _placesAddress;
-    private TextView _invalidDetail;
-    private TextView _invalidTags;
+    private EditText _editDetail,_editTags, _editComment;
+    private TextInputLayout _detailLayout, _tagLayout;
+    private ImageView _placesIcon;
+    private TextView _placeAddress;
     private String _type = "TEXT";
+    private String _placePickerId;
     private boolean _fromRightSwipe;
 
     @Override
@@ -72,10 +62,10 @@ public class PostRecommendationFragment extends Fragment implements
         _listener.onFragmentTitleChange("New Recommendation");
         _listener.onFragmentToolbarChange(R.color.appGreen);
         _presenter = new PostRecommendationPresenter(this, getActivity().getApplicationContext());
-        _placeLayout.setOnClickListener(this);
-        _editComment.setOnEditorActionListener(this);
-        _editDetail.setOnFocusChangeListener(this);
-        _editTags.setOnFocusChangeListener(this);
+        _editDetail.addTextChangedListener(new InputChangeWatcher(_editDetail));
+        _editTags.addTextChangedListener(new InputChangeWatcher(_editTags));
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(_editComment.getWindowToken(), 0);
     }
 
     @Override
@@ -98,94 +88,93 @@ public class PostRecommendationFragment extends Fragment implements
             _listener.onFragmentChange(DualFragmentActivity.PROMPT_QUERY_ID, bundle);
         }
         else {
-            _listener.onFragmentChange(DualFragmentActivity.REMOVE_FRAGMENT);
+            _listener.onFragmentChange(DualFragmentActivity.PROMPT_QUERY_ID);
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_style1, menu);
+        inflater.inflate(R.menu.menu_add_recommendation, menu);
     }
 
     @Override
-    public void displayDetailValidation(String message) {
-        _invalidDetail.setText(message);
+    public void setDetailValidationError(String message) {
+        _detailLayout.setError(message);
     }
 
     @Override
-    public void hideDetailValidation() {
-        _invalidDetail.setVisibility(View.INVISIBLE);
+    public void removeDetailValidationError() {
+        _detailLayout.setErrorEnabled(false);
     }
 
     @Override
-    public void displayTagsValidation(String message) {
-        _invalidTags.setText(message);
+    public void setTagValidationError(String message) {
+        _tagLayout.setError(message);
     }
 
     @Override
-    public void hideTagsValidation() {
-        _invalidTags.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                Place place = PlacePicker.getPlace(getActivity(), data);
-                _editDetail.setText(place.getName());
-                _editDetail.setFocusable(false);
-                _placesAddress.setText(place.getAddress());
-//                String toastMsg = String.format("Place: %s", place.getName());
-//                Toast.makeText(getActivity(), toastMsg, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == _placeLayout) {
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-            try {
-                startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-            }
-            catch (Exception e) {
-                Log.e("Place picker", e.getMessage(), e);
-            }
-        }
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_SEND) {
-            String title = _editDetail.getText().toString();
-            String tags = _editTags.getText().toString();
-            String comment = _editComment.getText().toString();
-            _presenter.submitRecommendation(title, tags, comment, _type);
-            return true;
-        }
-        return false;
+    public void removeTagValidationError() {
+        _tagLayout.setErrorEnabled(false);
     }
 
     private void initialize(View view, Bundle bundle) {
-        _editDetail = (EditText) view.findViewById(R.id.rec_tags_title_input);
-        _editTags = (EditText) view.findViewById(R.id.rec_tags_input);
-        _editComment = (EditText) view.findViewById(R.id.rec_comments_input);
-        _placeLayout = (RelativeLayout) view.findViewById(R.id.place_picker_layout);
-        _placesAddress = (TextView) view.findViewById(R.id.rec_places_address);
-        _invalidDetail = (TextView) view.findViewById(R.id.rec_title_invalid_label);
-        _invalidTags = (TextView) view.findViewById(R.id.rec_tags_invalid_label);
+        _editDetail = (EditText) view.findViewById(R.id.recommendation_detail_input);
+        _editTags = (EditText) view.findViewById(R.id.recommendation_tags_input);
+        _editComment = (EditText) view.findViewById(R.id.recommendation_comments_input);
+        _placeAddress = (TextView) view.findViewById(R.id.recommendation_places_address);
+        _placesIcon = (ImageView) view.findViewById(R.id.recommendation_places_icon);
+        _detailLayout = (TextInputLayout) view.findViewById(R.id.recommendation_detail_layout);
+        _tagLayout = (TextInputLayout) view.findViewById(R.id.recommendation_tags_layout);
+        _placesIcon.setVisibility(View.INVISIBLE);
 
         _fromRightSwipe = false;
         if (bundle != null) {
-            if (bundle.getString(PromptFragment.BUNDLE_TAG, null) != null) {
-                String tags = bundle.getString(PromptFragment.BUNDLE_TAG);
-                _editTags.setText(tags);
+            String bundleValue;
+            if ((bundleValue = bundle.getString(PromptFragment.BUNDLE_TAG, null)) != null) {
+                _editTags.setText(bundleValue);
                 _fromRightSwipe = true;
+            }
+            if ((bundleValue = bundle.getString(RecommendationOptionFragment.PLACE_PICKER_ID, null)) != null) {
+                _placePickerId = bundleValue;
+                _editDetail.setText(bundle.getString(RecommendationOptionFragment.PLACE_PICKER_NAME));
+                _placeAddress.setText(bundle.getString(RecommendationOptionFragment.PLACE_PICKER_ADDRESS));
+                _placesIcon.setVisibility(View.VISIBLE);
             }
         }
     }
 
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    private class InputChangeWatcher implements TextWatcher {
+
+        private View _view;
+
+        private InputChangeWatcher(View view) {
+            _view = view;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            switch (_view.getId()) {
+                case R.id.recommendation_detail_input:
+                    _presenter.validateDetail(_editDetail.getText().toString());
+                case R.id.recommendation_comments_input:
+                    _presenter.validateDetail(_editTags.getText().toString());
+            }
+        }
     }
 }

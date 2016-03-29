@@ -2,11 +2,16 @@
 
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorControlNormal">@color/blue_gray200</item>
+        <item name="android:colorControlActivated">@color/colorAccent</item>
+        <item name="android:colorControlHighlight">@color/blue_gray100</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -18,10 +23,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="ToolbarStyleLight" parent="ThemeOverlay.AppCompat.ActionBar">
+    <style name="AppLoginTheme" parent="Base.ThemeOverlay.AppCompat.Light">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="ToolbarStyleLight" parent="ThemeOverlay.AppCompat">
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/blue_gray200</item>
-        <item name="android:actionMenuTextColor">@color/colorAccent</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>

@@ -46,7 +46,7 @@ public class FriendFragment extends Fragment implements OnListItemClickListener<
         init(getArguments());
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_friend_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        FriendAdapter adapter = new FriendAdapter(getActivity().getApplicationContext(), _friends, this);
+        FriendAdapter adapter = new FriendAdapter(getActivity(), _friends, this);
         recyclerView.setAdapter(adapter);
         return rootView;
     }

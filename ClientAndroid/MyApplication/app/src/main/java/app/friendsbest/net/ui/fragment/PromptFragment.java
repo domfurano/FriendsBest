@@ -2,26 +2,32 @@ package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.PromptCard;
-import app.friendsbest.net.data.services.FontManager;
-import app.friendsbest.net.presenter.DemoPresenter;
+import app.friendsbest.net.presenter.PromptPresenter;
+import app.friendsbest.net.presenter.RecommendationPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.swipecards.FlingCardListener;
 import app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView;
@@ -31,21 +37,24 @@ public class PromptFragment extends Fragment implements
         FragmentView<List<PromptCard>>,
         View.OnClickListener,
         View.OnFocusChangeListener,
-        View.OnTouchListener,
         FlingCardListener.ActionDownInterface {
 
     public static final String BUNDLE_TAG = "promptFragmentTag";
+    private long INTERVAL = 6500l;
     public static IViewContainer _viewContainer;
     public static ICardAdapter _cardAdapter;
 
     private OnFragmentInteractionListener _listener;
-    private DemoPresenter _presenter;
+    private PromptPresenter _presenter;
     private SwipeFlingAdapterView _adapterView;
-    private TextView _historyBtn;
+    private ImageView _historyBtn;
+    private TextView _updateView;
     private EditText _searchField;
     private ImageButton _searchBtn;
     private List<PromptCard> _cards = new ArrayList<>();
     boolean _deleteRecommendation = false;
+    private Handler _handler;
+    private Runnable _runnable;
 
     public static void removeBackground() {
         _viewContainer.background.setVisibility(View.GONE);
@@ -56,16 +65,15 @@ public class PromptFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-        Typeface typeface = FontManager
-                .getTypeface(getActivity().getApplicationContext(), FontManager.FONT_AWESOME);
         initialize(getArguments());
         setHasOptionsMenu(true);
-        FontManager.markAsIconContainer(view.findViewById(R.id.fragment_main_query_layout), typeface);
         _adapterView = (SwipeFlingAdapterView) view.findViewById(R.id.fragment_main_swipe_card);
-        _historyBtn = (TextView) view.findViewById(R.id.fragment_main_query_results_button);
+        _historyBtn = (ImageView) view.findViewById(R.id.fragment_main_query_results_button);
+        _updateView = (TextView) view.findViewById(R.id.fragment_main_query_results_update);
         _searchField = (EditText) view.findViewById(R.id.fragment_main_query_field);
         _searchBtn = (ImageButton) view.findViewById(R.id.fragment_main_submit_query_button);
+
+        _updateView.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -74,10 +82,35 @@ public class PromptFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
         _historyBtn.setOnClickListener(this);
         _searchField.setOnClickListener(this);
+        _searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    _searchBtn.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
         _searchBtn.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.hideSupportActionBar();
-        _presenter = new DemoPresenter(this, getActivity());
+        _presenter = new PromptPresenter(this, getActivity());
+
+        _runnable = new Runnable() {
+            @Override
+            public void run() {
+                fetch();
+            }
+        };
+        _handler = new Handler();
+        fetch();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        _handler.removeCallbacks(_runnable);
     }
 
     @Override
@@ -98,11 +131,6 @@ public class PromptFragment extends Fragment implements
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
 
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return false;
     }
 
     @Override
@@ -149,10 +177,26 @@ public class PromptFragment extends Fragment implements
         }
     }
 
+    public void hasNewRecommendations(boolean hasUpdate) {
+        int visibility = View.INVISIBLE;
+        if (hasUpdate) {
+            visibility = View.VISIBLE;
+            INTERVAL += 10000;
+        }
+        _updateView.setVisibility(visibility);
+    }
+
     private void initialize(Bundle arguments) {
         if (arguments != null) {
             _deleteRecommendation = arguments.getBoolean(PostRecommendationFragment.BUNDLE_KEY);
         }
+    }
+
+    private void fetch() {
+        _presenter.getData();
+        //_presenter.getQueryUpdates();
+        Log.i("Poo in the loo", "Called runnable");
+        _handler.postDelayed(_runnable, INTERVAL);
     }
 
     @Override
@@ -168,6 +212,7 @@ public class PromptFragment extends Fragment implements
     }
 
     public void changeFragment(String fragmentTag, Bundle payload) {
+        _searchField.setText("");
         _listener.onFragmentChange(fragmentTag, payload);
     }
 
@@ -225,8 +270,8 @@ public class PromptFragment extends Fragment implements
                 _viewContainer = (IViewContainer) convertView.getTag();
             }
 
-            String basedOnSearch = "Based on a search by ";
-            _viewContainer.friendText.setText(basedOnSearch + _promptCards.get(position).getFriend().getName());
+            String searchBy = "Based on a search by ";
+            _viewContainer.friendText.setText(searchBy + _promptCards.get(position).getFriend().getName());
             _viewContainer.tagStringText.setText(_promptCards.get(position).getTagstring());
             return rowView;
         }

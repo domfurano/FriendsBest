@@ -1,7 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="@dimen/right_margin"
+    android:layout_marginLeft="@dimen/left_margin"
+    android:layout_marginTop="8dp"
+    android:elevation="1dp"
+    android:background="@drawable/rounded_rect"
+    android:orientation="horizontal">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/profile_recommendation_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_subheading_size"
+            android:fontFamily="sans-serif-thin"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:text="Hello"/>
+
+        <TextView
+            android:id="@+id/profile_recommendation_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_recommendation_title"
+            android:textSize="@dimen/text_body_size"
+            android:textColor="@android:color/black"
+            android:fontFamily="sans-serif-light"
+            android:text="hello touch the porpoise"/>
+
+        <View
+            android:layout_below="@+id/profile_recommendation_description"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/gray200"/>
+
+        <ImageView
+            android:layout_marginTop="16dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_below="@id/profile_recommendation_description"
+            android:background="@drawable/ic_tag_vector"/>
+
+        <TextView
+            android:id="@+id/profile_recommendation_tags_text"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="24dp"
+            android:layout_below="@id/profile_recommendation_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_caption_size"/>
+    </RelativeLayout>
 </LinearLayout>

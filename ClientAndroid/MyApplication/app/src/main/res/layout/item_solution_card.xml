@@ -43,7 +43,7 @@
                 android:id="@+id/solution_arrow_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/arrow_right_ic_light_vector"/>
+                android:background="@drawable/ic_arrow_right_light_vector"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>

@@ -2,6 +2,7 @@ package app.friendsbest.net.data.services;
 
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import app.friendsbest.net.data.model.QueryResult;
 import app.friendsbest.net.data.model.Recommendation;
 import app.friendsbest.net.data.model.RecommendationPost;
 import app.friendsbest.net.presenter.interfaces.BasePresenter;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,7 +30,8 @@ public class BaseRepository {
     }
 
     public void getPrompts() {
-        _service.getPrompts().enqueue(new Callback<List<PromptCard>>() {
+        Call<List<PromptCard>> call = _service.getPrompts();
+        call.clone().enqueue(new Callback<List<PromptCard>>() {
             @Override
             public void onResponse(Call<List<PromptCard>> call, Response<List<PromptCard>> response) {
                 List<PromptCard> prompts = null;
@@ -59,7 +62,8 @@ public class BaseRepository {
     }
 
     public void getRecommendations() {
-        _service.getRecommendations().enqueue(new Callback<List<Recommendation>>() {
+        Call<List<Recommendation>> call = _service.getRecommendations();
+        call.clone().enqueue(new Callback<List<Recommendation>>() {
             @Override
             public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
                 List<Recommendation> recommendations = null;

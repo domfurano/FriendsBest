@@ -8,21 +8,37 @@
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="15dp">
+    android:layout_marginTop="8dp">
 
     <RelativeLayout
         android:id="@+id/fragment_main_query_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:elevation="2dp"
+        android:background="@color/white"
+        android:layout_marginBottom="8dp"
         android:layout_weight="1">
 
-        <TextView
+        <ImageView
             android:id="@+id/fragment_main_query_results_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/icon_medium"
+            android:layout_height="@dimen/icon_medium"
             android:layout_marginRight="5dp"
-            android:text="@string/fa_icon_history"
-            android:textSize="30dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_history_vector"/>
+
+        <TextView
+            android:id="@+id/fragment_main_query_results_update"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:background="@drawable/update_bubble"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:textStyle="bold"
+            android:text="!"/>
 
         <EditText
             android:id="@+id/fragment_main_query_field"
@@ -31,14 +47,19 @@
             android:layout_toLeftOf="@+id/fragment_main_submit_query_button"
             android:layout_toRightOf="@id/fragment_main_query_results_button"
             android:layout_weight="1"
-            android:hint="Search for something..."/>
+            android:singleLine="true"
+            android:layout_centerVertical="true"
+            android:imeOptions="actionDone"
+            android:hint="Search"/>
 
         <ImageButton
             android:id="@+id/fragment_main_submit_query_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/icon_medium"
+            android:layout_height="@dimen/icon_medium"
             android:layout_alignParentRight="true"
-            android:background="@drawable/ic_search_black_36dp"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_search_grey_vector"
             />
     </RelativeLayout>
 
@@ -59,8 +80,8 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/rounded_corner"
                 android:layout_marginBottom="32dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="@dimen/left_margin"
+                android:layout_marginRight="@dimen/right_margin"
                 android:gravity="center">
 
                 <TextView

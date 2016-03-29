@@ -62,10 +62,10 @@
                     android:text="0"/>
                 <ImageView
                     android:id="@+id/profile_recommendation_arrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_medium"
+                    android:layout_height="@dimen/icon_medium"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ic_keyboard_arrow_right_black_36dp"/>
+                    android:background="@drawable/ic_arrow_right_light_vector"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:cardCornerRadius="10dp"
-            app:cardBackgroundColor="@color/colorPrimaryDark"
+            app:cardBackgroundColor="@color/colorAccent"
             android:layout_below="@+id/profile_recommendations_button">
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -99,10 +99,10 @@
                     android:text="0"/>
                 <ImageView
                     android:id="@+id/profile_friends_arrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_medium"
+                    android:layout_height="@dimen/icon_medium"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ic_keyboard_arrow_right_black_36dp"/>
+                    android:background="@drawable/ic_arrow_right_light_vector"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
     </RelativeLayout>
@@ -119,16 +119,15 @@
             android:id="@+id/logout_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:textAllCaps="false"
             android:layout_weight="1"
             android:text="@string/logout"/>
         <Button
+            android:id="@+id/delete_profile_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_alignParentRight="true"
-            android:padding="10dp"
             android:textAllCaps="false"
             android:text="@string/delete_account"/>
     </LinearLayout>

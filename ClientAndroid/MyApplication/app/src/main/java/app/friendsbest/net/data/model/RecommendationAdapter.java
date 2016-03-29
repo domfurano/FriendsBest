@@ -36,7 +36,7 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
 
     @Override
     public RecommendationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = _inflater.inflate(R.layout.recommendation_row, parent, false);
+        View view = _inflater.inflate(R.layout.profile_recommendation_row, parent, false);
         RecommendationViewHolder holder = new RecommendationViewHolder(view);
         return holder;
     }
@@ -56,23 +56,24 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
 
         TextView _commentTextView;
         TextView _detailTextView;
-        ImageView _imageView;
+        TextView _tagsTextView;
 
         public RecommendationViewHolder(View itemView) {
             super(itemView);
-            _commentTextView = (TextView) itemView.findViewById(R.id.recommendation_row_comment_view);
-            _detailTextView = (TextView) itemView.findViewById(R.id.recommendation_row_detail_view);
-            _imageView = (ImageView) itemView.findViewById(R.id.recommendation_row_image_view);
+            _commentTextView = (TextView) itemView.findViewById(R.id.profile_recommendation_description);
+            _detailTextView = (TextView) itemView.findViewById(R.id.profile_recommendation_title);
+            _tagsTextView = (TextView) itemView.findViewById(R.id.profile_recommendation_tags_text);
         }
 
         public void bind(final Recommendation recommendation, final OnListItemClickListener listener) {
+            List<String> tags = recommendation.getTags();
+            StringBuilder sb = new StringBuilder(tags.get(0));
+            for (int i = 1; i < tags.size(); i++) {
+                sb.append(" ").append(tags.get(i));
+            }
             _commentTextView.setText(recommendation.getComment());
             _detailTextView.setText(recommendation.getDetail());
-            ImageService.getInstance(_context)
-                    .retrieveProfileImage(
-                            _imageView,
-                            recommendation.getUser().getId(),
-                            ImageService.PictureSize.MEDIUM);
+            _tagsTextView.setText(sb.toString());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

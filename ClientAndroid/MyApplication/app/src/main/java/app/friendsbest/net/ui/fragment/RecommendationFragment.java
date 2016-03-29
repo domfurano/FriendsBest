@@ -43,7 +43,7 @@ public class RecommendationFragment extends Fragment implements OnListItemClickL
         init(getArguments());
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recommendation_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        RecommendationAdapter adapter = new RecommendationAdapter(getActivity().getApplicationContext(), _recommendationList, this);
+        RecommendationAdapter adapter = new RecommendationAdapter(getActivity(), _recommendationList, this);
         recyclerView.setAdapter(adapter);
         return rootView;
     }

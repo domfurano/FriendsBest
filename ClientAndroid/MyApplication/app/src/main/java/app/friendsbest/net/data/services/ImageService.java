@@ -43,8 +43,7 @@ public class ImageService {
         String uri = FACEBOOK_URL + id + "/picture?type=" + size._sizeText;
         Glide.with(_context)
                 .load(uri)
-                .placeholder(R.drawable.empty_avatar)
-                .error(R.drawable.empty_avatar)
+                .error(R.drawable.ic_account_vector)
                 .transform(new CircleTransform(_context))
                 .crossFade()
                 .into(view);

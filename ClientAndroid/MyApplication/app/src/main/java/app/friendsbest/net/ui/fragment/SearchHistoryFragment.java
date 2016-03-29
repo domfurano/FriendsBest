@@ -7,14 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +33,8 @@ public class SearchHistoryFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        _adapter = new HistoryAdapter(getActivity(), _queries, this);
+        _recyclerView.setAdapter(_adapter);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Search History");
@@ -47,13 +43,12 @@ public class SearchHistoryFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View contentView = inflater.inflate(R.layout.query_history_list, container, false);
+        View contentView = inflater.inflate(R.layout.list_query_history, container, false);
         _progressBar = (ProgressBar) contentView.findViewById(R.id.history_fragment_progressbar);
         new QueryHistoryPresenter(this, getActivity().getApplicationContext());
         _recyclerView = (RecyclerView) contentView.findViewById(R.id.recycler_view);
         _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        _adapter = new HistoryAdapter(getActivity(), _queries, this);
-        _recyclerView.setAdapter(_adapter);
+
         return contentView;
     }
 

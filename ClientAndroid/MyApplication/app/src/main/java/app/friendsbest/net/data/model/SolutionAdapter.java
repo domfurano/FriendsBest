@@ -30,7 +30,7 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
 
     @Override
     public SolutionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = _inflater.inflate(R.layout.solution_item_card, parent, false);
+        View view = _inflater.inflate(R.layout.item_solution_card, parent, false);
         SolutionViewHolder holder = new SolutionViewHolder(view);
         return holder;
     }

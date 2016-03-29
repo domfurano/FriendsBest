@@ -27,6 +27,7 @@ public class AppLoginPresenter implements LoginPresenter {
 
     @Override
     public void onStart() {
+        _loginView.hideLoginButton();
         checkLoginStatus();
     }
 
@@ -38,9 +39,9 @@ public class AppLoginPresenter implements LoginPresenter {
     @Override
     public void onLoginFail() {
         _loginView.displayMessage("Error, unable to log in.");
+        _loginView.showLoginButton();
         _preferencesUtility.deleteStoredData();
         _loginView.forceLogout();
-        onStart();
     }
 
     @Override
@@ -51,6 +52,7 @@ public class AppLoginPresenter implements LoginPresenter {
             _repository.checkLoginStatus();
         }
         else {
+            _loginView.showLoginButton();
             _repository = new BaseRepository(this, null);
             _loginView.registerFacebookCallback();
         }

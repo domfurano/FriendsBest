@@ -1,6 +1,7 @@
 package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -77,6 +78,12 @@ public class SolutionFragment extends Fragment implements
             _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
             _presenter.getData(_queryResult);
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
     }
 
     @Override

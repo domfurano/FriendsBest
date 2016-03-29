@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="16dp"
-            android:background="@drawable/clear_vector"
+            android:background="@drawable/ic_clear_vector"
             android:layout_toRightOf="@+id/picture_row_subtitle"/>
         <View
             android:layout_below="@+id/picture_row_subtitle"

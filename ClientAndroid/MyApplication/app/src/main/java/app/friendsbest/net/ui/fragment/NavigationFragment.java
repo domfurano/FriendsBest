@@ -30,7 +30,7 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
         _recommendButton.setOnClickListener(this);
         _homeButton.setOnClickListener(this);
         String uri = PreferencesUtility.getInstance(getActivity().getApplicationContext()).getProfilePictureUri();
-        ImageService.getInstance(getActivity().getApplicationContext()).retrieveImage(_profileButton, uri, 30, 30);
+        ImageService.getInstance(getActivity()).retrieveImage(_profileButton, uri, 30, 30);
         _listener = (OnFragmentInteractionListener) getActivity();
     }
 
