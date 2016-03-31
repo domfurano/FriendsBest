@@ -475,7 +475,10 @@
 	}
 	
 	.loadmore .logo {
-        font-size: 30px;
+	}
+	
+	.logo img {
+		width: 50%;
 	}
 	
 	.prompt .item {
