@@ -22,7 +22,7 @@ define([
 		that = this;
 		
 		var backTemplate = _.template( backHTML, {} );
-		this.$el.append(backTemplate);
+		this.$el.append(backTemplate());
 		$(".back-button").click(function() {
 			console.log("going back");
 			parent.history.go(-1);
@@ -41,7 +41,18 @@ define([
 		this.model.fetch({success: function(model, response, options){
 
 			// Load tags into the search field
-			$("#tags").val(model.get("tagstring")).tokenfield({delimiter : ' '});
+			tags = $(".tags");
+			_.each(model.get("tagstring").split(" "), function(tag) {
+			    tags.append($("<span>").html(tag));
+            }, this);
+            
+            // Setup delete
+            $(".delete").click(function() {
+                if(confirm("Do you really want to delete this search?")) {
+                    model.destroy();
+                    parent.history.go(-1);
+                }
+            });
 			
 			// Empty the list
 			list.html("");
@@ -50,11 +61,12 @@ define([
 			itemTemplate = _.template(itemHTML);
 			_.each(model.get("solutions"), function(solution, index) {
 				s = {
-								id: index,
-								name: solution.detail.split("\n")[0].trim(),
-								longname: solution.detail.split("\n").join("<br>"),
-								recommendations: solution.recommendations
-							};
+					id: index,
+					name: solution.detail.split("\n")[0].trim(),
+					longname: solution.detail.split("\n").join("<br>"),
+					recommendations: solution.recommendations
+				};
+				console.log(s);
 				solutions.push(s);
 				list.prepend(itemTemplate(s));
 			});
