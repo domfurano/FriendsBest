@@ -64,14 +64,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     
     override func loadView() {
-        view = MainView()        
+        view = MainView()
     }
     
     override func viewDidLoad() {
-        /* ViewController */
-        
-        definesPresentationContext = true
-        
         
         /* Search controller */
         
@@ -161,7 +157,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         placesClient.currentPlaceWithCallback { (placeLikelihoods, error) -> Void in
             guard error == nil else {
-                print("Current Place error: \(error!.localizedDescription)")
+                NSLog("Current Place error: \(error!.localizedDescription)")
                 return
             }
             
@@ -218,10 +214,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     
     /*** Koloda ***/
-     
+    
     var didSwipeRight: Bool = false
     
-     // delegate
+    // delegate
     
     func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
@@ -235,23 +231,35 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
-        for prompt in User.instance.prompts.prompts {
-            FBNetworkDAO.instance.deletePrompt(prompt.ID)
-        }
-        for cv in cardViews {
-            cv.removeFromSuperview()
-        }
-        cardViews.removeAll()
-        User.instance.prompts.prompts.removeAll()
-        FBNetworkDAO.instance.getPrompts()
+//        for prompt in User.instance.prompts.prompts {
+//            FBNetworkDAO.instance.deletePrompt(prompt.ID)
+//        }
+//        for cv in cardViews {
+//            cv.removeFromSuperview()
+//        }
+//        cardViews.removeAll()
+//        User.instance.prompts.prompts.removeAll()
+        kolodaView.resetCurrentCardNumber()
     }
     
     func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
         return
     }
     
+    func koloda(kolodaShouldApplyAppearAnimation koloda: KolodaView) -> Bool {
+        return false
+    }
+    
     func koloda(kolodaShouldTransparentizeNextCard koloda: KolodaView) -> Bool {
         return false
+    }
+    
+    func koloda(kolodaDidResetCard koloda: KolodaView) {
+        NSLog("kolodaDidResetCard")
+    }
+    
+    func koloda(koloda: KolodaView, didShowCardAtIndex index: UInt) {
+        NSLog("didShowCardAtIndex")
     }
     
     // datasource
@@ -343,13 +351,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func newRecommendationButtonPressed() {
-        navigationController?.navigationBarHidden = true
         setToolbarItems(recPickToolBar, animated: true)
         showNewRecommendationViews()
     }
     
     func closeRecommendationPickerButtonPressed() {
-        navigationController?.navigationBarHidden = false
         setToolbarItems(regToolBar, animated: true)
         hideNewRecommendationViews(false)
         if didSwipeRight {
@@ -360,46 +366,24 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func showNewRecommendationViews() {
         UIView.animateWithDuration(
-            NSTimeInterval(0.33)) { 
-                self.recommendationPicker.alpha = 0.66
+        NSTimeInterval(0.33)) {
+            self.recommendationPicker.alpha = 0.66
         }
         
         UIView.animateWithDuration(
             NSTimeInterval(0.33),
             delay: NSTimeInterval(0.0),
             usingSpringWithDamping: 0.66,
-            initialSpringVelocity: 1.0,
+            initialSpringVelocity: 1.1,
             options: UIViewAnimationOptions.CurveEaseOut,
             animations: {
                 
                 self.recommendationPicker.show()
                 self.view.layoutIfNeeded()
         }) { (Bool) in
-
+            
         }
         
-        //        UIView animateWithDuration:0.5
-//        delay:0.5
-//        usingSpringWithDamping:0.7
-//        initialSpringVelocity:0.7
-//        options:0
-//        animations:^{
-//            [self.closeButton layoutIfNeeded];
-//        } completion:NULL];
-//        UIView.animateWithDuration(
-//            NSTimeInterval(0.33),
-//            delay: NSTimeInterval(0.0),
-//            options: UIViewAnimationOptions.TransitionCrossDissolve,
-//            animations: {
-//                self.recommendationPicker.show()
-//                self.view.layoutIfNeeded()
-//        }) { (completed: Bool) in
-//                return
-//        }
-//        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
-//            self.recommendationPicker.show()
-//            self.view.layoutIfNeeded()
-//        }
         recommendationPickerShown = true
     }
     
@@ -408,9 +392,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             recommendationPicker.hide()
             view.layoutIfNeeded()
         } else {
-            UIView.animateWithDuration(NSTimeInterval(0.33), animations: { () -> Void in
-                self.recommendationPicker.hide()
-                self.view.layoutIfNeeded()
+            UIView.animateWithDuration(
+                NSTimeInterval(0.33),
+                animations: { () -> Void in
+                    self.recommendationPicker.hide()
+                    self.view.layoutIfNeeded()
             })
         }
         recommendationPickerShown = false
@@ -479,7 +465,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         return true
     }
     
-
+    
     /*** Constraints ***/
     
     func addConstraints() {
@@ -521,7 +507,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.75,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(
@@ -581,7 +567,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.75,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(

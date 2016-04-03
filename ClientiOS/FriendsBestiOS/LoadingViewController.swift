@@ -49,6 +49,8 @@ class LoadingViewController: UIViewController {
             FacebookNetworkDAO.instance.getFacebookData()
             FBNetworkDAO.instance.getPrompts()
             FBNetworkDAO.instance.getFriends()
+            FBNetworkDAO.instance.getQueries()
+            FBNetworkDAO.instance.getRecommendationsForUser()
             
             CommonUI.instance
             UpdateBullshitter.instance.start()

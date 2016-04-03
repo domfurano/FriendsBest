@@ -64,6 +64,7 @@ class CommonUI {
     
     // Navigation bar back chevron
     static let nbBackChevron: UIImage = FAKFontAwesome.chevronLeftIconWithSize(ICON_FLOAT).imageWithSizeAndColor(ICON_SIZE, color: UIColor.whiteColor())
+    static let nbTimes: UIImage = FAKFontAwesome.timesIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
     
     /* Gradient colors for views */
     static let topGradientColor: CGColor = UIColor.whiteColor().CGColor
@@ -76,6 +77,9 @@ class CommonUI {
     
     /* Solution Detail */
     static let sdNavbarBgColor: UIColor = UIColor.colorFromHex(0x666666)
+    
+    /* web type */
+    static let globeView: UIImageView = UIImageView(image: FAKFontAwesome.globeIconWithSize(16.0).imageWithSize(CGSize(width: 30.0, height: 30.0)))
     
     private init() {
         FacebookNetworkDAO.instance.getFacebookProfileImageView(

@@ -9,7 +9,7 @@
 import UIKit
 import Koloda
 
-class PromptCardView: KolodaView {
+class PromptCardView: UIView {
 
     var titleLabel: UILabel = UILabel()
     var tagLabel: UILabel = UILabel()
@@ -27,6 +27,8 @@ class PromptCardView: KolodaView {
     convenience init(frame: CGRect, prompt: Prompt) {
         self.init(frame: frame)        
         self.prompt = prompt
+        
+        backgroundColor = UIColor.grayColor() // TODO: HACK
         
         
         /* Rounded corners */
