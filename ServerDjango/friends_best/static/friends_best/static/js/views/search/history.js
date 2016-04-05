@@ -4,37 +4,65 @@ define([
   'backbone',
   'collections/queries',
   'text!templates/standard/back.html',
-  'text!templates/search/history/items.html',
-], function($, _, Backbone, QueriesCollection, backHTML, itemsHTML){
+  'text!templates/standard/list.html',
+  'text!templates/search/history/item.html',
+], function($, _, Backbone, QueriesCollection, backHTML, listHTML, itemHTML){
 
   var HistoryView = Backbone.View.extend({
     el: $(".view"),
 
 	initialize: function() {
-		console.log("init HistoryView")
+        this.visible = true;
+        this.collection = new QueriesCollection();
+        this.collection.on("sync", this.list, this);
+		this.collection.fetch();
 	},
 
     render: function(){
-      
-		that = this;
 		
+		// Back
 		var backTemplate = _.template( backHTML );
 		this.$el.append(backTemplate({
 			color: "#ffffff",
 			background: "#abb4ba",
 			title: "Search History"
 		}));
-      
-		this.collection = new QueriesCollection();
-		this.collection.fetch({success: function(collection, response, options){
-    		
-    		collection.sort();
-    		
-			// Render the collection
-			itemsTemplate = _.template(itemsHTML);
-			that.$el.append(itemsTemplate({collection: that.collection.toJSON()}));
-		}});
+		
+		// List
+		listTemplate = _.template(listHTML);
+		this.$el.append(listTemplate());
+		this.$list = $(".listcontainer");
  
+    },
+    
+    list: function() {
+        if(this.visible) {
+            
+            // Empty the list
+    		this.$list.html("");
+            
+            // Sort the collection
+            this.collection.sort();
+
+            // Add elements to the list
+		    var itemTemplate = _.template( itemHTML );
+		    this.collection.each(function(i, index) {
+			    this.$list.append(itemTemplate(i.toJSON()));
+		    }, this);
+		    
+		    // Make list clickable
+		    $(".line").click(function() {
+    			id = $(this).attr("id");
+    			require(['app'],function(App){
+    			    App.router.navigate('search/' + id, true);
+                });
+    		});
+		    
+		    // Show text if there was nothing visible...
+    		if(this.collection.length == 0) {
+    			this.$list.append("<div class='container'><div class='row hint'>No previous searches</div></div>");
+    		}
+        }  
     },
     
     remove: function() {

@@ -252,6 +252,7 @@
 		background-color: #fff;
 		padding: 8px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		cursor: pointer;
 	}
 	
 	.list .line.unpadded {
@@ -336,6 +337,7 @@
 		padding: 10px 10px 8px 15px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
+        cursor: pointer;
 	}
 	
 	.list .solution div {

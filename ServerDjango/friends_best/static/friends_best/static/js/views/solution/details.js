@@ -50,6 +50,8 @@ define([
     		} else {
         	    list.append(commentTemplate(r));	
     		}
+    		
+    		
 					
 		});
       
