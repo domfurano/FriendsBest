@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -57,11 +59,11 @@ public class DualFragmentActivity extends AppCompatActivity implements
     public static final String NAVIGATION_ID = "navigationBar";
     public static final String FRIENDS_ID = "friends";
     public static final String WEB_VIEW_ID ="webView";
-    public static final String REMOVE_FRAGMENT = "remove";
     public static Typeface TYPEFACE;
 
     private DualFragmentPresenter _fragmentPresenter;
-    private ImageView _recommendationButton;
+    private LinearLayout _bottomNavigationBar;
+    private ImageButton _recommendationButton;
     private ImageView _profileButton;
     private ImageView _homeButton;
     private Toolbar _toolbar;
@@ -75,9 +77,10 @@ public class DualFragmentActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_dual_fragment);
 
         _toolbar = (Toolbar) findViewById(R.id.toolbar);
+        _bottomNavigationBar = (LinearLayout) findViewById(R.id.dual_fragment_nav_frame);
         _homeButton = (ImageView) findViewById(R.id.bottom_navigation_home_icon);
         _profileButton = (ImageView) findViewById(R.id.bottom_navigation_profile_icon);
-        _recommendationButton = (ImageView) findViewById(R.id.bottom_navigation_create_icon);
+        _recommendationButton = (ImageButton) findViewById(R.id.bottom_navigation_create_icon);
 
         _toolbar.setOnClickListener(this);
         _homeButton.setOnClickListener(this);
@@ -108,11 +111,8 @@ public class DualFragmentActivity extends AppCompatActivity implements
             FragmentManager fragmentManager = getFragmentManager();
             if (fragmentManager.getBackStackEntryCount() > 0) {
                 fragmentManager.popBackStack();
+                return true;
             }
-            else {
-                //onBackPressed();
-            }
-            return true;
         }
         return false;
     }
@@ -157,6 +157,22 @@ public class DualFragmentActivity extends AppCompatActivity implements
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null && actionBar.isShowing())
             actionBar.hide();
+    }
+
+    @Override
+    public void showBottomNavigationBar() {
+        int visibility = _bottomNavigationBar.getVisibility();
+        if (visibility == View.GONE){
+            _bottomNavigationBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void hideBottomNavigationBar() {
+        int visibility = _bottomNavigationBar.getVisibility();
+        if (visibility == View.VISIBLE) {
+            _bottomNavigationBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -221,6 +237,10 @@ public class DualFragmentActivity extends AppCompatActivity implements
         Log.i("Drawer Click: ", item);
     }
 
+    /**
+     * Handle clicks for bottom navigation bar. Change fragment as long as the button clicked
+     * does not refer to the currently displayed fragment.
+     */
     @Override
     public void onClick(View v) {
         if (v == _homeButton && !_activeButton.equals(PROMPT_QUERY_ID)) {

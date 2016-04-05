@@ -51,6 +51,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
         TextView _textBubbleFirst;
         TextView _textBubbleSecond;
         TextView _textBubbleOverflow;
+        TextView _textSolutionCount;
         ImageView _arrowRight;
 
         public HistoryItemViewHolder(View itemView) {
@@ -59,11 +60,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
             _textBubbleFirst = (TextView) itemView.findViewById(R.id.history_bubble1);
             _textBubbleSecond = (TextView) itemView.findViewById(R.id.history_bubble2);
             _textBubbleOverflow = (TextView) itemView.findViewById(R.id.history_bubble_overflow);
+            _textSolutionCount = (TextView) itemView.findViewById(R.id.history_count);
             _arrowRight = (ImageView) itemView.findViewById(R.id.history_arrow_right);
         }
 
         public void bind(final Query query, final OnListItemClickListener listener) {
             List<String> queryTags = query.getTags();
+            int solutionSize = query.getSolutions().size();
 
             switch (queryTags.size()) {
                 case 1:
@@ -81,7 +84,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
                 default:
                     _textBubbleFirst.setText(queryTags.get(0));
                     _textBubbleSecond.setText(queryTags.get(1));
+                    _textBubbleOverflow.setText(queryTags.get(2));
                     break;
+            }
+
+            if (solutionSize > 0) {
+                _textSolutionCount.setText("" + solutionSize);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

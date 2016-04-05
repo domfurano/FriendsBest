@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import app.friendsbest.net.data.model.PromptCard;
+import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.data.model.QueryResult;
-import app.friendsbest.net.data.model.Recommendation;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.BasePresenter;
 import app.friendsbest.net.presenter.interfaces.ListPresenter;
@@ -20,8 +20,8 @@ import app.friendsbest.net.ui.fragment.SolutionFragment;
 
 public class PromptPresenter implements ListPresenter<List<PromptCard>> {
 
-    private BaseRepository _repository;
-    private BaseRepository _historyRepository;
+    private Repository _repository;
+    private Repository _historyRepository;
     private PromptFragment _view;
     private final String _token;
     private boolean _hasNewRecommendations;
@@ -36,11 +36,11 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
         }
     };
 
-    private BasePresenter<List<Recommendation>> _queryHistoryPresenter = new BasePresenter<List<Recommendation>>() {
+    private BasePresenter<List<Query>> _queryHistoryPresenter = new BasePresenter<List<Query>>() {
         @Override
-        public void sendToPresenter(List<Recommendation> responseData) {
+        public void sendToPresenter(List<Query> responseData) {
             if (responseData != null) {
-                processRecommendationList(responseData);
+                processSolutions(responseData);
             }
         }
     };
@@ -48,8 +48,8 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
     public PromptPresenter(PromptFragment view, Context context){
         _view = view;
         _token = PreferencesUtility.getInstance(context).getToken();
-        _repository = new BaseRepository(this, _token);
-        _historyRepository = new BaseRepository(_queryHistoryPresenter, _token);
+        _repository = new Repository(this, _token);
+        _historyRepository = new Repository(_queryHistoryPresenter, _token);
         _recommendationCount = -1;
         _hasNewRecommendations = false;
         getData();
@@ -66,23 +66,33 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
         _view.changeFragment(DualFragmentActivity.VIEW_SOLUTION_ID, bundle);
     }
 
-    private void processRecommendationList(List<Recommendation> recommendations) {
+    /**
+     * Process query list and keep track of the current recommendation count.
+     * Alert fragment if recommendation count increases.
+     * @param queryList - List of queries, each containing a list of solutions
+     */
+    private void processSolutions(List<Query> queryList) {
         if (!_hasNewRecommendations) {
-            int listSize = recommendations.size();
-            if (_recommendationCount < 0)
-                _recommendationCount = listSize;
-            if (listSize > _recommendationCount) {
+            int solutionsCount = getSolutionsCount(queryList);
+
+            // initialize recommendation count with current account when class first starts
+            if (_recommendationCount < 0) {
+                _recommendationCount = solutionsCount;
+            }
+
+            if (solutionsCount > _recommendationCount) {
                 _view.hasNewRecommendations(true);
-                _recommendationCount = recommendations.size();
+                _recommendationCount = solutionsCount;
                 _hasNewRecommendations = true;
-            } else {
+            }
+            else {
                 _view.hasNewRecommendations(false);
             }
         }
     }
 
     public void getQueryUpdates() {
-        _historyRepository.getRecommendations();
+        _historyRepository.getQueries();
     }
 
     public void submitQuery(String query) {
@@ -95,7 +105,7 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
             }
 
             tagsMap.put("tags", tagsList);
-            BaseRepository repository = new BaseRepository(_queryPresenter, _token);
+            Repository repository = new Repository(_queryPresenter, _token);
             repository.postQuery(tagsMap);
         }
     }
@@ -125,5 +135,14 @@ public class PromptPresenter implements ListPresenter<List<PromptCard>> {
             return trimmedText.length() > 0;
         }
         return false;
+    }
+
+    private int getSolutionsCount(List<Query> queryList) {
+        int count = 0;
+        for (int i = 0; i < queryList.size(); i++) {
+            count += queryList.get(i).getSolutions().size();
+        }
+
+        return count;
     }
 }

@@ -7,6 +7,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -43,8 +46,14 @@ public class SolutionFragment extends Fragment implements
     private List<Solution> _solutions = new ArrayList<>();
     private QueryResult _queryResult;
     private ProgressBar _progressBar;
-    private ListPresenter _presenter;
+    private SolutionPresenter _presenter;
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -66,6 +75,7 @@ public class SolutionFragment extends Fragment implements
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange(_queryResult.getTagString());
         _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.showBottomNavigationBar();
 
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString(_fragmentTitleTag);
@@ -80,10 +90,27 @@ public class SolutionFragment extends Fragment implements
         }
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_recommendation_item, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            if (_queryResult != null) {
+                _presenter.deleteSearch(_queryResult.getId());
+                _listener.onFragmentChange("");
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
     }
 
     @Override

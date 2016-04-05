@@ -10,7 +10,7 @@ import java.util.List;
 
 import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.model.Recommendation;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.BasePresenter;
 import app.friendsbest.net.ui.fragment.ProfileFragment;
@@ -46,7 +46,7 @@ public class ProfilePresenter {
     }
 
     private void getRecommendations() {
-        BaseRepository recRepository = new BaseRepository(
+        Repository recRepository = new Repository(
                         _recommendationPresenter,
                         _token
                 );
@@ -54,7 +54,7 @@ public class ProfilePresenter {
     }
 
     private void getFriends() {
-        BaseRepository friendRepository = new BaseRepository(
+        Repository friendRepository = new Repository(
                         _friendPresenter,
                         _token
                         );

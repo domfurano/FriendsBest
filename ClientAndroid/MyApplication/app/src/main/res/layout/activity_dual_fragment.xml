@@ -73,7 +73,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/bottom_navigation_create_icon"
                     android:layout_width="@dimen/icon_medium"
                     android:layout_height="@dimen/icon_medium"

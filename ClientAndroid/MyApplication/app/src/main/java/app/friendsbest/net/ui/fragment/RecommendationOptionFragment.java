@@ -43,10 +43,12 @@ public class RecommendationOptionFragment extends Fragment implements View.OnCli
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         _mapButton.setOnClickListener(this);
+        _webButton.setOnClickListener(this);
         _customButton.setOnClickListener(this);
         _listener = (DualFragmentView) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("");
+        _listener.hideBottomNavigationBar();
         _listener.onFragmentToolbarChange(R.color.appGreen);
     }
 
@@ -79,11 +81,17 @@ public class RecommendationOptionFragment extends Fragment implements View.OnCli
         } else if (v == _customButton) {
             if (_bundle != null) {
                 _listener.onFragmentChange(DualFragmentActivity.CREATE_RECOMMENDATION_ID, _bundle);
-            } else {
+            }
+            else {
                 _listener.onFragmentChange(DualFragmentActivity.CREATE_RECOMMENDATION_ID);
             }
         } else if (v == _webButton) {
-            _listener.onFragmentChange(DualFragmentActivity.WEB_VIEW_ID);
+            if (_bundle != null) {
+                _listener.onFragmentChange(DualFragmentActivity.WEB_VIEW_ID, _bundle);
+            }
+            else {
+                _listener.onFragmentChange(DualFragmentActivity.WEB_VIEW_ID);
+            }
         }
     }
 

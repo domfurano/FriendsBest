@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -19,15 +18,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.presenter.PromptPresenter;
-import app.friendsbest.net.presenter.RecommendationPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.swipecards.FlingCardListener;
 import app.friendsbest.net.ui.swipecards.SwipeFlingAdapterView;
@@ -87,7 +83,6 @@ public class PromptFragment extends Fragment implements
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     _searchBtn.performClick();
-                    return true;
                 }
                 return false;
             }
@@ -95,16 +90,17 @@ public class PromptFragment extends Fragment implements
         _searchBtn.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.hideSupportActionBar();
+        _listener.showBottomNavigationBar();
         _presenter = new PromptPresenter(this, getActivity());
 
         _runnable = new Runnable() {
             @Override
             public void run() {
-                fetch();
+                fetchBackgroundData();
             }
         };
         _handler = new Handler();
-        fetch();
+        fetchBackgroundData();
     }
 
     @Override
@@ -192,9 +188,9 @@ public class PromptFragment extends Fragment implements
         }
     }
 
-    private void fetch() {
+    private void fetchBackgroundData() {
         _presenter.getData();
-        //_presenter.getQueryUpdates();
+        _presenter.getQueryUpdates();
         Log.i("Poo in the loo", "Called runnable");
         _handler.postDelayed(_runnable, INTERVAL);
     }

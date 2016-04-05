@@ -60,6 +60,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _logoutButton.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
+        _listener.showBottomNavigationBar();
         _listener.onFragmentTitleChange("Profile");
         _listener.onFragmentToolbarChange(R.color.blue_gray200);
         new ProfilePresenter(this, getActivity().getApplicationContext());

@@ -19,12 +19,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BaseRepository {
+/**
+ * Handles network communication with both internal and external endpoints.
+ */
+public class Repository {
 
     private final BasePresenter _presenter;
     private final RestClientService _service;
 
-    public BaseRepository(BasePresenter presenter, String token){
+    public Repository(BasePresenter presenter, String token){
         _presenter = presenter;
         _service = ServiceGenerator.createService(RestClientService.class, token);
     }
@@ -141,6 +144,20 @@ public class BaseRepository {
             @Override
             public void onFailure(Call<QueryResult> call, Throwable t) {
                 logError("Post Query", t);
+            }
+        });
+    }
+
+    public void deleteQuery(int queryId) {
+        _service.deleteQuery(queryId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i("Delete Query", "Success: " + response.isSuccess());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                logError("Delete Query", t);
             }
         });
     }

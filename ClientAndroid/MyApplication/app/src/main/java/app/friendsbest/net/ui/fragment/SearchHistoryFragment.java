@@ -39,6 +39,7 @@ public class SearchHistoryFragment extends Fragment implements
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Search History");
         _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.showBottomNavigationBar();
     }
 
     @Override

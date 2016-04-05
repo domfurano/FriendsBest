@@ -36,6 +36,7 @@ public class FriendFragment extends Fragment implements OnListItemClickListener<
         view.showSupportActionBar();
         view.onFragmentTitleChange("Facebook Friends");
         view.onFragmentToolbarChange(R.color.blue900);
+        view.showBottomNavigationBar();
         _presenter = new FriendPresenter(getActivity().getApplicationContext(), this);
     }
 

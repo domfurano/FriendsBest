@@ -7,6 +7,8 @@ public interface OnFragmentInteractionListener {
     void onFragmentToolbarChange(int id);
     void onFragmentChange(String fragmentTag);
     void onFragmentChange(String fragmentTag, Bundle bundle);
-    void hideSupportActionBar();
     void showSupportActionBar();
+    void hideSupportActionBar();
+    void showBottomNavigationBar();
+    void hideBottomNavigationBar();
 }

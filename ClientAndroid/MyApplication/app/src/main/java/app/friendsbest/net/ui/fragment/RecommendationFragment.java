@@ -34,6 +34,7 @@ public class RecommendationFragment extends Fragment implements OnListItemClickL
         view.showSupportActionBar();
         view.onFragmentTitleChange("Your Recommendations");
         view.onFragmentToolbarChange(R.color.appGreen);
+        view.showBottomNavigationBar();
     }
 
     @Nullable

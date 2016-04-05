@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.google.gson.Gson;
 
 import app.friendsbest.net.data.model.QueryResult;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.Presenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
@@ -17,12 +17,12 @@ import app.friendsbest.net.ui.view.DualFragmentView;
 public class DualFragmentPresenter implements Presenter {
 
     private DualFragmentView _dualFragmentView;
-    private BaseRepository _repository;
+    private Repository _repository;
 
 
     public DualFragmentPresenter(DualFragmentView baseView, Context context){
         _dualFragmentView = baseView;
-        _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
+        _repository = new Repository(this, PreferencesUtility.getInstance(context).getToken());
     }
 
     public void setContentClass(String startingClass) {

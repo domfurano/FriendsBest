@@ -16,6 +16,9 @@ public class Solution {
     @SerializedName("detail")
     @Expose
     private String _detail;
+    @SerializedName("isPinned")
+    @Expose
+    private boolean _isPinned;
 
     public String getType() {
         return _type;
@@ -39,6 +42,14 @@ public class Solution {
 
     public void setDetail(String detail) {
         _detail = detail;
+    }
+
+    public boolean isPinned() {
+        return _isPinned;
+    }
+
+    public void setIsPinned(boolean isPinned) {
+        _isPinned = isPinned;
     }
 
     @Override

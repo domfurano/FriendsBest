@@ -6,49 +6,47 @@
     android:layout_marginLeft="@dimen/left_margin"
     android:layout_marginRight="@dimen/right_margin"
     android:layout_marginTop="10dp"
-    android:background="@drawable/rounded_rect"
-    android:elevation="2dp"
-    android:orientation="horizontal"
+    android:background="@color/white"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/recommendation_row_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:background="@drawable/ic_account_vector"
+            android:layout_width="@dimen/icon_medium"
+            android:layout_height="@dimen/icon_medium"/>
+
+        <TextView
+            android:id="@+id/recommendation_row_detail_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/text_title_size"
+            android:fontFamily="sans-serif-light"
+            android:text="John"
+            android:paddingLeft="@dimen/padding_medium"
+            android:layout_toRightOf="@+id/recommendation_row_image_view"
+            android:textColor="@color/gray800"
+            android:textStyle="bold"/>
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:paddingTop="10dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/recommendation_row_detail_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="hello"
-                android:textColor="@color/gray800"
-                android:textStyle="bold"/>
-
-            <TextView
+                android:paddingTop="@dimen/padding_small"
                 android:id="@+id/recommendation_row_comment_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/gray800"
-                android:paddingTop="5dp"
+                android:paddingLeft="@dimen/icon_large"
+                android:paddingRight="@dimen/padding_medium"
+                android:text="@string/add_recommendation"
                 android:textSize="13dp"/>
-        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

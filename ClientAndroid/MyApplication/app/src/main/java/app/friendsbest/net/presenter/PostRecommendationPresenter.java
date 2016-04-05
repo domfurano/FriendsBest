@@ -7,19 +7,19 @@ import java.util.List;
 
 import app.friendsbest.net.data.model.Recommendation;
 import app.friendsbest.net.data.model.RecommendationPost;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.RecommendPresenter;
 import app.friendsbest.net.ui.view.RecommendView;
 
 public class PostRecommendationPresenter implements RecommendPresenter {
 
-    private BaseRepository _repository;
+    private Repository _repository;
     private RecommendView _recommendView;
 
     public PostRecommendationPresenter(RecommendView view, Context context){
         _recommendView = view;
-        _repository = new BaseRepository(this,
+        _repository = new Repository(this,
                 PreferencesUtility.getInstance(context).getToken());
     }
 

@@ -1,12 +1,9 @@
 package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,17 +60,12 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
         _presenter = new PostRecommendationPresenter(this, getActivity().getApplicationContext());
         _editDetail.addTextChangedListener(new InputChangeWatcher(_editDetail));
         _editTags.addTextChangedListener(new InputChangeWatcher(_editTags));
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(_editComment.getWindowToken(), 0);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_create) {
-            String editTitle = _editDetail.getText().toString();
-            String editTags = _editTags.getText().toString();
-            String comment = _editComment.getText().toString();
-            _presenter.submitRecommendation(editTitle, editTags, comment, _type);
+            submitData();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -117,6 +108,21 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
         _tagLayout.setErrorEnabled(false);
     }
 
+    private void submitData() {
+        String editTitle = _editDetail.getText().toString();
+        String editTags = _editTags.getText().toString();
+        String comment = _editComment.getText().toString();
+
+        // Hide keyboard
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+        _presenter.submitRecommendation(editTitle, editTags, comment, _type);
+    }
+
     private void initialize(View view, Bundle bundle) {
         _editDetail = (EditText) view.findViewById(R.id.recommendation_detail_input);
         _editTags = (EditText) view.findViewById(R.id.recommendation_tags_input);
@@ -132,6 +138,7 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
             String bundleValue;
             if ((bundleValue = bundle.getString(PromptFragment.BUNDLE_TAG, null)) != null) {
                 _editTags.setText(bundleValue);
+                _editTags.setEnabled(false);
                 _fromRightSwipe = true;
             }
             if ((bundleValue = bundle.getString(RecommendationOptionFragment.PLACE_PICKER_ID, null)) != null) {
@@ -139,13 +146,12 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
                 _editDetail.setText(bundle.getString(RecommendationOptionFragment.PLACE_PICKER_NAME));
                 _placeAddress.setText(bundle.getString(RecommendationOptionFragment.PLACE_PICKER_ADDRESS));
                 _placesIcon.setVisibility(View.VISIBLE);
+                _editDetail.setEnabled(false);
             }
-        }
-    }
-
-    private void requestFocus(View view) {
-        if (view.requestFocus()) {
-            //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            else if ((bundleValue = bundle.getString(WebFragment.BUNDLE_TAG, null)) != null) {
+                _editDetail.setText(bundleValue);
+                _editDetail.setEnabled(false);
+            }
         }
     }
 
@@ -170,10 +176,12 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
         @Override
         public void afterTextChanged(Editable s) {
             switch (_view.getId()) {
-                case R.id.recommendation_detail_input:
+                case R.id.recommendation_detail_input:;
                     _presenter.validateDetail(_editDetail.getText().toString());
-                case R.id.recommendation_comments_input:
-                    _presenter.validateDetail(_editTags.getText().toString());
+                    break;
+                case R.id.recommendation_tags_input:
+                    _presenter.validateTags(_editTags.getText().toString());
+                    break;
             }
         }
     }

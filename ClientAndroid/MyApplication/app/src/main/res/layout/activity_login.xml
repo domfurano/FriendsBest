@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_coffee_table"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context="net.friendsbest.app.fbest.LoginActivity">
@@ -18,7 +17,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="2">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -29,21 +28,9 @@
 
                 <TextView
                     android:id="@+id/logo_friends"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/logo_1"
-                    android:textColor="@color/white"
-                    android:textSize="45dp"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/logo_friends"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/white"
-                    android:text="@string/logo_2"
-                    android:textSize="45sp"/>
+                    android:layout_width="192dp"
+                    android:layout_height="192dp"
+                    android:background="@drawable/ic_logo_vector"/>
             </RelativeLayout>
         </RelativeLayout>
 
