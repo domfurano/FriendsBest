@@ -5,8 +5,9 @@ define([
   'models/query',
   'text!templates/search/results/solution/back.html',
   'text!templates/search/results/solution/comments.html',
+  'text!templates/search/results/solution/friendcomment.html',
   'text!templates/search/results/solution/comment.html',
-], function($, _, Backbone, QueryModel, backHTML, commentsHTML, commentHTML){
+], function($, _, Backbone, QueryModel, backHTML, commentsHTML, friendcommentHTML, commentHTML){
 
   var SolutionView = Backbone.View.extend({
     el: $(".view"),
@@ -35,14 +36,22 @@ define([
 		list.html("");
 		
 		commentTemplate = _.template(commentHTML);
+        friendcommentTemplate = _.template(friendcommentHTML);
+        
 		_.each(this.solution.recommendations, function(recommendation, index) {
     		console.log(recommendation);
-			r = { name: recommendation.user.name.trim(),
-    			  id: recommendation.user.id,
-				  comment: recommendation.comment.split("\n").join("<br>")};
-			list.append(commentTemplate(r));
+    		
+    		r = { comment: recommendation.comment.split("\n").join("<br>") };
+            // Some recommendations wont have a user (if they're not from a friend)
+    		if(_.has(recommendation, 'user')) {
+        		r.name = recommendation.user.name.trim();
+                r.id = recommendation.user.id;
+                list.append(friendcommentTemplate(r));
+    		} else {
+        	    list.append(commentTemplate(r));	
+    		}
+					
 		});
-
       
     },
     
