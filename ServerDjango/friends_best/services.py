@@ -252,17 +252,19 @@ def getQuerySolutions(query):
        notifications = Notification.objects.select_related('recommendation').filter(query=query)
        newRecs = [n.recommendation for n in notifications] # recommendations not yet seen by querying user
        recommendationsWithFlags = []
+       newRecommendationCount = 0
        recommendedByFriend = False  # thing is recommended by at least one friend
        for recommendation in recommendations:
            isNew = recommendation in newRecs
            recommendationsWithFlags.append(RecommendationWithFlag(recommendation=recommendation, isNew=isNew))
+           if isNew: newRecommendationCount += 1
            if not recommendedByFriend or isFriendsWith(query.user, recommendation.user):
                recommendedByFriend = True
 
        isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=len(recommendationsWithFlags)))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=newRecommendationCount))
            recommendationsFromFriendsCount += 1
        else:
            solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0))

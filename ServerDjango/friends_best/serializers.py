@@ -199,6 +199,8 @@ class QuerySerializer(serializers.ModelSerializer):
             'accessed': query.timestamp,
             'taghash': query.taghash,
         }
+        
+        newtotal = 0;
         for sol in solutions['solutions']:
             recommendations = []
             for rwf in sol.recommendationsWithFlags:
@@ -211,8 +213,13 @@ class QuerySerializer(serializers.ModelSerializer):
                 'detail': sol.detail,
                 'type': sol.solutionType,
                 'recommendations': recommendations,
-                'isPinned': sol.isPinned
+                'isPinned': sol.isPinned,
+                'notifications': sol.totalNewRecommendations
             })
+            newtotal += sol.totalNewRecommendations
+            
+        solution_collection['notifications'] = newtotal
+        
         return solution_collection
 
     def create(self, validated_data):    
