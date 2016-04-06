@@ -262,10 +262,10 @@ def getQuerySolutions(query):
        isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=len(recommendationsWithFlags)))
            recommendationsFromFriendsCount += 1
        else:
-           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0))
 
    return solutionsWithTags
 
