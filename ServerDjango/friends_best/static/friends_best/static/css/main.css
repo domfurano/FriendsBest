@@ -130,7 +130,7 @@
     	line-height: 14px;
     }
     
-    .menu .button .arrow span, .count span {
+    .menu .button .arrow span {
         margin-right: 10px
     }
 	
@@ -252,6 +252,7 @@
 		margin-bottom: 5px;
 		background-color: #fff;
 		padding: 8px;
+		padding: 10px 8px 10px 8px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		cursor: pointer;
 	}
@@ -319,7 +320,7 @@
 		background-color: #abb4ba;
 	}
 	
-	.list .line .count {
+	.list .count {
 		text-align: right;
 	}
 	
@@ -353,9 +354,16 @@
 		text-overflow: ellipsis;
 	}
 	
-	.list .solution .dots {
-		text-align: right;
+	.list .solution .count {
 		padding-top: 4px;
+	}
+	
+	.count .badge {
+    	background-color: #f00;
+    	color: #fff;
+    	vertical-align: top;
+    	margin-right: 6px;
+    	padding: 3px 7px 2px 7px;
 	}
 	
 	.list .comment {

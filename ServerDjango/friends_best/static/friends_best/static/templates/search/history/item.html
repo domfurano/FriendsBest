@@ -5,7 +5,9 @@
 		<% }) %>
 	</div>
 	<div class="col-xs-3 col-md-3 count">
-		<span><%= notifications %></span><span><%= solutions.length %></span>
+		<% if(notifications) { %>
+    	<span class="badge"><%= notifications %></span>
+    	<% } %>
 		<i class="fa fa-chevron-right fa-lg" style="color:#cacaca"></i>
 	</div>
 </div>
