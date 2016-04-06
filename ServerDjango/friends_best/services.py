@@ -12,6 +12,7 @@ from .models import Prompt
 from .models import Pin
 from .models import Subscription
 from .models import Accolade
+from .models import Notification
 
 # from .models import RecommendationTag
 # from .models import QueryTag
@@ -248,20 +249,23 @@ def getQuerySolutions(query):
        else:
            return "error: thing type'" + thing.thingType + "' is invalid"
        recommendations = Recommendation.objects.filter(thing=thing)
+       notifications = Notification.objects.select_related('recommendation').filter(query=query)
+       newRecs = [n.recommendation for n in notifications] # recommendations not yet seen by querying user
+       recommendationsWithFlags = []
        recommendedByFriend = False  # thing is recommended by at least one friend
        for recommendation in recommendations:
-           if isFriendsWith(query.user, recommendation.user):
+           isNew = recommendation in newRecs
+           recommendationsWithFlags.append(RecommendationWithFlag(recommendation=recommendation, isNew=isNew))
+           if not recommendedByFriend or isFriendsWith(query.user, recommendation.user):
                recommendedByFriend = True
-               break
 
        isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned))
            recommendationsFromFriendsCount += 1
        else:
-           # TODO: sort non-friend recommendations by degrees of separation
-           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned))
 
    return solutionsWithTags
 
@@ -351,6 +355,12 @@ def getFacebookUserIdFromFacebook(user):
 # </editor-fold>
 
 
+# <editor-fold desc="Notifications">
+def deleteNotification(recId):
+    Notification.get(recommendation=Recommendation.objects.get(id=recId)).delete()
+# </editor-fold>
+
+
 # <editor-fold desc="Recommendations">
 def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
@@ -409,9 +419,18 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    recommendation.save()
 
    # create the recommendationTags
+   lemmas = set()
    for t in tags:
-       newtag, created = Tag.objects.get_or_create(tag=t.lower(), lemma=_lemmatizer.lemmatize(word=t.lower(), pos='n'))
+       lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
+       lemmas.add(lemma)
+       newtag, created = Tag.objects.get_or_create(tag=t.lower(), lemma=lemma)
        recommendation.tags.add(newtag)
+
+   # create a notification for every existing query with a matching tag
+   queries = Query.objects.filter(tags__lemma__in=lemmas)
+   for query in queries:
+      n = Notification(query=query, recommendation=recommendation)
+      n.save()
 
    return recommendation
 # </editor-fold>
@@ -560,11 +579,18 @@ def getAllFriendsFacebookUserIds(user):
 
 
 class Solution:
-   def __init__(self, detail, recommendations, solutionType, isPinned):
+   def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations):
        self.detail = detail
-       self.recommendations = recommendations
+       self.recommendationsWithFlags = recommendationsWithFlags
        self.solutionType = solutionType
        self.isPinned = isPinned
+       self.totalNewRecommendations = totalNewRecommendations
+
+
+class RecommendationWithFlag:
+    def __init__(self, recommendation, isNew):
+        self.recommendation = recommendation
+        self.isNew = isNew
 
 
 

@@ -158,5 +158,25 @@ class Accolade(models.Model):
         unique_together = (("user", "recommendation"),)
 
 
+#class UserEvents(models.Model):
+#    user = models.ForeignKey(User)
+#    completedFirstLogin = models.BooleanField(default=False)
+#
+#    def __str__(self):
+#        return "user:%s, completed first login:%s" % (self.user, self.completedFirstLogin)
+
+
+# server should push number of total notifications to each user
+class Notification(models.Model):
+    query = models.ForeignKey(Query)
+    recommendation = models.ForeignKey(Recommendation)
+
+    def __str__(self):
+        return "fromQuery:%s, fromRecommendation:%s" % (self.query, self.recommendation)
+
+    class Meta:
+        unique_together = (("query", "recommendation"),)
+
+
 
 
