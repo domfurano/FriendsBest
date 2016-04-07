@@ -144,6 +144,21 @@ class PromptViewSet(mixins.RetrieveModelMixin,
     # friends can't get spammed by a repeat query...
     # def destroy(self, request):
 
+class NotificationViewSet(  mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
+    
+    queryset = Notification.objects.order_by('query')
+    
+    def destroy(self, request, pk=None):
+        # pk is the id of the recommendation
+        try:
+            r = Recommendation.objects.get(pk=pk);
+            n = Notification.objects.filter(query__user=request.user, recommendation=r);
+            n.delete();
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Recommendation.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 # Limited to GET PUT HEAD DELETE OPTIONS
 class FriendshipViewSet(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,

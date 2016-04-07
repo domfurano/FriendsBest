@@ -88,3 +88,5 @@ GoogleMaps
 ServerDjango/db.sqlite3
 
 ServerDjango/runserver
+
+ServerDjango/friends_best/migrations/
