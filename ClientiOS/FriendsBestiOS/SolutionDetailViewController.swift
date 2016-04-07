@@ -47,6 +47,8 @@ class SolutionDetailViewController: UITableViewController {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
         
+        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
+        
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
 //        button.setTitle(SOLUTION!.detail, forState: .Normal)
@@ -69,6 +71,26 @@ class SolutionDetailViewController: UITableViewController {
         navigationController?.toolbarHidden = true
         
         navigationController?.navigationBar.barTintColor = CommonUI.sdNavbarBgColor
+    }
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SolutionDetailViewController.contentSizeCategoryChanged(_:)), name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(animated: Bool)
+    {
+        super.viewDidDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    // This function will be called when the Dynamic Type user setting changes (from the system Settings app)
+    func contentSizeCategoryChanged(notification: NSNotification)
+    {
+        tableView.reloadData()
     }
     
     func back() {
@@ -96,14 +118,16 @@ class SolutionDetailViewController: UITableViewController {
             cell.userInteractionEnabled = false
             return cell
         } else {
-            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Default, reuseIdentifier: "SolutionDetailCell")
+//            let cell: SolutionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("SolutionDetailCell") as! SolutionDetailTableViewCell
+//            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
             let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
-            cell.textLabel?.text = recommendation.friend.name
-            cell.textLabel?.numberOfLines = 0 // 0 means unlimited
-            cell.detailTextLabel?.text = recommendation.comment
-            cell.detailTextLabel?.numberOfLines = 0
-            cell.imageView?.image = UIImage.roundedRectImageFromImage(recommendation.friend.squarePicture)
+            cell.nameLabel.text = recommendation.friend.name
+            cell.commentLabel.text = recommendation.comment
+//            cell.imageView?.image = UIImage.roundedRectImageFromImage(recommendation.friend.squarePicture)
             cell.userInteractionEnabled = false
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             return cell
         }
     }
