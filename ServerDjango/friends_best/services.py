@@ -109,6 +109,9 @@ def generateAnonymousPrompts(user):
     #queries = Query.objects.all()
     queryCount = queriesByStrangers.count()
 
+    if queryCount == 0:
+        return
+
     # select random queries and generate prompts for them
     randomIndexes = set()
     for x in range(0, 5):
