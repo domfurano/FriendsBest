@@ -342,6 +342,31 @@
         cursor: pointer;
 	}
 	
+	.list .postback {
+		margin-bottom: 10px;
+		background-color: #3b5998;
+		color: #fff;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		-webkit-border-radius: 5px;
+        cursor: pointer;
+	}
+	
+	.list .postback div {
+    	padding: 0;
+	}
+	
+	.list .postback em {
+    	font-size: 18px;
+		padding-top: 3px;
+		font-style: normal;
+		font-weight: bold;
+	}
+	
+	.list .postback i {
+    	
+	}
+	
 	.list .solution div {
 		padding: 0;
 	}

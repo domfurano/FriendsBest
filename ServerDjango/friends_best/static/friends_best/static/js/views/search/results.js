@@ -7,7 +7,8 @@ define([
   'text!templates/search/results/back.html',
   'text!templates/standard/list.html',
   'text!templates/search/results/item.html',
-], function($, _, Backbone, QueryModel, SolutionView, backHTML, listHTML, itemHTML){
+  'text!templates/search/results/postback.html',
+], function($, _, Backbone, QueryModel, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -90,6 +91,17 @@ define([
     		if(model.get("solutions").length == 0) {
     			this.$list.append("<div class='container'><div class='row hint'>No results</div></div>")
     		}
+    		
+    		// Add the postback button
+    		postbackTemplate = _.template(postbackHTML);
+            this.$list.append(postbackTemplate({id: id}));
+            $(".postback").click(function() {
+                url = "https://www.friendsbest.net/fb/link/" + id + "/";
+                FB.ui({
+                    method: 'share',
+                    href: url,
+                }, function(response){});
+            });
 		}
     },
     
