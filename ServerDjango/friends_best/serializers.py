@@ -56,7 +56,8 @@ class PromptSerializer(serializers.ModelSerializer):
         return {
             'id': prompt.id,
             # Copied from FriendshipSerializer
-            'friend': '' if prompt.isAnonymous else UserSerializer(prompt.query.user).data,
+            #'friend': '' if prompt.isAnonymous else UserSerializer(prompt.query.user).data,
+            'friend': UserSerializer(prompt.query.user).data,
             'tags': [t.tag for t in prompt.query.tags.all()],
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
