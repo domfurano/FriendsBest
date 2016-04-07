@@ -39,6 +39,7 @@ define([
 		
 		$('#search-field-tokenfield').keypress(function (e) {
 		  if (e.which == 13) {
+            $('form#query').attr("disabled", "disabled");
 		    $('form#query').submit();
 		    return false;
 		  }
