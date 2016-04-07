@@ -364,7 +364,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        let type: Recommendation.RecommendationType = Recommendation.RecommendationType(rawValue: typeString.uppercaseString)!
+                                        let type: RecommendationType = RecommendationType(rawValue: typeString.uppercaseString)!
                                         
                                         guard let user: NSDictionary = recDict["user"] as? NSDictionary else {
                                             NSLog("Error - FriendsBest API - getRecommendationsForUser()")
@@ -940,14 +940,14 @@ class FBNetworkDAO {
                     friend: newFriend,
                     comment: validComment,
                     detail: validSolutionDetail,
-                    type: Recommendation.RecommendationType(rawValue: validSolutionType.uppercaseString)!,
+                    type: RecommendationType(rawValue: validSolutionType.uppercaseString)!,
                     ID: validID
                 )
                 
                 recommendations.insert(newRecommendation)
             }
             
-            solutions.insert(Solution(recommendations: recommendations, detail: validSolutionDetail, type: Recommendation.RecommendationType(rawValue: validSolutionType.uppercaseString)!))
+            solutions.insert(Solution(recommendations: recommendations, detail: validSolutionDetail, type: RecommendationType(rawValue: validSolutionType.uppercaseString)!))
         }
         
         return solutions

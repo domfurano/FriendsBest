@@ -84,10 +84,12 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "Pods-FriendsBest/Eureka.framework"
   install_framework "Pods-FriendsBest/Koloda.framework"
   install_framework "Pods-FriendsBest/pop.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "Pods-FriendsBest/Eureka.framework"
   install_framework "Pods-FriendsBest/Koloda.framework"
   install_framework "Pods-FriendsBest/pop.framework"
 fi

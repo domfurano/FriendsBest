@@ -93,8 +93,13 @@ class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
     var muted: Bool?
-    private(set) var squarePicture: UIImage?
-    
+    private(set) var squarePicture: UIImage? {
+        didSet {
+            pictureCircular = UIImageView(image: squarePicture)
+            pictureCircular?.layer.cornerRadius = max(squarePicture!.size.width, squarePicture!.size.height) / 2
+        }
+    }
+    private(set) var pictureCircular: UIImageView?    
     var hashValue: Int {
         return facebookID.hashValue
     }
@@ -273,7 +278,7 @@ func ==(lhs: Query, rhs: Query) -> Bool {
 class Solution: Equatable, Hashable {
     private(set) var _recommendations: Set<Recommendation>
     private(set) var detail: String
-    private(set) var type: Recommendation.RecommendationType
+    private(set) var type: RecommendationType
     
     var recommendations: [Recommendation] {
         get {
@@ -289,7 +294,7 @@ class Solution: Equatable, Hashable {
         return self.detail.hash
     }
     
-    init(recommendations: Set<Recommendation>, detail: String, type: Recommendation.RecommendationType) {
+    init(recommendations: Set<Recommendation>, detail: String, type: RecommendationType) {
         self._recommendations = recommendations
         self.detail = detail
         self.type = type
@@ -301,10 +306,13 @@ func ==(lhs: Solution, rhs: Solution) -> Bool {
 }
 
 
+enum RecommendationType: String {
+    case TEXT
+    case PLACE
+    case URL
+}
+
 class Recommendation: Equatable, Hashable {
-    enum RecommendationType: String {
-        case TEXT
-    }
     
     private(set) var friend: Friend
     private(set) var comment: String

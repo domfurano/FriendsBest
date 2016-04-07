@@ -44,7 +44,7 @@ class RecommendationTypePickerView: UIView {
         placeTypeButton.alpha = 0.0
         
         let iCursorIcon: FAKFontAwesome = FAKFontAwesome.iCursorIconWithSize(ICON_SIZE)
-        let linkIcon: FAKFontAwesome = FAKFontAwesome.linkIconWithSize(ICON_SIZE)
+        let linkIcon: FAKFontAwesome = FAKFontAwesome.externalLinkIconWithSize(ICON_SIZE)
         let mapOIcon: FAKFontAwesome = FAKFontAwesome.mapOIconWithSize(ICON_SIZE)
         
         iCursorIcon.addAttribute(NSForegroundColorAttributeName, value: ICON_COLOR)
@@ -67,34 +67,53 @@ class RecommendationTypePickerView: UIView {
         linkTypeButton.layer.cornerRadius = BUTTON_CORNER_RADIUS
         placeTypeButton.layer.cornerRadius = BUTTON_CORNER_RADIUS
         
+        self.translatesAutoresizingMaskIntoConstraints = false
         customTypeButton.translatesAutoresizingMaskIntoConstraints = false
         linkTypeButton.translatesAutoresizingMaskIntoConstraints = false
         placeTypeButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
+    override func didMoveToSuperview() {
+        generateStaticConstraints()
+        generateHiddenConstraints()
+        generateVisibleConstraints()
+        superview!.addSubview(customTypeButton)
+        superview!.addSubview(linkTypeButton)
+        superview!.addSubview(placeTypeButton)
+        superview?.addConstraints(staticConstraints!)
+        hide()
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        hide()
+    }
+    
     func show() {
-        if hiddenConstraints == nil {
-            generateHiddenConstraints()
-        }
-        if visibleContstraints == nil {
-            generateVisibleConstraints()
-        }
+//        if hiddenConstraints == nil {
+//            generateHiddenConstraints()
+//        }
+//        if visibleContstraints == nil {
+//            generateVisibleConstraints()
+//        }
         
+        superview!.bringSubviewToFront(self)
+        superview!.bringSubviewToFront(customTypeButton)
+        superview!.bringSubviewToFront(linkTypeButton)
+        superview!.bringSubviewToFront(placeTypeButton)
         superview!.removeConstraints(hiddenConstraints!)
         superview!.addConstraints(visibleContstraints!)
-//        alpha = 0.5
         customTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         linkTypeButton.alpha = BUTTON_VISIBLE_ALPHA
         placeTypeButton.alpha = BUTTON_VISIBLE_ALPHA
     }
     
     func hide() {
-        if hiddenConstraints == nil {
-            generateHiddenConstraints()
-        }
-        if visibleContstraints == nil {
-            generateVisibleConstraints()
-        }
+//        if hiddenConstraints == nil {
+//            generateHiddenConstraints()
+//        }
+//        if visibleContstraints == nil {
+//            generateVisibleConstraints()
+//        }
         
         superview!.removeConstraints(visibleContstraints!)
         superview!.addConstraints(hiddenConstraints!)
@@ -107,6 +126,42 @@ class RecommendationTypePickerView: UIView {
     private func generateStaticConstraints() {
         staticConstraints = []
         staticConstraints!.appendContentsOf([
+            NSLayoutConstraint(
+                item: self,
+                attribute: NSLayoutAttribute.CenterX,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: superview,
+                attribute: NSLayoutAttribute.CenterX,
+                multiplier: 1.0,
+                constant: 0.0),
+            
+            NSLayoutConstraint(
+                item: self,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: superview,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
+                constant: 0.0),
+            
+            NSLayoutConstraint(
+                item: self,
+                attribute: NSLayoutAttribute.Width,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: superview,
+                attribute: NSLayoutAttribute.Width,
+                multiplier: 1.0,
+                constant: 0.0),
+            
+            NSLayoutConstraint(
+                item: self,
+                attribute: NSLayoutAttribute.Height,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: superview,
+                attribute: NSLayoutAttribute.Height,
+                multiplier: 1.0,
+                constant: 0.0),
+            
             NSLayoutConstraint(
                 item: linkTypeButton,
                 attribute: .CenterX,

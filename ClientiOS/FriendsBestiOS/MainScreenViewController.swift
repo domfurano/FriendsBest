@@ -104,19 +104,17 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         /* Subviews */
         
         baseCard.translatesAutoresizingMaskIntoConstraints = false
-        recommendationPicker.translatesAutoresizingMaskIntoConstraints = false
         kolodaView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(baseCard)
         view.addSubview(kolodaView)
-        view.addSubview(recommendationPicker)
-        view.addSubview(recommendationPicker.customTypeButton)
-        view.addSubview(recommendationPicker.linkTypeButton)
-        view.addSubview(recommendationPicker.placeTypeButton)
+        navigationController!.view.addSubview(recommendationPicker)
+//        navigationController!.view.addSubview(recommendationPicker.customTypeButton)
+//        navigationController!.view.addSubview(recommendationPicker.linkTypeButton)
+//        navigationController!.view.addSubview(recommendationPicker.placeTypeButton)
         
-        recommendationPicker.hide() // This call must occur after the view has been added to the view hierarchy.
-        
-        
+//        recommendationPicker.hide() // This call must occur after the view has been added to the view hierarchy.
+
         /* Actions */
         
         recommendationPicker.customTypeButton.addTarget(
@@ -195,7 +193,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             }
             
             changed = true
-            // TODO: Change to koloda view
             let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
             self.cardViews.append(cardView)
             cardView.translatesAutoresizingMaskIntoConstraints = false
@@ -221,7 +218,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
-            cardViews[Int(index)].removeFromSuperview()
+//            cardViews[Int(index)].removeFromSuperview() ???
         } else if direction == SwipeResultDirection.Right {
             didSwipeRight = true
             newRecommendationButtonPressed()
@@ -306,7 +303,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image_fbGreen,
+            image: CommonUI.fa_plus_square_image,
             style: .Plain,
             target: self,
             action: #selector(MainScreenViewController.newRecommendationButtonPressed)
@@ -351,12 +348,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func newRecommendationButtonPressed() {
-        setToolbarItems(recPickToolBar, animated: true)
+//        setToolbarItems(recPickToolBar, animated: true)
         showNewRecommendationViews()
     }
     
     func closeRecommendationPickerButtonPressed() {
-        setToolbarItems(regToolBar, animated: true)
+//        setToolbarItems(regToolBar, animated: true)
         hideNewRecommendationViews(false)
         if didSwipeRight {
             kolodaView.revertAction()
@@ -367,7 +364,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func showNewRecommendationViews() {
         UIView.animateWithDuration(
         NSTimeInterval(0.33)) {
-            self.recommendationPicker.alpha = 0.66
+            self.recommendationPicker.alpha = 0.5
         }
         
         UIView.animateWithDuration(
@@ -377,7 +374,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             initialSpringVelocity: 1.1,
             options: UIViewAnimationOptions.CurveEaseOut,
             animations: {
-                
                 self.recommendationPicker.show()
                 self.view.layoutIfNeeded()
         }) { (Bool) in
@@ -406,16 +402,19 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /*** Recommendation Picker ***/
     
     func pickCustom(sender: UIButton) {
-        navigationController?.pushViewController(NewRecommendationViewController(), animated: true)
+        recommendationPicker.hide()
+        navigationController?.pushViewController(NewRecommendationFormViewController(type: .TEXT, detail: ""), animated: true)
     }
     
     func pickLink(sender: UIButton) {
+        recommendationPicker.hide()
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         navigationController?.pushViewController(WebViewController(), animated: true)
     }
     
     func pickPlace(sender: UIButton) {
+        recommendationPicker.hide()
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         let center = CLLocationCoordinate2DMake(40.7676918, -111.8452524)
@@ -510,45 +509,45 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 multiplier: 0.9,
                 constant: 0.0))
         
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.Width,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.Height,
-                multiplier: 1.0,
-                constant: 0.0))
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: recommendationPicker,
+//                attribute: NSLayoutAttribute.CenterX,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.CenterX,
+//                multiplier: 1.0,
+//                constant: 0.0))
+//        
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: recommendationPicker,
+//                attribute: NSLayoutAttribute.CenterY,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.CenterY,
+//                multiplier: 1.0,
+//                constant: 0.0))
+//        
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: recommendationPicker,
+//                attribute: NSLayoutAttribute.Width,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.Width,
+//                multiplier: 1.0,
+//                constant: 0.0))
+//        
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: recommendationPicker,
+//                attribute: NSLayoutAttribute.Height,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.Height,
+//                multiplier: 1.0,
+//                constant: 0.0))
         
         view.addConstraint(
             NSLayoutConstraint(

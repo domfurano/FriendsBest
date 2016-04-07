@@ -72,7 +72,7 @@ class CommonUI {
     
     /* Toolbar */
     static let home_image: UIImage = FAKFontAwesome.homeIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
-    static let fa_plus_square_image_fbGreen: UIImage = FAKFontAwesome.plusSquareIconWithSize(ICON_FLOAT).imageWithSizeAndColor(ICON_SIZE, color: fbGreen)
+    static let fa_plus_square_image: UIImage = FAKFontAwesome.plusSquareIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
     static let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
     
     /* Solution Detail */
@@ -80,6 +80,9 @@ class CommonUI {
     
     /* web type */
     static let globeView: UIImageView = UIImageView(image: FAKFontAwesome.globeIconWithSize(16.0).imageWithSize(CGSize(width: 30.0, height: 30.0)))
+    static let wvBackChevron: UIImage = FAKFontAwesome.chevronLeftIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
+    static let wvForwardChevron: UIImage = FAKFontAwesome.chevronRightIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
+    static let wvRefresh: UIImage = FAKFontAwesome.repeatIconWithSize(ICON_FLOAT).imageWithSize(ICON_SIZE)
     
     private init() {
         FacebookNetworkDAO.instance.getFacebookProfileImageView(
@@ -147,6 +150,25 @@ class CommonUI {
             let image: UIImage = historyIcon.imageWithSize(ICON_SIZE)
             button.setImage(image, forState: .Normal)
             return button
+        }
+    }
+    
+}
+
+extension UIImage{
+    
+    class func roundedRectImageFromImage(image: UIImage?) -> UIImage? {
+        if let image = image {
+            let cornerRadius: CGFloat = max(image.size.width, image.size.height) / 2.0
+            UIGraphicsBeginImageContextWithOptions(image.size, false, 0.0)
+            let bounds = CGRect(origin: CGPointZero, size: image.size)
+            UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).addClip()
+            image.drawInRect(bounds)
+            let finalImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return finalImage
+        } else {
+            return nil
         }
     }
     

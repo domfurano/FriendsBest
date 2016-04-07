@@ -26,7 +26,7 @@ class SolutionDetailView: UITableView {
 
 class SolutionDetailViewController: UITableViewController {
     
-    var SOLUTION: Solution?
+    var SOLUTION: Solution!
     
     
     convenience init(solution: Solution) {
@@ -44,11 +44,12 @@ class SolutionDetailViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
-        tableView.rowHeight = 100.0 // Hacky alpha demo crap
+        tableView.estimatedRowHeight =  128.0
+        tableView.rowHeight = UITableViewAutomaticDimension
         
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
-        button.setTitle(SOLUTION!.detail, forState: .Normal)
+//        button.setTitle(SOLUTION!.detail, forState: .Normal)
         button.addTarget(
             self,
             action: #selector(SolutionDetailViewController.back),
@@ -59,7 +60,7 @@ class SolutionDetailViewController: UITableViewController {
         let leftBBItem: UIBarButtonItem = UIBarButtonItem(customView: button)
         
         leftBBItem.tintColor = UIColor.whiteColor()
-        leftBBItem.title = SOLUTION!.detail
+        leftBBItem.title = SOLUTION.detail
         navigationItem.leftBarButtonItem = leftBBItem
     }
     
@@ -82,25 +83,26 @@ class SolutionDetailViewController: UITableViewController {
         if section == 0 {
             return 1
         } else {
-            return SOLUTION!.recommendations.count
+            return SOLUTION.recommendations.count
         }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell: UITableViewCell = UITableViewCell(style: .Default, reuseIdentifier: "main")
-            cell.textLabel?.text = SOLUTION!.detail
+            cell.textLabel?.text = SOLUTION.detail
             cell.textLabel?.textColor = UIColor.whiteColor()
             cell.backgroundColor = CommonUI.sdNavbarBgColor
             cell.userInteractionEnabled = false
             return cell
         } else {
             let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
-            let recommendation: Recommendation = SOLUTION!.recommendations[indexPath.row]
+            let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
             cell.textLabel?.text = recommendation.friend.name
+            cell.textLabel?.numberOfLines = 0 // 0 means unlimited
             cell.detailTextLabel?.text = recommendation.comment
-            cell.detailTextLabel?.numberOfLines = 10 // Hackity hack
-            cell.imageView?.image = recommendation.friend.squarePicture
+            cell.detailTextLabel?.numberOfLines = 0
+            cell.imageView?.image = UIImage.roundedRectImageFromImage(recommendation.friend.squarePicture)
             cell.userInteractionEnabled = false
             return cell
         }

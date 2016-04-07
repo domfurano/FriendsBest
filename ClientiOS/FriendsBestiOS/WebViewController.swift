@@ -9,11 +9,8 @@
 import UIKit
 import WebKit
 
-//
 
 class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDelegate {
-    
-    var currentURLString: String = "https://www.google.com/"
     
     var progressView: UIProgressView!
     
@@ -29,20 +26,24 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         }
     }
     
+    deinit {
+        NSLog("deinit() - WebViewController")
+        webView.removeObserver(self, forKeyPath: "loading")
+        webView.removeObserver(self, forKeyPath: "estimatedProgress")
+    }
+    
     override func loadView() {
         view = WKWebView()
     }
     
     override func viewDidLoad() {
-        //        navigationController?.navigationBar.translucent = false
-        
         webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
-        webView.loadRequest(NSURLRequest(URL: NSURL(string: currentURLString)!))
         
         progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.Default)
+        progressView.tintColor = CommonUI.fbGreen
         progressView.translatesAutoresizingMaskIntoConstraints = false
-        
+        progressView.hidden = true
         
         view.insertSubview(progressView, aboveSubview: webView)
         webView.addConstraint(
@@ -73,7 +74,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
             image: fa_plus_square_image,
             style: .Plain,
             target: self,
-            action: #selector(NewRecommendationViewController.createNewRecommendationButtonPressed)
+            action: #selector(WebViewController.createNewRecommendationButtonPressed)
         )
         rightBB.tintColor = UIColor.whiteColor()
         navigationItem.rightBarButtonItem = rightBB
@@ -92,9 +93,9 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         
         urlTextField.backgroundColor = UIColor.whiteColor()
         let globeView: UIImageView = CommonUI.globeView
-        globeView.tintColor = UIColor.darkGrayColor()
+        globeView.alpha = 0.5
         urlTextField.leftView = globeView
-        urlTextField.placeholder = "Enter website"
+        urlTextField.placeholder = "Search or enter a website"
         urlTextField.clearButtonMode = .WhileEditing
         
         navigationItem.titleView = urlTextField
@@ -102,12 +103,16 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         /* Toolbar */
         let fixedSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .FixedSpace, target: nil, action: nil)
         let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
-        backButton = UIBarButtonItem(barButtonSystemItem: .Rewind, target: self, action: #selector(WebViewController.back))
-        forwardButton = UIBarButtonItem(barButtonSystemItem: .FastForward, target: self, action: #selector(WebViewController.forward))
-        reloadButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: #selector(WebViewController.reload))
+        
+        backButton = UIBarButtonItem(image: CommonUI.wvBackChevron, style: .Plain, target: self, action: #selector(WebViewController.back))
+        backButton.tintColor = CommonUI.fbGreen
+        forwardButton = UIBarButtonItem(image: CommonUI.wvForwardChevron, style: .Plain, target: self, action: #selector(WebViewController.forward))
+        forwardButton.tintColor = CommonUI.fbGreen
+        reloadButton = UIBarButtonItem(image: CommonUI.wvRefresh, style: .Plain, target: self, action: #selector(WebViewController.reload))
+        reloadButton.tintColor = CommonUI.fbGreen
         
         setToolbarItems([backButton, fixedSpace, forwardButton, flexibleSpace, reloadButton], animated: false)
-                
+        
         backButton.enabled = false
         forwardButton.enabled = false
     }
@@ -120,7 +125,14 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     }
     
     override func viewWillDisappear(animated: Bool) {
-        webView.removeObserver(self, forKeyPath: "estimatedProgress")
+        urlTextField.resignFirstResponder()
+    }
+    
+    func createNewRecommendationButtonPressed() {
+        if let urlString = webView.URL?.absoluteString {
+            NSLog(urlString)
+            navigationController?.pushViewController(NewRecommendationFormViewController(type: .URL, detail: urlString), animated: true)
+        }
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -137,6 +149,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     
     func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
         progressView.setProgress(0.0, animated: false)
+        urlTextField.text = webView.URL?.host
     }
     
     func dismiss() {
@@ -144,40 +157,51 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        
         if let inputText = textField.text {
-            currentURLString = inputText
-            checkURLReachability(NSURL(string: inputText)!)
+            
+            // I'm gonna hack this because I could develop it to death, but lets assume the user is friendly.
+            
+            let components: [String: String?] = urlComponentsDict(inputText)
+            let scheme: String? = components["scheme"]!
+            let host_a: String? = components["host_a"]!
+            let host_b: String? = components["host_b"]!
+            
+            if host_a == nil {
+                searchGoogle(inputText)
+                textField.resignFirstResponder()
+                return false
+            }
+            
+            let urlComponents: NSURLComponents = NSURLComponents()
+            
+            urlComponents.scheme = scheme == nil ? "http" : scheme!
+            urlComponents.host = host_a! + (host_b == nil ? "" : "." + host_b!)
+            
+            print(urlComponents)
+            if let url = urlComponents.URL {
+                webView.loadRequest(NSURLRequest(URL: url))
+            } else {
+                searchGoogle(inputText)
+            }
         }
-        
+        textField.resignFirstResponder()
         return false
     }
     
-    private func checkURLReachability(url: NSURL) {
-        let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-        let request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "HEAD"
-        
-        session.dataTaskWithRequest(request, completionHandler: {
-            [weak self] (data: NSData?, response: NSURLResponse?, error: NSError?) in
-            if data != nil {
-                NSOperationQueue.mainQueue().addOperationWithBlock({
-                    self?.webView.loadRequest(NSURLRequest(URL: NSURL(string: self!.currentURLString)!))
-                })
-            } else {
-                let googleSearchURL: NSURL = NSURL(string: "https://www.google.com/search?q=\(self!.currentURLString.stringByReplacingOccurrencesOfString(" ", withString: "+"))")!
-                NSOperationQueue.mainQueue().addOperationWithBlock({
-                    self?.webView.loadRequest(NSURLRequest(URL: googleSearchURL))
-                })
-            }
-            }).resume()
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.text = webView.URL?.absoluteString
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        textField.text = webView.URL?.host
+    }
+    
+    private func searchGoogle(searchString: String) {
+        let googleSearchURL: NSURL = NSURL(string: "https://www.google.com/search?q=\(searchString.stringByReplacingOccurrencesOfString(" ", withString: "+"))")!
+        webView.loadRequest(NSURLRequest(URL: googleSearchURL))
     }
     
     func webView(webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: NSError) {
-        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
     }
     
     /* Toolbar */
@@ -191,7 +215,39 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     }
     
     func reload(sender: UIBarButtonItem) {
-        webView.loadRequest(NSURLRequest(URL: webView.URL!))
+        if let url = webView.URL {
+            webView.loadRequest(NSURLRequest(URL: url))
+        }
+    }
+    
+    func urlComponentsDict(input: String!) -> [String: String?] {
+        var components: [String: String?] = ["scheme": nil, "host_a": nil, "host_b": nil]
+        do {
+            let nsStringInput: NSString = input.lowercaseString as NSString
+            let urlRegex: String = "(https?){0,1}[:\\/]*([\\d\\w\\.-]+)\\.([a-z]+)"
+            let regex: NSRegularExpression = try NSRegularExpression(pattern: urlRegex, options: [])
+            let matches = regex.matchesInString(input, options: [], range: NSMakeRange(0, nsStringInput.length))
+            for match: NSTextCheckingResult in matches {
+                let match_1: NSRange = match.rangeAtIndex(1)
+                let match_2: NSRange = match.rangeAtIndex(2)
+                let match_3: NSRange = match.rangeAtIndex(3)
+                
+                if match_1.length != 0 {
+                    components["scheme"] = nsStringInput.substringWithRange(match_1)
+                }
+                
+                if match_2.length != 0 {
+                    components["host_a"] = nsStringInput.substringWithRange(match_2)
+                }
+                
+                if match_3.length != 0 {
+                    components["host_b"] = nsStringInput.substringWithRange(match_3)
+                }
+            }
+        } catch let error as NSError {
+            fatalError("invalid regex: \(error.localizedDescription)")
+        }
+        return components
     }
     
 }
