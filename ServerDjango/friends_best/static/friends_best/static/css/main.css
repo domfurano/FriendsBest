@@ -311,7 +311,6 @@
 	
 	.list .item .delete {
 		margin: 2px;
-		font-size: 18px;
         float: right;
         cursor: pointer;
 	}
@@ -407,7 +406,6 @@
 	
 	.back-button, .submit {
 		cursor: pointer;
-		font-size: 15px;
 	}
 	
 	footer {
