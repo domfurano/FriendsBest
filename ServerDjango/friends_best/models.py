@@ -16,8 +16,8 @@ from django.contrib.auth.models import User
 
 
 class Friendship(models.Model):
-   userOne = models.ForeignKey(User, related_name='userOne_set')
-   userTwo = models.ForeignKey(User, related_name='userTwo_set')
+   userOne = models.ForeignKey(User, related_name='friendship1')
+   userTwo = models.ForeignKey(User, related_name='friendship2')
    muted = models.BooleanField(default=False)
 
    class Meta:

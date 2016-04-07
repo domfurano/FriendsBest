@@ -103,8 +103,7 @@ def getAllPrompts(user):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    #queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
-    queries = Query.objects.exclude(user__userOne_set__userTwo=user)
+    queries = Query.objects.exclude(Q(user__friendship1__userTwo=user) | Q(user__friendship2__userOne=user)).all()
     #queries = Query.objects.all()
     queryCount = queries.count()
 
