@@ -9,6 +9,7 @@ from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
 from django.http import HttpResponse
+from django.shortcuts import render
 import hmac
 import os
 import json
@@ -17,7 +18,20 @@ import subprocess
 from friends_best.serializers import *
 from friends_best.services import *
 from friends_best.permissions import *
+
+def queryLink(request, query_id):
+    # Get the query
+    try:
+        q = Query.objects.get(id=query_id)
+        context = {
+            'id': query_id,
+            'tagstring': q.tagstring
+        }
+    except Query.DoesNotExist:
+        context = {}
     
+    return render(request, 'friends_best/link.html', context)
+
 class CurrentUserViewSet(viewsets.GenericViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+		<meta charset="UTF-8">
+		
+		{% if id %}
+		    <meta property="og:url" content="http://friendsbest.net/link/{{ id }}" />
+            <meta property="og:title" content="Do you have a recommendation for a {{ tagstring }}?" />
+        {% else %}
+            <meta property="og:url" content="http://friendsbest.net/link/0" />
+            <meta property="og:title" content="Do you have something you want to recommend?" />
+        {% endif %}
+        <meta property="og:type" content="article" />
+        <meta property="og:description" content="Use FriendsBest to quickly share your recommendation with your Facebook friends!" />
+        <meta property="og:image" content="http://ui.dockthis.com/fbpost.png" />
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.js" charset="utf-8"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js" charset="utf-8"></script>
+	</head>
+<body>
+    
+    {% if id %}
+        <h1>Do you have a recommendation for a {{ tagstring }}?</h1>
+    {% else %}
+        <h1>Do you have something you want to recommend?</h1>
+    {% endif %}
+    
+    <h2>This page should redirect to FriendsBest.net</h2>
+        
+</body>
+</html>
