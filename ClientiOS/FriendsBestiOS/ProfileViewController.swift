@@ -185,7 +185,7 @@ class ProfileViewController: UIViewController {
         
         
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image_fbGreen,
+            image: CommonUI.fa_plus_square_image,
             style: .Plain,
             target: self,
             action: #selector(ProfileViewController.newRecommendationButtonPressed)
