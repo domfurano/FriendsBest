@@ -116,7 +116,7 @@ def generateAnonymousPrompts(user):
         randomIndexes.add(randomIndex)
 
     for randomIndex in randomIndexes:
-        p, created = Prompt.objects.get_or_create(user=user, query=queriesByStrangers[randomIndex])
+        p, created = Prompt.objects.get_or_create(user=user, query=queriesByStrangers[randomIndex], isAnonymous=True)
 
 
 #client will call for this whenever a prompt is swiped left (or when a recommendation is created after swiping right)
@@ -134,7 +134,7 @@ def generatePromptsForNewUser(user):
     allFriends = getAllFriendUsers(user)
     recentFriendQueries = Query.objects.filter(user__in=allFriends, created_at__gte=(timezone.now()-timedelta(days=3)))
     for query in recentFriendQueries:
-        p, created = Prompt.objects.get_or_create(user=user, query=query)
+        p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=False)
 
 # </editor-fold>
 
@@ -198,14 +198,14 @@ def submitQuery(user, *tags):
                 lemmaMatch = True
                 break
         if not lemmaMatch:
-            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
+            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
 
    # create prompts for subscribed users who are not friends of the user
    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
    subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
    for su in subscribedUsers:
-       p, created = Prompt.objects.get_or_create(user=su, query=q1)
+       p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
 
    return q1
 

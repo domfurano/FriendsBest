@@ -115,9 +115,10 @@ class Query(models.Model):
 class Prompt(models.Model):
     user = models.ForeignKey(User)  # the user who the prompt is for (not the user who made the associated query)
     query = models.ForeignKey(Query)  # we can get the user's id from the query
+    isAnonymous = models.BooleanField(default=False)
 
     def __str__(self):
-        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
+        return "forUser:%s, fromQuery:%s, isAnonymous:%s" % (self.user, self.query, self.isAnonymous)
 
     class Meta:
         unique_together = (("user", "query"),)
