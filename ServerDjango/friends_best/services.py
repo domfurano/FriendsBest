@@ -106,10 +106,10 @@ def generateAnonymousPrompts(user):
 
 
     #queries = Query.objects.exclude(Q(user__friendship1__userTwo=user) | Q(user__friendship2__userOne=user)).all()
-    queries = Query.objects.exclude(user__friendship1__userTwo=user).all()
+    queriesByStrangers = Query.objects.exclude(user__friendship1__userTwo=user).all()
 
     #queries = Query.objects.all()
-    queryCount = queries.count()
+    queryCount = queriesByStrangers.count()
 
     # select random queries and generate prompts for them
     randomIndexes = set()
@@ -118,7 +118,7 @@ def generateAnonymousPrompts(user):
         randomIndexes.add(randomIndex)
 
     for randomIndex in randomIndexes:
-        p, created = Prompt.objects.get_or_create(user=user, query=Query.objects.all()[randomIndex])
+        p, created = Prompt.objects.get_or_create(user=user, query=queriesByStrangers[randomIndex])
 
 
 #client will call for this whenever a prompt is swiped left (or when a recommendation is created after swiping right)
