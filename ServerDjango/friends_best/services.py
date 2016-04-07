@@ -103,14 +103,15 @@ def getAllPrompts(user):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
+    #queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
+    queries = Query.objects.all()
     queryCount = queries.count()
-    print("querycount: " + queryCount)
+    #print("querycount: " + queryCount)
 
     # select random queries and generate prompts for them
     for x in range(0, 5):
         randomIndex = randint(0, queryCount - 1)
-        print("randomindex: " + randomIndex)
+        #print("randomindex: " + randomIndex)
         p, created = Prompt.objects.get_or_create(user=user, query=Query.objects.all()[randomIndex])
 
 
