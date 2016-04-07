@@ -80,7 +80,7 @@ def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
-    if prompts.count == 0:
+    if prompts.count() == 0:
         generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
     else:
