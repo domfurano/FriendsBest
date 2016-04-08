@@ -135,7 +135,7 @@ def forwardPrompt(user, friendUserId, queryId):
 # this will ensure that new users get normal prompts immediately
 def generatePromptsForNewUser(user):
     allFriends = getAllFriendUsers(user)
-    recentFriendQueries = Query.objects.filter(user__in=allFriends, created_at__gte=(timezone.now()-timedelta(days=3)))
+    recentFriendQueries = Query.objects.filter(user__in=allFriends, timestamp__gte=(timezone.now()-timedelta(days=3)))
     for query in recentFriendQueries:
         p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=False)
 
