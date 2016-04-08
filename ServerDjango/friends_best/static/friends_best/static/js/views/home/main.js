@@ -27,7 +27,7 @@ define([
         this.loadPrompts();        
         
         this.refresh = setInterval(function() {
-            if (that.collection.length < 1) {
+            if (that.collection.length <= 1) {
                 that.loadPrompts();
             }
         }, 6000);
