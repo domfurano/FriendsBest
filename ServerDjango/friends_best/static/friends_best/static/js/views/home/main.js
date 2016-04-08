@@ -104,9 +104,10 @@ define([
     loadPrompts: function() {
         this.collection = new PromptsCollection();
 //         this.collection.on("add", this.showPrompts, this);
+		show = showPrompts;
 		this.collection.fetch({
 			success: function() {
-				showPrompts()
+				show();
 			}
 		});
     },
