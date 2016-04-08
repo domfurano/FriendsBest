@@ -136,6 +136,7 @@ def forwardPrompt(user, friendUserId, queryId):
 def generatePromptsForNewUser(user):
     allFriends = getAllFriendUsers(user)
     recentFriendQueries = Query.objects.filter(user__in=allFriends, timestamp__gte=(timezone.now()-timedelta(days=3)))
+    print(recentFriendQueries.count())
     for query in recentFriendQueries:
         p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=False)
 

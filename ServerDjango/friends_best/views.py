@@ -234,8 +234,24 @@ class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
     
     def login(self):
-        getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
-        return SocialLoginView.login(self)
+        
+        # See if user already exists
+        try:
+            self.user = self.serializer.validated_data['user']
+            self.token_model.objects.get(user=self.user)
+            firsttime = False
+        except:
+            firsttime = True
+        
+        # Login
+        SocialLoginView.login(self)
+
+        # Update friends
+        getCurrentFriendsListFromFacebook(self.user)
+
+        # If the user was just created
+        if firsttime:
+            generatePromptsForNewUser(self.user)
 
 
 def deploy(request):
