@@ -118,6 +118,7 @@ define([
 			el = that.$el;
 			
 			prompts.each(function(prompt) {
+				console.log(prompt.toJSON());
     			promptcard = promptTemplate(prompt.toJSON());
     			el.append(promptcard);
     		});
