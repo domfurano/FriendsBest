@@ -103,7 +103,7 @@ define([
     
     loadPrompts: function() {
         this.collection = new PromptsCollection();
-        this.collection.on("update", this.showPrompts, this);
+        this.collection.on("add", this.showPrompts, this);
 		this.collection.fetch();
     },
     
