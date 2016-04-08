@@ -103,13 +103,8 @@ define([
     
     loadPrompts: function() {
         this.collection = new PromptsCollection();
-//         this.collection.on("add", this.showPrompts, this);
-		show = this.showPrompts;
-		this.collection.fetch({
-			success: function() {
-				show();
-			}
-		});
+        this.collection.on("update", this.showPrompts, this);
+		this.collection.fetch();
     },
     
     showPrompts: function() {
@@ -121,6 +116,8 @@ define([
             promptTemplate = _.template(promptHTML);
 			
 			el = that.$el;
+			
+			el.find(".promptsection").remove();
 			
 			prompts.each(function(prompt) {
 				console.log(prompt.toJSON());
