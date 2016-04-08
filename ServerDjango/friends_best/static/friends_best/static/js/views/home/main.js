@@ -107,7 +107,7 @@ define([
 		show = this.showPrompts;
 		this.collection.fetch({
 			success: function() {
-				this.showPrompts();
+				show();
 			}
 		});
     },
