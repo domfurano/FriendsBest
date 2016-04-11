@@ -29,6 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
         let navigationController: UINavigationController = UINavigationController(rootViewController: LoadingViewController())
+        navigationController.navigationBar.translucent = false
+        navigationController.toolbar.translucent = false
         
         navigationController.navigationBar.titleTextAttributes = [
             NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 28.0)!,

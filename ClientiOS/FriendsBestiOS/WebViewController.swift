@@ -9,26 +9,296 @@
 import UIKit
 import WebKit
 
-class WebViewController: UIViewController, WKNavigationDelegate {
+
+class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDelegate {
+    
+    var progressView: UIProgressView!
+    
+    var urlTextField: UITextField!
+    
+    var backButton: UIBarButtonItem!
+    var forwardButton: UIBarButtonItem!
+    var reloadButton: UIBarButtonItem!
     
     var webView: WKWebView {
         get {
             return view as! WKWebView
         }
     }
-
+    
+    deinit {
+        NSLog("deinit() - WebViewController")
+        webView.removeObserver(self, forKeyPath: "loading")
+        webView.removeObserver(self, forKeyPath: "estimatedProgress")
+    }
+    
     override func loadView() {
-        view = WKWebView(frame: UIScreen.mainScreen().bounds)
-        webView.navigationDelegate = self
-        webView.allowsBackForwardNavigationGestures = true
+        view = WKWebView()
     }
     
     override func viewDidLoad() {
-        navigationController?.toolbarHidden = true
-
+        webView.navigationDelegate = self
+        webView.allowsBackForwardNavigationGestures = true
         
-        let url = NSURL(string: "https://www.google.com/")!
-        webView.loadRequest(NSURLRequest(URL: url))
+        progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.Default)
+        progressView.tintColor = CommonUI.fbGreen
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.hidden = true
+        
+        view.insertSubview(progressView, aboveSubview: webView)
+        webView.addConstraint(
+            NSLayoutConstraint(
+                item: progressView,
+                attribute: .Width,
+                relatedBy: .Equal,
+                toItem: webView,
+                attribute: .Width,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        webView.addObserver(self, forKeyPath: "estimatedProgress", options: .New, context: nil)
+        webView.addObserver(self, forKeyPath: "loading", options: .New, context: nil)
+        
+        let leftBBitem: UIBarButtonItem = UIBarButtonItem(
+            image: CommonUI.nbTimes,
+            style: .Plain,
+            target: self,
+            action: #selector(WebViewController.dismiss)
+        )
+        leftBBitem.tintColor = UIColor.whiteColor()
+        self.navigationItem.leftBarButtonItem = leftBBitem
+        
+        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(CommonUI.ICON_FLOAT)
+        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CommonUI.ICON_SIZE)
+        let rightBB: UIBarButtonItem = UIBarButtonItem(
+            image: fa_plus_square_image,
+            style: .Plain,
+            target: self,
+            action: #selector(WebViewController.createNewRecommendationButtonPressed)
+        )
+        rightBB.tintColor = UIColor.whiteColor()
+        navigationItem.rightBarButtonItem = rightBB
+        
+        /* url bar */
+        urlTextField = UITextField(frame: CGRectMake(0, 0, 300, 30))
+        urlTextField.layer.cornerRadius = 4.0
+        
+        
+        urlTextField.delegate = self
+        urlTextField.keyboardType = .URL
+        urlTextField.returnKeyType = .Go
+        urlTextField.autocapitalizationType = .None
+        urlTextField.autocorrectionType = .No
+        urlTextField.leftViewMode = .Always
+        
+        urlTextField.backgroundColor = UIColor.whiteColor()
+        let globeView: UIImageView = CommonUI.globeView
+        globeView.alpha = 0.5
+        urlTextField.leftView = globeView
+        urlTextField.placeholder = "Search or enter a website"
+        urlTextField.clearButtonMode = .WhileEditing
+        
+        navigationItem.titleView = urlTextField
+        
+        /* Toolbar */
+        let fixedSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .FixedSpace, target: nil, action: nil)
+        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
+        
+        backButton = UIBarButtonItem(image: CommonUI.wvBackChevron, style: .Plain, target: self, action: #selector(WebViewController.back))
+        backButton.tintColor = CommonUI.fbGreen
+        forwardButton = UIBarButtonItem(image: CommonUI.wvForwardChevron, style: .Plain, target: self, action: #selector(WebViewController.forward))
+        forwardButton.tintColor = CommonUI.fbGreen
+        reloadButton = UIBarButtonItem(image: CommonUI.wvRefresh, style: .Plain, target: self, action: #selector(WebViewController.reload))
+        reloadButton.tintColor = CommonUI.fbGreen
+        
+        setToolbarItems([backButton, fixedSpace, forwardButton, flexibleSpace, reloadButton], animated: false)
+        
+        backButton.enabled = false
+        forwardButton.enabled = false
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
+        
+        navigationController?.navigationBar.barTintColor = CommonUI.fbGreen
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        urlTextField.resignFirstResponder()
+    }
+    
+    func createNewRecommendationButtonPressed() {
+        if let urlString = webView.URL?.absoluteString {
+            NSLog(urlString)
+            navigationController?.pushViewController(NewRecommendationFormViewController(type: .URL, detail: urlString), animated: true)
+        }
+    }
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        if (keyPath == "loading") {
+            backButton.enabled = webView.canGoBack
+            forwardButton.enabled = webView.canGoForward
+        }
+        
+        if (keyPath == "estimatedProgress") {
+            progressView.hidden = webView.estimatedProgress == 1
+            progressView.setProgress(Float(webView.estimatedProgress), animated: true)
+        }
+    }
+    
+    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
+        progressView.setProgress(0.0, animated: false)
+        urlTextField.text = webView.URL?.host
+    }
+    
+    func dismiss() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if let inputText = textField.text {
+            
+            // I'm gonna hack this because I could develop it to death, but lets assume the user is friendly.
+            
+            let components: [String: String?] = urlComponentsDict(inputText)
+            let scheme: String? = components["scheme"]!
+            let host_a: String? = components["host_a"]!
+            let host_b: String? = components["host_b"]!
+            
+            if host_a == nil {
+                searchGoogle(inputText)
+                textField.resignFirstResponder()
+                return false
+            }
+            
+            let urlComponents: NSURLComponents = NSURLComponents()
+            
+            urlComponents.scheme = scheme == nil ? "http" : scheme!
+            urlComponents.host = host_a! + (host_b == nil ? "" : "." + host_b!)
+            
+            print(urlComponents)
+            if let url = urlComponents.URL {
+                webView.loadRequest(NSURLRequest(URL: url))
+            } else {
+                searchGoogle(inputText)
+            }
+        }
+        textField.resignFirstResponder()
+        return false
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.text = webView.URL?.absoluteString
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        textField.text = webView.URL?.host
+    }
+    
+    private func searchGoogle(searchString: String) {
+        let googleSearchURL: NSURL = NSURL(string: "https://www.google.com/search?q=\(searchString.stringByReplacingOccurrencesOfString(" ", withString: "+"))")!
+        webView.loadRequest(NSURLRequest(URL: googleSearchURL))
+    }
+    
+    func webView(webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: NSError) {
+    }
+    
+    /* Toolbar */
+    
+    func back(sender: UIBarButtonItem) {
+        webView.goBack()
+    }
+    
+    func forward(sender: UIBarButtonItem) {
+        webView.goForward()
+    }
+    
+    func reload(sender: UIBarButtonItem) {
+        if let url = webView.URL {
+            webView.loadRequest(NSURLRequest(URL: url))
+        }
+    }
+    
+    func urlComponentsDict(input: String!) -> [String: String?] {
+        var components: [String: String?] = ["scheme": nil, "host_a": nil, "host_b": nil]
+        do {
+            let nsStringInput: NSString = input.lowercaseString as NSString
+            let urlRegex: String = "(https?){0,1}[:\\/]*([\\d\\w\\.-]+)\\.([a-z]+)"
+            let regex: NSRegularExpression = try NSRegularExpression(pattern: urlRegex, options: [])
+            let matches = regex.matchesInString(input, options: [], range: NSMakeRange(0, nsStringInput.length))
+            for match: NSTextCheckingResult in matches {
+                let match_1: NSRange = match.rangeAtIndex(1)
+                let match_2: NSRange = match.rangeAtIndex(2)
+                let match_3: NSRange = match.rangeAtIndex(3)
+                
+                if match_1.length != 0 {
+                    components["scheme"] = nsStringInput.substringWithRange(match_1)
+                }
+                
+                if match_2.length != 0 {
+                    components["host_a"] = nsStringInput.substringWithRange(match_2)
+                }
+                
+                if match_3.length != 0 {
+                    components["host_b"] = nsStringInput.substringWithRange(match_3)
+                }
+            }
+        } catch let error as NSError {
+            fatalError("invalid regex: \(error.localizedDescription)")
+        }
+        return components
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

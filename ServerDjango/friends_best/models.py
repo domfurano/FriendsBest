@@ -16,8 +16,8 @@ from django.contrib.auth.models import User
 
 
 class Friendship(models.Model):
-   userOne = models.ForeignKey(User, related_name='userOne_set')
-   userTwo = models.ForeignKey(User, related_name='userTwo_set')
+   userOne = models.ForeignKey(User, related_name='friendship1')
+   userTwo = models.ForeignKey(User, related_name='friendship2')
    muted = models.BooleanField(default=False)
 
    class Meta:
@@ -115,9 +115,10 @@ class Query(models.Model):
 class Prompt(models.Model):
     user = models.ForeignKey(User)  # the user who the prompt is for (not the user who made the associated query)
     query = models.ForeignKey(Query)  # we can get the user's id from the query
+    isAnonymous = models.BooleanField(default=False)
 
     def __str__(self):
-        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
+        return "forUser:%s, fromQuery:%s, isAnonymous:%s" % (self.user, self.query, self.isAnonymous)
 
     class Meta:
         unique_together = (("user", "query"),)
@@ -156,6 +157,26 @@ class Accolade(models.Model):
 
     class Meta:
         unique_together = (("user", "recommendation"),)
+
+
+#class UserEvents(models.Model):
+#    user = models.ForeignKey(User)
+#    completedFirstLogin = models.BooleanField(default=False)
+#
+#    def __str__(self):
+#        return "user:%s, completed first login:%s" % (self.user, self.completedFirstLogin)
+
+
+# server should push number of total notifications to each user
+class Notification(models.Model):
+    query = models.ForeignKey(Query)
+    recommendation = models.ForeignKey(Recommendation)
+
+    def __str__(self):
+        return "fromQuery:%s, fromRecommendation:%s" % (self.query, self.recommendation)
+
+    class Meta:
+        unique_together = (("query", "recommendation"),)
 
 
 

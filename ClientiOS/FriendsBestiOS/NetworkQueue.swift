@@ -58,7 +58,7 @@ class NetworkQueue {
     func tryAgain() {
         self.executing = false
         self.retries -= 1
-        if self.retries == 0 {
+        if self.retries < 1 {
             self.dequeue()
         }
         // TODO: Slow down timer until task is dequeued

@@ -6,9 +6,6 @@
 //  Copyright © 2016 Dominic Furano. All rights reserved.
 //
 
-import Foundation
-
-
 // TODO: Change this class to be serializable --> Tasks no longer closures
 class NetworkTask {
     

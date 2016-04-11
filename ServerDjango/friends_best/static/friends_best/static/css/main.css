@@ -21,7 +21,20 @@
 	    position: relative;
 	    width: 100%;
 	    height: 100%;
-	    max-height: 800px;
+	    /* max-height: 800px; */
+    }
+    
+    .view.login {
+	    background: #ffffff; /* Old browsers */
+		background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		color: #fff;
+    }
+    
+    .view.login .logo img {
+	    height: 130px;
+	    margin: 20px;
     }
 	
 	header {
@@ -176,6 +189,7 @@
 	}
 	
 	header.results {
+    	background-color: #dedede;
 	}
 	
 	header.solution {
@@ -251,7 +265,9 @@
 		margin-bottom: 5px;
 		background-color: #fff;
 		padding: 8px;
+		padding: 10px 8px 10px 8px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		cursor: pointer;
 	}
 	
 	.list .line.unpadded {
@@ -262,7 +278,11 @@
 		padding: 0;
 	}
 	
-	.list .line .tags span {
+	.results .tags {
+    	margin-top: 6px;
+	}
+	
+	.tags span {
 		padding: 2px 5px;
 		margin-right: 3px;
 		-webkit-border-radius: 3px;
@@ -304,7 +324,6 @@
 	
 	.list .item .delete {
 		margin: 2px;
-		font-size: 18px;
         float: right;
         cursor: pointer;
 	}
@@ -313,7 +332,7 @@
 		background-color: #abb4ba;
 	}
 	
-	.list .line .count {
+	.list .count {
 		text-align: right;
 	}
 	
@@ -332,6 +351,32 @@
 		padding: 10px 10px 8px 15px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
+        cursor: pointer;
+	}
+	
+	.list .postback {
+		margin-bottom: 10px;
+		background-color: #3b5998;
+		color: #fff;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		-webkit-border-radius: 5px;
+        cursor: pointer;
+	}
+	
+	.list .postback div {
+    	padding: 0;
+	}
+	
+	.list .postback em {
+    	font-size: 18px;
+		padding-top: 3px;
+		font-style: normal;
+		font-weight: bold;
+	}
+	
+	.list .postback i {
+    	
 	}
 	
 	.list .solution div {
@@ -346,9 +391,16 @@
 		text-overflow: ellipsis;
 	}
 	
-	.list .solution .dots {
-		text-align: right;
+	.list .solution .count {
 		padding-top: 4px;
+	}
+	
+	.count .badge {
+    	background-color: #f00;
+    	color: #fff;
+    	vertical-align: top;
+    	margin-right: 6px;
+    	padding: 3px 7px 2px 7px;
 	}
 	
 	.list .comment {
@@ -367,7 +419,6 @@
 	
 	.back-button, .submit {
 		cursor: pointer;
-		font-size: 15px;
 	}
 	
 	footer {
@@ -470,8 +521,8 @@
 		-webkit-transform: translateZ(0);
 	}
 	
-	.loadmore .logo {
-        font-size: 30px;
+	.loadmore .logo img {
+		width: 50%;
 	}
 	
 	.prompt .item {
@@ -560,12 +611,29 @@
 		right: 15px;
 	}
 	
+	.row.explain {
+		font-size: 16px;
+	}
+	
+	.row.callout {
+		font-size: 16px;
+		font-weight: bold;
+		margin: 10px 0 10px 0;
+	}
+	
+	.container.login {
+		position: absolute;
+		bottom: 20px;
+		left: 0;
+		right: 0;
+	}
+	
 	.fb-login-button {
-		background-color: #3b5998;
+		border: 1px solid #fff;
 		color: #fff;
 		padding: 10px 20px;
 		border-radius: 8px;
-		font-size: 22px;
+		font-size: 20px;
 	}
 	
 	.fb-login-button i {
@@ -574,5 +642,11 @@
 		margin-right: 10px; 
 	}
 	
-	@media (min-width: 320px) { .container { max-width: 320px; } }
+	@media (min-width: 320px) { 
+		.container { max-width: 320px; }
+		.view.login .logo img {
+		    height: 160px;
+	    }
+	}
+	
 	@media (max-width: 320px) { .container { max-width: 280px; } }

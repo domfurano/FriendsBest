@@ -27,8 +27,6 @@ class YourRecommendationsView: UITableView {
 
 class YourRecommendationsViewController: UITableViewController {
     
-    let smallProfilePicture: UIImageView = CommonUI.smallProfilePicture!
-    
     override func loadView() {
         view = YourRecommendationsView()
     }
@@ -82,13 +80,11 @@ class YourRecommendationsViewController: UITableViewController {
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        smallProfilePicture.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        smallProfilePicture.contentMode = .ScaleAspectFit
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = smallProfilePicture.frame
+        let profileButton: UIButton = UIButton(type: .Custom)
+        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
         profileButton.layer.masksToBounds = true
         profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(smallProfilePicture)
+        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
         profileButton.addTarget(
             self,
             action: #selector(YourRecommendationsViewController.profileButtonPressed),
@@ -98,7 +94,7 @@ class YourRecommendationsViewController: UITableViewController {
         
         
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image_fbGreen,
+            image: CommonUI.fa_plus_square_image,
             style: .Plain,
             target: self,
             action: #selector(YourRecommendationsViewController.newRecommendationButtonPressed)
@@ -147,11 +143,28 @@ class YourRecommendationsViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let recommendation = User.instance.recommendations[indexPath.row]
-        FBNetworkDAO.instance.deleteRecommendation(recommendation.ID)
-        User.instance.recommendations.removeAtIndex(indexPath.row)
-        tableView.beginUpdates()
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
-        tableView.endUpdates()
-    }    
+//        let recommendation = User.instance.recommendations[indexPath.row]
+//        FBNetworkDAO.instance.deleteRecommendation(recommendation.ID)
+//        User.instance.recommendations.removeAtIndex(indexPath.row)
+//        tableView.beginUpdates()
+//        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
+//        tableView.endUpdates()
+    }
+    
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let button1 = UITableViewRowAction(style: .Default, title: "Delete", handler: { (action, indexPath) in
+            let recommendation = User.instance.recommendations[indexPath.row]
+            FBNetworkDAO.instance.deleteRecommendation(recommendation.ID)
+            User.instance.recommendations.removeAtIndex(indexPath.row)
+            tableView.beginUpdates()
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
+            tableView.endUpdates()
+        })
+        button1.backgroundColor = UIColor.redColor()
+        let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
+            print("button2 pressed!")
+        })
+        button2.backgroundColor = UIColor.blueColor()
+        return [button1, button2]
+    }
 }

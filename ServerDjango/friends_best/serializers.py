@@ -56,13 +56,14 @@ class PromptSerializer(serializers.ModelSerializer):
         return {
             'id': prompt.id,
             # Copied from FriendshipSerializer
-            'friend': UserSerializer(prompt.query.user).data,
+            'friend': '' if prompt.isAnonymous else UserSerializer(prompt.query.user).data,
+            #'friend': UserSerializer(prompt.query.user).data,
             'tags': [t.tag for t in prompt.query.tags.all()],
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
             # but we'll need some good NLP
             'article': 'a',
-            #'urgent': prompt.query.urgent  # this seems to be causing a problem (not sure why)
+            'urgent': prompt.query.urgent  # this seems to be causing a problem (not sure why)
         }
     
     class Meta:
@@ -199,19 +200,27 @@ class QuerySerializer(serializers.ModelSerializer):
             'accessed': query.timestamp,
             'taghash': query.taghash,
         }
+        
+        newtotal = 0;
         for sol in solutions['solutions']:
             recommendations = []
-            for rec in sol.recommendations:
+            for rwf in sol.recommendationsWithFlags:
+                rec = rwf.recommendation
                 if isFriendsWith(query.user, rec.user) or query.user == rec.user:
-                    recommendations.append({"id": rec.id, "comment": rec.comments, "user": UserSerializer(rec.user).data})
+                    recommendations.append({"id": rec.id, "comment": rec.comments, "isNew": rwf.isNew, "user": UserSerializer(rec.user).data})
                 else:
-                    recommendations.append({"id": rec.id, "comment": rec.comments})
+                    recommendations.append({"id": rec.id, "comment": rec.comments, "isNew": rwf.isNew})
             solution_collection['solutions'].append({
                 'detail': sol.detail,
                 'type': sol.solutionType,
                 'recommendations': recommendations,
-                'isPinned': sol.isPinned
+                'isPinned': sol.isPinned,
+                'notifications': sol.totalNewRecommendations
             })
+            newtotal += sol.totalNewRecommendations
+            
+        solution_collection['notifications'] = newtotal
+        
         return solution_collection
 
     def create(self, validated_data):    

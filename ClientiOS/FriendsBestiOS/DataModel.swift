@@ -18,13 +18,14 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     var name: String? = nil
-    var facebookID: String? = nil
+    var facebookID: String {
+        return FBSDKAccessToken.currentAccessToken().userID
+    }
     private(set) var queryHistory: QueryHistory = QueryHistory()
     private(set) var prompts: Prompts = Prompts()
     private(set) var friends: [Friend] = []
     var recommendations: [Recommendation] = []
-
-
+    
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = { _ in }
@@ -32,10 +33,12 @@ class User: NetworkDAODelegate {
     var newSolutionAlert: () -> Void = {}
     var newRecommendationAlert: () -> Void = {}
     var userRecommendationsFetchedClosure: () -> Void = {}
+    var friendsFetchedClosure: () -> Void = {}
     
     
     /* Private constructor */
     private init() {
+        
         // Delegate assignment
         FBNetworkDAO.instance.networkDAODelegate = self
     }
@@ -72,6 +75,14 @@ class User: NetworkDAODelegate {
         userRecommendationsFetchedClosure()
     }
     
+    func friendsFetched(friends: [Friend]) {
+        for friend in friends {
+            if !self.friends.contains(friend) {
+                self.friends.append(friend)
+            }
+        }
+    }
+    
     
     /* Serialization */
     private func serialize() {
@@ -83,8 +94,8 @@ class User: NetworkDAODelegate {
 class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
-    private(set) var squarePicture: UIImage?
-    
+    var muted: Bool?
+    private(set) var squarePicture: UIImageView?
     var hashValue: Int {
         return facebookID.hashValue
     }
@@ -93,12 +104,7 @@ class Friend: Equatable, Hashable {
         self.facebookID = facebookID
         self.name = name
         
-        FacebookNetworkDAO.instance.getFacebookProfileImage(
-            facebookID,
-            size: FacebookNetworkDAO.FacbookImageSize.square
-        ) { (profileImage: UIImage) in
-            self.squarePicture = profileImage
-        }
+        self.squarePicture = CommonUI.instance.getFacebookProfileUIImageView(facebookID, size: .square)
     }
 }
 
@@ -263,7 +269,7 @@ func ==(lhs: Query, rhs: Query) -> Bool {
 class Solution: Equatable, Hashable {
     private(set) var _recommendations: Set<Recommendation>
     private(set) var detail: String
-    private(set) var type: Recommendation.RecommendationType
+    private(set) var type: RecommendationType
     
     var recommendations: [Recommendation] {
         get {
@@ -279,7 +285,7 @@ class Solution: Equatable, Hashable {
         return self.detail.hash
     }
     
-    init(recommendations: Set<Recommendation>, detail: String, type: Recommendation.RecommendationType) {
+    init(recommendations: Set<Recommendation>, detail: String, type: RecommendationType) {
         self._recommendations = recommendations
         self.detail = detail
         self.type = type
@@ -291,10 +297,13 @@ func ==(lhs: Solution, rhs: Solution) -> Bool {
 }
 
 
+enum RecommendationType: String {
+    case TEXT
+    case PLACE
+    case URL
+}
+
 class Recommendation: Equatable, Hashable {
-    enum RecommendationType: String {
-        case TEXT
-    }
     
     private(set) var friend: Friend
     private(set) var comment: String
@@ -358,7 +367,7 @@ class Prompt: Equatable, Hashable {
     private(set) var article: String
     private(set) var tags: [String]
     private(set) var tagString: String
-    private(set) var friend: Friend
+    private(set) var friend: Friend?
     private(set) var ID: Int
     var new: Bool
     
@@ -366,7 +375,7 @@ class Prompt: Equatable, Hashable {
         return self.ID
     }
 
-    init(article: String, tags: [String], tagString: String, friend: Friend, ID: Int) {
+    init(article: String, tags: [String], tagString: String, friend: Friend?, ID: Int) {
         self.article = article
         self.tags = tags
         self.tagString = tagString

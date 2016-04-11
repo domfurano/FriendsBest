@@ -6,8 +6,6 @@
 //  Copyright © 2016 Dominic Furano. All rights reserved.
 //
 
-import Foundation
-
 class Queue<T> {
     private(set) var first: Node<T>? = nil
     private(set) var last: Node<T>? = nil

@@ -9,6 +9,7 @@ from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
 from django.http import HttpResponse
+from django.shortcuts import render
 import hmac
 import os
 import json
@@ -17,7 +18,20 @@ import subprocess
 from friends_best.serializers import *
 from friends_best.services import *
 from friends_best.permissions import *
+
+def queryLink(request, query_id):
+    # Get the query
+    try:
+        q = Query.objects.get(id=query_id)
+        context = {
+            'id': query_id,
+            'tagstring': q.tagstring
+        }
+    except Query.DoesNotExist:
+        context = {}
     
+    return render(request, 'friends_best/link.html', context)
+
 class CurrentUserViewSet(viewsets.GenericViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
@@ -130,6 +144,21 @@ class PromptViewSet(mixins.RetrieveModelMixin,
     # friends can't get spammed by a repeat query...
     # def destroy(self, request):
 
+class NotificationViewSet(  mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
+    
+    queryset = Notification.objects.order_by('query')
+    
+    def destroy(self, request, pk=None):
+        # pk is the id of the recommendation
+        try:
+            r = Recommendation.objects.get(pk=pk);
+            n = Notification.objects.filter(query__user=request.user, recommendation=r);
+            n.delete();
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Recommendation.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 # Limited to GET PUT HEAD DELETE OPTIONS
 class FriendshipViewSet(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
@@ -205,8 +234,24 @@ class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
     
     def login(self):
-        getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
-        return SocialLoginView.login(self)
+        
+        # See if user already exists
+        try:
+            self.user = self.serializer.validated_data['user']
+            self.token_model.objects.get(user=self.user)
+            firsttime = False
+        except:
+            firsttime = True
+        
+        # Login
+        SocialLoginView.login(self)
+
+        # Update friends
+        getCurrentFriendsListFromFacebook(self.user)
+
+        # If the user was just created
+        if firsttime:
+            generatePromptsForNewUser(self.user)
 
 
 def deploy(request):

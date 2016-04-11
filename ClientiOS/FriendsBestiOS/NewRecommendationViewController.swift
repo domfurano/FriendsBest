@@ -27,6 +27,7 @@ class NewRecommendationView: UIScrollView {
 class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate {
     
     // TODO: Need different recommendation modes
+    var type: Recommendation.Type!
     
     let tagsLabel: UILabel = UILabel()
     let tagsField: UITextField = UITextField()
@@ -47,6 +48,11 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
     
     var activeTextField: UITextField? = nil
     var activeTextView: UITextView? = nil
+    
+    convenience init(type: Recommendation.Type) {        
+        self.init()
+        self.type = type
+    }
     
     override func loadView() {
         self.view = NewRecommendationView()
@@ -222,7 +228,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         }
         
         if self.activeTextView != nil {
-            let activeTextViewFrame: CGRect = self.activeTextView!.frame            
+            let activeTextViewFrame: CGRect = self.activeTextView!.frame
             self.scrollView.setContentOffset(CGPointMake(0.0, activeTextViewFrame.midY - midpoint), animated: true)
         }
     }
@@ -427,7 +433,7 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
             "comments" : commentsField
         ]
         
-        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-16-[tagsLabel]-[tags]-[titleLabel]-[title]-[commentsLabel]-[comments]",
+        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-16-[titleLabel]-[title]-[tagsLabel]-[tags]-[commentsLabel]-[comments]",
             options: NSLayoutFormatOptions(), metrics: nil, views: views))
     }
     
@@ -446,19 +452,19 @@ class NewRecommendationViewController: UIViewController, UITextFieldDelegate, UI
         
         let comments = commentsField.text == nil ? "" : commentsField.text!
         let tags = tagsString.characters.split{ $0 == " " }.map(String.init)
-        FBNetworkDAO.instance.postNewRecommendtaion(description, type: Recommendation.RecommendationType.TEXT.rawValue, comments: comments, recommendationTags: tags) // TODO: handle multiple types
+        FBNetworkDAO.instance.postNewRecommendtaion(description, type: RecommendationType.TEXT.rawValue, comments: comments, recommendationTags: tags) // TODO: handle multiple types
         navigationController?.popViewControllerAnimated(true)
     }
     
     private func setToolbarItems() {
-//        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-//        
-//        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
-//        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
-//        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
-//        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
-//        
-//        self.toolbarItems = [flexibleSpace, newRecommendationButton]
+        //        let flexibleSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+        //
+        //        let fa_plus_square: FAKFontAwesome = FAKFontAwesome.plusIconWithSize(22)
+        //        let fa_plus_square_image: UIImage = fa_plus_square.imageWithSize(CGSize(width: 22, height: 22))
+        //        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(image: fa_plus_square_image, style: .Plain, target: self, action: Selector("createNewRecommendationButtonPressed"))
+        //        newRecommendationButton.tintColor = .colorFromHex(0x59c939)
+        //
+        //        self.toolbarItems = [flexibleSpace, newRecommendationButton]
     }
     
 }

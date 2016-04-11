@@ -12,6 +12,7 @@ from .models import Prompt
 from .models import Pin
 from .models import Subscription
 from .models import Accolade
+from .models import Notification
 
 # from .models import RecommendationTag
 # from .models import QueryTag
@@ -79,7 +80,7 @@ def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
-    if prompts.count == 0:
+    if prompts.count() == 0:
         generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
     else:
@@ -102,13 +103,23 @@ def getAllPrompts(user):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queries = Query.objects.exclude(Q(user__userOne_set__userTwo=user) | Q(user__userTwo_set__userOne=user)).all()
-    queryCount = queries.count()
+    queriesByStrangers = Query.objects.exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
+    #queriesByStrangers = Query.objects.exclude(user__friendship1__userTwo=user).all()
+
+    #queries = Query.objects.all()
+    queryCount = queriesByStrangers.count()
+
+    if queryCount == 0:
+        return
 
     # select random queries and generate prompts for them
+    randomIndexes = set()
     for x in range(0, 5):
         randomIndex = randint(0, queryCount - 1)
-        p, created = Prompt.objects.get_or_create(user=user, query=Query.objects.all()[randomIndex])
+        randomIndexes.add(randomIndex)
+
+    for randomIndex in randomIndexes:
+        p, created = Prompt.objects.get_or_create(user=user, query=queriesByStrangers[randomIndex], isAnonymous=True)
 
 
 #client will call for this whenever a prompt is swiped left (or when a recommendation is created after swiping right)
@@ -124,9 +135,10 @@ def forwardPrompt(user, friendUserId, queryId):
 # this will ensure that new users get normal prompts immediately
 def generatePromptsForNewUser(user):
     allFriends = getAllFriendUsers(user)
-    recentFriendQueries = Query.objects.filter(user__in=allFriends, created_at__gte=(timezone.now()-timedelta(days=3)))
+    recentFriendQueries = Query.objects.filter(user__in=allFriends, timestamp__gte=(timezone.now()-timedelta(days=3)))
+    print(recentFriendQueries.count())
     for query in recentFriendQueries:
-        p, created = Prompt.objects.get_or_create(user=user, query=query)
+        p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=False)
 
 # </editor-fold>
 
@@ -190,14 +202,14 @@ def submitQuery(user, *tags):
                 lemmaMatch = True
                 break
         if not lemmaMatch:
-            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1)
+            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
 
    # create prompts for subscribed users who are not friends of the user
    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
    subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
    for su in subscribedUsers:
-       p, created = Prompt.objects.get_or_create(user=su, query=q1)
+       p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
 
    return q1
 
@@ -248,20 +260,25 @@ def getQuerySolutions(query):
        else:
            return "error: thing type'" + thing.thingType + "' is invalid"
        recommendations = Recommendation.objects.filter(thing=thing)
+       notifications = Notification.objects.select_related('recommendation').filter(query=query)
+       newRecs = [n.recommendation for n in notifications] # recommendations not yet seen by querying user
+       recommendationsWithFlags = []
+       newRecommendationCount = 0
        recommendedByFriend = False  # thing is recommended by at least one friend
        for recommendation in recommendations:
-           if isFriendsWith(query.user, recommendation.user):
+           isNew = recommendation in newRecs
+           recommendationsWithFlags.append(RecommendationWithFlag(recommendation=recommendation, isNew=isNew))
+           if isNew: newRecommendationCount += 1
+           if not recommendedByFriend or isFriendsWith(query.user, recommendation.user):
                recommendedByFriend = True
-               break
 
        isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=newRecommendationCount))
            recommendationsFromFriendsCount += 1
        else:
-           # TODO: sort non-friend recommendations by degrees of separation
-           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendations=recommendations, solutionType=thing.thingType, isPinned=isPinned))
+           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0))
 
    return solutionsWithTags
 
@@ -351,6 +368,12 @@ def getFacebookUserIdFromFacebook(user):
 # </editor-fold>
 
 
+# <editor-fold desc="Notifications">
+def deleteNotification(recId):
+    Notification.get(recommendation=Recommendation.objects.get(id=recId)).delete()
+# </editor-fold>
+
+
 # <editor-fold desc="Recommendations">
 def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
@@ -409,9 +432,18 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    recommendation.save()
 
    # create the recommendationTags
+   lemmas = set()
    for t in tags:
-       newtag, created = Tag.objects.get_or_create(tag=t.lower(), lemma=_lemmatizer.lemmatize(word=t.lower(), pos='n'))
+       lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
+       lemmas.add(lemma)
+       newtag, created = Tag.objects.get_or_create(tag=t.lower(), lemma=lemma)
        recommendation.tags.add(newtag)
+
+   # create a notification for every existing query with a matching tag
+   queries = Query.objects.filter(tags__lemma__in=lemmas)
+   for query in queries:
+      n = Notification(query=query, recommendation=recommendation)
+      n.save()
 
    return recommendation
 # </editor-fold>
@@ -560,11 +592,18 @@ def getAllFriendsFacebookUserIds(user):
 
 
 class Solution:
-   def __init__(self, detail, recommendations, solutionType, isPinned):
+   def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations):
        self.detail = detail
-       self.recommendations = recommendations
+       self.recommendationsWithFlags = recommendationsWithFlags
        self.solutionType = solutionType
        self.isPinned = isPinned
+       self.totalNewRecommendations = totalNewRecommendations
+
+
+class RecommendationWithFlag:
+    def __init__(self, recommendation, isNew):
+        self.recommendation = recommendation
+        self.isNew = isNew
 
 
 

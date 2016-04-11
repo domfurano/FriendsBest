@@ -26,12 +26,12 @@ class KolodaOverlayView: OverlayView {
         
         thumbsUpIcon.addAttribute(
             NSForegroundColorAttributeName,
-            value: UIColor.greenColor()
+            value: CommonUI.yesColor
         )
         
         thumbsDownIcon.addAttribute(
             NSForegroundColorAttributeName,
-            value: UIColor.redColor()
+            value: CommonUI.noColor
         )
         
         let imageSize: CGSize = CGSize(width: ICON_SIZE, height: ICON_SIZE)

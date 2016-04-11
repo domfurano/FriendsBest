@@ -127,6 +127,8 @@ SOCIALACCOUNT_PROVIDERS = \
         'LOCALE_FUNC': 'path.to.callable',
         'VERIFIED_EMAIL': False,
         'VERSION': 'v2.4'}}
+        
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 REST_FRAMEWORK = {
 	

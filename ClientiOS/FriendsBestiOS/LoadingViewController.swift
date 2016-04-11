@@ -40,20 +40,20 @@ class LoadingViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
-        /* Facebook */ // TODO: Add this to a "loading" viewcontroller
+        /* Facebook */
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
-            User.instance.facebookID = FBSDKAccessToken.currentAccessToken().userID
+            User.instance
+            CommonUI.instance
             FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
             FacebookNetworkDAO.instance.getFacebookData()
             FBNetworkDAO.instance.getPrompts()
+            FBNetworkDAO.instance.getFriends()
+            FBNetworkDAO.instance.getQueries()
+            FBNetworkDAO.instance.getRecommendationsForUser()            
             
-            CommonUI.instance
-            UpdateBullshitter.instance.start()
-            
-            while CommonUI.largeProfilePicture == nil { }
-            while CommonUI.smallProfilePicture == nil { }
+//            Updater.instance.start()
             
             navigationController?.pushViewController(MainScreenViewController(), animated: false)
         }
