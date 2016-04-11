@@ -1,6 +1,7 @@
 package app.friendsbest.net.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -25,7 +26,6 @@ public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
         _view.showProgressBar();
         getData();
     }
-
 
     @Override
     public void getData() {

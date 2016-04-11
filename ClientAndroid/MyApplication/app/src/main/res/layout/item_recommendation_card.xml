@@ -12,13 +12,13 @@
         app:cardCornerRadius="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginRight="@dimen/margin_smaller"
+        android:layout_marginLeft="@dimen/margin_smaller"
+        android:layout_marginTop="@dimen/margin_smaller">
 
         <RelativeLayout
             android:id="@+id/recommendation_item_tag_container"
-            android:padding="10dp"
+            android:padding="@dimen/padding_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

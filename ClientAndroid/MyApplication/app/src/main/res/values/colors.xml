@@ -4,7 +4,9 @@
     <color name="colorPrimaryDark">#78909c</color>
     <color name="colorAccent">#01579b</color>
     <color name="greenSea">#00897b</color>
-    <color name="appGreen">#00E676</color>
+    <!--<color name="appGreen">#00E676</color>-->
+    <color name="appGreen">#00C853</color>
+    <color name="appGreenDark">#4CAF50</color>
     <color name="light_green500">#fff</color>
     <color name="white">#ffffff</color>
     <color name="blue_gray100">#CFD8DC</color>
@@ -18,6 +20,7 @@
     <color name="red900">#b71c1c</color>
     <color name="red800">#c62828</color>
     <color name="gray800">#424242</color>
+    <color name="blue700">#1976D2</color>
     <color name="blue900">#0d47a1</color>
     <color name="blue_gray500">#607D8B</color>
     <color name="blue_gray800">#37474f</color>

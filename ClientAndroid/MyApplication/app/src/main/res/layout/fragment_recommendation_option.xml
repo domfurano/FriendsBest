@@ -17,9 +17,9 @@
                 android:id="@+id/recommend_options_title_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/left_margin"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="24dp">
+                android:layout_marginLeft="@dimen/side_margin"
+                android:layout_marginRight="@dimen/side_margin"
+                android:layout_marginTop="@dimen/margin_large">
 
                 <ImageView
                     android:id="@+id/recommend_options_icon"
@@ -38,107 +38,83 @@
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textColor="@color/blue_gray800"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_body_size"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/recommend_options_title"
-                    android:paddingBottom="36dp"
+                    android:paddingBottom="@dimen/padding_xlarge"
                     android:textColor="@color/blue_gray500"
                     android:text="Click a button to create a recommendation from Google Places, a web page, or create your own from scratch."
-                    android:textSize="15sp"/>
+                    android:textSize="@dimen/text_body_size"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/recommend_options_map_button"
+                android:id="@+id/recommend_options_map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recommend_options_title_container"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_blue_gray"
-                android:elevation="2dp">
-
-                <TextView
+                android:layout_marginBottom="@dimen/vertical_margin"
+                android:layout_marginLeft="@dimen/side_margin"
+                android:layout_marginRight="@dimen/side_margin"
+                android:layout_marginTop="@dimen/vertical_margin">
+                <Button
+                    android:id="@+id/recommend_options_map_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:textAllCaps="true"
-                    android:textStyle="bold"
+                    android:padding="@dimen/padding_smaller"
+                    android:background="@drawable/rounded_rect_blue_gray"
                     android:text="Place"
                     android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_body_size"/>
-
-                <ImageView
-                    android:layout_width="@dimen/icon_small"
-                    android:layout_height="@dimen/icon_small"
-                    android:layout_margin="12dp"
-                    android:background="@drawable/ic_map_white_24px"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/recommend_options_web_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/recommend_options_map_button"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_blue_gray"
-                android:elevation="2dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:text="Web"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_body_size"/>
-
-                <ImageView
-                    android:layout_width="@dimen/icon_small"
-                    android:layout_height="@dimen/icon_small"
-                    android:layout_margin="12dp"
-                    android:background="@drawable/ic_language_white_24px"/>
+                    android:drawableLeft="@drawable/ic_map_white_24px"/>
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/recommend_options_custom_button"
+                android:id="@+id/recommend_options_web_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/recommend_options_web_button"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="@dimen/left_margin"
-                android:layout_marginRight="@dimen/right_margin"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_blue_gray"
-                android:elevation="2dp">
+                android:layout_below="@id/recommend_options_map_layout"
+                android:layout_marginBottom="@dimen/vertical_margin"
+                android:layout_marginLeft="@dimen/side_margin"
+                android:layout_marginRight="@dimen/side_margin"
+                android:layout_marginTop="@dimen/vertical_margin">
 
-                <TextView
+                <Button
+                    android:id="@+id/recommend_options_web_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:padding="@dimen/padding_smaller"
+                    android:background="@drawable/rounded_rect_blue_gray"
+                    android:text="Web"
+                    android:elevation="2dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:drawableLeft="@drawable/ic_language_white_24px"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/recommend_options_custom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recommend_options_web_layout"
+                android:layout_marginBottom="@dimen/vertical_margin"
+                android:layout_marginLeft="@dimen/side_margin"
+                android:layout_marginRight="@dimen/side_margin"
+                android:layout_marginTop="@dimen/vertical_margin">
+
+                <Button
+                    android:id="@+id/recommend_options_custom_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_smaller"
+                    android:background="@drawable/rounded_rect_blue_gray"
                     android:text="Custom"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_body_size"/>
-
-                <ImageView
-                    android:layout_width="@dimen/icon_small"
-                    android:layout_height="@dimen/icon_small"
-                    android:layout_margin="12dp"
-                    android:background="@drawable/ic_pencil_white_vector"/>
+                    android:drawableLeft="@drawable/ic_pencil_white_vector"/>
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>

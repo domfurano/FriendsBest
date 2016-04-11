@@ -57,6 +57,10 @@ public class ImageService {
                 .into(view);
     }
 
+    public void clearImageCache() {
+        Glide.get(_context).clearMemory();
+    }
+
     private int dipToPixel(int measure) {
         DisplayMetrics metrics = _context.getResources().getDisplayMetrics();
         return Math.round(measure * (metrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));

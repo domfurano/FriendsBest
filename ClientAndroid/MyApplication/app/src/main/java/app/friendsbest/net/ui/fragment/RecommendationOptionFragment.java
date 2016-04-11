@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.places.Place;
@@ -26,9 +27,9 @@ public class RecommendationOptionFragment extends Fragment implements View.OnCli
     private static final String PLACE_PICKER_PHONE = "googlePlacePickerPhone";
     private final int PLACE_PICKER_REQUEST = 47;
     private Bundle _bundle;
-    private RelativeLayout _mapButton;
-    private RelativeLayout _webButton;
-    private RelativeLayout _customButton;
+    private Button _mapButton;
+    private Button _webButton;
+    private Button _customButton;
     private OnFragmentInteractionListener _listener;
 
     @Nullable
@@ -49,7 +50,8 @@ public class RecommendationOptionFragment extends Fragment implements View.OnCli
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("");
         _listener.hideBottomNavigationBar();
-        _listener.onFragmentToolbarChange(R.color.appGreen);
+        _listener.onFragmentToolbarColorChange(R.color.appGreen);
+        _listener.onFragmentStatusBarChange(R.color.appGreenDark);
     }
 
     @Override
@@ -96,9 +98,9 @@ public class RecommendationOptionFragment extends Fragment implements View.OnCli
     }
 
     private void initialize(View view, Bundle bundle) {
-        _mapButton = (RelativeLayout) view.findViewById(R.id.recommend_options_map_button);
-        _webButton = (RelativeLayout) view.findViewById(R.id.recommend_options_web_button);
-        _customButton = (RelativeLayout) view.findViewById(R.id.recommend_options_custom_button);
+        _mapButton = (Button) view.findViewById(R.id.recommend_options_map_button);
+        _webButton = (Button) view.findViewById(R.id.recommend_options_web_button);
+        _customButton = (Button) view.findViewById(R.id.recommend_options_custom_button);
         if (bundle != null) {
             if (bundle.getString(PromptFragment.BUNDLE_TAG, null) != null) {
                 _bundle = bundle;

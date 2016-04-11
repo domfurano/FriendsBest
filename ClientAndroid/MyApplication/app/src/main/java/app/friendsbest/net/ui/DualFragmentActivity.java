@@ -9,11 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,7 +37,7 @@ import app.friendsbest.net.ui.fragment.PromptFragment;
 import app.friendsbest.net.ui.fragment.RecommendationFragment;
 import app.friendsbest.net.ui.fragment.RecommendationItemFragment;
 import app.friendsbest.net.ui.fragment.RecommendationOptionFragment;
-import app.friendsbest.net.ui.fragment.SearchHistoryFragment;
+import app.friendsbest.net.ui.fragment.QueryHistoryFragment;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 import app.friendsbest.net.ui.fragment.WebFragment;
 import app.friendsbest.net.ui.view.DualFragmentView;
@@ -88,7 +88,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
         _profileButton.setOnClickListener(this);
 
         String pictureUri = PreferencesUtility.getInstance(getApplicationContext()).getProfilePictureUri();
-        ImageService.getInstance(this).retrieveImage(_profileButton, pictureUri, 36, 36);
+        ImageService.getInstance(getApplicationContext()).retrieveImage(_profileButton, pictureUri, 36, 36);
 
         setSupportActionBar(_toolbar);
         new GoogleApiClient
@@ -135,8 +135,15 @@ public class DualFragmentActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentToolbarChange(int id) {
+    public void onFragmentToolbarColorChange(int id) {
         _toolbar.setBackgroundColor(ContextCompat.getColor(this, id));
+    }
+
+    @Override
+    public void onFragmentStatusBarChange(int id) {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(id));
     }
 
     @Override
@@ -192,7 +199,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
             case CREATE_RECOMMENDATION_ID:
                 return new PostRecommendationFragment();
             case SEARCH_HISTORY_ID:
-                return new SearchHistoryFragment();
+                return new QueryHistoryFragment();
             case VIEW_SOLUTION_ID:
                 return new SolutionFragment();
             case VIEW_SOLUTION_ITEM_ID:
@@ -226,7 +233,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
                 fragmentTransaction.replace(R.id.dual_fragment_content_frame, fragment, fragmentTag);
                 fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             }
         }

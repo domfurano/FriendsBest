@@ -19,6 +19,9 @@ public class Solution {
     @SerializedName("isPinned")
     @Expose
     private boolean _isPinned;
+    @SerializedName("notifications")
+    @Expose
+    private int _notifications;
 
     public String getType() {
         return _type;
@@ -50,6 +53,14 @@ public class Solution {
 
     public void setIsPinned(boolean isPinned) {
         _isPinned = isPinned;
+    }
+
+    public int getNotifications() {
+        return _notifications;
+    }
+
+    public void setNotifications(int notifications) {
+        _notifications = notifications;
     }
 
     @Override

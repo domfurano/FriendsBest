@@ -97,6 +97,37 @@ public class Repository {
         });
     }
 
+    public void deleteRecommendation(final int recommendationId) {
+        Call<Void> call = _service.deleteRecommendation(recommendationId);
+        call.clone().enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                int deletedId = response.isSuccess() ? recommendationId : -1;
+                _presenter.sendToPresenter(deletedId);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                onFailure(call, t);
+            }
+        });
+    }
+
+    public void deleteNotification(final int recommendationId) {
+        Call<Void> call = _service.deleteNotification(recommendationId);
+        call.clone().enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i("Delete Notification", "Accepted = " + response.isSuccess());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                logError("Delete Notification", t);
+            }
+        });
+    }
+
     public void getQueries() {
         _service.getQueryHistory().enqueue(new Callback<List<Query>>() {
             @Override
@@ -104,6 +135,8 @@ public class Repository {
                 List<Query> queries = null;
                 if (response.isSuccess())
                     queries = response.body();
+                if (_presenter == null)
+                    Log.e("getQuery", "Presenter is null");
                 _presenter.sendToPresenter(queries);
             }
 

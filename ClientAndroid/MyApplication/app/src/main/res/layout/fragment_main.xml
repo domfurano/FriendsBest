@@ -4,41 +4,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="20dp"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="8dp">
+    android:layout_marginBottom="@dimen/margin_small"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/fragment_main_query_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:elevation="2dp"
-        android:background="@color/white"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1">
+        android:layout_height="56dp"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:layout_weight="0.05">
 
         <ImageView
             android:id="@+id/fragment_main_query_results_button"
             android:layout_width="@dimen/icon_medium"
             android:layout_height="@dimen/icon_medium"
             android:layout_marginRight="5dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="@dimen/margin_smaller"
             android:layout_centerVertical="true"
             android:background="@drawable/ic_history_vector"/>
 
         <TextView
             android:id="@+id/fragment_main_query_results_update"
-            android:layout_width="18dp"
+            android:layout_width="wrap_content"
             android:layout_height="18dp"
-            android:background="@drawable/update_bubble"
+            android:background="@color/red900"
             android:textColor="@color/white"
             android:textAlignment="center"
+            android:padding="1dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"
+            android:layout_marginLeft="@dimen/side_margin"
             android:textStyle="bold"
-            android:text="!"/>
+            android:textSize="@dimen/text_caption_size"
+            android:text="new"/>
 
         <EditText
             android:id="@+id/fragment_main_query_field"
@@ -46,7 +43,10 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/fragment_main_submit_query_button"
             android:layout_toRightOf="@id/fragment_main_query_results_button"
-            android:layout_weight="1"
+            android:background="@drawable/edit_text_bubble"
+            android:layout_marginLeft="@dimen/margin_smaller"
+            android:layout_marginRight="@dimen/margin_smaller"
+            android:padding="@dimen/padding_smaller"
             android:singleLine="true"
             android:layout_centerVertical="true"
             android:imeOptions="actionDone"
@@ -57,16 +57,18 @@
             android:layout_width="@dimen/icon_medium"
             android:layout_height="@dimen/icon_medium"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="@dimen/margin_smaller"
             android:layout_centerVertical="true"
-            android:background="@drawable/ic_search_grey_vector"
+            android:background="@drawable/ic_search_dark_vector"
             />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7">
+        android:layout_marginLeft="@dimen/side_margin"
+        android:layout_marginRight="@dimen/side_margin"
+        android:layout_weight="0.9">
 
         <RelativeLayout
             android:id="@+id/fragment_main_empty_card_layout"
@@ -79,9 +81,9 @@
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:background="@drawable/rounded_corner"
-                android:layout_marginBottom="32dp"
-                android:layout_marginLeft="@dimen/left_margin"
-                android:layout_marginRight="@dimen/right_margin"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/side_margin"
+                android:layout_marginRight="@dimen/side_margin"
                 android:gravity="center">
 
                 <TextView

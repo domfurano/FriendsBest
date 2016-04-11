@@ -3,6 +3,7 @@ package app.friendsbest.net.ui.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,7 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
     public static final String BUNDLE_KEY = "addRecommendationKey";
     private OnFragmentInteractionListener _listener;
     private RecommendPresenter _presenter;
+    private FloatingActionButton _floatingActionButton;
     private EditText _editDetail,_editTags, _editComment;
     private TextInputLayout _detailLayout, _tagLayout;
     private ImageView _placesIcon;
@@ -56,7 +58,7 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("New Recommendation");
-        _listener.onFragmentToolbarChange(R.color.appGreen);
+        _listener.onFragmentToolbarColorChange(R.color.appGreen);
         _presenter = new PostRecommendationPresenter(this, getActivity().getApplicationContext());
         _editDetail.addTextChangedListener(new InputChangeWatcher(_editDetail));
         _editTags.addTextChangedListener(new InputChangeWatcher(_editTags));
@@ -127,11 +129,19 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
         _editDetail = (EditText) view.findViewById(R.id.recommendation_detail_input);
         _editTags = (EditText) view.findViewById(R.id.recommendation_tags_input);
         _editComment = (EditText) view.findViewById(R.id.recommendation_comments_input);
+        _floatingActionButton = (FloatingActionButton) view.findViewById(R.id.recommend_create_button);
         _placeAddress = (TextView) view.findViewById(R.id.recommendation_places_address);
         _placesIcon = (ImageView) view.findViewById(R.id.recommendation_places_icon);
         _detailLayout = (TextInputLayout) view.findViewById(R.id.recommendation_detail_layout);
         _tagLayout = (TextInputLayout) view.findViewById(R.id.recommendation_tags_layout);
         _placesIcon.setVisibility(View.INVISIBLE);
+
+        _floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitData();
+            }
+        });
 
         _fromRightSwipe = false;
         if (bundle != null) {

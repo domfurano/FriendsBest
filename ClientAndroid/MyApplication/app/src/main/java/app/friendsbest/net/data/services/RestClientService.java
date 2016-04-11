@@ -44,6 +44,12 @@ public interface RestClientService {
     @POST("recommend/")
     Call<Recommendation> postRecommendation(@Body RecommendationPost recommendation);
 
+    @DELETE("recommend/{id}/")
+    Call<Void> deleteRecommendation(@Path("id") int id);
+
+    @DELETE("notification/{id}/")
+    Call<Void> deleteNotification(@Path("id") int id);
+
     @POST("facebook/")
     Call<Map<String, String>> getAuthToken(@Body Map<String, String> facebookToken);
 

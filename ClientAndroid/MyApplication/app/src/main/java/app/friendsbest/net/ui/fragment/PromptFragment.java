@@ -91,6 +91,7 @@ public class PromptFragment extends Fragment implements
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.hideSupportActionBar();
         _listener.showBottomNavigationBar();
+        _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
         _presenter = new PromptPresenter(this, getActivity());
 
         _runnable = new Runnable() {

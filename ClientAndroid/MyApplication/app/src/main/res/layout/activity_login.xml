@@ -9,46 +9,39 @@
     android:orientation="vertical"
     tools:context="net.friendsbest.app.fbest.LoginActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginBottom="96dp">
 
+    <RelativeLayout
+        android:id="@+id/logo_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/margin_large">
+
+        <ImageView
+            android:id="@+id/logo_friends"
+            android:layout_width="192dp"
+            android:layout_height="192dp"
+            android:background="@drawable/ic_logo_vector"/>
+    </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true">
-
-                <TextView
-                    android:id="@+id/logo_friends"
-                    android:layout_width="192dp"
-                    android:layout_height="192dp"
-                    android:background="@drawable/ic_logo_vector"/>
-            </RelativeLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/login_content"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2">
-
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo_container">
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="30dp"
-                android:layout_marginTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"/>
+                android:layout_marginBottom="@dimen/margin_large"
+                android:layout_marginTop="@dimen/margin_small"
+                android:paddingBottom="@dimen/padding_small"
+                android:paddingTop="@dimen/padding_small"/>
         </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -14,13 +14,13 @@ import java.util.List;
 
 import app.friendsbest.net.R;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryItemViewHolder> {
+public class QueryHistoryAdapter extends RecyclerView.Adapter<QueryHistoryAdapter.QueryItemViewHolder> {
 
     private final OnListItemClickListener<Query> _listener;
     private final LayoutInflater _inflater;
     private List<Query> _queries = new ArrayList<>();
 
-    public HistoryAdapter(Context context, List<Query> queries, OnListItemClickListener listener) {
+    public QueryHistoryAdapter(Context context, List<Query> queries, OnListItemClickListener listener) {
         _inflater = LayoutInflater.from(context);
         _queries = queries;
         _listener = listener;
@@ -28,14 +28,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
 
 
     @Override
-    public HistoryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public QueryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = _inflater.inflate(R.layout.item_history_card, parent, false);
-        HistoryItemViewHolder holder = new HistoryItemViewHolder(view);
+        QueryItemViewHolder holder = new QueryItemViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(HistoryItemViewHolder holder, int position) {
+    public void onBindViewHolder(QueryItemViewHolder holder, int position) {
         Query query = _queries.get(position);
         holder.bind(query, _listener);
     }
@@ -45,7 +45,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
         return _queries.size();
     }
 
-    class HistoryItemViewHolder extends RecyclerView.ViewHolder {
+    class QueryItemViewHolder extends RecyclerView.ViewHolder {
 
         CardView _cardView;
         TextView _textBubbleFirst;
@@ -54,7 +54,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
         TextView _textSolutionCount;
         ImageView _arrowRight;
 
-        public HistoryItemViewHolder(View itemView) {
+        public QueryItemViewHolder(View itemView) {
             super(itemView);
             _cardView = (CardView) itemView.findViewById(R.id.history_item_card_view);
             _textBubbleFirst = (TextView) itemView.findViewById(R.id.history_bubble1);
@@ -89,7 +89,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryI
             }
 
             if (solutionSize > 0) {
-                _textSolutionCount.setText("" + solutionSize);
+                _textSolutionCount.setVisibility(View.INVISIBLE);
+                int count = 0;
+                List<Solution> solutions = query.getSolutions();
+                for (Solution solution : solutions) {
+                    for (RecommendationItem item : solution.getRecommendations()) {
+                        if (item.isNew())
+                            count++;
+                    }
+                }
+
+                if (count > 0) {
+                    _textSolutionCount.setVisibility(View.VISIBLE);
+                    _textSolutionCount.setText("" + count);
+                }
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

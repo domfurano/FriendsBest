@@ -7,7 +7,9 @@
 
     <FrameLayout
         android:layout_width="match_parent"
+        android:background="@color/appGreen"
         android:layout_height="@dimen/toolbar_height"
+        android:layout_weight="0"
         android:elevation="@dimen/toolbar_elevation">
 
         <LinearLayout
@@ -42,6 +44,9 @@
                     android:layout_height="match_parent"
                     android:singleLine="true"
                     android:inputType="textUri"
+                    android:hint="Enter URL"
+                    android:textColorHint="@color/white"
+                    android:textColor="@color/white"
                     android:imeOptions="actionGo"/>
 
             </RelativeLayout>
@@ -56,8 +61,8 @@
                     android:layout_width="@dimen/icon_large"
                     android:layout_height="@dimen/icon_large"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/bottom_margin"
-                    android:background="@drawable/ic_create_green"/>
+                    android:layout_marginBottom="@dimen/vertical_margin"
+                    android:background="@drawable/ic_create_light_vector"/>
 
             </RelativeLayout>
 
@@ -66,7 +71,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="8">
 
         <WebView
             android:id="@+id/web_view"
@@ -74,25 +80,22 @@
             android:layout_height="match_parent"/>
 
     </FrameLayout>
-
-    <!--<RelativeLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_marginLeft="@dimen/left_margin"-->
-    <!--android:layout_marginRight="@dimen/right_margin"-->
-    <!--android:layout_weight="0.5">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/web_view_back_button"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:textSize="@dimen/text_title_size"/>-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/web_view_forward_button"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_toRightOf="@id/web_view_back_button"-->
-    <!--android:textSize="@dimen/text_title_size"/>-->
-    <!--</RelativeLayout>-->
+    <FrameLayout
+        android:background="@color/gray100"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.75">
+        <ImageButton
+            android:id="@+id/web_view_back"
+            android:layout_width="@dimen/icon_large"
+            android:layout_height="@dimen/icon_large"
+            android:layout_marginLeft="@dimen/side_margin"
+            android:background="@drawable/ic_arrow_left_dark"/>
+        <ImageButton
+            android:id="@+id/web_view_forward"
+            android:layout_width="@dimen/icon_large"
+            android:layout_height="@dimen/icon_large"
+            android:layout_marginLeft="64dp"
+            android:background="@drawable/ic_arrow_right_dark"/>
+    </FrameLayout>
 </LinearLayout>

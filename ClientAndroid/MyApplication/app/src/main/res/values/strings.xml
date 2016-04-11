@@ -10,19 +10,15 @@
     <string name="title_recommendation">New Recommendation</string>
     <string name="title_activity_login">Login</string>
     <string name="add_recommendation">Add Recommendation</string>
-    <string name="rec_title_label">Recommendation</string>
-    <string name="rec_tags_label">Keywords</string>
-    <string name="rec_comments_label">Comments</string>
     <string name="no_results">No Results</string>
-    <string name="back">Back</string>
     <string name="create">+</string>
     <string name="no_internet">No Internet connection</string>
     <string name="prompt_title">Do you have a recommendation for</string>
-    <string name="prompt_tag">Restaurant</string>
     <string name="prompt_asker">Based on a search by</string>
     <string name="recommendations">Recommendations</string>
     <string name="delete_account">Delete Account</string>
     <string name="logout">Log out</string>
     <string name="search">Search</string>
     <string name="submit">submit</string>
+    <string name="fragment_frag_trans">Transition1</string>
 </resources>

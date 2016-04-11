@@ -13,6 +13,15 @@ public class RecommendationItem {
     @Expose
     private User _user;
 
+    @SerializedName("isNew")
+    @Expose
+    private boolean _isNew;
+
+    @SerializedName("id")
+    @Expose
+    private int _id;
+
+
     public String getComment() {
         return _comment;
     }
@@ -27,5 +36,21 @@ public class RecommendationItem {
 
     public void setUser(User user) {
         _user = user;
+    }
+
+    public boolean isNew() {
+        return _isNew;
+    }
+
+    public void setIsNew(boolean isNew) {
+        _isNew = isNew;
+    }
+
+    public int getId() {
+        return _id;
+    }
+
+    public void setId(int id) {
+        _id = id;
     }
 }

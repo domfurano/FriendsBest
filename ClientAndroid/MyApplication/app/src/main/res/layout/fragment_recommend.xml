@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,13 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/left_margin"
-            android:paddingRight="@dimen/right_margin">
+            android:paddingLeft="@dimen/side_margin"
+            android:paddingRight="@dimen/side_margin">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="@dimen/margin_medium">
 
                 <ImageView
                     android:id="@+id/recommendation_places_icon"
@@ -33,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginBottom="16dp"
-                    android:paddingLeft="36dp"
+                    android:paddingLeft="@dimen/padding_xlarge"
                     android:textColor="@color/gray800"
                     android:textSize="@dimen/text_caption_size"/>
             </RelativeLayout>
@@ -88,5 +89,15 @@
                     android:singleLine="false"/>
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/recommend_create_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="@dimen/vertical_margin"
+            android:layout_marginRight="@dimen/side_margin"
+            app:backgroundTint="@color/appGreen"
+            android:src="@drawable/ic_create_light_vector"
+            />
     </LinearLayout>
 </ScrollView>

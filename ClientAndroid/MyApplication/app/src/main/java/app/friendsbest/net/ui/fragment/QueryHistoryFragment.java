@@ -10,22 +10,23 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.model.HistoryAdapter;
+import app.friendsbest.net.data.model.QueryHistoryAdapter;
 import app.friendsbest.net.data.model.OnListItemClickListener;
 import app.friendsbest.net.data.model.Query;
 import app.friendsbest.net.presenter.QueryHistoryPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.FragmentView;
 
-public class SearchHistoryFragment extends Fragment implements
+public class QueryHistoryFragment extends Fragment implements
         OnListItemClickListener<Query>,
         FragmentView<List<Query>> {
 
     private OnFragmentInteractionListener _listener;
-    private HistoryAdapter _adapter;
+    private QueryHistoryAdapter _adapter;
     private RecyclerView _recyclerView;
     private ProgressBar _progressBar;
     private List<Query> _queries = new ArrayList<>();
@@ -33,29 +34,33 @@ public class SearchHistoryFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        _adapter = new HistoryAdapter(getActivity(), _queries, this);
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        _recyclerView.setLayoutManager(manager);
+        new QueryHistoryPresenter(this, getActivity().getApplicationContext());
+        _adapter = new QueryHistoryAdapter(getActivity(), _queries, this);
         _recyclerView.setAdapter(_adapter);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Search History");
-        _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
         _listener.showBottomNavigationBar();
+        if (_queries.size() > 0) {
+            hideProgressBar();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.list_query_history, container, false);
         _progressBar = (ProgressBar) contentView.findViewById(R.id.history_fragment_progressbar);
-        new QueryHistoryPresenter(this, getActivity().getApplicationContext());
         _recyclerView = (RecyclerView) contentView.findViewById(R.id.recycler_view);
-        _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         return contentView;
     }
 
     @Override
     public void displayContent(List<Query> queries) {
-        _recyclerView.setAdapter(new HistoryAdapter(getActivity(), queries, this));
+        Collections.reverse(queries);
+        _recyclerView.setAdapter(new QueryHistoryAdapter(getActivity(), queries, this));
     }
 
     @Override

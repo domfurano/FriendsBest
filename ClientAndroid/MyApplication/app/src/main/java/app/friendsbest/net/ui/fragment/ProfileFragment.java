@@ -62,7 +62,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _listener.showSupportActionBar();
         _listener.showBottomNavigationBar();
         _listener.onFragmentTitleChange("Profile");
-        _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
+        _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
         new ProfilePresenter(this, getActivity().getApplicationContext());
         _preferencesUtility = PreferencesUtility.getInstance(getActivity().getApplicationContext());
         _profileGreeting.setText(_preferencesUtility.getUserName());

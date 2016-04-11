@@ -28,7 +28,7 @@ public class RecommendationItemAdapter extends RecyclerView.Adapter<Recommendati
 
     @Override
     public RecommendationItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = _inflater.inflate(R.layout.recommendation_row, parent, false);
+        View view = _inflater.inflate(R.layout.item_recommendation, parent, false);
         RecommendationItemViewHolder holder = new RecommendationItemViewHolder(view);
         return holder;
     }
@@ -36,9 +36,18 @@ public class RecommendationItemAdapter extends RecyclerView.Adapter<Recommendati
     @Override
     public void onBindViewHolder(RecommendationItemViewHolder holder, int position) {
         RecommendationItem item = _recommendationItems.get(position);
-        holder._nameTextView.setText(item.getUser().getName());
-        holder._commentTextView.setText(item.getComment());
-        ImageService.getInstance(_context).retrieveProfileImage(holder._profilePicture, item.getUser().getId(), ImageService.PictureSize.MEDIUM);
+        User user = item.getUser();
+
+        if (user != null) {
+            holder._nameTextView.setText(item.getUser().getName());
+            holder._commentTextView.setText(item.getComment());
+            ImageService.getInstance(_context).retrieveProfileImage(holder._profilePicture, item.getUser().getId(), ImageService.PictureSize.MEDIUM);
+        }
+        else {
+            holder._nameTextView.setText("Anonymous");
+            holder._commentTextView.setText("");
+            holder._profilePicture.setImageResource(R.drawable.ic_account_vector);
+        }
     }
 
     @Override

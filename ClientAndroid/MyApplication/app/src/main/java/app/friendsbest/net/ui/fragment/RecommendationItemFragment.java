@@ -20,7 +20,10 @@ import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.RecommendationItem;
 import app.friendsbest.net.data.model.RecommendationItemAdapter;
 import app.friendsbest.net.data.model.Solution;
+import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.presenter.RecommendationPresenter;
+import app.friendsbest.net.presenter.interfaces.BasePresenter;
 
 public class RecommendationItemFragment extends Fragment {
 
@@ -59,5 +62,29 @@ public class RecommendationItemFragment extends Fragment {
         Solution solution = new Gson().fromJson(solutionJson, Solution.class);
         _toolbarTitle = solution.getDetail();
         _recommendations = solution.getRecommendations();
+        Presenter presenter = new Presenter();
+        for (RecommendationItem item : _recommendations) {
+            if (item.isNew()) {
+                presenter.updateReadStatus(item);
+            }
+        }
+    }
+
+    private class Presenter implements BasePresenter<Void> {
+
+        private Repository _repository;
+
+        public Presenter() {
+            _repository = new Repository(this, PreferencesUtility.getInstance(getActivity()).getToken());
+        }
+
+        public void updateReadStatus(RecommendationItem item) {
+            _repository.deleteNotification(item.getId());
+        }
+
+        @Override
+        public void sendToPresenter(Void responseData) {
+
+        }
     }
 }
