@@ -11,8 +11,6 @@ import UIKit
 
 class FriendsListViewController: UITableViewController {
     
-    let smallProfilePicture: UIImageView = CommonUI.smallProfilePicture!
-    
     override func loadView() {
         view = GradientTableView()
     }
@@ -65,7 +63,7 @@ class FriendsListViewController: UITableViewController {
         let friend: Friend = User.instance.friends[indexPath.row]
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
         cell.textLabel?.text = friend.name
-        cell.imageView?.image = friend.squarePicture
+        cell.imageView?.image = friend.squarePicture?.image
         cell.userInteractionEnabled = false
         return cell
     }
@@ -81,13 +79,11 @@ class FriendsListViewController: UITableViewController {
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        smallProfilePicture.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        smallProfilePicture.contentMode = .ScaleAspectFit
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = smallProfilePicture.frame
+        let profileButton: UIButton = UIButton(type: .Custom)
+        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
         profileButton.layer.masksToBounds = true
         profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(smallProfilePicture)
+        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
         profileButton.addTarget(
             self,
             action: #selector(ProfileViewController.profileButtonPressed),

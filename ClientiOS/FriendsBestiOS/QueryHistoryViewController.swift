@@ -27,9 +27,6 @@ class QueryHistoryView: UITableView {
 
 class QueryHistoryViewController: UITableViewController {
     
-    
-    let smallProfilePicture: UIImageView = CommonUI.smallProfilePicture!
-    
     override func loadView() {
         view = QueryHistoryView(frame: CGRectZero, style: UITableViewStyle.Grouped)
     }
@@ -91,13 +88,11 @@ class QueryHistoryViewController: UITableViewController {
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        smallProfilePicture.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        smallProfilePicture.contentMode = .ScaleAspectFit
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = smallProfilePicture.frame
+        let profileButton: UIButton = UIButton(type: .Custom)
+        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
         profileButton.layer.masksToBounds = true
         profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(smallProfilePicture)
+        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
         profileButton.addTarget(
             self,
             action: #selector(QueryHistoryViewController.profileButtonPressed),

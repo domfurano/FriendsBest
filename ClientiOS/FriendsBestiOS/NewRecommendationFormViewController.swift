@@ -66,6 +66,10 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Keywords")
             <<< TextRow() {
                 $0.tag = "keywords"
+                if tags != nil {
+                    $0.value = self.tags!.joinWithSeparator("")
+                    $0.disabled = true
+                }
             }
             +++ Section("Comments")
             <<< TextAreaRow() {

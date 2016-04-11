@@ -118,13 +118,15 @@ class SolutionDetailViewController: UITableViewController {
             cell.userInteractionEnabled = false
             return cell
         } else {
-            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Default, reuseIdentifier: "SolutionDetailCell")
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Subtitle, reuseIdentifier: "SolutionDetailCell")
 //            let cell: SolutionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("SolutionDetailCell") as! SolutionDetailTableViewCell
 //            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
             let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
-            cell.nameLabel.text = recommendation.friend.name
-            cell.commentLabel.text = recommendation.comment
-//            cell.imageView?.image = UIImage.roundedRectImageFromImage(recommendation.friend.squarePicture)
+//            cell.nameLabel.text = recommendation.friend.name
+//            cell.commentLabel.text = recommendation.comment
+            cell.textLabel?.text = recommendation.friend.name
+            cell.detailTextLabel?.text = recommendation.comment
+            cell.imageView?.image = recommendation.friend.squarePicture?.image
             cell.userInteractionEnabled = false
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()

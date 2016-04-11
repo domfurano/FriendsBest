@@ -18,13 +18,14 @@ class User: NetworkDAODelegate {
     
     /* Member variables */
     var name: String? = nil
-    var facebookID: String? = nil
+    var facebookID: String {
+        return FBSDKAccessToken.currentAccessToken().userID
+    }
     private(set) var queryHistory: QueryHistory = QueryHistory()
     private(set) var prompts: Prompts = Prompts()
     private(set) var friends: [Friend] = []
     var recommendations: [Recommendation] = []
-
-
+    
     /* Delegation */
     var queryHistoryUpdatedClosure: () -> Void = {}
     var querySolutionsUpdatedClosure: (queryID: Int) -> Void = { _ in }
@@ -37,6 +38,7 @@ class User: NetworkDAODelegate {
     
     /* Private constructor */
     private init() {
+        
         // Delegate assignment
         FBNetworkDAO.instance.networkDAODelegate = self
     }
@@ -93,13 +95,7 @@ class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
     var muted: Bool?
-    private(set) var squarePicture: UIImage? {
-        didSet {
-            pictureCircular = UIImageView(image: squarePicture)
-            pictureCircular?.layer.cornerRadius = max(squarePicture!.size.width, squarePicture!.size.height) / 2
-        }
-    }
-    private(set) var pictureCircular: UIImageView?    
+    private(set) var squarePicture: UIImageView?
     var hashValue: Int {
         return facebookID.hashValue
     }
@@ -108,12 +104,7 @@ class Friend: Equatable, Hashable {
         self.facebookID = facebookID
         self.name = name
         
-        FacebookNetworkDAO.instance.getFacebookProfileImage(
-            facebookID,
-            size: FacebookNetworkDAO.FacbookImageSize.square
-        ) { (profileImage: UIImage) in
-            self.squarePicture = profileImage
-        }
+        self.squarePicture = CommonUI.instance.getFacebookProfileUIImageView(facebookID, size: .square)
     }
 }
 
@@ -376,7 +367,7 @@ class Prompt: Equatable, Hashable {
     private(set) var article: String
     private(set) var tags: [String]
     private(set) var tagString: String
-    private(set) var friend: Friend
+    private(set) var friend: Friend?
     private(set) var ID: Int
     var new: Bool
     
@@ -384,7 +375,7 @@ class Prompt: Equatable, Hashable {
         return self.ID
     }
 
-    init(article: String, tags: [String], tagString: String, friend: Friend, ID: Int) {
+    init(article: String, tags: [String], tagString: String, friend: Friend?, ID: Int) {
         self.article = article
         self.tags = tags
         self.tagString = tagString

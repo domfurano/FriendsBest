@@ -8,18 +8,18 @@
 
 import Foundation
 
-class UpdateBullshitter {
+class Updater {
     
-    static let instance: UpdateBullshitter = UpdateBullshitter()
+    static let instance: Updater = Updater()
     
-    private var timer: Timer? = nil
+    private var timer: Timer!
     
     func STAHP () {
-        self.timer!.cancelTimer()
+        self.timer.cancelTimer()
     }
     
     func start() {
-        self.timer!.startTimer()
+        self.timer.startTimer()
     }
     
     private init() {
@@ -27,7 +27,7 @@ class UpdateBullshitter {
 //            self.checkForNewRecommendations()
             FBNetworkDAO.instance.getPrompts()
         })
-        timer?.startTimer()
+        timer.startTimer()
     }
     
     

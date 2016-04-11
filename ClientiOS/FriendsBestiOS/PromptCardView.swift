@@ -8,12 +8,14 @@
 
 import UIKit
 import Koloda
+import PINRemoteImage
 
 class PromptCardView: UIView {
-
+    
     var titleLabel: UILabel = UILabel()
     var tagLabel: UILabel = UILabel()
     var subTitleLabel: UILabel = UILabel()
+    var friendPicture: UIImageView?
     
     //    var userPicture: UIView?
     
@@ -25,49 +27,63 @@ class PromptCardView: UIView {
     }
     
     convenience init(frame: CGRect, prompt: Prompt) {
-        self.init(frame: frame)        
+        self.init(frame: frame)
         self.prompt = prompt
-        
-        backgroundColor = UIColor.grayColor() // TODO: HACK
         
         
         /* Rounded corners */
         
-        self.layer.masksToBounds = true
-        self.layer.cornerRadius = 8.0
+        layer.cornerRadius = 8.0
+        layer.masksToBounds = true
         
         
         /* Border */
         
-        self.layer.borderWidth = 1.5
-        self.layer.borderColor = UIColor.colorFromHex(0xaaaaaa).CGColor
+        layer.borderWidth = 1.5
+        layer.borderColor = UIColor.colorFromHex(0xaaaaaa).CGColor
         
         
-        /* UILabels */
+        /* UI Elements */
         
         titleLabel.numberOfLines = 2
         titleLabel.textAlignment = .Center
         titleLabel.font = UIFont(name: "Helvetica Neue", size: 16.0)
         
         tagLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 20.0)
+        tagLabel.numberOfLines = 2
+        tagLabel.lineBreakMode = NSLineBreakMode.ByTruncatingTail
         
         subTitleLabel.font = UIFont(name: "Helvetica Neue", size: 10.0)
         
-        let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: "based on a search by \(prompt.friend.name)")
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 20))
-        attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt.friend.name.characters.count))
+        var attributedString: NSMutableAttributedString
+        if prompt.friend != nil {
+            attributedString = NSMutableAttributedString(string: "based on a search by \(prompt.friend!.name)")
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 20))
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt.friend!.name.characters.count))
+        } else {
+            attributedString = NSMutableAttributedString(string: "based on a search")
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 16))
+        }
         
-        titleLabel.text = "Do you have a\nrecommendation for a"
+        if prompt.friend != nil {
+            friendPicture = CommonUI.instance.getFacebookProfileUIImageView(prompt.friend!.facebookID, size: CommonUI.FacbookImageSize.square)
+        }
+        
+        titleLabel.text = "Do you have a recommendation"
         tagLabel.text = self.prompt!.tagString
         subTitleLabel.attributedText = attributedString
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         tagLabel.translatesAutoresizingMaskIntoConstraints = false
         subTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        friendPicture?.translatesAutoresizingMaskIntoConstraints = false
         
-        self.addSubview(titleLabel)
-        self.addSubview(tagLabel)
-        self.addSubview(subTitleLabel)
+        addSubview(titleLabel)
+        addSubview(tagLabel)
+        addSubview(subTitleLabel)
+        if friendPicture != nil {
+            addSubview(friendPicture!)
+        }
         
         
         /* Layout contstraints */
@@ -94,6 +110,16 @@ class PromptCardView: UIView {
         
         self.addConstraint(
             NSLayoutConstraint(
+                item: titleLabel,
+                attribute: NSLayoutAttribute.Width,
+                relatedBy: NSLayoutRelation.LessThanOrEqual,
+                toItem: self,
+                attribute: NSLayoutAttribute.Width,
+                multiplier: 0.9,
+                constant: 0.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
                 item: tagLabel,
                 attribute: NSLayoutAttribute.CenterX,
                 relatedBy: NSLayoutRelation.Equal,
@@ -110,6 +136,16 @@ class PromptCardView: UIView {
                 toItem: self,
                 attribute: NSLayoutAttribute.CenterY,
                 multiplier: 1.0,
+                constant: 0.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: tagLabel,
+                attribute: NSLayoutAttribute.Width,
+                relatedBy: NSLayoutRelation.LessThanOrEqual,
+                toItem: self,
+                attribute: NSLayoutAttribute.Width,
+                multiplier: 0.9,
                 constant: 0.0))
         
         self.addConstraint(
@@ -129,10 +165,44 @@ class PromptCardView: UIView {
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self,
                 attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.9,
+                multiplier: 1.85,
                 constant: 0.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: subTitleLabel,
+                attribute: NSLayoutAttribute.Width,
+                relatedBy: NSLayoutRelation.LessThanOrEqual,
+                toItem: self,
+                attribute: NSLayoutAttribute.Width,
+                multiplier: 0.9,
+                constant: 0.0))
+        
+        if friendPicture != nil {
+            self.addConstraint(
+                NSLayoutConstraint(
+                    item: friendPicture!,
+                    attribute: NSLayoutAttribute.CenterY,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: subTitleLabel,
+                    attribute: NSLayoutAttribute.CenterY,
+                    multiplier: 1.0,
+                    constant: 0.0))
+            
+            self.addConstraint(
+                NSLayoutConstraint(
+                    item: friendPicture!,
+                    attribute: NSLayoutAttribute.Leading,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: subTitleLabel,
+                    attribute: NSLayoutAttribute.Trailing,
+                    multiplier: 1.0,
+                    constant: 12.0))
+        }
+        
+        
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

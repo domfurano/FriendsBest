@@ -83,7 +83,7 @@ class FBNetworkDAO {
                                         return
                                     }
                                     
-                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "getQueries") {
                                         NetworkQueue.instance.tryAgain()
                                         return
                                     }
@@ -177,7 +177,7 @@ class FBNetworkDAO {
                                         return
                                     }
                                     
-                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQueries") {
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "getQueries") {
                                         NetworkQueue.instance.tryAgain()
                                         return
                                     }
@@ -251,7 +251,7 @@ class FBNetworkDAO {
                                         return
                                     }
                                     
-                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getQuerySolutions") {
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "getQuerySolutions") {
                                         NetworkQueue.instance.tryAgain()
                                         return
                                     }
@@ -314,7 +314,7 @@ class FBNetworkDAO {
                                         return
                                     }
                                     
-                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getRecommendationsForUser") {
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "getRecommendationsForUser") {
                                         NetworkQueue.instance.tryAgain()
                                         return
                                     }
@@ -456,7 +456,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewQuery") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [201], funcName: "postNewQuery") {
                                             NetworkQueue.instance.tryAgain()
                                             return
                                         }
@@ -562,7 +562,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 204, funcName: "deleteQuery") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [204], funcName: "deleteQuery") {
                                             NetworkQueue.instance.tryAgain()
                                             return
                                         }
@@ -607,11 +607,11 @@ class FBNetworkDAO {
                                         
                                         if let error = error {
                                             NSLog("Error - FriendsBest API - deletePrompt() - \(error.localizedDescription)")
-                                            NetworkQueue.instance.dequeue()
+                                            NetworkQueue.instance.tryAgain()
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 204, funcName: "deletePrompt") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [204, 404], funcName: "deletePrompt") {
                                             NetworkQueue.instance.dequeue()
                                             return
                                         }
@@ -660,7 +660,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 204, funcName: "deleteRecommendation") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [204], funcName: "deleteRecommendation") {
                                             NetworkQueue.instance.dequeue()
                                             return
                                         }
@@ -719,7 +719,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 201, funcName: "postNewRecommendation") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [201], funcName: "postNewRecommendation") {
                                             NetworkQueue.instance.tryAgain()
                                             return
                                         }
@@ -770,7 +770,7 @@ class FBNetworkDAO {
                                         return
                                     }
                                     
-                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "getPrompts") {
+                                    if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "getPrompts") {
                                         NetworkQueue.instance.tryAgain()
                                         return
                                     }
@@ -801,22 +801,13 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        guard let validFriendDict: NSDictionary = friendDict else {
-                                            NSLog("Error - FriendsBest API - getPrompts() - Error unwrapping friend dictionary")
-                                            NetworkQueue.instance.tryAgain()
-                                            return
-                                        }
+                                        // friendDict may be nil for anonymous prompts.
                                         
-                                        let facebookID: String? = validFriendDict["id"] as? String
-                                        let userName: String? = validFriendDict["name"] as? String
+                                        var friend: Friend? = nil
                                         
-                                        guard let validFacebookID = facebookID, let validUserName = userName else {
-                                            NSLog("Error - FriendsBest API - getPrompts() - Friend dictionary elements invalid")
-                                            NetworkQueue.instance.tryAgain()
-                                            return
-                                        }
-                                        
-                                        let friend: Friend = Friend(facebookID: validFacebookID, name: validUserName)
+                                        if friendDict != nil {
+                                            friend = Friend(facebookID: friendDict!["id"]! as! String, name: friendDict!["name"]! as! String)
+                                        }                                    
                                         
                                         prompts.append(Prompt(article: validArticle, tags: validTags, tagString: validTagString, friend: friend, ID: validPromptID))
                                     }
@@ -871,7 +862,7 @@ class FBNetworkDAO {
                                             return
                                         }
                                         
-                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCode: 200, funcName: "postFacebookToken") {
+                                        if !FBNetworkDAO.instance.responseHasExpectedStatusCode(response, expectedStatusCodes: [200], funcName: "postFacebookToken") {
                                             NetworkQueue.instance.tryAgain()
                                             return
                                         }
@@ -953,17 +944,17 @@ class FBNetworkDAO {
         return solutions
     }
     
-    func responseHasExpectedStatusCode(response: NSURLResponse?, expectedStatusCode: Int, funcName: String) -> Bool {
+    func responseHasExpectedStatusCode(response: NSURLResponse?, expectedStatusCodes: [Int], funcName: String) -> Bool {
         guard let response = response else {
             NSLog("Error - FriendsBest API - \(funcName)() - No response")
             return false
         }
         
         if let response = response as? NSHTTPURLResponse {
-            if response.statusCode == expectedStatusCode {
+            if expectedStatusCodes.contains(response.statusCode) {
                 return true
             } else {
-                NSLog("Error - FriendsBest API - \(funcName)() - Status code \(response.statusCode) not expected \(expectedStatusCode)")
+                NSLog("Error - FriendsBest API - \(funcName)() - Status code \(response.statusCode) not expected \(expectedStatusCodes)")
             }
         }
         

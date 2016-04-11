@@ -10,38 +10,49 @@ import UIKit
 
 class RecommendationTypePickerView: UIView {
     
+    var customLabel: UILabel = UILabel()
+    var linkLabel: UILabel = UILabel()
+    var placeLabel: UILabel = UILabel()
+    
     var customTypeButton: UIButton = UIButton()
     var linkTypeButton: UIButton = UIButton()
     var placeTypeButton: UIButton = UIButton()
     
-    var visibleContstraints: [NSLayoutConstraint]? = nil
-    var hiddenConstraints: [NSLayoutConstraint]? = nil
+    var visibleContstraints: [NSLayoutConstraint] = []
+    var hiddenConstraints: [NSLayoutConstraint] = []
     
-    var staticConstraints: [NSLayoutConstraint]? = nil
-    
-    var customButtonVisibleConstraint: NSLayoutConstraint? = nil
-    var customButtonHiddenConstraint: NSLayoutConstraint? = nil
-    var linkButtonVisibleConstraint: NSLayoutConstraint? = nil
-    var linkButtonHiddenConstraint: NSLayoutConstraint? = nil
-    var placeButtonVisibleConstraint: NSLayoutConstraint? = nil
-    var placeButtonHiddenConstraint: NSLayoutConstraint? = nil
-    
+    final let labelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 18.0)!
+    final let textColor: UIColor = UIColor.whiteColor()
     final let ICON_SIZE: CGFloat = 60.0
     final let ICON_COLOR: UIColor = CommonUI.fbGreen
     final let BUTTON_SIZE: CGSize = CGSize(width: 80.0, height: 80.0)
-    final let BUTTON_BGCOLOR: UIColor = UIColor.grayColor()
+    final let BUTTON_BGCOLOR: UIColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.33)
     final let BUTTON_CORNER_RADIUS: CGFloat = 4.0
-    final let BUTTON_VISIBLE_ALPHA: CGFloat = 0.8
+    final let VISIBLE_COLOR: UIColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.67)
+    final let HIDDEN_COLOR: UIColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
     
+    /* Delegation */
+    var customButtonDelegate: () -> Void = { }
+    var linkButtonDelegate: () -> Void = { }
+    var placeButtonDelegate: () -> Void = { }
+    var pickerHidden: () -> Void = { }
     
     convenience init() {
         self.init(frame: CGRectZero)
         
-        backgroundColor = UIColor.blackColor()
-        alpha = 0.0
-        customTypeButton.alpha = 0.0
-        linkTypeButton.alpha = 0.0
-        placeTypeButton.alpha = 0.0
+        backgroundColor = HIDDEN_COLOR
+        
+        customLabel.text = "Custom"
+        linkLabel.text = "Website"
+        placeLabel.text = "Place"
+        
+        customLabel.font = labelFont
+        linkLabel.font = labelFont
+        placeLabel.font = labelFont
+        
+        customLabel.textColor = textColor
+        linkLabel.textColor = textColor
+        placeLabel.textColor = textColor
         
         let iCursorIcon: FAKFontAwesome = FAKFontAwesome.iCursorIconWithSize(ICON_SIZE)
         let linkIcon: FAKFontAwesome = FAKFontAwesome.externalLinkIconWithSize(ICON_SIZE)
@@ -67,208 +78,257 @@ class RecommendationTypePickerView: UIView {
         linkTypeButton.layer.cornerRadius = BUTTON_CORNER_RADIUS
         placeTypeButton.layer.cornerRadius = BUTTON_CORNER_RADIUS
         
-        self.translatesAutoresizingMaskIntoConstraints = false
+        customLabel.translatesAutoresizingMaskIntoConstraints = false
+        linkLabel.translatesAutoresizingMaskIntoConstraints = false
+        placeLabel.translatesAutoresizingMaskIntoConstraints = false
         customTypeButton.translatesAutoresizingMaskIntoConstraints = false
         linkTypeButton.translatesAutoresizingMaskIntoConstraints = false
         placeTypeButton.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    override func didMoveToSuperview() {
-        generateStaticConstraints()
+        
+        customTypeButton.addTarget(
+            self,
+            action: #selector(RecommendationTypePickerView.customTypeButtonTouched),
+            forControlEvents: UIControlEvents.TouchUpInside)
+        
+        linkTypeButton.addTarget(
+            self,
+            action: #selector(RecommendationTypePickerView.linkTypeButtonTouched),
+            forControlEvents: UIControlEvents.TouchUpInside)
+        
+        placeTypeButton.addTarget(
+            self,
+            action: #selector(RecommendationTypePickerView.placeTypeButtonTouched),
+            forControlEvents: UIControlEvents.TouchUpInside)
+        
+        addSubview(linkLabel)
+        addSubview(placeLabel)
+        addSubview(customLabel)
+        addSubview(linkTypeButton)
+        addSubview(placeTypeButton)
+        addSubview(customTypeButton)
+        
+        addStaticConstraints()
         generateHiddenConstraints()
         generateVisibleConstraints()
-        superview!.addSubview(customTypeButton)
-        superview!.addSubview(linkTypeButton)
-        superview!.addSubview(placeTypeButton)
-        superview?.addConstraints(staticConstraints!)
-        hide()
+        
+        hide(true)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        hide()
+        hide(false)
+    }
+    
+    func customTypeButtonTouched() {
+        customButtonDelegate()
+    }
+    
+    func linkTypeButtonTouched() {
+        linkButtonDelegate()
+    }
+    
+    func placeTypeButtonTouched() {
+        placeButtonDelegate()
     }
     
     func show() {
-//        if hiddenConstraints == nil {
-//            generateHiddenConstraints()
-//        }
-//        if visibleContstraints == nil {
-//            generateVisibleConstraints()
-//        }
+        UIView.animateWithDuration(NSTimeInterval(0.33)) {
+            self.backgroundColor = self.VISIBLE_COLOR
+        }
         
-        superview!.bringSubviewToFront(self)
-        superview!.bringSubviewToFront(customTypeButton)
-        superview!.bringSubviewToFront(linkTypeButton)
-        superview!.bringSubviewToFront(placeTypeButton)
-        superview!.removeConstraints(hiddenConstraints!)
-        superview!.addConstraints(visibleContstraints!)
-        customTypeButton.alpha = BUTTON_VISIBLE_ALPHA
-        linkTypeButton.alpha = BUTTON_VISIBLE_ALPHA
-        placeTypeButton.alpha = BUTTON_VISIBLE_ALPHA
+        UIView.animateWithDuration(
+            NSTimeInterval(0.5),
+            delay: NSTimeInterval(0.0),
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 1.0,
+            options: UIViewAnimationOptions.CurveEaseOut,
+            animations: {
+                self.removeConstraints(self.hiddenConstraints)
+                self.addConstraints(self.visibleContstraints)
+                self.layoutIfNeeded()
+        }) { (Bool) in
+        }
     }
     
-    func hide() {
-//        if hiddenConstraints == nil {
-//            generateHiddenConstraints()
-//        }
-//        if visibleContstraints == nil {
-//            generateVisibleConstraints()
-//        }
+    var hiding: Bool = false
+    func hide(immediately: Bool) {
+        if hiding {
+            return
+        }
         
-        superview!.removeConstraints(visibleContstraints!)
-        superview!.addConstraints(hiddenConstraints!)
-        alpha = 0.0
-        customTypeButton.alpha = 0.0
-        linkTypeButton.alpha = 0.0
-        placeTypeButton.alpha = 0.0
+        hiding = true
+        
+        if immediately {
+            hide()
+            self.backgroundColor = self.HIDDEN_COLOR
+            hiding = false
+            self.pickerHidden()
+        } else {
+            UIView.animateWithDuration(NSTimeInterval(0.33)) {
+                self.backgroundColor = self.HIDDEN_COLOR
+            }
+            
+            UIView.animateWithDuration(
+                NSTimeInterval(0.5),
+                delay: NSTimeInterval(0.0),
+                usingSpringWithDamping: 1.0,
+                initialSpringVelocity: 1.0,
+                options: UIViewAnimationOptions.CurveEaseIn,
+                animations: {
+                    self.hide()
+                    self.layoutIfNeeded()
+            }) { (Bool) in
+                self.hiding = false
+                self.pickerHidden()
+            }
+        }
     }
     
-    private func generateStaticConstraints() {
-        staticConstraints = []
-        staticConstraints!.appendContentsOf([
+    private func hide() {
+        removeConstraints(visibleContstraints)
+        addConstraints(hiddenConstraints)
+    }
+    
+    private func addStaticConstraints() {
+        
+        addConstraint(
             NSLayoutConstraint(
-                item: self,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: superview,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: 0.0),
-            
-            NSLayoutConstraint(
-                item: self,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: superview,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.0,
-                constant: 0.0),
-            
-            NSLayoutConstraint(
-                item: self,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: superview,
-                attribute: NSLayoutAttribute.Width,
-                multiplier: 1.0,
-                constant: 0.0),
-            
-            NSLayoutConstraint(
-                item: self,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: superview,
-                attribute: NSLayoutAttribute.Height,
-                multiplier: 1.0,
-                constant: 0.0),
-            
-            NSLayoutConstraint(
-                item: linkTypeButton,
+                item: customLabel,
                 attribute: .CenterX,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: customTypeButton,
                 attribute: .CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            ))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: linkLabel,
+                attribute: .CenterX,
+                relatedBy: .Equal,
+                toItem: linkTypeButton,
+                attribute: .CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            ))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: placeLabel,
+                attribute: .CenterX,
+                relatedBy: .Equal,
+                toItem: placeTypeButton,
+                attribute: .CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            ))
+        
+        addConstraints([
+            NSLayoutConstraint(
+                item: customLabel,
+                attribute: .Bottom,
+                relatedBy: .Equal,
+                toItem: customTypeButton,
+                attribute: .Top,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
+                item: linkLabel,
+                attribute: .Bottom,
+                relatedBy: .Equal,
+                toItem: linkTypeButton,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 0.0
+            ),
+            NSLayoutConstraint(
+                item: placeLabel,
+                attribute: .Bottom,
+                relatedBy: .Equal,
+                toItem: placeTypeButton,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 0.0
+            )])
+        
+        addConstraints([
+            NSLayoutConstraint(
                 item: customTypeButton,
                 attribute: .CenterY,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .CenterY,
                 multiplier: 1.5,
+                constant: 0.0
+            ),
+            NSLayoutConstraint(
+                item: linkTypeButton,
+                attribute: .CenterX,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .CenterX,
+                multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: placeTypeButton,
                 attribute: .CenterY,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .CenterY,
                 multiplier: 1.5,
                 constant: 0.0
-            )
-            ])
+            )])
     }
     
     private func generateVisibleConstraints() {
-        visibleContstraints = []
-        visibleContstraints!.appendContentsOf([
+        visibleContstraints.appendContentsOf([
             NSLayoutConstraint(
                 item: customTypeButton,
                 attribute: .CenterX,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .CenterX,
                 multiplier: 0.33,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: linkTypeButton,
-                attribute: .CenterX,
+                attribute: .CenterY,
                 relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterX,
-                multiplier: 1.0,
+                toItem: self,
+                attribute: .CenterY,
+                multiplier: 1.5,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: placeTypeButton,
                 attribute: .CenterX,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .CenterX,
                 multiplier: 1.67,
                 constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: customTypeButton,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterY,
-                multiplier: 1.5,
-                constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: linkTypeButton,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterY,
-                multiplier: 1.5,
-                constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: placeTypeButton,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterY,
-                multiplier: 1.5,
-                constant: 0.0
-            )
-            ])
+            )])
     }
     
     private func generateHiddenConstraints() {
-        hiddenConstraints = []
-        hiddenConstraints!.appendContentsOf([
+        hiddenConstraints.appendContentsOf([
             NSLayoutConstraint(
                 item: customTypeButton,
                 attribute: .Right,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .Left,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
-                item: linkTypeButton,
+                item: linkLabel,
                 attribute: .Top,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .Bottom,
                 multiplier: 1.0,
                 constant: 0.0
@@ -277,39 +337,11 @@ class RecommendationTypePickerView: UIView {
                 item: placeTypeButton,
                 attribute: .Left,
                 relatedBy: .Equal,
-                toItem: superview,
+                toItem: self,
                 attribute: .Right,
                 multiplier: 1.0,
                 constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: customTypeButton,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterY,
-                multiplier: 1.5,
-                constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: linkTypeButton,
-                attribute: .CenterX,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterX,
-                multiplier: 1.0,
-                constant: 0.0
-            ),
-            NSLayoutConstraint(
-                item: placeTypeButton,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: superview,
-                attribute: .CenterY,
-                multiplier: 1.5,
-                constant: 0.0
-            )
-            ])
+            )])
     }
     
 }
