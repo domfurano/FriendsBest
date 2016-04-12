@@ -8,6 +8,7 @@ target 'FriendsBest' do
     pod 'Eureka', '~> 1.5'
     pod 'PureLayout'
     pod 'PINRemoteImage'
+    pod 'GoogleMaps'
 end
 
 post_install do |installer|

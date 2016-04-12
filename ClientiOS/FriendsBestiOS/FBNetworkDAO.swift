@@ -672,14 +672,14 @@ class FBNetworkDAO {
         
     }
     
-    func postNewRecommendtaion(detail: String, type: String, comments: String, recommendationTags: [String]) {
+    func postNewRecommendtaion(recommendation: UserRecommendation) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._postNewRecommendtaion(detail, type: type, comments: comments, recommendationTags: recommendationTags)
+            self?._postNewRecommendtaion(recommendation)
             }, description: "postNewRecommendtaion()"))
     }
     
-    private func _postNewRecommendtaion(detail: String, type: String, comments: String, recommendationTags: [String]) {
+    private func _postNewRecommendtaion(recommendation: UserRecommendation) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate()
             NetworkQueue.instance.tryAgain()
@@ -695,7 +695,12 @@ class FBNetworkDAO {
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
-        let json = ["detail": detail, "type": type, "comments" : comments, "tags": recommendationTags]
+        let json = [
+            "detail": recommendation.detail!,
+            "type": recommendation.type!.rawValue,
+            "comments" : recommendation.comments == nil ? " " : recommendation.comments!,
+            "tags": recommendation.tags!
+        ]
         let jsonData: NSData
         do {
             jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
