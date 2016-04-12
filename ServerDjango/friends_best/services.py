@@ -270,8 +270,8 @@ def submitQuery(user, *tags):
         # create prompt if friend user has no recommendation such that its tags include every tag in the query
         friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
         allLemmasMatch = False
-        #for rec in friendRecommendations:
-        #    recLemmas = [tag.lemma for tag in rec.tags]
+        for rec in friendRecommendations:
+            recLemmas = [tag.lemma for tag in rec.tags]
         #    allLemmasMatch = True
         #    for lemma in lemmas:
         #        if not lemma in recLemmas:
