@@ -139,7 +139,7 @@ def generateAnonymousPrompts(user):
     #    randomIndexes.add(randomIndex)
     randomIndexes = generateRandomIndexes(5, queryCount)
 
-    userRecommendations = Recommendation.objects.prefetch_related('tags').filter(user=user)
+    userRecommendations = Recommendation.objects.filter(user=user)
     for randomIndex in randomIndexes:
         query = queriesByStrangers[randomIndex]
         queryTags = Tag.objects.filter(query=query)
