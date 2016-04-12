@@ -163,14 +163,14 @@ def generateAnonymousPrompts(user):
 
 
 # private helper method (creates a set of random indexes for the specified collection)
-# range = number of indexes returned (fewer indexes are returned if any indexes are randomly selected more than once)
+# loopRange = number of indexes returned (fewer indexes are returned if any indexes are randomly selected more than once)
 # length = length of collection
-def generateRandomIndexes(range, length):
+def generateRandomIndexes(loopRange, length):
     if range < 0 or length < 1:
         return "error: invalid parameter(s) for generating random indexes"
 
     randomIndexes = set()
-    for x in range(0, range):
+    for x in range(0, loopRange):
         randomIndex = randint(0, length - 1)
         randomIndexes.add(randomIndex)
 
