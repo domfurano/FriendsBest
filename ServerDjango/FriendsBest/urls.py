@@ -43,7 +43,7 @@ else:
         url(r'^api/', include(router.urls)),
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^deploy/$', csrf_exempt(deploy)),
-        url(r'^fb/error/', error),
+        url(r'^error/$', error),
 #         url(r'^api/me/$', CurrentUserView.as_view()
 
         # Facebook Postback
