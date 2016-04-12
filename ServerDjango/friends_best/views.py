@@ -138,7 +138,24 @@ class PromptViewSet(mixins.RetrieveModelMixin,
          prompts = getPrompts(request.user)
          serializer = PromptSerializer(prompts, many=True)
          return Response(serializer.data)
+
+# Limited to GET HEAD DELETE OPTIONS
+# http://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
+class AccoladeViewSet(mixins.RetrieveModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    
+    queryset = Accolade.objects.order_by('user')
+    serializer_class = AccoladeSerializer
+    permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
+    
+    # GET
+    def list(self, request):
+         accolades = getAccolades(request.user)
+         serializer = AccoladeSerializer(accolades, many=True)
+         return Response(serializer.data)
          
+
     # When deleting a prompt now, we rely on default behavior.
     # In the future we might want to hide prompts so that
     # friends can't get spammed by a repeat query...
