@@ -271,7 +271,8 @@ def submitQuery(user, *tags):
         friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
         allLemmasMatch = False
         for rec in friendRecommendations:
-            recLemmas = [tag.lemma for tag in rec.tags]
+            recTags = Tag.objects.filter(recommendation=rec)
+            recLemmas = [tag.lemma for tag in recTags]
         #    allLemmasMatch = True
         #    for lemma in lemmas:
         #        if not lemma in recLemmas:
