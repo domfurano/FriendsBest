@@ -13,6 +13,7 @@ from .models import Pin
 from .models import Subscription
 from .models import Accolade
 from .models import Notification
+from .models import RejectedTag
 
 # from .models import RecommendationTag
 # from .models import QueryTag
@@ -103,7 +104,7 @@ def getAllPrompts(user):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queriesByStrangers = Query.objects.exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
+    queriesByStrangers = Query.objects.select_related('tags__lemma').exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
     #queriesByStrangers = Query.objects.exclude(user__friendship1__userTwo=user).all()
 
     #queries = Query.objects.all()
@@ -112,19 +113,83 @@ def generateAnonymousPrompts(user):
     if queryCount == 0:
         return
 
+    # create list of most frequent tags associated with prompts that have been rejected by the user (get random 15 of top 20)
+    rejectedTags = RejectedTag.objects.select_related('tag__lemma').filter(user=user)
+    rtCount = rejectedTags.count()
+    badLemmas = []
+    if rtCount >= 20:  # only get the list if user has at least 20 rejected tags
+        weightedRejectedTags = []
+        for rt in rejectedTags:
+            weightedRejectedTags.append((rt.tag, rt.tagSum))
+        # reverse sort tags by frequency and get top 20 items
+        weightedRejectedTags = sorted(weightedRejectedTags, key=lambda wrt: wrt[1], reverse=True)[:20]
+
+        randomIndexes = generateRandomIndexes(15, len(weightedRejectedTags))
+        for randomIndex in randomIndexes:
+            badLemmas.append(weightedRejectedTags[randomIndex].lemma)
+
+    # exclude any queries with tag lemmas included in the bad lemma list
+    queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
+
     # select random queries and generate prompts for them
+    #randomIndexes = set()
+    #for x in range(0, 5):
+    #    randomIndex = randint(0, queryCount - 1)
+    #    randomIndexes.add(randomIndex)
+    randomIndex = generateRandomIndexes(5, queryCount)
+
+    userRecommendations = Recommendation.objects.select_related('tag__lemma').filter(user=user)
+    for randomIndex in randomIndexes:
+        query = queriesByStrangers[randomIndex]
+        queryLemmas = [tag.lemma for tag in query.tags]
+
+        # only create prompt if user has no recommendation such that its tags include every tag in the randomly selected query
+        allLemmasMatch = True
+        for rec in userRecommendations:
+            recLemmas = [tag.lemma for tag in rec.tags]
+            allLemmasMatch = True
+            for lemma in queryLemmas:
+                if not lemma in recLemmas:
+                    allLemmasMatch = False
+                    break
+            if allLemmasMatch:
+                break
+
+        if not allLemmasMatch:
+            p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
+
+
+# private helper method (creates a set of random indexes for the specified collection)
+# range = number of indexes returned (fewer indexes are returned if any indexes are randomly selected more than once)
+# length = length of collection
+def generateRandomIndexes(range, length):
+    if range < 0 or length < 1:
+        return "error: invalid parameter(s) for generating random indexes"
+
     randomIndexes = set()
-    for x in range(0, 5):
-        randomIndex = randint(0, queryCount - 1)
+    for x in range(0, range):
+        randomIndex = randint(0, length - 1)
         randomIndexes.add(randomIndex)
 
-    for randomIndex in randomIndexes:
-        p, created = Prompt.objects.get_or_create(user=user, query=queriesByStrangers[randomIndex], isAnonymous=True)
+    return randomIndexes
 
 
 #client will call for this whenever a prompt is swiped left (or when a recommendation is created after swiping right)
 def deletePrompt(promptId):
-   Prompt.objects.filter(id=promptId).delete()
+    prompt = Prompt.objects.select_related('query__tags', 'user').get(id=promptId)
+    tags = prompt.query.tags
+    user = prompt.user
+
+    # TODO: need to change the logic for this so that tags are only tracked when user swipes left on prompt
+    # track tags related to the deleted prompt
+    for tag in tags:
+        rt, created = RejectedTag.objects.get_or_create(user=user, tag=tag)
+        # if tag/user pair already exists in db, increment the counter
+        if not created:
+            rt.tagSum += 1
+            rt.save()
+
+    prompt.delete()
 
 
 def forwardPrompt(user, friendUserId, queryId):
@@ -190,20 +255,32 @@ def submitQuery(user, *tags):
 
 
    # create prompts for all of user's friends (but only if the friend doesn't already have a relevant recommendation)
-   # (assumes that the user's query will receive all recommendations with at least one matching lemma)
    allFriends = getAllFriendUsers(user)
    for friendUser in allFriends:
-       # friendTags = Tag.objects.select_related('lemma').filter(recommendation__user=friendUser).all()  # this was an improper use of select_related (might cause an error)
-        friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
+        # single tag match logic:
+        #friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
+        #lemmaMatch = False
+        #for friendTag in friendTags:
+        #    if friendTag.lemma in lemmas:
+        #        lemmaMatch = True
+        #        break
+        #if not lemmaMatch:
+        #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
-        lemmaMatch = False
-        for friendTag in friendTags:
-            if friendTag.lemma in lemmas:
-                lemmaMatch = True
+        # create prompt if friend user has no recommendation such that its tags include every tag in the query
+        friendRecommendations = Recommendation.objects.select_related('tag__lemma').filter(user=friendUser)
+        allLemmasMatch = True
+        for rec in friendRecommendations:
+            recLemmas = [tag.lemma for tag in rec.tags]
+            allLemmasMatch = True
+            for lemma in lemmas:
+                if not lemma in recLemmas:
+                    allLemmasMatch = False
+                    break
+            if allLemmasMatch:
                 break
-        if not lemmaMatch:
+        if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
-
 
    # create prompts for subscribed users who are not friends of the user
    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))

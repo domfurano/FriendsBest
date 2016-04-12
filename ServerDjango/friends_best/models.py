@@ -97,6 +97,19 @@ class Recommendation(models.Model):
        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
 
 
+# track tags associated with prompts rejected by user
+class RejectedTag(models.Model):
+    user = models.ForeignKey(User)
+    tag = models.ForeignKey(Tag)
+    tagSum = models.IntegerField(default=1)
+
+    def __str__(self):
+        return "user: %s, tag:%s" % (self.user, self.tag)
+
+    class Meta:
+        unique_together = (("user", "tag"),)
+
+
 class Query(models.Model):
    user = models.ForeignKey(User)
    tags = models.ManyToManyField(Tag)
