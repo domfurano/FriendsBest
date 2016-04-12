@@ -119,7 +119,9 @@ class RecommendationViewSet(viewsets.ModelViewSet):
         serializer = RecommendationSerializer(recommendations, many=True)
         return Response(serializer.data)
         
-class PinViewSet(viewsets.ModelViewSet):
+class PinViewSet(mixins.CreateModelMixin,
+					mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Pin.objects.order_by('query')
     serializer_class = PinSerializer
     permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
@@ -134,10 +136,10 @@ class PinViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         
     # GET
-    def list(self, request):
-        recommendations = getRecommendations(request.user.id)
-        serializer = RecommendationSerializer(recommendations, many=True)
-        return Response(serializer.data)
+#     def list(self, request):
+#         recommendations = getRecommendations(request.user.id)
+#         serializer = PinSerializer(pins, many=True)
+#         return Response(serializer.data)
 
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
