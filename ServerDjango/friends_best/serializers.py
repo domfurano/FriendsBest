@@ -226,7 +226,7 @@ class QuerySerializer(serializers.ModelSerializer):
                 'detail': sol.detail,
                 'type': sol.solutionType.lower(),
                 'recommendations': recommendations,
-                'isPinned': sol.isPinned,
+                'pinid': sol.pinId,
                 'id': sol.id,
                 'notifications': sol.totalNewRecommendations
             })
