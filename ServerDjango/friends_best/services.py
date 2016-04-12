@@ -258,18 +258,18 @@ def submitQuery(user, *tags):
    allFriends = getAllFriendUsers(user)
    for friendUser in allFriends:
         # single tag match logic:
-        #friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
-        #lemmaMatch = False
-        #for friendTag in friendTags:
-        #    if friendTag.lemma in lemmas:
-        #        lemmaMatch = True
-        #        break
-        #if not lemmaMatch:
-        #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+        friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
+        lemmaMatch = False
+        for friendTag in friendTags:
+            if friendTag.lemma in lemmas:
+                lemmaMatch = True
+                break
+        if not lemmaMatch:
+            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
         # create prompt if friend user has no recommendation such that its tags include every tag in the query
         friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
-        allLemmasMatch = False
+        #allLemmasMatch = False
         #for rec in friendRecommendations:
         #    recLemmas = [tag.lemma for tag in rec.tags]
         #    allLemmasMatch = True
@@ -279,8 +279,8 @@ def submitQuery(user, *tags):
         #            break
         #    if allLemmasMatch:
         #        break
-        if not allLemmasMatch:
-            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+        #if not allLemmasMatch:
+        #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
    # create prompts for subscribed users who are not friends of the user
    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
