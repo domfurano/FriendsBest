@@ -262,7 +262,7 @@ def submitQuery(user, *tags):
     q1.save()
 
 
-    # TODO: check for inappropriate words in query
+    # check for inappropriate words in query
     naughtyWords = ([
         'poop',
         'booger',
@@ -282,14 +282,18 @@ def submitQuery(user, *tags):
         'boobs',
         'boob',
         'cock',
-        '',
-        '',
-        '',
-        '',
+        'tits',
+        'penis',
+        'crap',
+        'boner',
         '',
         '',
         '',
     ])
+
+    for tag in tagsWithoutDuplicates:
+        if tag in naughtyWords:
+            return q1
 
     # create self prompt as a test
     # remove this when we can test that friends work
