@@ -34,6 +34,34 @@ from nltk.stem import WordNetLemmatizer
 from django.db.models import Q
 from random import randint
 
+_naughtyWords = ([
+    'poop',
+    'booger',
+    'boogers',
+    'whore',
+    'shit',
+    'fuck',
+    'ass',
+    'asshole',
+    'queer',
+    'strip',
+    'damn',
+    'fart',
+    'douche',
+    'butt',
+    'dick',
+    'boobs',
+    'boob',
+    'cock',
+    'tits',
+    'penis',
+    'crap',
+    'boner',
+    '',
+    '',
+    '',
+])
+
 
 
 
@@ -136,6 +164,17 @@ def generateAnonymousPrompts(user):
     for randomIndex in randomIndexes:
         query = queriesByStrangers[randomIndex]
         queryTags = Tag.objects.filter(query=query)
+
+        # don't create prompt if query has any dirty words
+        hasNaughtyWords = False
+        for tag in queryTags:
+            if tag.tag in _naughtyWords:
+                hasNaughtyWords = True
+                break
+
+        if hasNaughtyWords:
+            continue
+
         queryLemmas = [tag.lemma for tag in queryTags]
 
         # only create prompt if user has no recommendation such that its tags include every tag in the randomly selected query
@@ -263,36 +302,10 @@ def submitQuery(user, *tags):
 
 
     # check for inappropriate words in query
-    naughtyWords = ([
-        'poop',
-        'booger',
-        'boogers',
-        'whore',
-        'shit',
-        'fuck',
-        'ass',
-        'asshole',
-        'queer',
-        'strip',
-        'damn',
-        'fart',
-        'douche',
-        'butt',
-        'dick',
-        'boobs',
-        'boob',
-        'cock',
-        'tits',
-        'penis',
-        'crap',
-        'boner',
-        '',
-        '',
-        '',
-    ])
+
 
     for tag in tagsWithoutDuplicates:
-        if tag in naughtyWords:
+        if tag in _naughtyWords:
             return q1
 
     # create self prompt as a test
