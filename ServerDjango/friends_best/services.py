@@ -144,7 +144,7 @@ def generateAnonymousPrompts(user):
         queryLemmas = [tag.lemma for tag in query.tags]
 
         # only create prompt if user has no recommendation such that its tags include every tag in the randomly selected query
-        allLemmasMatch = True
+        allLemmasMatch = False
         for rec in userRecommendations:
             recLemmas = [tag.lemma for tag in rec.tags]
             allLemmasMatch = True
@@ -269,7 +269,7 @@ def submitQuery(user, *tags):
 
         # create prompt if friend user has no recommendation such that its tags include every tag in the query
         friendRecommendations = Recommendation.objects.select_related('tag__lemma').filter(user=friendUser)
-        allLemmasMatch = True
+        allLemmasMatch = False
         for rec in friendRecommendations:
             recLemmas = [tag.lemma for tag in rec.tags]
             allLemmasMatch = True
