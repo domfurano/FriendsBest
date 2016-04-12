@@ -269,7 +269,7 @@ def submitQuery(user, *tags):
         #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
         # create prompt if friend user has no recommendation such that its tags include every tag in the query
-        friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
+        friendRecommendations = Recommendation.objects.prefetch_related('tags__lemma').filter(user=friendUser)
         allLemmasMatch = False
         for rec in friendRecommendations:
             recLemmas = [tag.lemma for tag in rec.tags]
