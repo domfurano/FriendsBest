@@ -137,6 +137,9 @@ class RecommendationSerializer(serializers.Serializer):
         if recommendation.thing.thingType.lower() == 'place':
             thing = PlaceThing.objects.filter(thing=recommendation.thing).get()
             detail = thing.placeId
+        if recommendation.thing.thingType.lower() == 'url':
+            thing = UrlThing.objects.filter(thing=recommendation.thing).get()
+            detail = thing.url
 
         recommendation_json = {
             'id': recommendation.id,
