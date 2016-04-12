@@ -557,6 +557,11 @@
 		padding-right: 0;
 	}
 	
+	.prompt .row {
+    	margin-left: 15px;
+        margin-right: 15px;
+	}
+	
 	.prompt .row.head, ,prompt .row.foot {
     	font-size: 20px;
 	}
@@ -564,6 +569,8 @@
 	.prompt .row.topic {
     	font-size: 30px;
 		font-weight: 600;
+		text-overflow: clip;
+        overflow: hidden;
 	}
 	
 	.info div {
