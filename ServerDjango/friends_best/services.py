@@ -719,7 +719,7 @@ class Solution:
        self.detail = detail
        self.recommendationsWithFlags = recommendationsWithFlags
        self.solutionType = solutionType.lower()
-       self.pinId
+       self.pinId = pinId
        self.totalNewRecommendations = totalNewRecommendations
        self.id = id  # this is the thing id
 
