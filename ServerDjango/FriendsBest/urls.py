@@ -31,8 +31,9 @@ if settings.DEBUG:
         url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^fb/deploy/$', csrf_exempt(deploy)),
-        url(r'^fb/error/$', csrf_exempt(error)),
+        url(r'^fb/error/$', error),
 #         url(r'^fb/api/me/$', CurrentUserView.as_view())
+        # Facebook Postback
         # Facebook Postback
         url(r'^fb/link/(?P<query_id>[0-9]+)/', queryLink)
     ]
@@ -42,7 +43,7 @@ else:
         url(r'^api/', include(router.urls)),
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^deploy/$', csrf_exempt(deploy)),
-        url(r'^fb/error/$', csrf_exempt(error)),
+        url(r'^fb/error/$', error),
 #         url(r'^api/me/$', CurrentUserView.as_view()
 
         # Facebook Postback

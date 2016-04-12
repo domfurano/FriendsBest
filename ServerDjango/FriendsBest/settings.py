@@ -22,27 +22,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kvty!#y!$tgxsm74s$-m)kwrwh5o+ktj%p$6b5z%of&e0sw09p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'Production' in os.environ:
-    DEBUG = False
-else:
-    DEBUG = True
+# if 'Production' in os.environ:
+#     DEBUG = False
+# else:
+#     DEBUG = True
+
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-ADMINS = (('Ray', 'ray@bluem33.com'),
-          ('Paul', 'paulhanson.exe@gmail.com'),
-          ('Umair', 'unaveed@gmail.com'),
-          ('Dominic', 'dominicfurano@gmail.com'))
-
-if not DEBUG:
-    EMAIL_USE_TLS = True
-    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_PASSWORD = os.environ['GmailPassword']
-    EMAIL_HOST_USER = os.environ['GmailUser']
-    EMAIL_PORT = 587
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@gmail.com'
-    SERVER_EMAIL = EMAIL_HOST_USER + '@gmail.com'
 
 # Application definition
 
@@ -190,10 +177,6 @@ if not DEBUG:
                 'class': 'logging.FileHandler',
                 'filename': os.path.join(BASE_DIR, 'error.log'),
                 'formatter': 'simple'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
             },
         },
         'loggers': {
