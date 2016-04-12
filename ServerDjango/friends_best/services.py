@@ -72,7 +72,7 @@ def getAccolades(user):
 
 
 def deleteAccolade(accoladeId):
-    Accolade.objects.filter(id=accoladeId).delete()
+    Accolade.objects.get(id=accoladeId).delete()
 # </editor-fold>
 
 
@@ -341,6 +341,7 @@ def getQuerySolutions(query):
    recommendationsFromFriendsCount = 0
    for wt in weightedThings:
        thing = wt[0]
+       thingId = thing.id
        detail = ""  # for a text thing this is the description; for a place thing this is the placeId
        if thing.thingType.lower() == 'text':
            detail = TextThing.objects.filter(thing_id=thing.id)[0].description
@@ -366,10 +367,10 @@ def getQuerySolutions(query):
        isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=newRecommendationCount))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=newRecommendationCount, id=thingId))
            recommendationsFromFriendsCount += 1
        else:
-           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0))
+           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0, id=thingId))
 
    return solutionsWithTags
 
@@ -683,12 +684,13 @@ def getAllFriendsFacebookUserIds(user):
 
 
 class Solution:
-   def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations):
+   def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations, id):
        self.detail = detail
        self.recommendationsWithFlags = recommendationsWithFlags
        self.solutionType = solutionType.lower()
        self.isPinned = isPinned
        self.totalNewRecommendations = totalNewRecommendations
+       self.id = id  # this is the thing id
 
 
 class RecommendationWithFlag:
