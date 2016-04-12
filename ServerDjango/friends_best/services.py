@@ -677,7 +677,7 @@ class Solution:
    def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations):
        self.detail = detail
        self.recommendationsWithFlags = recommendationsWithFlags
-       self.solutionType = solutionType
+       self.solutionType = solutionType.lower()
        self.isPinned = isPinned
        self.totalNewRecommendations = totalNewRecommendations
 

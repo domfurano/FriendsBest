@@ -144,7 +144,7 @@ class RecommendationSerializer(serializers.Serializer):
         recommendation_json = {
             'id': recommendation.id,
             'detail': detail,
-            'type': recommendation.thing.thingType,
+            'type': recommendation.thing.thingType.lower(),
             'comments': recommendation.comments,
             'tags': [rt.tag for rt in rec_tags],
             'user': UserSerializer(recommendation.user).data
@@ -215,7 +215,7 @@ class QuerySerializer(serializers.ModelSerializer):
                     recommendations.append({"id": rec.id, "comment": rec.comments, "isNew": rwf.isNew})
             solution_collection['solutions'].append({
                 'detail': sol.detail,
-                'type': sol.solutionType,
+                'type': sol.solutionType.lower(),
                 'recommendations': recommendations,
                 'isPinned': sol.isPinned,
                 'notifications': sol.totalNewRecommendations
