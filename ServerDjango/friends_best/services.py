@@ -182,12 +182,12 @@ def deletePrompt(promptId):
 
     # TODO: need to change the logic for this so that tags are only tracked when user swipes left on prompt
     # track tags related to the deleted prompt
-    for tag in tags:
-        rt, created = RejectedTag.objects.get_or_create(user=user, tag=tag)
-        # if tag/user pair already exists in db, increment the counter
-        if not created:
-            rt.tagSum += 1
-            rt.save()
+    #for tag in tags:
+    #    rt, created = RejectedTag.objects.get_or_create(user=user, tag=tag)
+    #    # if tag/user pair already exists in db, increment the counter
+    #    if not created:
+    #        rt.tagSum += 1
+    #        rt.save()
 
     prompt.delete()
 
@@ -226,54 +226,70 @@ def getAllSubscriptions(user):
 
 # <editor-fold desc="Queries">
 def submitQuery(user, *tags):
-   if tags.count == 0:
-       return "error: cannot submit query, query must include at least one tag"
+    if tags.count == 0:
+        return "error: cannot submit query, query must include at least one tag"
 
    # create hash of tags and ordered string
-   taghash = ' '.join(sorted(set(tags)))
-   tagstring = ' '.join(tags)
+    taghash = ' '.join(sorted(set(tags)))
+    tagstring = ' '.join(tags)
 
-   # create a query
-   q1, created = Query.objects.get_or_create(user=user, taghash=taghash)
+    # create a query
+    q1, created = Query.objects.get_or_create(user=user, taghash=taghash)
 
-   q1.tagstring = tagstring
-   q1.timestamp = timezone.now()
+    q1.tagstring = tagstring
+    q1.timestamp = timezone.now()
 
-   # create query tags
-   lemmas = set()
-   for t in tags:
-       lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
-       lemmas.add(lemma)
-       qt, created = Tag.objects.get_or_create(tag=t.lower(), lemma=lemma)
-       q1.tags.add(qt)
+    # create query tags
+    lemmas = set()
+    for t in tags:
+        lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
+        lemmas.add(lemma)
+        qt, created = Tag.objects.get_or_create(tag=t.lower(), lemma=lemma)
+        q1.tags.add(qt)
 
-   q1.save()
+    q1.save()
 
-   # create self prompt as a test
-   # remove this when we can test that friends work
-   #p, created = Prompt.objects.get_or_create(user=user, query=q1)
+    # create self prompt as a test
+    # remove this when we can test that friends work
+    #p, created = Prompt.objects.get_or_create(user=user, query=q1)
 
 
-   # create prompts for all of user's friends (but only if the friend doesn't already have a relevant recommendation)
-   allFriends = getAllFriendUsers(user)
-   for friendUser in allFriends:
-        # single tag match logic
-        friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
-        lemmaMatch = False
-        for friendTag in friendTags:
-            if friendTag.lemma in lemmas:
-                lemmaMatch = True
+    # create prompts for all of user's friends (but only if the friend doesn't already have a relevant recommendation)
+    allFriends = getAllFriendUsers(user)
+    for friendUser in allFriends:
+
+        #single tag match logic
+        #friendTags = Tag.objects.filter(recommendation__user=friendUser).all()
+        #lemmaMatch = False
+        #for friendTag in friendTags:
+        #if friendTag.lemma in lemmas:
+        #        lemmaMatch = True
+        #        break
+        #if not lemmaMatch:
+        #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+
+        # create prompt if friend user has no recommendation such that its tags include every tag in the query
+        friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
+        allLemmasMatch = False
+        for rec in friendRecommendations:
+            recLemmas = [tag.lemma for tag in rec.tags]
+            allLemmasMatch = True
+            for lemma in lemmas:
+                if not lemma in recLemmas:
+                    allLemmasMatch = False
+                    break
+            if allLemmasMatch:
                 break
-        if not lemmaMatch:
+        if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
-   # create prompts for subscribed users who are not friends of the user
-   #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
-   #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
-   #for su in subscribedUsers:
-   #    p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
+    # create prompts for subscribed users who are not friends of the user
+    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
+    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
+    #for su in subscribedUsers:
+    #    p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
 
-   return q1
+    return q1
 
 
 def getQuerySolutions(query):
