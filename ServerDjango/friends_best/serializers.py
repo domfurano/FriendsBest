@@ -51,6 +51,7 @@ class PromptSerializer(serializers.ModelSerializer):
     
     def to_representation(self, prompt):
         
+        # is this needed?
         account = SocialAccount.objects.filter(user=prompt.query.user).first()
         
         return {
@@ -68,6 +69,21 @@ class PromptSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Prompt
+        fields = '__all__'
+        depth = 1
+
+
+class AccoladeSerializer(serializers.ModelSerializer):
+    
+    def to_representation(self, accolade):
+                
+        return {
+            'id': accolade.id,
+            'recommendation': RecommendationSerializer(accolade.recommendation).data,
+        }
+    
+    class Meta:
+        model = Accolade
         fields = '__all__'
         depth = 1
 
