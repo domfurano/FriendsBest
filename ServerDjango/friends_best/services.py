@@ -268,20 +268,20 @@ def submitQuery(user, *tags):
         'booger',
         'boogers',
         'whore',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
+        'shit',
+        'fuck',
+        'ass',
+        'asshole',
+        'queer',
+        'strip',
+        'damn',
+        'fart',
+        'douche',
+        'butt',
+        'dick',
+        'boobs',
+        'boob',
+        'cock',
         '',
         '',
         '',
@@ -395,7 +395,7 @@ def getQuerySolutions(query):
                recommendedByFriend = True
 
        pins = Pin.objects.filter(thing=thing, query=query)
-       pinId = pins[0].id if pins.count > 0 else False
+       pinId = pins[0].id if pins.count() > 0 else False
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
            solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, pinId=pinId, totalNewRecommendations=newRecommendationCount, id=thingId))
