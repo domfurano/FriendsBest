@@ -124,7 +124,8 @@ def generateAnonymousPrompts(user):
         # reverse sort tags by frequency and get top 20 items
         weightedRejectedTags = sorted(weightedRejectedTags, key=lambda wrt: wrt[1], reverse=True)[:20]
 
-        randomIndexes = generateRandomIndexes(15, len(weightedRejectedTags))
+        length = len(weightedRejectedTags)
+        randomIndexes = generateRandomIndexes(15, length)
         for randomIndex in randomIndexes:
             badLemmas.append(weightedRejectedTags[randomIndex].lemma)
 
