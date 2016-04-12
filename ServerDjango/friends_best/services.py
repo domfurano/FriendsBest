@@ -82,7 +82,7 @@ def getPrompts(user):
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
     if prompts.count() == 0:
-        #generateAnonymousPrompts(user)
+        generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
     else:
         return prompts
@@ -136,17 +136,19 @@ def generateAnonymousPrompts(user):
     #for x in range(0, 5):
     #    randomIndex = randint(0, queryCount - 1)
     #    randomIndexes.add(randomIndex)
-    randomIndex = generateRandomIndexes(5, queryCount)
+    randomIndexes = generateRandomIndexes(5, queryCount)
 
-    userRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=user)
+    userRecommendations = Recommendation.objects.select_related('tags').filter(user=user)
     for randomIndex in randomIndexes:
         query = queriesByStrangers[randomIndex]
-        queryLemmas = [tag.lemma for tag in query.tags]
+        queryTags = Tag.objects.filter(query=query)
+        queryLemmas = [tag.lemma for tag in queryTags]
 
         # only create prompt if user has no recommendation such that its tags include every tag in the randomly selected query
         allLemmasMatch = False
         for rec in userRecommendations:
-            recLemmas = [tag.lemma for tag in rec.tags]
+            recTags = Tag.objects.filter(recommendation=rec)
+            recLemmas = [tag.lemma for tag in recTags]
             allLemmasMatch = True
             for lemma in queryLemmas:
                 if not lemma in recLemmas:
