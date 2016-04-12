@@ -261,6 +261,36 @@ def submitQuery(user, *tags):
 
     q1.save()
 
+
+    # TODO: check for inappropriate words in query
+    naughtyWords = ([
+        'poop',
+        'booger',
+        'boogers',
+        'whore',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+    ])
+
     # create self prompt as a test
     # remove this when we can test that friends work
     #p, created = Prompt.objects.get_or_create(user=user, query=q1)
@@ -364,13 +394,14 @@ def getQuerySolutions(query):
            if not recommendedByFriend or isFriendsWith(query.user, recommendation.user):
                recommendedByFriend = True
 
-       isPinned = Pin.objects.filter(thing=thing, query=query).count() >= 1
+       pins = Pin.objects.filter(thing=thing, query=query)
+       pinId = pins[0].id if pins.count > 0 else False
        # if any of the recommendations for the solution are from a friend of the querying user, prepend the solution to the solution list, otherwise append
        if recommendedByFriend:
-           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=newRecommendationCount, id=thingId))
+           solutionsWithTags['solutions'].insert(recommendationsFromFriendsCount, Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, pinId=pinId, totalNewRecommendations=newRecommendationCount, id=thingId))
            recommendationsFromFriendsCount += 1
        else:
-           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, isPinned=isPinned, totalNewRecommendations=0, id=thingId))
+           solutionsWithTags['solutions'].append(Solution(detail=detail, recommendationsWithFlags=recommendationsWithFlags, solutionType=thing.thingType, pinId=pinId, totalNewRecommendations=0, id=thingId))
 
    return solutionsWithTags
 
@@ -684,11 +715,11 @@ def getAllFriendsFacebookUserIds(user):
 
 
 class Solution:
-   def __init__(self, detail, recommendationsWithFlags, solutionType, isPinned, totalNewRecommendations, id):
+   def __init__(self, detail, recommendationsWithFlags, solutionType, pinId, totalNewRecommendations, id):
        self.detail = detail
        self.recommendationsWithFlags = recommendationsWithFlags
        self.solutionType = solutionType.lower()
-       self.isPinned = isPinned
+       self.pinId
        self.totalNewRecommendations = totalNewRecommendations
        self.id = id  # this is the thing id
 
