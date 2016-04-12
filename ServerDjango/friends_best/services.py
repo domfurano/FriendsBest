@@ -105,9 +105,6 @@ def getAllPrompts(user):
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
     queriesByStrangers = Query.objects.prefetch_related('tags').exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
-    #queriesByStrangers = Query.objects.exclude(user__friendship1__userTwo=user).all()
-
-    #queries = Query.objects.all()
     queryCount = queriesByStrangers.count()
 
     if queryCount == 0:
@@ -133,10 +130,6 @@ def generateAnonymousPrompts(user):
     #queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
 
     # select random queries and generate prompts for them
-    #randomIndexes = set()
-    #for x in range(0, 5):
-    #    randomIndex = randint(0, queryCount - 1)
-    #    randomIndexes.add(randomIndex)
     randomIndexes = generateRandomIndexes(5, queryCount)
 
     userRecommendations = Recommendation.objects.filter(user=user)
@@ -244,7 +237,8 @@ def submitQuery(user, *tags):
 
     # create query tags
     lemmas = set()
-    for t in tags:
+    tagsWithoutDuplicates = set(tags)
+    for t in tagsWithoutDuplicates:
         lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
         lemmas.add(lemma)
         qt, created = Tag.objects.get_or_create(tag=t.lower(), lemma=lemma)
@@ -310,7 +304,7 @@ def getQuerySolutions(query):
        things.append(recommendation.thing)
    things = set(things)  # put in a set to eliminate duplicates
 
-
+    #TODO: take into account the number of recommendation tags that don't match
    weightedThings = []  # list of tuples (thing, average recommendation lemma match for that thing)
    for thing in things:
        # get average number of matching lemmas for each recommendation

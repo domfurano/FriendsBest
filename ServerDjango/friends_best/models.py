@@ -74,7 +74,7 @@ class UrlThing(models.Model):
 
 class Tag(models.Model):
    tag = models.CharField(max_length=25, unique=True)
-   lemma = models.CharField(max_length=25, unique=True)
+   lemma = models.CharField(max_length=25)
 
    def save(self, *args, **kwargs):
        if not self.lemma:
