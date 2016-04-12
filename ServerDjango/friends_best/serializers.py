@@ -46,7 +46,6 @@ class TextSerializer(serializers.ModelSerializer):
         model = TextThing
         fields = '__all__'
 
-
 class PromptSerializer(serializers.ModelSerializer):
     
     def to_representation(self, prompt):
@@ -72,7 +71,6 @@ class PromptSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
-
 class AccoladeSerializer(serializers.ModelSerializer):
     
     def to_representation(self, accolade):
@@ -86,7 +84,6 @@ class AccoladeSerializer(serializers.ModelSerializer):
         model = Accolade
         fields = '__all__'
         depth = 1
-
 
 class FriendshipSerializer(serializers.ModelSerializer):
     
@@ -118,20 +115,17 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('tag',)
 
-
 class TextThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TextThing
         fields = '__all__'
 
-
 class UrlThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UrlThing
         fields = '__all__'
-
 
 class RecommendationSerializer(serializers.Serializer):
     user = serializers.CharField(max_length=50)
@@ -199,7 +193,6 @@ class RecommendationSerializer(serializers.Serializer):
         model = Recommendation
         fields = ('id', 'user', 'description', 'comments', 'tags',)
 
-
 class QuerySerializer(serializers.ModelSerializer):
     #user = UserSerializer
     tags = TagSerializer(many=True)
@@ -234,6 +227,7 @@ class QuerySerializer(serializers.ModelSerializer):
                 'type': sol.solutionType.lower(),
                 'recommendations': recommendations,
                 'isPinned': sol.isPinned,
+                'id': sol.id,
                 'notifications': sol.totalNewRecommendations
             })
             newtotal += sol.totalNewRecommendations
@@ -263,10 +257,30 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
         fields = ('id', 'tags', )
-        
-
 
 class PinSerializer(serializers.ModelSerializer):
+    
+    def to_representation(self, pin):
+        return {
+            'id': pin.id,
+            'solutionid': pin.thing.id,
+            'queryid': pin.query.id
+        }
+    
+    def create(self, validated_data):
+        solutionID = validated_data.get('solutionid')
+        queryID = validated_data.get('queryid')
+        return createPin(thingID, queryID)
+        
+    def validate(self, data):
+        if 'solutionid' not in data:
+            raise serializers.ValidationError('No solution id provided')    
+        if 'queryid' not in data:
+            raise serializers.ValidationError('No query id provided')
+
+        user = User.objects.filter(id=data['user'])
+        if not user.exists():
+            raise serializers.ValidationError('User does not exist')
     
     class Meta:
         model = Pin

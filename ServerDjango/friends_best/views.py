@@ -118,6 +118,26 @@ class RecommendationViewSet(viewsets.ModelViewSet):
         recommendations = getRecommendations(request.user.id)
         serializer = RecommendationSerializer(recommendations, many=True)
         return Response(serializer.data)
+        
+class PinViewSet(viewsets.ModelViewSet):
+    queryset = Pin.objects.order_by('query')
+    serializer_class = PinSerializer
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data["user"] = request.user.id
+        serializer = PinSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        
+    # GET
+    def list(self, request):
+        recommendations = getRecommendations(request.user.id)
+        serializer = RecommendationSerializer(recommendations, many=True)
+        return Response(serializer.data)
 
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
@@ -240,11 +260,6 @@ class RecommendationTagViewSet(viewsets.ModelViewSet):
 class QueryTagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.order_by('query')
     serializer_class = TagSerializer
-
-
-class PinViewSet(viewsets.ModelViewSet):
-    queryset = Pin.objects.order_by('thing')
-    serializer_class = PinSerializer
     
 
 class FacebookLogin(SocialLoginView):
