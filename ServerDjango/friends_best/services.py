@@ -176,14 +176,29 @@ def deletePrompt(promptId):
     tags = prompt.query.tags
     user = prompt.user
 
-    # TODO: need to change the logic for this so that tags are only tracked when user swipes left on prompt
+    # check for a recently created recommendation related to the prompt
+    promptTags = [tag.tag for tag in tags]
+    recentRecs = Recommendation.objects.filter(user=user, timestamp__gte=(timezone.now()-timedelta(seconds=10)))
+    allTagsMatch = False
+    for rec in recentRecs:
+        if allTagsMatch:
+            break
+        recTags = Tag.objects.filter(recommendation=rec)
+        for recTag in recTags:
+            if recTag.tag not in promptTags:
+                allTagsMatch = False
+                break
+            else:
+                allTagsMatch = True
+
     # track tags related to the deleted prompt
-    #for tag in tags:
-    #    rt, created = RejectedTag.objects.get_or_create(user=user, tag=tag)
-    #    # if tag/user pair already exists in db, increment the counter
-    #    if not created:
-    #        rt.tagSum += 1
-    #        rt.save()
+    if not allTagsMatch:
+        for tag in tags:
+            rt, created = RejectedTag.objects.get_or_create(user=user, tag=tag)
+            #if tag/user pair already exists in db, increment the counter
+            if not created:
+                rt.tagSum += 1
+                rt.save()
 
     prompt.delete()
 
