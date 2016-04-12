@@ -127,7 +127,7 @@ def generateAnonymousPrompts(user):
             badLemmas.append(weightedRejectedTags[randomIndex].lemma)
 
     # exclude any queries with tag lemmas included in the bad lemma list
-    #queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
+    queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
 
     # select random queries and generate prompts for them
     randomIndexes = generateRandomIndexes(5, queryCount)
