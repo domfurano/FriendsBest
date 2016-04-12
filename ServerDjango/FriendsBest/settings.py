@@ -179,7 +179,7 @@ if not DEBUG:
         },
         'loggers': {
             'django': {
-                'handlers': ['file', 'console', 'mail_admins'],
+                'handlers': ['file', 'console'],
                 'level': 'DEBUG',
                 'propagate': True,
                 },
