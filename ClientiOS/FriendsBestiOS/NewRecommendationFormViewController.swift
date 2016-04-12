@@ -7,10 +7,12 @@
 //
 
 import Eureka
+import GoogleMaps
 
 
 class NewRecommendationFormViewController: FormViewController {
     var userRecommendation: UserRecommendation!
+    var placesClient: GMSPlacesClient = GMSPlacesClient()
     
     convenience init(recommendation: UserRecommendation) {
         self.init()
@@ -49,6 +51,7 @@ class NewRecommendationFormViewController: FormViewController {
                     $0.disabled = true
                     break
                 case .PLACE:
+                    $0.disabled = true
                     break
                 }
                 }.cellSetup({ (cell, row) in
@@ -64,6 +67,16 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Comments")
             <<< TextAreaRow() {
                 $0.tag = "comment"
+        }
+        
+        if userRecommendation.type! == .PLACE {
+            placesClient.lookUpPlaceID(userRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
+                if error == nil {
+                    if let place = place {
+                        self.form.rowByTag("detail")!.baseValue = place.name
+                    }
+                }
+            })
         }
     }
     

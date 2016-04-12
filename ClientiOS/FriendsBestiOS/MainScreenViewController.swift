@@ -372,17 +372,23 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self.viewWillAppear(false)
             
             if let error = error {
-                print("Pick Place error: \(error.localizedDescription)")
+                NSLog("Pick Place error: \(error.localizedDescription)")
                 return
             }
             
             if let place = place {
-                print("Place name \(place.name)")
-                print("\(place.placeID)")
-                print("Place address \(place.formattedAddress)")
-                print("Place attributions \(place.attributions)")
+                NSLog("Place name: \(place.name)")
+                NSLog("Place ID: \(place.placeID)")
+                NSLog("Place address: \(place.formattedAddress)")
+                NSLog("Place attributions: \(place.attributions)")
+                
+                self.newUserRecommendation.type = .PLACE
+                self.newUserRecommendation.detail = place.placeID
+                
+                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: self.newUserRecommendation), animated: true)
+                
             } else {
-                print("No place selected")
+                NSLog("No place selected")
             }
         })
     }
