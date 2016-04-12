@@ -166,7 +166,7 @@ def generateAnonymousPrompts(user):
 # loopRange = number of indexes returned (fewer indexes are returned if any indexes are randomly selected more than once)
 # length = length of collection
 def generateRandomIndexes(loopRange, length):
-    if range < 0 or length < 1:
+    if loopRange < 0 or length < 1:
         return "error: invalid parameter(s) for generating random indexes"
 
     randomIndexes = set()
