@@ -104,7 +104,7 @@ def getAllPrompts(user):
 
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
-    queriesByStrangers = Query.objects.select_related('tags__lemma').exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
+    queriesByStrangers = Query.objects.prefetch_related('tags').exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
     #queriesByStrangers = Query.objects.exclude(user__friendship1__userTwo=user).all()
 
     #queries = Query.objects.all()
