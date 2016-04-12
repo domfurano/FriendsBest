@@ -138,7 +138,7 @@ def generateAnonymousPrompts(user):
     #    randomIndexes.add(randomIndex)
     randomIndex = generateRandomIndexes(5, queryCount)
 
-    userRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=user)
+    userRecommendations = Recommendation.objects.select_related('tags').filter(user=user)
     for randomIndex in randomIndexes:
         query = queriesByStrangers[randomIndex]
         queryLemmas = [tag.lemma for tag in query.tags]
@@ -268,7 +268,7 @@ def submitQuery(user, *tags):
         #    p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
         # create prompt if friend user has no recommendation such that its tags include every tag in the query
-        friendRecommendations = Recommendation.objects.select_related('tags__lemma').filter(user=friendUser)
+        friendRecommendations = Recommendation.objects.select_related('tags').filter(user=friendUser)
         allLemmasMatch = False
         for rec in friendRecommendations:
             recLemmas = [tag.lemma for tag in rec.tags]
@@ -284,9 +284,9 @@ def submitQuery(user, *tags):
 
    # create prompts for subscribed users who are not friends of the user
    #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
-   subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
-   for su in subscribedUsers:
-       p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
+   #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas)
+   #for su in subscribedUsers:
+   #    p, created = Prompt.objects.get_or_create(user=su, query=q1, isAnonymous=True)
 
    return q1
 
