@@ -191,7 +191,7 @@ if not DEBUG:
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-if DEBUG:
+if not DEBUG:
     STATIC_URL = '/app/'
 else:
     STATIC_URL = '/'
