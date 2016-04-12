@@ -277,10 +277,7 @@ class PinSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('No solution id provided')    
         if 'queryid' not in data:
             raise serializers.ValidationError('No query id provided')
-
-        user = User.objects.filter(id=data['user'])
-        if not user.exists():
-            raise serializers.ValidationError('User does not exist')
+        return data
     
     class Meta:
         model = Pin
