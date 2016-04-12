@@ -190,11 +190,6 @@ define([
         that = this;
         
         $('.submit').click(function() {
-
-            // Delete the prompt
-            if (typeof that.prompt != 'undefined') {
-              that.prompt.destroy();
-            }
             
             // Pull the (new) data
             that.recommendation.set({
@@ -203,7 +198,14 @@ define([
             });
             
             // Sync the model
-            that.recommendation.save();
+            that.recommendation.save({
+                success: function() {
+                    // Delete the prompt
+                    if (typeof that.prompt != 'undefined') {
+                      that.prompt.destroy();
+                    }
+                }
+            });
             
             // Go back in history
             parent.history.go(-1);
