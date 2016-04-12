@@ -28,7 +28,7 @@ if settings.DEBUG:
     urlpatterns = [
         url(r'^fb/admin/', include(admin.site.urls)),
         url(r'^fb/api/', include(router.urls)),
-        url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
+        # url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^fb/deploy/$', csrf_exempt(deploy)),
         url(r'^fb/error/', error),
