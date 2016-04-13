@@ -134,12 +134,6 @@ class PinViewSet(mixins.CreateModelMixin,
             serializer.save(user=request.user)
             return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(data, status.HTTP_400_BAD_REQUEST)
-        
-    # GET
-#     def list(self, request):
-#         recommendations = getRecommendations(request.user.id)
-#         serializer = PinSerializer(pins, many=True)
-#         return Response(serializer.data)
 
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
