@@ -128,7 +128,6 @@ class PinViewSet(mixins.CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         serializer = PinSerializer(data=request.data)
-        return Response(request.data, status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status.HTTP_201_CREATED)
