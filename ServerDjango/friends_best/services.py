@@ -675,6 +675,8 @@ def createPin(thingId, queryId):
    for rec in recs:
        a1 = Accolade(user=rec.user, recommendation=rec)
        a1.save()
+       
+    return pin;
 
 
 def deletePinById(pinId):
