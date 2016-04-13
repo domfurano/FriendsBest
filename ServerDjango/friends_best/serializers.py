@@ -284,4 +284,4 @@ class PinSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Pin
-        fields = ()
+        fields = '__all__'
