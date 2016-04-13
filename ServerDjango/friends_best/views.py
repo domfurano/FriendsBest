@@ -127,9 +127,7 @@ class PinViewSet(mixins.CreateModelMixin,
     permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
 
     def create(self, request, *args, **kwargs):
-        data = request.data
-        data["user"] = request.user.id
-        serializer = PinSerializer(data=data)
+        serializer = PinSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status.HTTP_201_CREATED)
