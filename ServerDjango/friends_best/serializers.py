@@ -284,4 +284,4 @@ class PinSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Pin
-        fields = '__all__'
+        fields = ('solutionid','queryid',)
