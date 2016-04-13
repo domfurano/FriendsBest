@@ -270,7 +270,6 @@ class PinSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         solutionID = validated_data.get('solutionid')
         queryID = validated_data.get('queryid')
-        print("Creating pin for query " + queryID + " and solution " + solutionID)
         return createPin(solutionID, queryID)
         
     def validate(self, data):
@@ -282,4 +281,4 @@ class PinSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Pin
-        fields = ('solutionid', 'queryid', )
+        fields = ()
