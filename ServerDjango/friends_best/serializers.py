@@ -273,7 +273,6 @@ class PinSerializer(serializers.ModelSerializer):
         return createPin(thingID, queryID)
         
     def validate(self, data):
-        print(data)
         if 'solutionid' not in data:
             raise serializers.ValidationError('No solutionid provided')    
         if 'queryid' not in data:
