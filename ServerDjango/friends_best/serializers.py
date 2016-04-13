@@ -260,6 +260,9 @@ class QuerySerializer(serializers.ModelSerializer):
 
 class PinSerializer(serializers.ModelSerializer):
     
+    solutionid = serializers.IntegerField()
+    queryid = serializers.IntegerField()
+    
     def to_representation(self, pin):
         return {
             'id': pin.id,
@@ -273,10 +276,10 @@ class PinSerializer(serializers.ModelSerializer):
         return createPin(solutionID, queryID)
         
     def validate(self, data):
-#         if 'solutionid' not in data:
-#             raise serializers.ValidationError('No solutionid provided')    
-#         if 'queryid' not in data:
-#             raise serializers.ValidationError('No queryid provided')
+        if 'solutionid' not in data:
+            raise serializers.ValidationError('No solutionid provided')    
+        if 'queryid' not in data:
+            raise serializers.ValidationError('No queryid provided')
         return data
     
     class Meta:
