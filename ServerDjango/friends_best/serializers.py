@@ -270,7 +270,7 @@ class PinSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         solutionID = validated_data.get('solutionid')
         queryID = validated_data.get('queryid')
-        return createPin(thingID, queryID)
+        return createPin(solutionID, queryID)
         
     def validate(self, data):
 #         if 'solutionid' not in data:
