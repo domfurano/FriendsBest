@@ -274,9 +274,9 @@ class PinSerializer(serializers.ModelSerializer):
         
     def validate(self, data):
         if 'solutionid' not in data:
-            raise serializers.ValidationError('No solution id provided')    
+            raise serializers.ValidationError('No solutionid provided')    
         if 'queryid' not in data:
-            raise serializers.ValidationError('No query id provided')
+            raise serializers.ValidationError('No queryid provided')
         return data
     
     class Meta:
