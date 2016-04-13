@@ -133,7 +133,7 @@ class PinViewSet(mixins.CreateModelMixin,
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(data, status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
