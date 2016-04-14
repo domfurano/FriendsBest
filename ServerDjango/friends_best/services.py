@@ -523,6 +523,9 @@ def modifyRecommendation(recId, newComments, newTagStrings):
     rec = Recommendation.objects.prefetch_related('tags').get(id=recId)
     rec.comments = newComments
 
+    # if line 530 throws an exception, use this instead:
+    # recTags = Tag.objects.filter(recommendation=rec)
+
     oldTagStrings = set()
     for recTag in rec.tags:
         oldTagString = recTag.tag
