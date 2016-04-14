@@ -815,6 +815,8 @@ def sendNotification(json_data, topic):
    #data = {'user':'test user', 'tagString': 'test text'}
    data = json_data
 
+   print("notification json_data: %s " % data)
+
    _q.put(data)
    # can be either recommendations or prompts
    #topic = 'recommendations'
