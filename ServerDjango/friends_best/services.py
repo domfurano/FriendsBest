@@ -820,6 +820,7 @@ def sendNotification(json_data, topic):
    #topic = 'recommendations'
 
    response = _gcm.send_topic_message(topic=topic, data=data)
+   print ("notification response: " + response)
 
    global TIME_TO_WAIT
    if not response or 'success' not in response:
