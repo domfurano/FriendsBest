@@ -114,20 +114,10 @@
     function getContextForElement(domObj) {
         return $(domObj).data("locationpicker");
     }
-    function updateInputValues(inputBinding, gmapContext) {
+    function updateInputValues(inputBinding, place) {
         if (!inputBinding) return;
-        var currentLocation = GmUtility.locationFromLatLng(gmapContext.location);
-        if (inputBinding.latitudeInput) {
-            inputBinding.latitudeInput.val(currentLocation.latitude).change();
-        }
-        if (inputBinding.longitudeInput) {
-            inputBinding.longitudeInput.val(currentLocation.longitude).change();
-        }
-        if (inputBinding.radiusInput) {
-            inputBinding.radiusInput.val(gmapContext.radius).change();
-        }
         if (inputBinding.locationNameInput) {
-            inputBinding.locationNameInput.val(gmapContext.locationName).change();
+            inputBinding.locationNameInput.val(place.name).change();
         }
     }
     function setupInputListenersInput(inputBinding, gmapContext) {
@@ -238,7 +228,6 @@
                     var location = GmUtility.locationFromLatLng(gmapContext.location);
                     location.radius = gmapContext.radius;
                     location.name = gmapContext.locationName;
-                    console.log(gmapContext);
                     return location;
                 } else {
                     if (params.radius) {
