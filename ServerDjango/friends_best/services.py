@@ -355,7 +355,7 @@ def submitQuery(user, *tags):
             #identifiedUmair = isUmair(friendUser)
             #print ("found umair while creating prompts?: " + "yes" if identifiedUmair else "no")
             if created and isUmair(friendUser):
-                sendNotification(serializers.PromptSerializer(p).data, "prompts")
+                sendNotification(friends_best.serializers.PromptSerializer(p).data, "prompts")
 
     # create prompts for subscribed users who are not friends of the user
     #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
@@ -617,7 +617,7 @@ def createRecommendation(user, detail, thingType, comments, *tags):
       #identifiedUmair = isUmair(query.user)
       #print ("found umair while creating recommendation?: " + "yes" if identifiedUmair else "no")
       if isUmair(query.user):
-          sendNotification(serializers.RecommendationSerializer(recommendation).data, "recommendations")
+          sendNotification(friends_best.serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
    return recommendation
 # </editor-fold>
