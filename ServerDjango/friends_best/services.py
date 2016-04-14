@@ -15,6 +15,10 @@ from .models import Accolade
 from .models import Notification
 from .models import RejectedTag
 
+
+from .serializers import RecommendationSerializer
+from .serializers import PromptSerializer
+
 # from .models import RecommendationTag
 # from .models import QueryTag
 from .models import Tag
@@ -344,9 +348,8 @@ def submitQuery(user, *tags):
                 break
         if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
-            #if isUmair(friendUser):
-                # TODO
-                #sendNotification()
+            if created and isUmair(friendUser):
+                sendNotification(PromptSerializer(p).data, "prompts")
 
     # create prompts for subscribed users who are not friends of the user
     #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
@@ -601,7 +604,9 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    for query in queries:
       n = Notification(query=query, recommendation=recommendation)
       n.save()
-
+      if isUmair(query.user):
+          # TODO
+          sendNotification(RecommendationSerializer(recommendation).data, "recommendations")
 
    return recommendation
 # </editor-fold>
@@ -785,14 +790,18 @@ TIME_TO_WAIT = 30.0
 _gcm = GCM(API_KEY)
 _q = Queue()
 
-def sendNotification(json_data):
+def sendNotification(json_data, topic):
+
+   if not topic == "recommendations" and not topic == "prompts":
+       return "error: notification topic must be 'recommendations' or 'prompts'"
+
    # Hard coded value, replace with actual server data
    #data = {'user':'Ray Phillips', 'tagString': 'cloud pics'}
    data = json_data
 
    _q.put(data)
    # can be either recommendations or prompts
-   topic = 'recommendations'
+   #topic = 'recommendations'
 
    response = _gcm.send_topic_message(topic=topic, data=data)
 
@@ -809,6 +818,5 @@ def sendNotification(json_data):
        print("Sent to GCM")
 
 
-#sendNotification({'user':'Ray Phillips', 'tagString': 'cloud pics'})
 
 
