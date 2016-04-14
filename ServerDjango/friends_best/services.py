@@ -350,6 +350,10 @@ def submitQuery(user, *tags):
                 break
         if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+
+            #just for testing
+            identifiedUmair = isUmair(friendUser)
+            print ("found umair while creating prompts?: " + identifiedUmair)
             if created and isUmair(friendUser):
                 sendNotification(serializers.PromptSerializer(p).data, "prompts")
 
@@ -608,6 +612,8 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    for query in queries:
       n = Notification(query=query, recommendation=recommendation)
       n.save()
+
+      #just for testing
       identifiedUmair = isUmair(query.user)
       print ("found umair while creating recommendation?: " + identifiedUmair)
       if isUmair(query.user):
