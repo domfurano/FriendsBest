@@ -285,7 +285,7 @@ def submitQuery(user, *tags):
         return "error: cannot submit query, query must include at least one tag"
 
     #TODO: delete after testing
-    sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
+    #sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
 
    # create hash of tags and ordered string
     taghash = ' '.join(sorted(set(tags)))
@@ -608,8 +608,9 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    for query in queries:
       n = Notification(query=query, recommendation=recommendation)
       n.save()
+      identifiedUmair = isUmair(query.user)
+      print ("found umair while creating recommendation?: " + identifiedUmair)
       if isUmair(query.user):
-          # TODO
           sendNotification(serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
    return recommendation
