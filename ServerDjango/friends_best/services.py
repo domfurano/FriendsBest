@@ -284,6 +284,9 @@ def submitQuery(user, *tags):
     if tags.count == 0:
         return "error: cannot submit query, query must include at least one tag"
 
+    #TODO: delete after testing
+    sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
+
    # create hash of tags and ordered string
     taghash = ' '.join(sorted(set(tags)))
     tagstring = ' '.join(tags)
@@ -797,7 +800,7 @@ def sendNotification(json_data, topic):
        return "error: notification topic must be 'recommendations' or 'prompts'"
 
    # Hard coded value, replace with actual server data
-   #data = {'user':'Ray Phillips', 'tagString': 'cloud pics'}
+   #data = {'user':'test user', 'tagString': 'test text'}
    data = json_data
 
    _q.put(data)
