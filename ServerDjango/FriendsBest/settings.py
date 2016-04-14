@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     'gcm',
 )
 
-GCM_APIKEY = "AIzaSyBBy4tWLInt7ZCEIq1yzSqpF_wEFc5FkhQ"
+GCM_APIKEY = "AIzaSyBaz-fjyd6BOXNosuKf-bvgsakpI2nGyjs"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -597,10 +597,11 @@ def createRecommendation(user, detail, thingType, comments, *tags):
        recommendation.tags.add(newtag)
 
    # create a notification for every existing query with a matching tag
-   queries = Query.objects.filter(tags__lemma__in=lemmas)
+   queries = Query.objects.select_related('user').filter(tags__lemma__in=lemmas)
    for query in queries:
       n = Notification(query=query, recommendation=recommendation)
       n.save()
+
 
    return recommendation
 # </editor-fold>
@@ -779,7 +780,7 @@ from queue import Queue
 
 # http://django-gcm.readthedocs.org/en/latest/quickstart.html
 
-API_KEY = "AIzaSyBBy4tWLInt7ZCEIq1yzSqpF_wEFc5FkhQ"
+API_KEY = "AIzaSyBaz-fjyd6BOXNosuKf-bvgsakpI2nGyjs"
 TIME_TO_WAIT = 30.0
 _gcm = GCM(API_KEY)
 _q = Queue()
