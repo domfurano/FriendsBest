@@ -238,6 +238,7 @@
                     var location = GmUtility.locationFromLatLng(gmapContext.location);
                     location.radius = gmapContext.radius;
                     location.name = gmapContext.locationName;
+                    console.log(gmapContext);
                     return location;
                 } else {
                     if (params.radius) {
