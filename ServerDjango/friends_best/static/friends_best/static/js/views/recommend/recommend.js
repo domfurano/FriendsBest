@@ -74,8 +74,6 @@ define([
         this.pickerButton("URL");
         this.pickerButton("TEXT");
         
-        $("#PLACE").hide();
-        
     },
     
     pickerButton: function(type) {
@@ -135,7 +133,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Custom"
+            title: "Text"
         }));
         
         // Text entry
@@ -184,15 +182,20 @@ define([
         // tag and comment entry
         var template = _.template( commentsHTML );
         this.$el.append(template(this.recommendation.toJSON()));
-        
         $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
+        
+        if (this.recommendation.get("tagstring") == "") {
+	        $('#tags-tokenfield').focus();
+        } else {
+	        $('#comments').focus();
+        }
         
         that = this;
         
         $('.submit').one("click", function() {
 
 			// Replace the icon with a progress indicator
-			$(this).find("i").toggleClass("fa-plus-square fa-refresh fa-spin");
+			$(this).find("i").toggleClass("fa-plus-square fa-square fa-spin");
 
             // Pull the (new) data
             that.recommendation.set({
