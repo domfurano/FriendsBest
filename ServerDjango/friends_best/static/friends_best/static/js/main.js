@@ -1,5 +1,6 @@
 require.config({
   paths: {
+	async: 'vendor/async',
     jquery: 'vendor/jquery.min',
     'jquery.ui': 'vendor/jquery-ui.min',
     'jquery.mobile': 'vendor/jquery.mobile.min',

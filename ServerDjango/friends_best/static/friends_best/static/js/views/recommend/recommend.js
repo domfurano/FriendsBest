@@ -11,6 +11,7 @@ define([
   'text!templates/recommend/url.html',
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
+  'async!http://maps.google.com/maps/api/js?sensor=false&libraries=places',
 ], function($, _, Backbone, RecommendModel, placefinder, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {
