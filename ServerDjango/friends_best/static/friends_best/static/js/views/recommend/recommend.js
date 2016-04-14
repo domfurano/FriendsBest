@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'models/recommend',
+  'placefinder',
   'text!templates/standard/cancel.html',
   'text!templates/standard/cancelsubmit.html',
   'text!templates/recommend/picker.html',
@@ -10,7 +11,7 @@ define([
   'text!templates/recommend/url.html',
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
-], function($, _, Backbone, RecommendModel, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
+], function($, _, Backbone, RecommendModel, placefinder, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {
         
@@ -92,6 +93,16 @@ define([
             background: "#59c939",
             title: "Place"
         }));
+        
+        // Place picker
+        var template = _.template( placeHTML );
+        this.$el.append(template());
+        
+        $.fn.placefinder({
+		  map: $('#map'),
+		  input: $('#place')
+		});
+        
     },
     
     URL: function() {
