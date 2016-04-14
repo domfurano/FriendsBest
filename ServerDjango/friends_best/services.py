@@ -130,6 +130,8 @@ def getAllPrompts(user):
 
 
 
+
+
 def generateAnonymousPrompts(user):
     # get all queries made by users who are not friends with the user
     queriesByStrangers = Query.objects.prefetch_related('tags').exclude(Q(user__friendship1__userTwo=user) | Q(user=user)).all()
@@ -342,6 +344,9 @@ def submitQuery(user, *tags):
                 break
         if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+            #if isUmair(friendUser):
+                # TODO
+                #sendNotification()
 
     # create prompts for subscribed users who are not friends of the user
     #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
@@ -519,7 +524,7 @@ def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
 
 
-def modifyRecommendation(recId, newComments, newTagStrings):
+def modifyRecommendation(recId, newComments, *newTagStrings):
     rec = Recommendation.objects.prefetch_related('tags').get(id=recId)
     rec.comments = newComments
 
@@ -761,5 +766,48 @@ class RecommendationWithFlag:
         self.recommendation = recommendation
         self.isNew = isNew
 
+
+
+def isUmair(user):
+    account = SocialAccount.objects.filter(user=user).first()
+    return account.uid == 139982843051386
+
+
+from gcm import *
+from threading import Timer
+from queue import Queue
+
+# http://django-gcm.readthedocs.org/en/latest/quickstart.html
+
+API_KEY = "AIzaSyBBy4tWLInt7ZCEIq1yzSqpF_wEFc5FkhQ"
+TIME_TO_WAIT = 30.0
+_gcm = GCM(API_KEY)
+_q = Queue()
+
+def sendNotification(json_data):
+   # Hard coded value, replace with actual server data
+   #data = {'user':'Ray Phillips', 'tagString': 'cloud pics'}
+   data = json_data
+
+   _q.put(data)
+   # can be either recommendations or prompts
+   topic = 'recommendations'
+
+   response = _gcm.send_topic_message(topic=topic, data=data)
+
+   global TIME_TO_WAIT
+   if not response or 'success' not in response:
+       # Try again later
+       data = _q.remove()
+       t = Timer(TIME_TO_WAIT, sendNotification(data))
+       TIME_TO_WAIT *= 2
+       t.start()
+   else:
+       _q.pop()
+       TIME_TO_WAIT = 30.0
+       print("Sent to GCM")
+
+
+#sendNotification({'user':'Ray Phillips', 'tagString': 'cloud pics'})
 
 
