@@ -191,18 +191,18 @@ define([
         
         $('.submit').one("click", function() {
 
+			// Replace the icon with a progress indicator
+			$(this).find("i").toggleClass("fa-plus-square fa-refresh fa-spin");
+
             // Pull the (new) data
             that.recommendation.set({
                 "tags": $("#tags").val().toLowerCase().split(" "),
                 "comments": $("#comments").val()
-            });
-            
-            console.log("Attempting to save the recommendation.");
+            }); 
             
             // Sync the model
             that.recommendation.save(null, {
                 success: function() {
-	                console.log("Saved the recommendation.");
 	                
                     // Delete the prompt
                     if (typeof that.prompt != 'undefined') {
@@ -214,8 +214,7 @@ define([
 		            return false;
                 },
                 error: function(model, response, options) {
-	                console.log("Couldn't save the recommendation.");
-	                console.log(response);
+					// What to do here?
                 }
             });
     
