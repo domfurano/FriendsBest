@@ -353,7 +353,7 @@ def submitQuery(user, *tags):
 
             #just for testing
             identifiedUmair = isUmair(friendUser)
-            print ("found umair while creating prompts?: " + identifiedUmair)
+            print ("found umair while creating prompts?: " + "yes" if identifiedUmair else "no")
             if created and isUmair(friendUser):
                 sendNotification(serializers.PromptSerializer(p).data, "prompts")
 
@@ -615,7 +615,7 @@ def createRecommendation(user, detail, thingType, comments, *tags):
 
       #just for testing
       identifiedUmair = isUmair(query.user)
-      print ("found umair while creating recommendation?: " + identifiedUmair)
+      print ("found umair while creating recommendation?: " + "yes" if identifiedUmair else "no")
       if isUmair(query.user):
           sendNotification(serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
