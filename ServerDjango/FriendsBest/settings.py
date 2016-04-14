@@ -49,7 +49,10 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'corsheaders',
     'friends_best',
+    'gcm',
 )
+
+GCM_APIKEY = "AIzaSyBBy4tWLInt7ZCEIq1yzSqpF_wEFc5FkhQ"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
