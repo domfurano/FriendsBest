@@ -791,7 +791,7 @@ def isUmair(user):
         print ("i found umair!")
         return True
     else:
-        print ("i did not find umair")
+        print ("i did not find umair, instead found uid: %s" % account.uid)
         return False
 
 
@@ -823,7 +823,8 @@ def sendNotification(json_data, topic):
    print ("notification response: %s" % response)
 
    global TIME_TO_WAIT
-   if not response or 'success' not in response:
+   #if not response or 'success' not in response:
+   if not response:
        # Try again later
        data = _q.remove()
        t = Timer(TIME_TO_WAIT, sendNotification(data))
