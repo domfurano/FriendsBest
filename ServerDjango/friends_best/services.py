@@ -519,18 +519,27 @@ def getRecommendations(user):
    return Recommendation.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
 
 
-def modifyRecommendation(recId, comments, tags):
-   rec = Recommendation.objects.filter(id=recId)[0]
-   rec.comments = comments
+def modifyRecommendation(recId, newComments, newTagStrings):
+    rec = Recommendation.objects.prefetch_related('tags').get(id=recId)
+    rec.comments = newComments
 
-   rec.tags.delete()
-   for t in tags:
-       newtag, created = Tag.objects.get_or_create(tag=t.lower(), lemma=_lemmatizer.lemmatize(word=t.lower(), pos='n'))
-       rec.tags.add(newtag)
+    oldTagStrings = set()
+    for recTag in rec.tags:
+        oldTagString = recTag.tag
+        oldTagStrings.add(oldTagString)
+        if oldTagString not in newTagStrings:
+            rec.tags.remove(recTag)
+
+    for newTagString in newTagStrings:
+        if newTagString not in oldTagStrings:
+            newTag, created = Tag.objects.get_or_create(tag=newTagString.lower(), lemma=_lemmatizer.lemmatize(word=newTagString.lower(), pos='n'))
+            rec.tags.add(newTag)
+
+    rec.save()
 
 
 def deleteRecommendation(recId):
-   Recommendation.objects.filter(id=recId)[0].delete()
+   Recommendation.objects.get(id=recId).delete()
 
 
 # if thing is a PlaceThing, put in the placeId as the description
