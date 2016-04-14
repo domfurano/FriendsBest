@@ -285,7 +285,7 @@ def submitQuery(user, *tags):
         return "error: cannot submit query, query must include at least one tag"
 
     #TODO: delete after testing
-    sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
+    #sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
 
    # create hash of tags and ordered string
     taghash = ' '.join(sorted(set(tags)))
@@ -820,7 +820,7 @@ def sendNotification(json_data, topic):
    #topic = 'recommendations'
 
    response = _gcm.send_topic_message(topic=topic, data=data)
-   print ("notification response: " + response)
+   print ("notification response: %s" % response)
 
    global TIME_TO_WAIT
    if not response or 'success' not in response:
