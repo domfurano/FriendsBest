@@ -168,6 +168,12 @@ class RecommendationSerializer(serializers.Serializer):
         tags = validated_data.get('tags')
         thingtype = validated_data.get('type')
         return createRecommendation(user, detail, thingtype, comments, *tags)
+        
+    def update(self, recommendation, validated_data):
+        id = recommendation.id;
+        comments = validated_data.get('comments')
+        tags = validated_data.get('tags')
+        return modifyRecommendation(id, comments, *tags)
 
     # Return - validated data in a dictionary
     def validate(self, data):

@@ -112,7 +112,25 @@ class RecommendationViewSet(viewsets.ModelViewSet):
             serializer.save(user=request.user)
             return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None, **kwargs):
         
+        # Add the user to the data
+        data = request.data
+        data["user"] = request.user.id
+        
+        # Get exisiting recommendation object
+        recommendation = Recommendation.objects.get(pk=pk)
+        
+        # Check to see if we're doing a partial update (?)
+        partial = kwargs.pop('partial', False)
+        
+        # Serialize the new data along with the old
+        serializer = self.get_serializer(recommendation, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+    
     # GET
     def list(self, request):
         recommendations = getRecommendations(request.user.id)
@@ -124,7 +142,7 @@ class PinViewSet(mixins.CreateModelMixin,
                    viewsets.GenericViewSet):
     queryset = Pin.objects.order_by('query')
     serializer_class = PinSerializer
-    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnlyPin)
 
     def create(self, request, *args, **kwargs):
         serializer = PinSerializer(data=request.data)

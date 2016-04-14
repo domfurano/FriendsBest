@@ -532,10 +532,10 @@ def modifyRecommendation(recId, newComments, *newTagStrings):
     rec.comments = newComments
 
     # if line 530 throws an exception, use this instead:
-    # recTags = Tag.objects.filter(recommendation=rec)
+    recTags = Tag.objects.filter(recommendation=rec)
 
     oldTagStrings = set()
-    for recTag in rec.tags:
+    for recTag in recTags:
         oldTagString = recTag.tag
         oldTagStrings.add(oldTagString)
         if oldTagString not in newTagStrings:
@@ -547,6 +547,8 @@ def modifyRecommendation(recId, newComments, *newTagStrings):
             rec.tags.add(newTag)
 
     rec.save()
+    
+    return rec;
 
 
 def deleteRecommendation(recId):
