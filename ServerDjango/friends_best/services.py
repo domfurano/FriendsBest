@@ -554,7 +554,7 @@ def modifyRecommendation(recId, newComments, *newTagStrings):
 
     rec.save()
     
-    return rec;
+    return rec
 
 
 def deleteRecommendation(recId):
@@ -787,11 +787,11 @@ class RecommendationWithFlag:
 
 def isUmair(user):
     account = SocialAccount.objects.filter(user=user).first()
-    if account.uid == 139982843051386:
-        print ("i found umair!")
+    if account.uid == "139982843051386":
+        #print ("i found umair!")
         return True
     else:
-        print ("i did not find umair, instead found uid: %s" % account.uid)
+        #print ("i did not find umair, instead found uid: %s" % account.uid)
         return False
 
 
