@@ -679,8 +679,7 @@ def createUrlThing(url):
 def createPin(thingId, queryId):
     thing = Thing.objects.filter(id=thingId)[0]
     query = Query.objects.filter(id=queryId)[0]
-    pin = Pin(thing=thing, query=query)
-    pin.save()
+    pin, created = Pin.objects.get_or_create(thing=thing, query=query)
 
     #create accolades
     recs = Recommendation.objects.select_related('user').filter(thing=thing).all()
