@@ -352,8 +352,8 @@ def submitQuery(user, *tags):
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
             #just for testing
-            identifiedUmair = isUmair(friendUser)
-            print ("found umair while creating prompts?: " + "yes" if identifiedUmair else "no")
+            #identifiedUmair = isUmair(friendUser)
+            #print ("found umair while creating prompts?: " + "yes" if identifiedUmair else "no")
             if created and isUmair(friendUser):
                 sendNotification(serializers.PromptSerializer(p).data, "prompts")
 
@@ -614,8 +614,8 @@ def createRecommendation(user, detail, thingType, comments, *tags):
       n.save()
 
       #just for testing
-      identifiedUmair = isUmair(query.user)
-      print ("found umair while creating recommendation?: " + "yes" if identifiedUmair else "no")
+      #identifiedUmair = isUmair(query.user)
+      #print ("found umair while creating recommendation?: " + "yes" if identifiedUmair else "no")
       if isUmair(query.user):
           sendNotification(serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
@@ -787,7 +787,12 @@ class RecommendationWithFlag:
 
 def isUmair(user):
     account = SocialAccount.objects.filter(user=user).first()
-    return account.uid == 139982843051386
+    if account.uid == 139982843051386:
+        print ("i found umair!")
+        return True
+    else:
+        print ("i did not find umair")
+        return False
 
 
 from gcm import *
