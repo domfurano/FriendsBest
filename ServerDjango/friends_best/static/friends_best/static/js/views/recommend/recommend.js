@@ -189,27 +189,35 @@ define([
         
         that = this;
         
-        $('.submit').click(function() {
-            
+        $('.submit').one("click", function() {
+
             // Pull the (new) data
             that.recommendation.set({
                 "tags": $("#tags").val().toLowerCase().split(" "),
                 "comments": $("#comments").val()
             });
             
+            console.log("Attempting to save the recommendation.");
+            
             // Sync the model
-            that.recommendation.save({
+            that.recommendation.save(null, {
                 success: function() {
+	                console.log("Saved the recommendation.");
+	                
                     // Delete the prompt
                     if (typeof that.prompt != 'undefined') {
                       that.prompt.destroy();
                     }
+                    
+                    // Go back in history
+		            parent.history.go(-1);
+		            return false;
+                },
+                error: function(model, response, options) {
+	                console.log("Couldn't save the recommendation.");
+	                console.log(response);
                 }
             });
-            
-            // Go back in history
-            parent.history.go(-1);
-            return false;
     
     	  });
         
