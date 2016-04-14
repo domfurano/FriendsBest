@@ -16,8 +16,7 @@ from .models import Notification
 from .models import RejectedTag
 
 
-from .serializers import RecommendationSerializer
-from .serializers import PromptSerializer
+import friends_best.serializers
 
 # from .models import RecommendationTag
 # from .models import QueryTag
@@ -349,7 +348,7 @@ def submitQuery(user, *tags):
         if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
             if created and isUmair(friendUser):
-                sendNotification(PromptSerializer(p).data, "prompts")
+                sendNotification(serializers.PromptSerializer(p).data, "prompts")
 
     # create prompts for subscribed users who are not friends of the user
     #subscribedUsers = User.objects.filter(subscription__tag__lemma__in=lemmas).exclude(Q(friendship__userOne=user) | Q(friendship__userTwo=user))
@@ -608,7 +607,7 @@ def createRecommendation(user, detail, thingType, comments, *tags):
       n.save()
       if isUmair(query.user):
           # TODO
-          sendNotification(RecommendationSerializer(recommendation).data, "recommendations")
+          sendNotification(serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
    return recommendation
 # </editor-fold>
