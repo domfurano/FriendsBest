@@ -677,15 +677,18 @@ def createUrlThing(url):
 
 # <editor-fold desc="Pins">
 def createPin(thingId, queryId):
+    
+    # create pin
     thing = Thing.objects.filter(id=thingId)[0]
     query = Query.objects.filter(id=queryId)[0]
     pin, created = Pin.objects.get_or_create(thing=thing, query=query)
 
-    #create accolades
+    # create accolades
     recs = Recommendation.objects.select_related('user').filter(thing=thing).all()
     for rec in recs:
-        a1 = Accolade(user=rec.user, recommendation=rec)
-        a1.save()
+        a, created = Accolade.objects.get_or_create(user=rec.user, recommendation=rec)
+    
+    # return new or exisiting pin
     return pin
 
 
