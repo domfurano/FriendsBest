@@ -27,6 +27,11 @@ public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
         getData();
     }
 
+    public void closeRepository() {
+        _repository.cancelRequest();
+        _repository = null;
+    }
+
     @Override
     public void getData() {
         _repository.getQueries();

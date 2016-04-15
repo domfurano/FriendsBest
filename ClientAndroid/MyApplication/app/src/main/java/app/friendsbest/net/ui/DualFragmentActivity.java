@@ -3,9 +3,16 @@ package app.friendsbest.net.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,16 +35,17 @@ import app.friendsbest.net.data.model.OnListItemClickListener;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.data.services.ImageService;
 import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.services.RegistrationIntentService;
 import app.friendsbest.net.presenter.DualFragmentPresenter;
 import app.friendsbest.net.ui.fragment.FriendFragment;
 import app.friendsbest.net.ui.fragment.NavigationFragment;
 import app.friendsbest.net.ui.fragment.PostRecommendationFragment;
 import app.friendsbest.net.ui.fragment.ProfileFragment;
 import app.friendsbest.net.ui.fragment.PromptFragment;
+import app.friendsbest.net.ui.fragment.QueryHistoryFragment;
 import app.friendsbest.net.ui.fragment.RecommendationFragment;
 import app.friendsbest.net.ui.fragment.RecommendationItemFragment;
 import app.friendsbest.net.ui.fragment.RecommendationOptionFragment;
-import app.friendsbest.net.ui.fragment.QueryHistoryFragment;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 import app.friendsbest.net.ui.fragment.WebFragment;
 import app.friendsbest.net.ui.view.DualFragmentView;
@@ -60,10 +68,15 @@ public class DualFragmentActivity extends AppCompatActivity implements
     public static final String FRIENDS_ID = "friends";
     public static final String WEB_VIEW_ID ="webView";
     public static Typeface TYPEFACE;
+    public static boolean _isActivityRunning;
+    private static final String TAG ="DualFragActivity";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private DualFragmentPresenter _fragmentPresenter;
+    private BroadcastReceiver _broadcastReceiver;
     private LinearLayout _bottomNavigationBar;
     private ImageButton _recommendationButton;
+    private boolean _isReceiverRegistered;
     private ImageView _profileButton;
     private ImageView _homeButton;
     private Toolbar _toolbar;
@@ -87,6 +100,21 @@ public class DualFragmentActivity extends AppCompatActivity implements
         _recommendationButton.setOnClickListener(this);
         _profileButton.setOnClickListener(this);
 
+        _broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    Log.i(TAG, getString(R.string.gcm_send_message));
+                }
+                else {
+                    Log.i(TAG, getString(R.string.token_error_message));
+                }
+            }
+        };
+        registerReceiver();
         String pictureUri = PreferencesUtility.getInstance(getApplicationContext()).getProfilePictureUri();
         ImageService.getInstance(getApplicationContext()).retrieveImage(_profileButton, pictureUri, 36, 36);
 
@@ -103,6 +131,26 @@ public class DualFragmentActivity extends AppCompatActivity implements
         hideSupportActionBar();
         TYPEFACE = FontManager
                 .getTypeface(getApplicationContext(), FontManager.FONT_AWESOME);
+
+        if(checkPlayServices()) {
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver();
+        _isActivityRunning = true;
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(_broadcastReceiver);
+        _isReceiverRegistered = false;
+        super.onPause();
+        _isActivityRunning = false;
     }
 
     @Override
@@ -258,6 +306,30 @@ public class DualFragmentActivity extends AppCompatActivity implements
         }
         else if (v == _recommendationButton && !_recommendationButton.equals(ADD_RECOMMENDATION_ID)) {
             onFragmentChange(ADD_RECOMMENDATION_ID);
+        }
+    }
+
+    private boolean checkPlayServices(){
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void registerReceiver() {
+        if (!_isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(_broadcastReceiver,
+                    new IntentFilter(RegistrationIntentService.REGISTRATION_COMPLETE));
+            _isReceiverRegistered = true;
         }
     }
 }

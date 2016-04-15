@@ -157,10 +157,12 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
                 _placeAddress.setText(bundle.getString(RecommendationOptionFragment.PLACE_PICKER_ADDRESS));
                 _placesIcon.setVisibility(View.VISIBLE);
                 _editDetail.setEnabled(false);
+                _type = "place";
             }
             else if ((bundleValue = bundle.getString(WebFragment.BUNDLE_TAG, null)) != null) {
                 _editDetail.setText(bundleValue);
                 _editDetail.setEnabled(false);
+                _type = "url";
             }
         }
     }

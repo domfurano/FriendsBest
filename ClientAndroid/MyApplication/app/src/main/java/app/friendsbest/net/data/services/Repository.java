@@ -26,15 +26,16 @@ public class Repository {
 
     private final BasePresenter _presenter;
     private final RestClientService _service;
+    private Call _call;
 
-    public Repository(BasePresenter presenter, String token){
+    public Repository(BasePresenter presenter, String token) {
         _presenter = presenter;
         _service = ServiceGenerator.createService(RestClientService.class, token);
     }
 
     public void getPrompts() {
-        Call<List<PromptCard>> call = _service.getPrompts();
-        call.clone().enqueue(new Callback<List<PromptCard>>() {
+        _call = _service.getPrompts();
+        _call.clone().enqueue(new Callback<List<PromptCard>>() {
             @Override
             public void onResponse(Call<List<PromptCard>> call, Response<List<PromptCard>> response) {
                 List<PromptCard> prompts = null;
@@ -51,7 +52,8 @@ public class Repository {
     }
 
     public void deletePrompt(int id) {
-        _service.deletePrompt(id).enqueue(new Callback() {
+        _call = _service.deletePrompt(id);
+        _call.clone().enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
                 Log.i("Delete Prompt", "Success: " + response.isSuccess());
@@ -65,8 +67,8 @@ public class Repository {
     }
 
     public void getRecommendations() {
-        Call<List<Recommendation>> call = _service.getRecommendations();
-        call.clone().enqueue(new Callback<List<Recommendation>>() {
+        _call = _service.getRecommendations();
+        _call.clone().enqueue(new Callback<List<Recommendation>>() {
             @Override
             public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
                 List<Recommendation> recommendations = null;
@@ -83,7 +85,8 @@ public class Repository {
     }
 
     public void postRecommendation(RecommendationPost recommendation) {
-        _service.postRecommendation(recommendation).enqueue(new Callback<Recommendation>() {
+        _call = _service.postRecommendation(recommendation);
+        _call.clone().enqueue(new Callback<Recommendation>() {
             @Override
             public void onResponse(Call<Recommendation> call, Response<Recommendation> response) {
                 _presenter.sendToPresenter(response.body());
@@ -98,8 +101,8 @@ public class Repository {
     }
 
     public void deleteRecommendation(final int recommendationId) {
-        Call<Void> call = _service.deleteRecommendation(recommendationId);
-        call.clone().enqueue(new Callback<Void>() {
+        _call = _service.deleteRecommendation(recommendationId);
+        _call.clone().enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 int deletedId = response.isSuccess() ? recommendationId : -1;
@@ -114,8 +117,8 @@ public class Repository {
     }
 
     public void deleteNotification(final int recommendationId) {
-        Call<Void> call = _service.deleteNotification(recommendationId);
-        call.clone().enqueue(new Callback<Void>() {
+        _call = _service.deleteNotification(recommendationId);
+        _call.clone().enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i("Delete Notification", "Accepted = " + response.isSuccess());
@@ -129,14 +132,13 @@ public class Repository {
     }
 
     public void getQueries() {
-        _service.getQueryHistory().enqueue(new Callback<List<Query>>() {
+        _call = _service.getQueryHistory();
+        _call.clone().enqueue(new Callback<List<Query>>() {
             @Override
             public void onResponse(Call<List<Query>> call, Response<List<Query>> response) {
                 List<Query> queries = null;
                 if (response.isSuccess())
                     queries = response.body();
-                if (_presenter == null)
-                    Log.e("getQuery", "Presenter is null");
                 _presenter.sendToPresenter(queries);
             }
 
@@ -148,7 +150,8 @@ public class Repository {
     }
 
     public void getQuery(int queryId) {
-        _service.getQuery(queryId).enqueue(new Callback<QueryResult>() {
+        _call = _service.getQuery(queryId);
+        _call.clone().enqueue(new Callback<QueryResult>() {
             @Override
             public void onResponse(Call<QueryResult> call, Response<QueryResult> response) {
                 QueryResult solution = null;
@@ -165,7 +168,8 @@ public class Repository {
     }
 
     public void postQuery(Map<String, List<String>> tags) {
-        _service.postQuery(tags).enqueue(new Callback<QueryResult>() {
+        _call = _service.postQuery(tags);
+        _call.clone().enqueue(new Callback<QueryResult>() {
             @Override
             public void onResponse(Call<QueryResult> call, Response<QueryResult> response) {
                 QueryResult solution = null;
@@ -182,7 +186,8 @@ public class Repository {
     }
 
     public void deleteQuery(int queryId) {
-        _service.deleteQuery(queryId).enqueue(new Callback<Void>() {
+        _call = _service.deleteQuery(queryId);
+        _call.clone().enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i("Delete Query", "Success: " + response.isSuccess());
@@ -262,6 +267,10 @@ public class Repository {
                 _presenter.sendToPresenter(resultMap);
             }
         });
+    }
+
+    public void cancelRequest() {
+        _call.cancel();
     }
 
     private void logError(String message, Throwable t) {

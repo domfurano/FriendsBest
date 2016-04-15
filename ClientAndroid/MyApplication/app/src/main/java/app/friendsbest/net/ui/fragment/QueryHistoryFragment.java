@@ -4,6 +4,9 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.model.QueryHistoryAdapter;
 import app.friendsbest.net.data.model.OnListItemClickListener;
 import app.friendsbest.net.data.model.Query;
+import app.friendsbest.net.data.model.QueryHistoryAdapter;
 import app.friendsbest.net.presenter.QueryHistoryPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.FragmentView;
@@ -27,6 +30,7 @@ public class QueryHistoryFragment extends Fragment implements
 
     private OnFragmentInteractionListener _listener;
     private QueryHistoryAdapter _adapter;
+    private QueryHistoryPresenter _presenter;
     private RecyclerView _recyclerView;
     private ProgressBar _progressBar;
     private List<Query> _queries = new ArrayList<>();
@@ -36,14 +40,16 @@ public class QueryHistoryFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         _recyclerView.setLayoutManager(manager);
-        new QueryHistoryPresenter(this, getActivity().getApplicationContext());
+        _presenter = new QueryHistoryPresenter(this, getActivity());
         _adapter = new QueryHistoryAdapter(getActivity(), _queries, this);
         _recyclerView.setAdapter(_adapter);
+
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Search History");
         _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
         _listener.showBottomNavigationBar();
+
         if (_queries.size() > 0) {
             hideProgressBar();
         }
@@ -54,7 +60,20 @@ public class QueryHistoryFragment extends Fragment implements
         View contentView = inflater.inflate(R.layout.list_query_history, container, false);
         _progressBar = (ProgressBar) contentView.findViewById(R.id.history_fragment_progressbar);
         _recyclerView = (RecyclerView) contentView.findViewById(R.id.recycler_view);
+        Transition fade = new Fade();
+        Transition slide = new Slide();
+        slide.setDuration(2000);
+        fade.setDuration(2000);
+
+        setEnterTransition(fade);
+        setReturnTransition(slide);
         return contentView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _presenter.closeRepository();
     }
 
     @Override

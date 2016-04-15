@@ -169,6 +169,8 @@ public class PromptFragment extends Fragment implements
 
                 @Override
                 public void onScroll(float scrollProgressPercent) {
+                    View view = _adapterView.getSelectedView();
+
                 }
             });
         }

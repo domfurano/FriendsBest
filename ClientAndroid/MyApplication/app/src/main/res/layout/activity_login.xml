@@ -5,34 +5,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/linear_gradient_login"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context="net.friendsbest.app.fbest.LoginActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="96dp">
+        android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/logo_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/margin_large">
+        <RelativeLayout
+            android:id="@+id/logo_container"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_weight="0.6">
 
-        <ImageView
-            android:id="@+id/logo_friends"
-            android:layout_width="192dp"
-            android:layout_height="192dp"
-            android:background="@drawable/ic_logo_vector"/>
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/logo_friends"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/logo_login_vector"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/logo_friends"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="@dimen/margin_large"
+                android:text="@string/login_message"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_title_size"/>
+        </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/logo_container">
+            android:layout_height="0dp"
+            android:layout_below="@+id/logo_container"
+            android:layout_weight="0.4">
+
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/login_button"
                 android:layout_width="wrap_content"
@@ -43,5 +59,5 @@
                 android:paddingBottom="@dimen/padding_small"
                 android:paddingTop="@dimen/padding_small"/>
         </RelativeLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

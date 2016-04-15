@@ -9,6 +9,8 @@
         <item name="android:colorControlNormal">@color/blue_gray200</item>
         <item name="android:colorControlActivated">@color/colorAccent</item>
         <item name="android:colorControlHighlight">@color/blue_gray100</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowNoTitle">true</item>

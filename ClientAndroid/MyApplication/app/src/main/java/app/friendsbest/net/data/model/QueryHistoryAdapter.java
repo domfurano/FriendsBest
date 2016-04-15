@@ -71,25 +71,31 @@ public class QueryHistoryAdapter extends RecyclerView.Adapter<QueryHistoryAdapte
             switch (queryTags.size()) {
                 case 1:
                     _textBubbleFirst.setText(queryTags.get(0));
-                    _textBubbleSecond.setVisibility(View.GONE);
-                    _textBubbleOverflow.setVisibility(View.GONE);
+                    _textBubbleSecond.setVisibility(View.INVISIBLE);
+                    _textBubbleOverflow.setVisibility(View.INVISIBLE);
                     break;
                 case 2:
                     _textBubbleFirst.setText(queryTags.get(0));
+                    if (_textBubbleSecond.getVisibility() == View.INVISIBLE)
+                        _textBubbleSecond.setVisibility(View.VISIBLE);
                     _textBubbleSecond.setText(queryTags.get(1));
-                    _textBubbleOverflow.setVisibility(View.GONE);
+                    _textBubbleOverflow.setVisibility(View.INVISIBLE);
                     break;
                 case 0:
                     break;
                 default:
                     _textBubbleFirst.setText(queryTags.get(0));
+                    if (_textBubbleSecond.getVisibility() == View.INVISIBLE)
+                        _textBubbleSecond.setVisibility(View.VISIBLE);
                     _textBubbleSecond.setText(queryTags.get(1));
+                    if (_textBubbleOverflow.getVisibility() == View.INVISIBLE)
+                        _textBubbleOverflow.setVisibility(View.VISIBLE);
                     _textBubbleOverflow.setText(queryTags.get(2));
                     break;
             }
 
+            _textSolutionCount.setVisibility(View.INVISIBLE);
             if (solutionSize > 0) {
-                _textSolutionCount.setVisibility(View.INVISIBLE);
                 int count = 0;
                 List<Solution> solutions = query.getSolutions();
                 for (Solution solution : solutions) {

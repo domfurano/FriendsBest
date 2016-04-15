@@ -26,4 +26,5 @@
     <color name="blue_gray800">#37474f</color>
     <color name="green100">#c8e6c9</color>
     <color name="blue_gray">#637B94</color>
+    <color name="login_top_gradient">#48abff</color>
 </resources>

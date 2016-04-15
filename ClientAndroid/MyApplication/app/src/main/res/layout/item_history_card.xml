@@ -64,6 +64,7 @@
                 android:textAlignment="center"
                 android:gravity="center_vertical"
                 android:background="@drawable/update_bubble"
+                android:elevation="4dp"
                 android:text="1"/>
             <ImageView
                 android:id="@+id/history_arrow_right"
