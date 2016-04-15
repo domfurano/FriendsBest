@@ -557,6 +557,11 @@
 		padding-right: 0;
 	}
 	
+	.prompt .row {
+    	margin-left: 15px;
+        margin-right: 15px;
+	}
+	
 	.prompt .row.head, ,prompt .row.foot {
     	font-size: 20px;
 	}
@@ -564,6 +569,8 @@
 	.prompt .row.topic {
     	font-size: 30px;
 		font-weight: 600;
+		text-overflow: clip;
+        overflow: hidden;
 	}
 	
 	.info div {
@@ -640,6 +647,19 @@
 		text-shadow: none;
 		font-size: 22px;
 		margin-right: 10px; 
+	}
+	
+	.fullmap {
+		position: fixed;
+		top: 80px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+	
+	.map {
+		width: 100%;
+		height: 100%;
 	}
 	
 	@media (min-width: 320px) { 

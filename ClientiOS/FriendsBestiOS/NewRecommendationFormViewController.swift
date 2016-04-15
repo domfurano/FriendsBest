@@ -7,24 +7,16 @@
 //
 
 import Eureka
+import GoogleMaps
 
 
 class NewRecommendationFormViewController: FormViewController {
-    var type: RecommendationType?
-    var detail: String?
-    var tags: [String]?
+    var userRecommendation: UserRecommendation!
+    var placesClient: GMSPlacesClient = GMSPlacesClient()
     
-    convenience init(type: RecommendationType, detail: String) {
+    convenience init(recommendation: UserRecommendation) {
         self.init()
-        self.type = type
-        self.detail = detail
-    }
-    
-    convenience init(type: RecommendationType, detail: String, tags: [String]) {
-        self.init()
-        self.type = type
-        self.detail = detail
-        self.tags = tags
+        self.userRecommendation = recommendation
     }
     
     override func viewDidLoad() {
@@ -51,14 +43,15 @@ class NewRecommendationFormViewController: FormViewController {
         form = Section("Recommendation")
             <<< TextRow() {
                 $0.tag = "detail"
-                switch self.type! {
+                switch self.userRecommendation.type! {
                 case .TEXT:
                     break
                 case .URL:
-                    $0.value = self.detail
+                    $0.value = self.userRecommendation.detail!
                     $0.disabled = true
                     break
                 case .PLACE:
+                    $0.disabled = true
                     break
                 }
                 }.cellSetup({ (cell, row) in
@@ -66,14 +59,24 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Keywords")
             <<< TextRow() {
                 $0.tag = "keywords"
-                if tags != nil {
-                    $0.value = self.tags!.joinWithSeparator("")
-                    $0.disabled = true
+                if self.userRecommendation.tags != nil && self.userRecommendation.tags!.count > 0 {
+                    $0.value = self.userRecommendation!.tags!.joinWithSeparator("")
+                    //                    $0.disabled = true
                 }
             }
             +++ Section("Comments")
             <<< TextAreaRow() {
                 $0.tag = "comment"
+        }
+        
+        if userRecommendation.type! == .PLACE {
+            placesClient.lookUpPlaceID(userRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
+                if error == nil {
+                    if let place = place {
+                        self.form.rowByTag("detail")!.baseValue = place.name
+                    }
+                }
+            })
         }
     }
     
@@ -91,19 +94,24 @@ class NewRecommendationFormViewController: FormViewController {
     }
     
     func createNewRecommendationButtonPressed() {
-        if type != nil && detail != nil {
-            let values: [String: Any?] = form.values(includeHidden: false)
-            
-            if values["keywords"] == nil || (values["keywords"]!! as! String).isEmpty {
-                return
+        let values: [String: Any?] = form.values(includeHidden: false)
+        
+        if values["detail"] == nil || values["detail"]! == nil || (values["detail"]!! as! String).isEmpty ||
+            values["keywords"] == nil || values["keywords"]! == nil || (values["keywords"]!! as! String).isEmpty {
+            return
+        }
+        
+        userRecommendation.detail = (values["detail"]!! as! String)
+        userRecommendation.tags = (values["keywords"]!! as! String).componentsSeparatedByString(" ")
+        userRecommendation.comments = values["comments"] == nil ? "" : (values["comments"]!! as! String)
+        
+        FBNetworkDAO.instance.postNewRecommendtaion(userRecommendation)
+        
+        for vc in (navigationController?.viewControllers)! {
+            if vc.isKindOfClass(MainScreenViewController) {
+                navigationController?.popToViewController(vc, animated: true)
+                break
             }
-            
-            FBNetworkDAO.instance.postNewRecommendtaion(
-                values["detail"]!! as! String,
-                type: type!.rawValue,
-                comments: values["comment"]!! as! String,
-                recommendationTags: (values["keywords"]!! as! String).componentsSeparatedByString(" ")
-            )
         }
     }
     

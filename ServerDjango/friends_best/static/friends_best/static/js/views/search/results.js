@@ -68,7 +68,7 @@ define([
         		solution.id = index;
         		solution.name = solution.detail.split("\n")[0].trim();
         		solution.longname = solution.detail.split("\n").join("<br>");
-    			this.$list.prepend(itemTemplate(solution));
+    			this.$list.append(itemTemplate(solution));
     		}, this);
     		
     		// Make the list clickable

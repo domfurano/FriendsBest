@@ -10,6 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 import GoogleMaps
+import CoreLocation
 import Koloda
 
 
@@ -32,7 +33,7 @@ class MainView: UIView {
 
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate, KolodaViewDataSource, KolodaViewDelegate {
     
-//    static let instance: MainScreenViewController = MainScreenViewController() // ?????
+    //    static let instance: MainScreenViewController = MainScreenViewController() // ?????
     
     /* Google */
     let placesClient: GMSPlacesClient = GMSPlacesClient()
@@ -61,6 +62,9 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     /* Recommendation Picker */
     var recommendationPicker: RecommendationPickerViewController = RecommendationPickerViewController()
+    
+    /* Location manager */
+    var locationManager: CLLocationManager = CLLocationManager()
     
     deinit {
         NSLog("MainScreenViewController - deinit")
@@ -158,6 +162,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 self.currentPlace = placeLikelihoods.likelihoods.first?.place
             }
         }
+        
+        /* Location manager */
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager.startUpdatingLocation()
+        
         addConstraints()
     }
     
@@ -169,6 +179,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         navigationController?.toolbarHidden = false
         
         setToolbarItems()
+        
+        newUserRecommendation.clear()
     }
     
     /*** Delegate implementation ***/
@@ -203,7 +215,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /*** Koloda ***/
     
     var didSwipeRight: Bool = false
-    var swipedTags: [String] = []
+    var newUserRecommendation: UserRecommendation = UserRecommendation()
     
     // delegate
     
@@ -213,7 +225,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             FBNetworkDAO.instance.deletePrompt(cardView.prompt!.ID)
         } else {
             didSwipeRight = true
-            swipedTags = cardViews[Int(index)].prompt!.tags
+            newUserRecommendation = UserRecommendation()
+            newUserRecommendation.tags = cardViews[Int(index)].prompt!.tags
             showNewRecommendationViews()
         }
     }
@@ -304,7 +317,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         showNewRecommendationViews()
     }
     
-    func showNewRecommendationViews() {        
+    func showNewRecommendationViews() {
         recommendationPicker.modalPresentationStyle = .OverFullScreen
         navigationController?.presentViewController(recommendationPicker, animated: false, completion: nil)
         recommendationPickerShown = true
@@ -321,47 +334,64 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     /*** Recommendation Picker ***/
     
-        func pickCustom() {
-//            recommendationPicker.hide(true)
-            navigationController?.pushViewController(NewRecommendationFormViewController(type: .TEXT, detail: "", tags: swipedTags), animated: true)
+    func pickCustom() {
+        newUserRecommendation.type = .TEXT
+        newUserRecommendation.detail = ""
+        navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation), animated: true)
+    }
+    
+    func pickLink() {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
+        navigationController?.pushViewController(WebViewController(recommendation: newUserRecommendation), animated: true)
+    }
+    
+    func pickPlace() {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = false
+
+        var latitude: Double = 39.4997605
+        var longitude: Double = -111.547028
+        var offset: Double = 10.0
+
+        if locationManager.location != nil {
+            latitude = locationManager.location!.coordinate.latitude
+            longitude = locationManager.location!.coordinate.longitude
+            offset = 0.001
         }
-    
-        func pickLink() {
-//            RecommendationTypePickerView.instance.hide(true)
-            navigationController?.navigationBarHidden = false
-            navigationController?.toolbarHidden = false
-            navigationController?.pushViewController(WebViewController(), animated: true)
-        }
-    
-        func pickPlace() {
-//            RecommendationTypePickerView.instance.hide(true)
-            navigationController?.navigationBarHidden = false
-            navigationController?.toolbarHidden = false
-            let center = CLLocationCoordinate2DMake(40.7676918, -111.8452524)
-            let northEast = CLLocationCoordinate2DMake(center.latitude + 0.001, center.longitude + 0.001)
-            let southWest = CLLocationCoordinate2DMake(center.latitude - 0.001, center.longitude - 0.001)
-            let viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
-    
-            let config = GMSPlacePickerConfig(viewport: viewport)
-            placePicker = GMSPlacePicker(config: config)
-    
-            placePicker?.pickPlaceWithCallback({ (place: GMSPlace?, error: NSError?) -> Void in
-                self.viewWillAppear(false)
-    
-                if let error = error {
-                    print("Pick Place error: \(error.localizedDescription)")
-                    return
-                }
-    
-                if let place = place {
-                    print("Place name \(place.name)")
-                    print("Place address \(place.formattedAddress)")
-                    print("Place attributions \(place.attributions)")
-                } else {
-                    print("No place selected")
-                }
-            })
-        }
+        
+        let center = CLLocationCoordinate2DMake(latitude, longitude)
+        let northEast = CLLocationCoordinate2DMake(center.latitude + offset, center.longitude + offset)
+        let southWest = CLLocationCoordinate2DMake(center.latitude - offset, center.longitude - offset)
+        let viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
+        
+        let config = GMSPlacePickerConfig(viewport: viewport)
+        placePicker = GMSPlacePicker(config: config)
+        
+        placePicker?.pickPlaceWithCallback({ (place: GMSPlace?, error: NSError?) -> Void in
+            self.viewWillAppear(false)
+            
+            if let error = error {
+                NSLog("Pick Place error: \(error.localizedDescription)")
+                return
+            }
+            
+            if let place = place {
+                NSLog("Place name: \(place.name)")
+                NSLog("Place ID: \(place.placeID)")
+                NSLog("Place address: \(place.formattedAddress)")
+                NSLog("Place attributions: \(place.attributions)")
+                
+                self.newUserRecommendation.type = .PLACE
+                self.newUserRecommendation.detail = place.placeID
+                
+                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: self.newUserRecommendation), animated: true)
+                
+            } else {
+                NSLog("No place selected")
+            }
+        })
+    }
     
     
     /*** Navigation bar ***/

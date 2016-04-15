@@ -20,10 +20,16 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     var forwardButton: UIBarButtonItem!
     var reloadButton: UIBarButtonItem!
     
+    var newUserRecommendation: UserRecommendation!
     var webView: WKWebView {
         get {
             return view as! WKWebView
         }
+    }
+    
+    convenience init(recommendation: UserRecommendation) {
+        self.init()
+        newUserRecommendation = recommendation
     }
     
     deinit {
@@ -131,7 +137,9 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     func createNewRecommendationButtonPressed() {
         if let urlString = webView.URL?.absoluteString {
             NSLog(urlString)
-            navigationController?.pushViewController(NewRecommendationFormViewController(type: .URL, detail: urlString), animated: true)
+            newUserRecommendation.type = .URL
+            newUserRecommendation.detail = urlString
+            navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation), animated: true)
         }
     }
     

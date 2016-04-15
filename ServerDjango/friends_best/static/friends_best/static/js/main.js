@@ -1,11 +1,13 @@
 require.config({
   paths: {
+	async: 'vendor/async',
     jquery: 'vendor/jquery.min',
     'jquery.ui': 'vendor/jquery-ui.min',
     'jquery.mobile': 'vendor/jquery.mobile.min',
     'jquery.ui.tp': 'vendor/jquery.ui.touch-punch.min',
     bootstrap: 'vendor/bootstrap',
     tokenfield: 'vendor/bootstrap-tokenfield',
+    placefinder: 'vendor/jquery.placefinder',
     underscore: 'vendor/underscore',
     backbone: 'vendor/backbone',
     templates: '../templates',
@@ -16,6 +18,9 @@ require.config({
 		  deps: ['jquery.ui'],
 	  },
 	  tokenfield: {
+		  deps: ['jquery', 'bootstrap'],
+	  },
+	  placefinder: {
 		  deps: ['jquery', 'bootstrap'],
 	  },
 	  'facebook' : {

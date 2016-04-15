@@ -74,7 +74,7 @@ class UrlThing(models.Model):
 
 class Tag(models.Model):
    tag = models.CharField(max_length=25, unique=True)
-   lemma = models.CharField(max_length=25, unique=True)
+   lemma = models.CharField(max_length=25)
 
    def save(self, *args, **kwargs):
        if not self.lemma:
@@ -95,6 +95,19 @@ class Recommendation(models.Model):
 
    def __str__(self):
        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
+
+
+# track tags associated with prompts rejected by user
+class RejectedTag(models.Model):
+    user = models.ForeignKey(User)
+    tag = models.ForeignKey(Tag)
+    tagSum = models.IntegerField(default=1)
+
+    def __str__(self):
+        return "user: %s, tag:%s" % (self.user, self.tag)
+
+    class Meta:
+        unique_together = (("user", "tag"),)
 
 
 class Query(models.Model):

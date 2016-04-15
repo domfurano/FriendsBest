@@ -1,6 +1,7 @@
 PODS:
   - Eureka (1.5.0)
   - FLAnimatedImage (1.0.12)
+  - GoogleMaps (1.13.0)
   - Koloda (3.0.0):
     - pop (~> 1.0)
   - PINCache (2.2.2)
@@ -16,6 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - Eureka (~> 1.5)
+  - GoogleMaps
   - Koloda
   - PINRemoteImage
   - PureLayout
@@ -23,6 +25,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   Eureka: 2fb37bb50569c62ee3284689d5b7aca694b040e0
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  GoogleMaps: 7a6caeb8336d7cb42982e969fc9b1b20a889fe79
   Koloda: 315aa5d2ef4138df90c42ee77c18af0727528e6a
   PINCache: 078426d356ab95ef875e9e62e5c35a2ea3333c28
   PINRemoteImage: 2ce3f1fcc52f0360a3821f91f1a1bc653c5d2338
