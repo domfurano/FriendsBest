@@ -710,6 +710,9 @@
 		line-height: 17px;
 		white-space: normal;
 	}
+	.text .custom {
+		margin-top: 4px;
+	}
 	.place .address, .url .full {
 		font-size: 12px;
 		line-height: 1;
