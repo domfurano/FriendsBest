@@ -99,12 +99,15 @@ define([
         var template = _.template( placeHTML );
         this.$el.append(template());
         
+        that = this;
         $.fn.placefinder({
 		  map: $('#map'),
 		  input: $('#search'),
 		  result: $('#placebox'),
-		  pick: function(placeid) {
+		  pick: function(name, address, placeid) {
 			  that.recommendation.set("detail", placeid);
+			  that.recommendation.set("name", name);
+			  that.recommendation.set("address", address);
 			  that.render();
 		  }
 		});
@@ -201,6 +204,7 @@ define([
         this.$el.append(template(this.recommendation.toJSON()));
         $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
         
+        // Set focus on empty field
         if (this.recommendation.get("tagstring") == "") {
 	        $('#tags-tokenfield').focus();
         } else {

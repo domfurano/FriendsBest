@@ -2,11 +2,14 @@
 	<div class="container">
         <div class="row thing well well-sm">
             <div class="col-xs-8 text">
-                <% if(type == "TEXT") { %>
+                <% if(type == "text") { %>
                     <%= detail %>
                 <% } %>
-                <% if(type == "URL") { %>
+                <% if(type == "url") { %>
                     <%= host %>
+                <% } %>
+                <% if(type == "place") { %>
+                    <%= name %>
                 <% } %>
             </div>
             <div class="col-xs-4 arrow">

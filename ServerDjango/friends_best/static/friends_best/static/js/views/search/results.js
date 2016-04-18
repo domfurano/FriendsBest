@@ -3,12 +3,17 @@ define([
   'underscore',
   'backbone',
   'models/query',
+  'placedetails',
   'views/solution/details',
   'text!templates/search/results/back.html',
   'text!templates/standard/list.html',
-  'text!templates/search/results/item.html',
+  'text!templates/search/results/item-text.html',
+  'text!templates/search/results/item-url.html',
+  'text!templates/search/results/item-place.html',
+  'text!templates/standard/place.html',
   'text!templates/search/results/postback.html',
-], function($, _, Backbone, QueryModel, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
+  'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
+], function($, _, Backbone, QueryModel, placedetails, SolutionView, backHTML, listHTML, itemTextHTML, itemURLHTML, itemPlaceHTML, placeHTML, postbackHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -63,12 +68,31 @@ define([
     		
     		// Populate the list
     		var solutions = this.model.get("solutions");
-    		itemTemplate = _.template(itemHTML);
+    		itemTextTemplate = _.template(itemTextHTML);
+    		itemURLTemplate = _.template(itemURLHTML);
+    		itemPlaceTemplate = _.template(itemPlaceHTML);
+    		placeTemplate = _.template(placeHTML);
     		_.each(solutions, function(solution, index) {
-        		solution.id = index;
-        		solution.name = solution.detail.split("\n")[0].trim();
-        		solution.longname = solution.detail.split("\n").join("<br>");
-    			this.$list.append(itemTemplate(solution));
+        		
+        		switch(solution.type) {
+	        		case 'url':
+	        			solution.id = index;
+						solution.name = solution.detail.trim();
+						this.$list.append(itemURLTemplate(solution));
+						break;
+	        		case 'place':
+	        			solution.id = index;
+						this.$list.append(itemPlaceTemplate(solution));
+						$("#"+index).find(".place").placedetails({placeid: solution.detail});
+						break;
+	        		case 'text':
+	        		default:
+	        			solution.id = index;
+						solution.name = solution.detail.split("\n")[0].trim();
+						solution.longname = solution.detail.split("\n").join("<br>");
+						this.$list.append(itemTextTemplate(solution));
+        		}
+
     		}, this);
     		
     		// Make the list clickable

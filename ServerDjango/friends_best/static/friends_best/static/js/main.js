@@ -8,6 +8,7 @@ require.config({
     bootstrap: 'vendor/bootstrap',
     tokenfield: 'vendor/bootstrap-tokenfield',
     placefinder: 'placefinder',
+    placedetails: 'placedetails',
     underscore: 'vendor/underscore',
     backbone: 'vendor/backbone',
     templates: '../templates',
@@ -22,6 +23,9 @@ require.config({
 	  },
 	  placefinder: {
 		  deps: ['jquery', 'bootstrap'],
+	  },
+	  placedetails: {
+		  deps: ['jquery'],
 	  },
 	  'facebook' : {
 	      exports: 'FB'

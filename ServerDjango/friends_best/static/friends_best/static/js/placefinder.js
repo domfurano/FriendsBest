@@ -72,7 +72,8 @@
 		result.find(".address").html(address);
 		result.find(".cancel").off().one("click", cancelResult);
 		result.find(".next").off().one("click", function() {
-			settings.pick(place.place_id)
+			console.log(place);
+			settings.pick(place.name, address, place.place_id)
 		});
 		result.show();
 	}
@@ -138,8 +139,7 @@
 			latitude: 0,
 			longitude: 10,
 		},
-		pick: function(placeid) {
-			console.log(placeid);
+		pick: function(name, address, placeid) {
 		}
 	};
 	

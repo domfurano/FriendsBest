@@ -244,6 +244,7 @@
 	.listcontainer {
 		overflow: scroll;
 		padding-top: 10px;
+		-webkit-overflow-scrolling: touch;
 	}
 	
 	.list a {
@@ -698,20 +699,19 @@
 		color: #59c939;
 	}
 	
-	.placebox .place {
+	.place {
 		display: inline-block;
 		vertical-align: top;
 		padding-top: 3px;
 	}
-	
-	.placebox .place .name {
+	.place .name {
 		color: #333;
 		font-weight: bold;
 		font-size: 15px;
 		line-height: 15px;
 		white-space: normal;
 	}
-	.placebox .place .address {
+	.place .address {
 		color: #666;
 		font-size: 12px;
 		line-height: 1;
