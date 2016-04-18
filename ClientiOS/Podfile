@@ -5,6 +5,10 @@ use_frameworks!
 
 target 'FriendsBest' do
     pod "Koloda"
+    pod 'Eureka', '~> 1.5'
+    pod 'PureLayout'
+    pod 'PINRemoteImage'
+    pod 'GoogleMaps'
 end
 
 post_install do |installer|

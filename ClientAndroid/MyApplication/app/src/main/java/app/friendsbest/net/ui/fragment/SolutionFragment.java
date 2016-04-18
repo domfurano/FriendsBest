@@ -1,15 +1,25 @@
 package app.friendsbest.net.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,7 +33,6 @@ import app.friendsbest.net.data.model.QueryResult;
 import app.friendsbest.net.data.model.Solution;
 import app.friendsbest.net.data.model.SolutionAdapter;
 import app.friendsbest.net.presenter.SolutionPresenter;
-import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.view.FragmentView;
 
@@ -33,6 +42,7 @@ public class SolutionFragment extends Fragment implements
 
     public static final String SOLUTION_TAGS = "solutionTag";
     public static final String SOLUTION_ID_TAG = "solutionId";
+    public static final String BUTTON_TYPE = "postToFacebookButton";
 
     private final String _fragmentTitleTag = "fragmentTitle";
     private final String _solutionBundleTag = "solutionBundle";
@@ -42,8 +52,16 @@ public class SolutionFragment extends Fragment implements
     private List<Solution> _solutions = new ArrayList<>();
     private QueryResult _queryResult;
     private ProgressBar _progressBar;
-    private ListPresenter _presenter;
+    private SolutionPresenter _presenter;
+    private CallbackManager _callbackManager;
+    private ShareDialog _shareDialog;
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -55,16 +73,23 @@ public class SolutionFragment extends Fragment implements
         _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         _adapter = new SolutionAdapter(getActivity(), _solutions, this);
         _recyclerView.setAdapter(_adapter);
+        if (_solutions.size() > 0){
+            hideProgressBar();
+        }
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        _callbackManager = CallbackManager.Factory.create();
+        _shareDialog = new ShareDialog(getActivity());
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange(_queryResult.getTagString());
-        _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
+        _listener.showBottomNavigationBar();
 
         if (savedInstanceState != null) {
             String title = savedInstanceState.getString(_fragmentTitleTag);
@@ -77,6 +102,29 @@ public class SolutionFragment extends Fragment implements
             _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
             _presenter.getData(_queryResult);
         }
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_recommendation_item, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            if (_queryResult != null) {
+                _presenter.deleteSearch(_queryResult.getId());
+                _listener.onFragmentChange("");
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override
@@ -95,6 +143,9 @@ public class SolutionFragment extends Fragment implements
     @Override
     public void displayContent(QueryResult solution) {
         _solutions = solution.getSolutions();
+        if (getActivity() == null) {
+            return;
+        }
         _recyclerView.setAdapter(new SolutionAdapter(getActivity(), _solutions, this));
     }
 
@@ -122,10 +173,25 @@ public class SolutionFragment extends Fragment implements
 
     @Override
     public void onListItemClick(Solution item) {
-        String itemJson = new Gson().toJson(item, Solution.class);
+        if (item.getType().equals(BUTTON_TYPE)) {
+            Log.i("SolutionFragment", "Clicked post to facebook button");
+            if (ShareDialog.canShow(ShareLinkContent.class)) {
+                ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                        .setContentTitle("I need a recommendation for '" + _queryResult.getTagString() + "'")
+                        .setContentDescription(
+                                "Please join me on FriendsBest.net and share your recommendation!")
+                        .setContentUrl(Uri.parse("http://www.friendsbest.net/fb/link/" + _queryResult.getId() + "/"))
+                        .build();
 
-        Bundle bundle = new Bundle();
-        bundle.putString(RecommendationItemFragment.TAG, itemJson);
-        _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ITEM_ID, bundle);
+                _shareDialog.show(linkContent);
+            }
+        }
+        else {
+            String itemJson = new Gson().toJson(item, Solution.class);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(RecommendationItemFragment.TAG, itemJson);
+            _listener.onFragmentChange(DualFragmentActivity.VIEW_SOLUTION_ITEM_ID, bundle);
+        }
     }
 }

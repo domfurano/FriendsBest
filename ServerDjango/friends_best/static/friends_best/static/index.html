@@ -9,9 +9,13 @@
         <title>FriendsBest</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <meta name="apple-mobile-web-app-capable" content="no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        
+        <!-- Added these lines so mobile safari wont cache during development -->
+        <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="-1">
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-tokenfield.css">
@@ -27,6 +31,7 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+       
     </head>
     <body class="scrollable">
 	    
@@ -38,10 +43,11 @@
     <div class="view">
 	    
 	    <div class="container loading">
-			<i class="fa fa-refresh fa-spin fa-2x"></i>
+			<i class="fa fa-square fa-spin fa-2x"></i>
 		</div>
 	    
     </div>
+    
 	<footer></footer>   
 	
     </body>

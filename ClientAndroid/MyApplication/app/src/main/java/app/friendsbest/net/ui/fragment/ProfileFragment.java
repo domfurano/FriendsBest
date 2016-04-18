@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.services.ImageService;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.ProfilePresenter;
@@ -27,6 +27,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener _listener;
     private Button _logoutButton;
+    private Button _deleteButton;
     private ImageView _profilePicture;
     private CardView _recommendationCard;
     private CardView _friendsCard;
@@ -43,6 +44,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         _profilePicture = (ImageView) rootView.findViewById(R.id.profile_picture);
         _logoutButton = (Button) rootView.findViewById(R.id.logout_button);
+        _deleteButton = (Button) rootView.findViewById(R.id.delete_profile_button);
         _recommendationCard = (CardView) rootView.findViewById(R.id.profile_recommendations_button);
         _friendsCard = (CardView) rootView.findViewById(R.id.profile_friends_button);
         _recommendationsCount = (TextView) rootView.findViewById(R.id.profile_recommendation_count);
@@ -58,12 +60,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _logoutButton.setOnClickListener(this);
         _listener = (OnFragmentInteractionListener) getActivity();
         _listener.showSupportActionBar();
+        _listener.showBottomNavigationBar();
         _listener.onFragmentTitleChange("Profile");
-        _listener.onFragmentToolbarChange(R.color.blue_gray200);
+        _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
+        _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
         new ProfilePresenter(this, getActivity().getApplicationContext());
         _preferencesUtility = PreferencesUtility.getInstance(getActivity().getApplicationContext());
         _profileGreeting.setText(_preferencesUtility.getUserName());
         _friendsCard.setOnClickListener(this);
+        _deleteButton.setOnClickListener(this);
         _recommendationCard.setOnClickListener(this);
         String uri = _preferencesUtility.getProfilePictureUri();
         ImageService.getInstance(getActivity().getApplicationContext())
@@ -107,6 +112,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 bundle.putString(RecommendationFragment.BUNDLE_KEY, _storedRecommendationList);
                 _listener.onFragmentChange(DualFragmentActivity.VIEW_RECOMMENDATIONS_ID, bundle);
             }
+        }
+        else if (v == _deleteButton) {
+            Toast.makeText(getActivity(), "I'm sorry Jim, I'm afraid I can't do that.", Toast.LENGTH_LONG).show();
         }
     }
 }

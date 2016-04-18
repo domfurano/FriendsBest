@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,9 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.ui.fragment.SolutionFragment;
 
 public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.SolutionViewHolder> {
 
+    public static final int SOLUTION_ITEM = 0;
+    public static final int BUTTON_ITEM = 1;
     private List<Solution> _solutions = new ArrayList<>();
     private final LayoutInflater _inflater;
     private final OnListItemClickListener<Solution> _listener;
@@ -30,20 +34,36 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
 
     @Override
     public SolutionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = _inflater.inflate(R.layout.solution_item_card, parent, false);
+        View view;
+        if (viewType == SOLUTION_ITEM) {
+            view = _inflater.inflate(R.layout.item_solution_card, parent, false);
+        }
+        else {
+            view = _inflater.inflate(R.layout.item_facebook_post, parent, false);
+        }
         SolutionViewHolder holder = new SolutionViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(SolutionViewHolder holder, int position) {
-        Solution solution = _solutions.get(position);
-        holder.bind(solution, _listener);
+        if (position == _solutions.size()) {
+            holder.bindButton(_listener);
+        }
+        else {
+            Solution solution = _solutions.get(position);
+            holder.bind(solution, _listener);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return _solutions.size();
+        return _solutions.size() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == _solutions.size()) ? BUTTON_ITEM : SOLUTION_ITEM;
     }
 
     class SolutionViewHolder extends RecyclerView.ViewHolder {
@@ -67,6 +87,18 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
                 @Override
                 public void onClick(View v) {
                     listener.onListItemClick(solution);
+                }
+            });
+        }
+
+        public void bindButton(final OnListItemClickListener listener) {
+            _cardView = (CardView) itemView.findViewById(R.id.facebook_post_view);
+            final Solution emptySolution = new Solution();
+            emptySolution.setType(SolutionFragment.BUTTON_TYPE);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onListItemClick(emptySolution);
                 }
             });
         }

@@ -5,79 +5,104 @@ define([
   'models/query',
   'views/solution/details',
   'text!templates/search/results/back.html',
-  'text!templates/search/results/items.html',
+  'text!templates/standard/list.html',
   'text!templates/search/results/item.html',
-], function($, _, Backbone, QueryModel, SolutionView, backHTML, itemsHTML, itemHTML){
+  'text!templates/search/results/postback.html',
+], function($, _, Backbone, QueryModel, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
 
 	initialize: function(options) {
-		console.log("init ResultsView");
 		this.id = options.id;
+        this.visible = true;
+		this.model = new QueryModel();
+		this.model.set({"id": this.id});
+		this.model.on("sync", this.list, this);
+		this.model.fetch();
 	},
 
     render: function() {
-      
-		that = this;
 		
+		// Back
 		var backTemplate = _.template( backHTML, {} );
-		this.$el.append(backTemplate);
+		this.$el.append(backTemplate());
 		$(".back-button").click(function() {
 			console.log("going back");
 			parent.history.go(-1);
 			return false;
 		});
 		
-		itemsTemplate = _.template(itemsHTML);
-		that.$el.append(itemsTemplate());
+		// List
+		listTemplate = _.template(listHTML);
+		this.$el.append(listTemplate());
+		this.$list = $(".listcontainer");
 		
-		var list = that.$el.find(".listcontainer");
-      
-		var id = this.id;
-      
-		this.model = new QueryModel();
-		this.model.set({"id": this.id});
-		this.model.fetch({success: function(model, response, options){
-
-			// Load tags into the search field
-			$("#tags").val(model.get("tagstring")).tokenfield({delimiter : ' '});
-			
-			// Empty the list
-			list.html("");
-			
-			var solutions = []
-			itemTemplate = _.template(itemHTML);
-			_.each(model.get("solutions"), function(solution, index) {
-				s = {
-								id: index,
-								name: solution.detail.split("\n")[0].trim(),
-								longname: solution.detail.split("\n").join("<br>"),
-								recommendations: solution.recommendations
-							};
-				solutions.push(s);
-				list.prepend(itemTemplate(s));
-			});
-			
-			$(".solution").click(function() {
-				index = $(this).attr("id");
-				
-				// Create a view with the solution at the index.
-				solution = solutions[index];
-				
-				require(['app'],function(App){
-							App.router.render(new SolutionView({solution: solution}));
-							App.router.navigate('search/' + id + '/' + index);
-						});
-				
-			});
-			
-			if(model.get("solutions").length == 0) {
-				list.append("<div class='container text'>No results</div>")
-			}
-
-		}});
+        // Delete button
+        model = this.model;
+        $(".delete").click(function() {
+            if(confirm("Do you really want to delete this search?")) {
+                model.destroy();
+                parent.history.go(-1);
+            }
+        });
  
+    },
+    
+    list: function() {
+        if(this.visible) {	
+            
+            // Load tags into the search field
+    		tags = $(".tags");
+    		_.each(this.model.get("tagstring").split(" "), function(tag) {
+    		    tags.append($("<span>").html(tag));
+            }, this);
+            
+    		// Empty the list
+    		this.$list.html("");
+    		
+    		// Populate the list
+    		var solutions = this.model.get("solutions");
+    		itemTemplate = _.template(itemHTML);
+    		_.each(solutions, function(solution, index) {
+        		solution.id = index;
+        		solution.name = solution.detail.split("\n")[0].trim();
+        		solution.longname = solution.detail.split("\n").join("<br>");
+    			this.$list.append(itemTemplate(solution));
+    		}, this);
+    		
+    		// Make the list clickable
+    		id = this.id;
+    		$(".solution").click(function() {
+    			index = $(this).attr("id");
+    			
+    			// Create a view with the solution at the index.
+    			solution = solutions[index];
+    			console.log(solution);
+    			
+    			require(['app'],function(App){
+    				App.router.render(new SolutionView({solution: solution}));
+    				App.router.navigate('search/' + id + '/' + index);
+    			});
+    			
+    		});
+    		
+    		// Show text if there was nothing visible...
+    		if(model.get("solutions").length == 0) {
+    			this.$list.append("<div class='container'><div class='row hint'>No results</div></div>")
+    		}
+    		
+    		// Add the postback button
+    		postbackTemplate = _.template(postbackHTML);
+            this.$list.append(postbackTemplate({id: id}));
+            $(".postback").click(function() {
+                url = "https://www.friendsbest.net/fb/link/" + id + "/";
+                FB.ui({
+                    method: 'share',
+                    href: url,
+                }, function(response){});
+            });
+		}
     },
     
     remove: function() {

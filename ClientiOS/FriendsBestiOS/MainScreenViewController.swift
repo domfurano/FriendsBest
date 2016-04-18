@@ -10,6 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 import GoogleMaps
+import CoreLocation
 import Koloda
 
 
@@ -32,7 +33,7 @@ class MainView: UIView {
 
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate, KolodaViewDataSource, KolodaViewDelegate {
     
-    static let instance: MainScreenViewController = MainScreenViewController()
+    //    static let instance: MainScreenViewController = MainScreenViewController() // ?????
     
     /* Google */
     let placesClient: GMSPlacesClient = GMSPlacesClient()
@@ -45,15 +46,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Search Controller */
     var searchController: UISearchController = UISearchController(searchResultsController: nil)
     
-    /* Toolbars */
+    /* Toolbar */
     var regToolBar: [UIBarButtonItem]?
-    var recPickToolBar: [UIBarButtonItem]?
     
     /* Subviews */
     let baseCard: BaseCardView = BaseCardView()
-    let recommendationPicker: RecommendationTypePickerView = RecommendationTypePickerView()
     var cardViews: [PromptCardView] = []
-    let smallProfilePicture: UIImageView = CommonUI.smallProfilePicture!
     
     /* FA Icons */
     let historyIconButtonAlert: UIButton = CommonUI.searchHistoryButton(true)
@@ -62,16 +60,21 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* State */
     var recommendationPickerShown: Bool = false
     
+    /* Recommendation Picker */
+    var recommendationPicker: RecommendationPickerViewController = RecommendationPickerViewController()
+    
+    /* Location manager */
+    var locationManager: CLLocationManager = CLLocationManager()
+    
+    deinit {
+        NSLog("MainScreenViewController - deinit")
+    }
     
     override func loadView() {
-        view = MainView()        
+        view = MainView()
     }
     
     override func viewDidLoad() {
-        /* ViewController */
-        
-        definesPresentationContext = true
-        
         
         /* Search controller */
         
@@ -108,38 +111,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         /* Subviews */
         
         baseCard.translatesAutoresizingMaskIntoConstraints = false
-        recommendationPicker.translatesAutoresizingMaskIntoConstraints = false
         kolodaView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(baseCard)
         view.addSubview(kolodaView)
-        view.addSubview(recommendationPicker)
-        view.addSubview(recommendationPicker.customTypeButton)
-        view.addSubview(recommendationPicker.linkTypeButton)
-        view.addSubview(recommendationPicker.placeTypeButton)
-        
-        recommendationPicker.hide() // This call must occur after the view has been added to the view hierarchy.
-        
-        
-        /* Actions */
-        
-        recommendationPicker.customTypeButton.addTarget(
-            self,
-            action: #selector(MainScreenViewController.pickCustom(_:)),
-            forControlEvents: .TouchUpInside
-        )
-        
-        recommendationPicker.linkTypeButton.addTarget(
-            self,
-            action: #selector(MainScreenViewController.pickLink(_:)),
-            forControlEvents: .TouchUpInside
-        )
-        
-        recommendationPicker.placeTypeButton.addTarget(
-            self,
-            action: #selector(MainScreenViewController.pickPlace(_:)),
-            forControlEvents: .TouchUpInside
-        )
         
         
         /* Closure implementations */
@@ -159,9 +134,27 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self?.showAlert()
         }
         
+        recommendationPicker.buttonPushedDelegate = { buttonType in
+            switch buttonType {
+            case .custom:
+                self.pickCustom()
+                break
+            case .link:
+                self.pickLink()
+                break
+            case .place:
+                self.pickPlace()
+                break
+            }
+        }
+        
+        recommendationPicker.pickerHiddenDelegate = {
+            self.pickerHidden()
+        }
+        
         placesClient.currentPlaceWithCallback { (placeLikelihoods, error) -> Void in
             guard error == nil else {
-                print("Current Place error: \(error!.localizedDescription)")
+                NSLog("Current Place error: \(error!.localizedDescription)")
                 return
             }
             
@@ -169,6 +162,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 self.currentPlace = placeLikelihoods.likelihoods.first?.place
             }
         }
+        
+        /* Location manager */
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager.startUpdatingLocation()
+        
         addConstraints()
     }
     
@@ -176,30 +175,26 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
         
-        if recommendationPickerShown {
-            hideNewRecommendationViews(false)
-        }
-        
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         
         setToolbarItems()
+        
+        newUserRecommendation.clear()
     }
-    
     
     /*** Delegate implementation ***/
     
     func showPromptCards() {
         var changed: Bool = false
         outerloop: for prompt in User.instance.prompts.prompts {
-            for cardView in self.cardViews { // This is some N^2 bullshit
+            for cardView in self.cardViews {
                 if cardView.prompt!.ID == prompt.ID {
                     continue outerloop
                 }
             }
             
             changed = true
-            // TODO: Change to koloda view
             let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
             self.cardViews.append(cardView)
             cardView.translatesAutoresizingMaskIntoConstraints = false
@@ -207,7 +202,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         }
         
         if changed {
-            kolodaView.reloadData()
+            kolodaView.resetCurrentCardIndex()
         }
     }
     
@@ -218,50 +213,45 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     
     /*** Koloda ***/
-     
+    
     var didSwipeRight: Bool = false
+    var newUserRecommendation: UserRecommendation = UserRecommendation()
     
-     // delegate
+    // delegate
     
-    func koloda(koloda: KolodaView, didSwipedCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+    func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
-            cardViews[Int(index)].removeFromSuperview()
-        } else if direction == SwipeResultDirection.Right {
-            didSwipeRight = true
-            newRecommendationButtonPressed()
+            let cardView: PromptCardView = cardViews[Int(index)]
+            FBNetworkDAO.instance.deletePrompt(cardView.prompt!.ID)
         } else {
-            fatalError()
+            didSwipeRight = true
+            newUserRecommendation = UserRecommendation()
+            newUserRecommendation.tags = cardViews[Int(index)].prompt!.tags
+            showNewRecommendationViews()
         }
     }
     
-    func koloda(kolodaDidRunOutOfCards koloda: KolodaView) {
-        for prompt in User.instance.prompts.prompts {
-            FBNetworkDAO.instance.deletePrompt(prompt.ID)
+    func kolodaDidRunOutOfCards(koloda: KolodaView) {
+        if didSwipeRight {
+            return
         }
-        for cv in cardViews {
-            cv.removeFromSuperview()
+        for prompt in User.instance.prompts.prompts {
+            User.instance.prompts.deletePrompt(prompt.ID)
         }
         cardViews.removeAll()
-        User.instance.prompts.prompts.removeAll()
         FBNetworkDAO.instance.getPrompts()
-    }
-    
-    func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
-        return
-    }
-    
-    func koloda(kolodaShouldTransparentizeNextCard koloda: KolodaView) -> Bool {
-        return false
     }
     
     // datasource
     
-    func koloda(kolodaNumberOfCards koloda:KolodaView) -> UInt {
+    func kolodaNumberOfCards(koloda: KolodaView) -> UInt {
         return UInt(cardViews.count)
     }
     
     func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
-        return cardViews[Int(index)]
+        let cardView: PromptCardView = cardViews[Int(index)]
+        cardView.setNeedsDisplay()
+        return cardView
     }
     
     func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
@@ -282,13 +272,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        smallProfilePicture.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        smallProfilePicture.contentMode = .ScaleAspectFit
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = smallProfilePicture.frame
+        let profileButton: UIButton = UIButton(type: .Custom)
+        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
         profileButton.layer.masksToBounds = true
         profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(smallProfilePicture)
+        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
         profileButton.addTarget(
             self,
             action: #selector(MainScreenViewController.profileButtonPressed),
@@ -298,26 +286,14 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image_fbGreen,
+            image: CommonUI.fa_plus_square_image,
             style: .Plain,
             target: self,
             action: #selector(MainScreenViewController.newRecommendationButtonPressed)
         )
         newRecommendationButton.tintColor = CommonUI.fbGreen
         
-        let fa_close: FAKFontAwesome = FAKFontAwesome.closeIconWithSize(32.0)
-        let fa_close_image: UIImage = fa_close.imageWithSize(CGSize(width: 32.0, height: 32.0))
-        let closeRecommendationPickerButton: UIBarButtonItem = UIBarButtonItem(
-            image: fa_close_image,
-            style: .Plain,
-            target: self,
-            action: #selector(MainScreenViewController.closeRecommendationPickerButtonPressed)
-        )
-        closeRecommendationPickerButton.tintColor = UIColor.redColor()
-        
         regToolBar = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
-        
-        recPickToolBar = [CommonUI.flexibleSpace, closeRecommendationPickerButton]
         
         toolbarItems = regToolBar
     }
@@ -333,103 +309,60 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         NSLog("Profile button pressed.")
         
         let profileViewController: ProfileViewController = ProfileViewController()
-        //        let transition: CATransition = CATransition()
-        //        transition.duration = 0.2;
-        //        transition.type = kCATransitionPush
-        //        transition.subtype = kCATransitionFromTop
-        //        self.navigationController!.view.layer.addAnimation(transition, forKey: kCATransition)
         
         navigationController?.pushViewController(profileViewController, animated: true)
     }
     
     func newRecommendationButtonPressed() {
-        navigationController?.navigationBarHidden = true
-        setToolbarItems(recPickToolBar, animated: true)
         showNewRecommendationViews()
     }
     
-    func closeRecommendationPickerButtonPressed() {
-        navigationController?.navigationBarHidden = false
-        setToolbarItems(regToolBar, animated: true)
-        hideNewRecommendationViews(false)
-        if didSwipeRight {
-            kolodaView.revertAction()
-            didSwipeRight = false
-        }
-    }
-    
     func showNewRecommendationViews() {
-        UIView.animateWithDuration(
-            NSTimeInterval(60.0),
-            delay: NSTimeInterval(0.0),
-            usingSpringWithDamping: 0.1,
-            initialSpringVelocity: 0.33,
-            options: UIViewAnimationOptions.CurveEaseIn,
-            animations: {
-                
-                self.recommendationPicker.show()
-                self.view.layoutIfNeeded()
-        }) { (Bool) in
-                return
-        }
-        
-        //        UIView animateWithDuration:0.5
-//        delay:0.5
-//        usingSpringWithDamping:0.7
-//        initialSpringVelocity:0.7
-//        options:0
-//        animations:^{
-//            [self.closeButton layoutIfNeeded];
-//        } completion:NULL];
-//        UIView.animateWithDuration(
-//            NSTimeInterval(0.33),
-//            delay: NSTimeInterval(0.0),
-//            options: UIViewAnimationOptions.TransitionCrossDissolve,
-//            animations: {
-//                self.recommendationPicker.show()
-//                self.view.layoutIfNeeded()
-//        }) { (completed: Bool) in
-//                return
-//        }
-//        UIView.animateWithDuration(NSTimeInterval(0.33)) { () -> Void in
-//            self.recommendationPicker.show()
-//            self.view.layoutIfNeeded()
-//        }
+        recommendationPicker.modalPresentationStyle = .OverFullScreen
+        navigationController?.presentViewController(recommendationPicker, animated: false, completion: nil)
         recommendationPickerShown = true
     }
     
-    func hideNewRecommendationViews(immediately: Bool) {
-        if immediately {
-            recommendationPicker.hide()
-            view.layoutIfNeeded()
-        } else {
-            UIView.animateWithDuration(NSTimeInterval(0.33), animations: { () -> Void in
-                self.recommendationPicker.hide()
-                self.view.layoutIfNeeded()
-            })
-        }
+    func pickerHidden() {
         recommendationPickerShown = false
+        if didSwipeRight {
+            didSwipeRight = false
+            kolodaView.revertAction()
+        }
     }
     
     
     /*** Recommendation Picker ***/
     
-    func pickCustom(sender: UIButton) {
-        navigationController?.pushViewController(NewRecommendationViewController(), animated: true)
+    func pickCustom() {
+        newUserRecommendation.type = .TEXT
+        newUserRecommendation.detail = ""
+        navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation), animated: true)
     }
     
-    func pickLink(sender: UIButton) {
+    func pickLink() {
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-        navigationController?.pushViewController(WebViewController(), animated: true)
+        navigationController?.pushViewController(WebViewController(recommendation: newUserRecommendation), animated: true)
     }
     
-    func pickPlace(sender: UIButton) {
+    func pickPlace() {
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-        let center = CLLocationCoordinate2DMake(40.7676918, -111.8452524)
-        let northEast = CLLocationCoordinate2DMake(center.latitude + 0.001, center.longitude + 0.001)
-        let southWest = CLLocationCoordinate2DMake(center.latitude - 0.001, center.longitude - 0.001)
+
+        var latitude: Double = 39.4997605
+        var longitude: Double = -111.547028
+        var offset: Double = 10.0
+
+        if locationManager.location != nil {
+            latitude = locationManager.location!.coordinate.latitude
+            longitude = locationManager.location!.coordinate.longitude
+            offset = 0.001
+        }
+        
+        let center = CLLocationCoordinate2DMake(latitude, longitude)
+        let northEast = CLLocationCoordinate2DMake(center.latitude + offset, center.longitude + offset)
+        let southWest = CLLocationCoordinate2DMake(center.latitude - offset, center.longitude - offset)
         let viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
         
         let config = GMSPlacePickerConfig(viewport: viewport)
@@ -439,16 +372,23 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self.viewWillAppear(false)
             
             if let error = error {
-                print("Pick Place error: \(error.localizedDescription)")
+                NSLog("Pick Place error: \(error.localizedDescription)")
                 return
             }
             
             if let place = place {
-                print("Place name \(place.name)")
-                print("Place address \(place.formattedAddress)")
-                print("Place attributions \(place.attributions)")
+                NSLog("Place name: \(place.name)")
+                NSLog("Place ID: \(place.placeID)")
+                NSLog("Place address: \(place.formattedAddress)")
+                NSLog("Place attributions: \(place.attributions)")
+                
+                self.newUserRecommendation.type = .PLACE
+                self.newUserRecommendation.detail = place.placeID
+                
+                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: self.newUserRecommendation), animated: true)
+                
             } else {
-                print("No place selected")
+                NSLog("No place selected")
             }
         })
     }
@@ -474,7 +414,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         return true
     }
     
-
+    
     /*** Constraints ***/
     
     func addConstraints() {
@@ -516,47 +456,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.75,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.Width,
-                multiplier: 1.0,
-                constant: 0.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: recommendationPicker,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.Height,
-                multiplier: 1.0,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(
@@ -576,7 +476,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: view,
                 attribute: NSLayoutAttribute.Height,
-                multiplier: 0.75,
+                multiplier: 0.9,
                 constant: 0.0))
         
         view.addConstraint(

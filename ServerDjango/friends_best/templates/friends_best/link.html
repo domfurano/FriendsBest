@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+		<meta charset="UTF-8">
+		
+		{% if id %}
+		    <meta property="og:url" content="https://www.friendsbest.net/fb/link/{{ id }}/" />
+            <meta property="og:title" content="I'm searching for '{{ tagstring }}'" />
+        {% else %}
+            <meta property="og:url" content="https://www.friendsbest.net/fb/link/0/" />
+            <meta property="og:title" content="Have a recommendation?" />
+        {% endif %}
+        <meta property="og:type" content="article" />
+        <meta property="fb:app_id" content="1519942364964737" />
+        <meta property="og:description" content="Please join me on FriendsBest.net and share your recommendation!" />
+<!--
+        <meta property="og:image" content="https://www.friendsbest.net/logopost.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+-->
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.js" charset="utf-8"></script>
+	</head>
+<body>
+    
+    {% if id %}
+        <h1>Do you have a recommendation for a {{ tagstring }}?</h1>
+    {% else %}
+        <h1>Do you have something you want to recommend?</h1>
+    {% endif %}
+    
+    <a href="https://www.friendsbest.net/"><h2>Go to FriendsBest.net</h2></a>
+    
+    <script>
+        
+        $(document).ready(function() {
+            window.location.replace("https://www.friendsbest.net/");
+        });
+            
+    </script>
+        
+</body>
+</html>

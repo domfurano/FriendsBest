@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Query {
-    @SerializedName("timestamp")
+    @SerializedName("accessed")
     @Expose
-    private String timestamp;
+    private String _accessed;
 
     @SerializedName("tags")
     @Expose
@@ -19,12 +19,24 @@ public class Query {
     @Expose
     private int _id;
 
-    public String getTimestamp() {
-        return timestamp;
+    @SerializedName("solutions")
+    @Expose
+    private List<Solution> _solutions = new ArrayList<>();
+
+    @SerializedName("taghash")
+    @Expose
+    private String _tagHash;
+
+    @SerializedName("tagstring")
+    @Expose
+    private String _tagString;
+
+    public String getAccessed() {
+        return _accessed;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setAccessed(String accessed) {
+        this._accessed = accessed;
     }
 
     public List<String> getTags() {
@@ -41,6 +53,30 @@ public class Query {
 
     public void setId(int id) {
         _id = id;
+    }
+
+    public List<Solution> getSolutions() {
+        return _solutions;
+    }
+
+    public void setSolutions(List<Solution> solutions) {
+        _solutions = solutions;
+    }
+
+    public String getTagHash() {
+        return _tagHash;
+    }
+
+    public void setTagHash(String tagHash) {
+        _tagHash = tagHash;
+    }
+
+    public String getTagString() {
+        return _tagString;
+    }
+
+    public void setTagString(String tagString) {
+        _tagString = tagString;
     }
 
     @Override

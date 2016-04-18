@@ -4,9 +4,12 @@ import android.os.Bundle;
 
 public interface OnFragmentInteractionListener {
     void onFragmentTitleChange(String title);
-    void onFragmentToolbarChange(int id);
+    void onFragmentToolbarColorChange(int id);
+    void onFragmentStatusBarChange(int id);
     void onFragmentChange(String fragmentTag);
     void onFragmentChange(String fragmentTag, Bundle bundle);
-    void hideSupportActionBar();
     void showSupportActionBar();
+    void hideSupportActionBar();
+    void showBottomNavigationBar();
+    void hideBottomNavigationBar();
 }

@@ -27,8 +27,7 @@ class ProfileView: UIView {
 
 class ProfileViewController: UIViewController {
     
-    let largeProfilePicture: UIImageView = CommonUI.largeProfilePicture!
-    let smallProfilePicture: UIImageView = CommonUI.smallProfilePicture!
+    let largeProfilePicture: UIImageView = CommonUI.instance.largePicture
     
     var nameLabel: UILabel = UILabel()
     var recommendationsButton: UIButton = UIButton()
@@ -41,15 +40,6 @@ class ProfileViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        largeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(largeProfilePicture)
-        largeProfilePicture.layer.cornerRadius = largeProfilePicture.frame.size.width / 2.0
-        largeProfilePicture.clipsToBounds = true
-//        largeProfilePicture.layer.masksToBounds = false
-//        largeProfilePicture.layer.shadowOpacity = 1.0
-//        largeProfilePicture.layer.shadowOffset.height = 12.0
-//        largeProfilePicture.layer.shadowColor = UIColor.redColor().CGColor
-        
         nameLabel.text = User.instance.name!
         recommendationsButton.setTitle("Recommendations", forState: .Normal)
         friendsButton.setTitle("Friends using FriendsBest", forState: .Normal)
@@ -80,26 +70,23 @@ class ProfileViewController: UIViewController {
         logoutButton.backgroundColor = CommonUI.navbarGrayColor
         removeAccountButton.backgroundColor = CommonUI.navbarGrayColor
         
-        
-        
-//        recommendationsButton
-//        friendsButton
-//        logoutButton
-//        removeAccountButton
-        
+        largeProfilePicture.layer.cornerRadius = largeProfilePicture.frame.size.width / 2.0
         recommendationsButton.layer.cornerRadius = 4.0
         friendsButton.layer.cornerRadius = 4.0
         logoutButton.layer.cornerRadius = 4.0
         removeAccountButton.layer.cornerRadius = 4.0
         
+        largeProfilePicture.clipsToBounds = true
         nameLabel.sizeToFit()
         
+        largeProfilePicture.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         recommendationsButton.translatesAutoresizingMaskIntoConstraints = false
         friendsButton.translatesAutoresizingMaskIntoConstraints = false
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         removeAccountButton.translatesAutoresizingMaskIntoConstraints = false
         
+        view.addSubview(largeProfilePicture)
         view.addSubview(nameLabel)
         view.addSubview(recommendationsButton)
         view.addSubview(friendsButton)
@@ -145,11 +132,11 @@ class ProfileViewController: UIViewController {
     }
     
     func friendsButtonPushed() {
-        
+        navigationController?.pushViewController(FriendsListViewController(), animated: true)
     }
     
     func logoutButtonPushed() {
-        UpdateBullshitter.instance.STAHP()
+        Updater.instance.STAHP()
         FBSDKLoginManager().logOut()
         navigationController?.popToRootViewControllerAnimated(true)
     }
@@ -169,13 +156,11 @@ class ProfileViewController: UIViewController {
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        smallProfilePicture.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
-        smallProfilePicture.contentMode = .ScaleAspectFit
-        let profileButton: UIButton = UIButton(type: UIButtonType.Custom)
-        profileButton.frame = smallProfilePicture.frame
+        let profileButton: UIButton = UIButton(type: .Custom)
+        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
         profileButton.layer.masksToBounds = true
         profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        profileButton.addSubview(smallProfilePicture)
+        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
         profileButton.addTarget(
             self,
             action: #selector(ProfileViewController.profileButtonPressed),
@@ -185,7 +170,7 @@ class ProfileViewController: UIViewController {
         
         
         let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image_fbGreen,
+            image: CommonUI.fa_plus_square_image,
             style: .Plain,
             target: self,
             action: #selector(ProfileViewController.newRecommendationButtonPressed)

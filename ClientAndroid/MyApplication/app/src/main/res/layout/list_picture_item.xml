@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/list_parent_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp">
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/com_facebook_profile_picture_blank_portrait"/>
+        <TextView
+            android:id="@+id/picture_row_title"
+            android:paddingLeft="88dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="20dp"
+            android:paddingRight="48dp"
+            android:textColor="@android:color/black"
+            android:text="Two-line item"/>
+        <TextView
+            android:id="@+id/picture_row_subtitle"
+            android:paddingLeft="88dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/picture_row_title"
+            android:paddingBottom="20dp"
+            android:textSize="14sp"
+            android:text="She probably had only just got up and not even begun to get dressed."/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="16dp"
+            android:background="@drawable/ic_clear_vector"
+            android:layout_toRightOf="@+id/picture_row_subtitle"/>
+        <View
+            android:layout_below="@+id/picture_row_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_marginLeft="88dp"
+            android:background="@color/gray400"/>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/side_margin"
+    android:layout_marginRight="@dimen/side_margin"
+    android:layout_marginTop="@dimen/vertical_margin"
+    android:background="@drawable/rounded_rect"
+    android:orientation="horizontal"
+    android:padding="@dimen/padding_smaller">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.15">
+
+        <ImageView
+            android:id="@+id/recommendation_row_image_view"
+            android:layout_width="@dimen/icon_medium"
+            android:layout_height="@dimen/icon_medium"
+            android:background="@drawable/ic_account_vector"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.85">
+
+        <TextView
+            android:id="@+id/recommendation_row_detail_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/padding_tiny"
+            android:text="John"
+            android:textColor="@color/gray800"
+            android:textSize="@dimen/text_title_size"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/recommendation_row_comment_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recommendation_row_detail_view"
+            android:paddingRight="@dimen/padding_medium"
+            android:text="@string/add_recommendation"
+            android:textColor="@color/gray800"
+            android:textSize="@dimen/text_body_size"/>
+
+
+    </RelativeLayout>
+</LinearLayout>

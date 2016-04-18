@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'models/recommend',
+  'placefinder',
   'text!templates/standard/cancel.html',
   'text!templates/standard/cancelsubmit.html',
   'text!templates/recommend/picker.html',
@@ -10,7 +11,8 @@ define([
   'text!templates/recommend/url.html',
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
-], function($, _, Backbone, RecommendModel, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
+  'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
+], function($, _, Backbone, RecommendModel, placefinder, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {
         
@@ -63,7 +65,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Recommendation Type",
+            title: "New Recommendation",
         }));
         
         // Type picker
@@ -73,8 +75,6 @@ define([
         this.pickerButton("PLACE");
         this.pickerButton("URL");
         this.pickerButton("TEXT");
-        
-        $("#PLACE").hide();
         
     },
     
@@ -92,8 +92,18 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Place"
+            title: "New Recommendation"
         }));
+        
+        // Place picker
+        var template = _.template( placeHTML );
+        this.$el.append(template());
+        
+        $.fn.placefinder({
+		  map: $('#map'),
+		  input: $('#place')
+		});
+        
     },
     
     URL: function() {
@@ -102,7 +112,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Website"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -135,7 +145,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Custom"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -172,7 +182,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "More Details"
+            title: "New Recommendation"
         }));
         
         if (typeof this.prompt != 'undefined') {
@@ -184,30 +194,44 @@ define([
         // tag and comment entry
         var template = _.template( commentsHTML );
         this.$el.append(template(this.recommendation.toJSON()));
-        
         $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
+        
+        if (this.recommendation.get("tagstring") == "") {
+	        $('#tags-tokenfield').focus();
+        } else {
+	        $('#comments').focus();
+        }
         
         that = this;
         
-        $('.submit').click(function() {
+        $('.submit').one("click", function() {
 
-            // Delete the prompt
-            if (typeof that.prompt != 'undefined') {
-              that.prompt.destroy();
-            }
-            
+			// Replace the icon with a progress indicator
+			$(this).find("i").toggleClass("fa-plus-square fa-square fa-spin");
+
             // Pull the (new) data
             that.recommendation.set({
                 "tags": $("#tags").val().toLowerCase().split(" "),
                 "comments": $("#comments").val()
-            });
+            }); 
             
             // Sync the model
-            that.recommendation.save();
-            
-            // Go back in history
-            parent.history.go(-1);
-            return false;
+            that.recommendation.save(null, {
+                success: function() {
+	                
+                    // Delete the prompt
+                    if (typeof that.prompt != 'undefined') {
+                      that.prompt.destroy();
+                    }
+                    
+                    // Go back in history
+		            parent.history.go(-1);
+		            return false;
+                },
+                error: function(model, response, options) {
+					// What to do here?
+                }
+            });
     
     	  });
         

@@ -16,8 +16,8 @@ from django.contrib.auth.models import User
 
 
 class Friendship(models.Model):
-   userOne = models.ForeignKey(User, related_name='userOne_set')
-   userTwo = models.ForeignKey(User, related_name='userTwo_set')
+   userOne = models.ForeignKey(User, related_name='friendship1')
+   userTwo = models.ForeignKey(User, related_name='friendship2')
    muted = models.BooleanField(default=False)
 
    class Meta:
@@ -74,7 +74,7 @@ class UrlThing(models.Model):
 
 class Tag(models.Model):
    tag = models.CharField(max_length=25, unique=True)
-   lemma = models.CharField(max_length=25, unique=True)
+   lemma = models.CharField(max_length=25)
 
    def save(self, *args, **kwargs):
        if not self.lemma:
@@ -97,6 +97,19 @@ class Recommendation(models.Model):
        return "user:%s, thing:%s, comments:%s" % (self.user, self.thing, self.comments)
 
 
+# track tags associated with prompts rejected by user
+class RejectedTag(models.Model):
+    user = models.ForeignKey(User)
+    tag = models.ForeignKey(Tag)
+    tagSum = models.IntegerField(default=1)
+
+    def __str__(self):
+        return "user: %s, tag:%s" % (self.user, self.tag)
+
+    class Meta:
+        unique_together = (("user", "tag"),)
+
+
 class Query(models.Model):
    user = models.ForeignKey(User)
    tags = models.ManyToManyField(Tag)
@@ -115,9 +128,10 @@ class Query(models.Model):
 class Prompt(models.Model):
     user = models.ForeignKey(User)  # the user who the prompt is for (not the user who made the associated query)
     query = models.ForeignKey(Query)  # we can get the user's id from the query
+    isAnonymous = models.BooleanField(default=False)
 
     def __str__(self):
-        return "forUser:%s, fromQuery:%s" % (self.user, self.query)
+        return "forUser:%s, fromQuery:%s, isAnonymous:%s" % (self.user, self.query, self.isAnonymous)
 
     class Meta:
         unique_together = (("user", "query"),)
@@ -156,6 +170,26 @@ class Accolade(models.Model):
 
     class Meta:
         unique_together = (("user", "recommendation"),)
+
+
+#class UserEvents(models.Model):
+#    user = models.ForeignKey(User)
+#    completedFirstLogin = models.BooleanField(default=False)
+#
+#    def __str__(self):
+#        return "user:%s, completed first login:%s" % (self.user, self.completedFirstLogin)
+
+
+# server should push number of total notifications to each user
+class Notification(models.Model):
+    query = models.ForeignKey(Query)
+    recommendation = models.ForeignKey(Recommendation)
+
+    def __str__(self):
+        return "fromQuery:%s, fromRecommendation:%s" % (self.query, self.recommendation)
+
+    class Meta:
+        unique_together = (("query", "recommendation"),)
 
 
 

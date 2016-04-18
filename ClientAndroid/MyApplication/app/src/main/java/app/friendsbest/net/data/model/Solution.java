@@ -16,6 +16,12 @@ public class Solution {
     @SerializedName("detail")
     @Expose
     private String _detail;
+    @SerializedName("isPinned")
+    @Expose
+    private boolean _isPinned;
+    @SerializedName("notifications")
+    @Expose
+    private int _notifications;
 
     public String getType() {
         return _type;
@@ -39,6 +45,22 @@ public class Solution {
 
     public void setDetail(String detail) {
         _detail = detail;
+    }
+
+    public boolean isPinned() {
+        return _isPinned;
+    }
+
+    public void setIsPinned(boolean isPinned) {
+        _isPinned = isPinned;
+    }
+
+    public int getNotifications() {
+        return _notifications;
+    }
+
+    public void setNotifications(int notifications) {
+        _notifications = notifications;
     }
 
     @Override

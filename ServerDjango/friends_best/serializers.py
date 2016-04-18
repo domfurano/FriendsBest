@@ -46,23 +46,24 @@ class TextSerializer(serializers.ModelSerializer):
         model = TextThing
         fields = '__all__'
 
-
 class PromptSerializer(serializers.ModelSerializer):
     
     def to_representation(self, prompt):
         
+        # is this needed?
         account = SocialAccount.objects.filter(user=prompt.query.user).first()
         
         return {
             'id': prompt.id,
             # Copied from FriendshipSerializer
-            'friend': UserSerializer(prompt.query.user).data,
+            'friend': '' if prompt.isAnonymous else UserSerializer(prompt.query.user).data,
+            #'friend': UserSerializer(prompt.query.user).data,
             'tags': [t.tag for t in prompt.query.tags.all()],
             'tagstring': prompt.query.tagstring,
             # could also be a good place to send articles like "a," "an"
             # but we'll need some good NLP
             'article': 'a',
-            #'urgent': prompt.query.urgent  # this seems to be causing a problem (not sure why)
+            'urgent': prompt.query.urgent  # this seems to be causing a problem (not sure why)
         }
     
     class Meta:
@@ -70,6 +71,19 @@ class PromptSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+class AccoladeSerializer(serializers.ModelSerializer):
+    
+    def to_representation(self, accolade):
+                
+        return {
+            'id': accolade.id,
+            'recommendation': RecommendationSerializer(accolade.recommendation).data,
+        }
+    
+    class Meta:
+        model = Accolade
+        fields = '__all__'
+        depth = 1
 
 class FriendshipSerializer(serializers.ModelSerializer):
     
@@ -101,20 +115,17 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('tag',)
 
-
 class TextThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TextThing
         fields = '__all__'
 
-
 class UrlThingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UrlThing
         fields = '__all__'
-
 
 class RecommendationSerializer(serializers.Serializer):
     user = serializers.CharField(max_length=50)
@@ -136,11 +147,14 @@ class RecommendationSerializer(serializers.Serializer):
         if recommendation.thing.thingType.lower() == 'place':
             thing = PlaceThing.objects.filter(thing=recommendation.thing).get()
             detail = thing.placeId
+        if recommendation.thing.thingType.lower() == 'url':
+            thing = UrlThing.objects.filter(thing=recommendation.thing).get()
+            detail = thing.url
 
         recommendation_json = {
             'id': recommendation.id,
             'detail': detail,
-            'type': recommendation.thing.thingType,
+            'type': recommendation.thing.thingType.lower(),
             'comments': recommendation.comments,
             'tags': [rt.tag for rt in rec_tags],
             'user': UserSerializer(recommendation.user).data
@@ -154,6 +168,12 @@ class RecommendationSerializer(serializers.Serializer):
         tags = validated_data.get('tags')
         thingtype = validated_data.get('type')
         return createRecommendation(user, detail, thingtype, comments, *tags)
+        
+    def update(self, recommendation, validated_data):
+        id = recommendation.id;
+        comments = validated_data.get('comments')
+        tags = validated_data.get('tags')
+        return modifyRecommendation(id, comments, *tags)
 
     # Return - validated data in a dictionary
     def validate(self, data):
@@ -179,7 +199,6 @@ class RecommendationSerializer(serializers.Serializer):
         model = Recommendation
         fields = ('id', 'user', 'description', 'comments', 'tags',)
 
-
 class QuerySerializer(serializers.ModelSerializer):
     #user = UserSerializer
     tags = TagSerializer(many=True)
@@ -199,19 +218,28 @@ class QuerySerializer(serializers.ModelSerializer):
             'accessed': query.timestamp,
             'taghash': query.taghash,
         }
+        
+        newtotal = 0;
         for sol in solutions['solutions']:
             recommendations = []
-            for rec in sol.recommendations:
+            for rwf in sol.recommendationsWithFlags:
+                rec = rwf.recommendation
                 if isFriendsWith(query.user, rec.user) or query.user == rec.user:
-                    recommendations.append({"id": rec.id, "comment": rec.comments, "user": UserSerializer(rec.user).data})
+                    recommendations.append({"id": rec.id, "comment": rec.comments, "isNew": rwf.isNew, "user": UserSerializer(rec.user).data})
                 else:
-                    recommendations.append({"id": rec.id, "comment": rec.comments})
+                    recommendations.append({"id": rec.id, "comment": rec.comments, "isNew": rwf.isNew})
             solution_collection['solutions'].append({
                 'detail': sol.detail,
-                'type': sol.solutionType,
+                'type': sol.solutionType.lower(),
                 'recommendations': recommendations,
-                'isPinned': sol.isPinned
+                'pinid': sol.pinId,
+                'id': sol.id,
+                'notifications': sol.totalNewRecommendations
             })
+            newtotal += sol.totalNewRecommendations
+            
+        solution_collection['notifications'] = newtotal
+        
         return solution_collection
 
     def create(self, validated_data):    
@@ -235,11 +263,31 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
         fields = ('id', 'tags', )
-        
-
 
 class PinSerializer(serializers.ModelSerializer):
     
+    solutionid = serializers.IntegerField()
+    queryid = serializers.IntegerField()
+    
+    def to_representation(self, pin):
+        return {
+            'id': pin.id,
+            'solutionid': pin.thing.id,
+            'queryid': pin.query.id
+        }
+    
+    def create(self, validated_data):
+        solutionID = validated_data.get('solutionid')
+        queryID = validated_data.get('queryid')
+        return createPin(solutionID, queryID)
+        
+    def validate(self, data):
+        if 'solutionid' not in data:
+            raise serializers.ValidationError('No solutionid provided')    
+        if 'queryid' not in data:
+            raise serializers.ValidationError('No queryid provided')
+        return data
+    
     class Meta:
         model = Pin
-        fields = '__all__'
+        fields = ('solutionid','queryid',)

@@ -29,21 +29,6 @@ else:
 
 ALLOWED_HOSTS = ['*']
 
-ADMINS = (('Ray', 'ray@bluem33.com'),
-          ('Paul', 'paulhanson.exe@gmail.com'),
-          ('Umair', 'unaveed@gmail.com'),
-          ('Dominic', 'dominicfurano@gmail.com'))
-
-if not DEBUG:
-    EMAIL_USE_TLS = True
-    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_PASSWORD = os.environ['GmailPassword']
-    EMAIL_HOST_USER = os.environ['GmailUser']
-    EMAIL_PORT = 587
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@gmail.com'
-    SERVER_EMAIL = EMAIL_HOST_USER + '@gmail.com'
-
 # Application definition
 
 SITE_ID=2
@@ -64,7 +49,10 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'corsheaders',
     'friends_best',
+    'gcm',
 )
+
+GCM_APIKEY = "AIzaSyBaz-fjyd6BOXNosuKf-bvgsakpI2nGyjs"
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -127,6 +115,8 @@ SOCIALACCOUNT_PROVIDERS = \
         'LOCALE_FUNC': 'path.to.callable',
         'VERIFIED_EMAIL': False,
         'VERSION': 'v2.4'}}
+        
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 REST_FRAMEWORK = {
 	
@@ -189,14 +179,10 @@ if not DEBUG:
                 'filename': os.path.join(BASE_DIR, 'error.log'),
                 'formatter': 'simple'
             },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
         },
         'loggers': {
             'django': {
-                'handlers': ['file', 'console', 'mail_admins'],
+                'handlers': ['file', 'console'],
                 'level': 'DEBUG',
                 'propagate': True,
                 },

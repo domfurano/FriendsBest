@@ -14,7 +14,6 @@
     visible: true,
 
 	initialize: function() {
-		console.log("initialize");
 		this.visible = true;
 		this.collection = new FriendsCollection();
 		this.collection.on("update", this.list, this);
@@ -50,6 +49,7 @@
 			    this.$list.append(itemTemplate(i.toJSON()));
 		    }, this);
 		    
+		    // Make mute clickable
 		    that = this;
 		    $(".mute").click(function() {
     		    $(this).find("i").toggleClass("fa-volume-up fa-volume-off");
@@ -62,7 +62,6 @@
 	},
 	
 	toggleMute: function(id) {
-    	console.log(this.collection.get(id));
     	model = this.collection.get(id);    	
     	// Toggle muted
     	model.set("muted", !model.get("muted"));

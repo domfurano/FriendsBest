@@ -26,7 +26,7 @@ class SolutionDetailView: UITableView {
 
 class SolutionDetailViewController: UITableViewController {
     
-    var SOLUTION: Solution?
+    var SOLUTION: Solution!
     
     
     convenience init(solution: Solution) {
@@ -44,11 +44,14 @@ class SolutionDetailViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
-        tableView.rowHeight = 100.0 // Hacky alpha demo crap
+        tableView.estimatedRowHeight =  128.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
+        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
         
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
-        button.setTitle(SOLUTION!.detail, forState: .Normal)
+//        button.setTitle(SOLUTION!.detail, forState: .Normal)
         button.addTarget(
             self,
             action: #selector(SolutionDetailViewController.back),
@@ -59,7 +62,7 @@ class SolutionDetailViewController: UITableViewController {
         let leftBBItem: UIBarButtonItem = UIBarButtonItem(customView: button)
         
         leftBBItem.tintColor = UIColor.whiteColor()
-        leftBBItem.title = SOLUTION!.detail
+        leftBBItem.title = SOLUTION.detail
         navigationItem.leftBarButtonItem = leftBBItem
     }
     
@@ -68,6 +71,26 @@ class SolutionDetailViewController: UITableViewController {
         navigationController?.toolbarHidden = true
         
         navigationController?.navigationBar.barTintColor = CommonUI.sdNavbarBgColor
+    }
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SolutionDetailViewController.contentSizeCategoryChanged(_:)), name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(animated: Bool)
+    {
+        super.viewDidDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    // This function will be called when the Dynamic Type user setting changes (from the system Settings app)
+    func contentSizeCategoryChanged(notification: NSNotification)
+    {
+        tableView.reloadData()
     }
     
     func back() {
@@ -82,26 +105,31 @@ class SolutionDetailViewController: UITableViewController {
         if section == 0 {
             return 1
         } else {
-            return SOLUTION!.recommendations.count
+            return SOLUTION.recommendations.count
         }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell: UITableViewCell = UITableViewCell(style: .Default, reuseIdentifier: "main")
-            cell.textLabel?.text = SOLUTION!.detail
+            cell.textLabel?.text = SOLUTION.detail
             cell.textLabel?.textColor = UIColor.whiteColor()
             cell.backgroundColor = CommonUI.sdNavbarBgColor
             cell.userInteractionEnabled = false
             return cell
         } else {
-            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
-            let recommendation: Recommendation = SOLUTION!.recommendations[indexPath.row]
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Subtitle, reuseIdentifier: "SolutionDetailCell")
+//            let cell: SolutionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("SolutionDetailCell") as! SolutionDetailTableViewCell
+//            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
+            let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
+//            cell.nameLabel.text = recommendation.friend.name
+//            cell.commentLabel.text = recommendation.comment
             cell.textLabel?.text = recommendation.friend.name
             cell.detailTextLabel?.text = recommendation.comment
-            cell.detailTextLabel?.numberOfLines = 10 // Hackity hack
-            cell.imageView?.image = recommendation.friend.squarePicture
+            cell.imageView?.image = recommendation.friend.squarePicture?.image
             cell.userInteractionEnabled = false
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             return cell
         }
     }

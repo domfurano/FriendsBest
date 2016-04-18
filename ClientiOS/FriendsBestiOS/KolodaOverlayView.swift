@@ -12,8 +12,8 @@ import Koloda
 class KolodaOverlayView: OverlayView {
     
     let ICON_SIZE: CGFloat = 128.0
-    var thumbsUpImageView: UIImageView?
-    var thumbsDownImageView: UIImageView?
+    var thumbsUpImageView: UIImageView!
+    var thumbsDownImageView: UIImageView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,29 +26,69 @@ class KolodaOverlayView: OverlayView {
         
         thumbsUpIcon.addAttribute(
             NSForegroundColorAttributeName,
-            value: UIColor.greenColor()
+            value: CommonUI.yesColor
         )
         
         thumbsDownIcon.addAttribute(
             NSForegroundColorAttributeName,
-            value: UIColor.redColor()
+            value: CommonUI.noColor
         )
         
         let imageSize: CGSize = CGSize(width: ICON_SIZE, height: ICON_SIZE)
         let thumbsUpImage = thumbsUpIcon.imageWithSize(imageSize)
         let thumbsDownImage = thumbsDownIcon.imageWithSize(imageSize)
         
-        thumbsUpImageView!.image = thumbsUpImage
-        thumbsDownImageView!.image = thumbsDownImage
+        thumbsUpImageView.image = thumbsUpImage
+        thumbsDownImageView.image = thumbsDownImage
         
-        thumbsUpImageView!.translatesAutoresizingMaskIntoConstraints = false
-        thumbsDownImageView!.translatesAutoresizingMaskIntoConstraints = false
+        thumbsUpImageView.translatesAutoresizingMaskIntoConstraints = false
+        thumbsDownImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        thumbsUpImageView!.alpha = 0.0
-        thumbsDownImageView!.alpha = 0.0
+        thumbsUpImageView.alpha = 0.0
+        thumbsDownImageView.alpha = 0.0
         
-        addSubview(thumbsUpImageView!)
-        addSubview(thumbsDownImageView!)
+        addSubview(thumbsUpImageView)
+        addSubview(thumbsDownImageView)
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: thumbsUpImageView,
+                attribute: .Left,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .Left,
+                multiplier: 1.0,
+                constant: 32.0))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: thumbsUpImageView,
+                attribute: .Top,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 64.0))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: thumbsDownImageView,
+                attribute: .Right,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .Right,
+                multiplier: 1.0,
+                constant: -32.0))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: thumbsDownImageView,
+                attribute: .Top,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 64.0))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -57,16 +97,13 @@ class KolodaOverlayView: OverlayView {
 
     override var overlayState: OverlayMode  {
         didSet {
-            thumbsUpImageView!.center = center
-            thumbsDownImageView!.center = center
-            
             switch overlayState {
             case .Left :
-                thumbsUpImageView!.alpha = 0.0
-                thumbsDownImageView!.alpha = 1.0
+                thumbsUpImageView.alpha = 0.0
+                thumbsDownImageView.alpha = 1.0
             case .Right :
-                thumbsUpImageView!.alpha = 1.0
-                thumbsDownImageView!.alpha = 0.0
+                thumbsUpImageView.alpha = 1.0
+                thumbsDownImageView.alpha = 0.0
             default:
                 NSLog("WTF")
             }

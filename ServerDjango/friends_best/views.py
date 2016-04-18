@@ -9,6 +9,7 @@ from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
 from django.http import HttpResponse
+from django.shortcuts import render
 import hmac
 import os
 import json
@@ -17,7 +18,20 @@ import subprocess
 from friends_best.serializers import *
 from friends_best.services import *
 from friends_best.permissions import *
+
+def queryLink(request, query_id):
+    # Get the query
+    try:
+        q = Query.objects.get(id=query_id)
+        context = {
+            'id': query_id,
+            'tagstring': q.tagstring
+        }
+    except Query.DoesNotExist:
+        context = {}
     
+    return render(request, 'friends_best/link.html', context)
+
 class CurrentUserViewSet(viewsets.GenericViewSet):
     queryset = User.objects.order_by('userName')
     serializer_class = UserSerializer
@@ -98,12 +112,44 @@ class RecommendationViewSet(viewsets.ModelViewSet):
             serializer.save(user=request.user)
             return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None, **kwargs):
         
+        # Add the user to the data
+        data = request.data
+        data["user"] = request.user.id
+        
+        # Get exisiting recommendation object
+        recommendation = Recommendation.objects.get(pk=pk)
+        
+        # Check to see if we're doing a partial update (?)
+        partial = kwargs.pop('partial', False)
+        
+        # Serialize the new data along with the old
+        serializer = self.get_serializer(recommendation, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+    
     # GET
     def list(self, request):
         recommendations = getRecommendations(request.user.id)
         serializer = RecommendationSerializer(recommendations, many=True)
         return Response(serializer.data)
+        
+class PinViewSet(mixins.CreateModelMixin,
+					mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Pin.objects.order_by('query')
+    serializer_class = PinSerializer
+    permission_classes = (permissions.IsAuthenticated, OwnerOrReadOnlyPin)
+
+    def create(self, request, *args, **kwargs):
+        serializer = PinSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 class TextThingViewSet(viewsets.ModelViewSet):
     queryset = TextThing.objects.order_by('thing')
@@ -124,11 +170,43 @@ class PromptViewSet(mixins.RetrieveModelMixin,
          prompts = getPrompts(request.user)
          serializer = PromptSerializer(prompts, many=True)
          return Response(serializer.data)
+
+# Limited to GET HEAD DELETE OPTIONS
+# http://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
+class AccoladeViewSet(mixins.RetrieveModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    
+    queryset = Accolade.objects.order_by('user')
+    serializer_class = AccoladeSerializer
+    permission_classes = (permissions.IsAuthenticated, OwnerCanReadDelete)
+    
+    # GET
+    def list(self, request):
+         accolades = getAccolades(request.user)
+         serializer = AccoladeSerializer(accolades, many=True)
+         return Response(serializer.data)
          
+
     # When deleting a prompt now, we rely on default behavior.
     # In the future we might want to hide prompts so that
     # friends can't get spammed by a repeat query...
     # def destroy(self, request):
+
+class NotificationViewSet(  mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
+    
+    queryset = Notification.objects.order_by('query')
+    
+    def destroy(self, request, pk=None):
+        # pk is the id of the recommendation
+        try:
+            r = Recommendation.objects.get(pk=pk);
+            n = Notification.objects.filter(query__user=request.user, recommendation=r);
+            n.delete();
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Recommendation.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Limited to GET PUT HEAD DELETE OPTIONS
 class FriendshipViewSet(mixins.RetrieveModelMixin,
@@ -194,19 +272,30 @@ class RecommendationTagViewSet(viewsets.ModelViewSet):
 class QueryTagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.order_by('query')
     serializer_class = TagSerializer
-
-
-class PinViewSet(viewsets.ModelViewSet):
-    queryset = Pin.objects.order_by('thing')
-    serializer_class = PinSerializer
     
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
     
     def login(self):
-        getCurrentFriendsListFromFacebook(self.serializer.validated_data['user'])
-        return SocialLoginView.login(self)
+        
+        # See if user already exists
+        try:
+            self.user = self.serializer.validated_data['user']
+            self.token_model.objects.get(user=self.user)
+            firsttime = False
+        except:
+            firsttime = True
+        
+        # Login
+        SocialLoginView.login(self)
+
+        # Update friends
+        getCurrentFriendsListFromFacebook(self.user)
+
+        # If the user was just created
+        if firsttime:
+            generatePromptsForNewUser(self.user)
 
 
 def deploy(request):
@@ -245,5 +334,12 @@ def deploy(request):
     subprocess.Popen(['bash', '/home/dominic/scripts/deploy.sh'])
 
     response = HttpResponse('Deployed')
+    response.status_code = 200
+    return response
+
+
+def error(request):
+    log = subprocess.check_output(['bash', '/home/dominic/scripts/apache_error_log.sh'])
+    response = HttpResponse('<html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
     response.status_code = 200
     return response

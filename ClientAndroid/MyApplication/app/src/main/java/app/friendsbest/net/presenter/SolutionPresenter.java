@@ -3,19 +3,19 @@ package app.friendsbest.net.presenter;
 import android.content.Context;
 
 import app.friendsbest.net.data.model.QueryResult;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.view.FragmentView;
 
 public class SolutionPresenter implements ListPresenter<QueryResult> {
 
-    private BaseRepository _repository;
+    private Repository _repository;
     private FragmentView _solutionView;
 
     public SolutionPresenter(FragmentView view, Context context) {
         _solutionView = view;
-        _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
+        _repository = new Repository(this, PreferencesUtility.getInstance(context).getToken());
     }
 
     @Override
@@ -35,5 +35,9 @@ public class SolutionPresenter implements ListPresenter<QueryResult> {
         _solutionView.showProgressBar();
         if (content != null)
             _repository.getQuery(content.getId());
+    }
+
+    public void deleteSearch(int id) {
+        _repository.deleteQuery(id);
     }
 }

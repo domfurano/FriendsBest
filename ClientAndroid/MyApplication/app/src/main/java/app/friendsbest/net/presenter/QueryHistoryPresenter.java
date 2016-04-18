@@ -1,11 +1,12 @@
 package app.friendsbest.net.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
 import app.friendsbest.net.data.model.Query;
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.view.FragmentView;
@@ -13,11 +14,11 @@ import app.friendsbest.net.ui.view.FragmentView;
 public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
 
     private FragmentView _view;
-    private BaseRepository _repository;
+    private Repository _repository;
 
     public QueryHistoryPresenter(FragmentView view, Context context){
         _view = view;
-        _repository = new BaseRepository(this, PreferencesUtility.getInstance(context).getToken());
+        _repository = new Repository(this, PreferencesUtility.getInstance(context).getToken());
         onStart();
     }
 
@@ -26,6 +27,10 @@ public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
         getData();
     }
 
+    public void closeRepository() {
+        _repository.cancelRequest();
+        _repository = null;
+    }
 
     @Override
     public void getData() {

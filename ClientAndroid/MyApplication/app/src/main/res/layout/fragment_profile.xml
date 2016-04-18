@@ -22,8 +22,9 @@
             android:layout_below="@id/profile_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:textSize="25sp"
+            android:paddingTop="@dimen/padding_small"
+            android:textSize="@dimen/text_title_size"
+            android:fontFamily="sans-serif-light"
             android:gravity="center"/>
     </RelativeLayout>
     <RelativeLayout
@@ -38,17 +39,17 @@
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/appGreen"
             app:cardCornerRadius="10dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="@dimen/margin_small">
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:padding="8dp">
+                android:padding="@dimen/padding_smaller">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="@dimen/padding_small"
                     android:layout_centerVertical="true"
                     android:text="@string/recommendations"/>
                 <TextView
@@ -62,29 +63,29 @@
                     android:text="0"/>
                 <ImageView
                     android:id="@+id/profile_recommendation_arrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_medium"
+                    android:layout_height="@dimen/icon_medium"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ic_keyboard_arrow_right_black_36dp"/>
+                    android:background="@drawable/ic_arrow_right_light"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
             android:id="@+id/profile_friends_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/margin_small"
             app:cardCornerRadius="10dp"
-            app:cardBackgroundColor="@color/colorPrimaryDark"
+            app:cardBackgroundColor="@color/colorAccent"
             android:layout_below="@+id/profile_recommendations_button">
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:padding="8dp">
+                android:padding="@dimen/padding_smaller">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="@dimen/padding_small"
                     android:text="@string/logo_1"
                     android:textColor="@color/white"
                     android:textStyle="bold"/>
@@ -99,10 +100,10 @@
                     android:text="0"/>
                 <ImageView
                     android:id="@+id/profile_friends_arrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_medium"
+                    android:layout_height="@dimen/icon_medium"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ic_keyboard_arrow_right_black_36dp"/>
+                    android:background="@drawable/ic_arrow_right_light"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
     </RelativeLayout>
@@ -114,21 +115,20 @@
         android:orientation="horizontal"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="@dimen/vertical_margin">
         <Button
             android:id="@+id/logout_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:textAllCaps="false"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:text="@string/logout"/>
         <Button
+            android:id="@+id/delete_profile_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:layout_alignParentRight="true"
-            android:padding="10dp"
             android:textAllCaps="false"
             android:text="@string/delete_account"/>
     </LinearLayout>

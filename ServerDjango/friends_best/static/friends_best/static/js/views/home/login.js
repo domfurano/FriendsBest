@@ -19,6 +19,7 @@ define([
       
 		var loginTemplate = _.template( loginHTML, {} );
 		this.$el.html(loginTemplate);
+		this.$el.addClass("login");
 		
 		$(".fb-login-button").click(function() {
 			FB.login(function(response) {

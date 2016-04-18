@@ -2,13 +2,11 @@ package app.friendsbest.net.presenter;
 
 import android.content.Context;
 
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.Profile;
 
 import java.util.Map;
 
-import app.friendsbest.net.data.services.BaseRepository;
+import app.friendsbest.net.data.services.Repository;
 import app.friendsbest.net.data.services.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.LoginPresenter;
 import app.friendsbest.net.ui.view.LoginView;
@@ -17,7 +15,7 @@ public class AppLoginPresenter implements LoginPresenter {
 
     private LoginView _loginView;
     private PreferencesUtility _preferencesUtility;
-    private BaseRepository _repository;
+    private Repository _repository;
 
     public AppLoginPresenter(LoginView loginView, Context context){
         _loginView = loginView;
@@ -27,6 +25,7 @@ public class AppLoginPresenter implements LoginPresenter {
 
     @Override
     public void onStart() {
+        _loginView.hideLoginButton();
         checkLoginStatus();
     }
 
@@ -38,20 +37,21 @@ public class AppLoginPresenter implements LoginPresenter {
     @Override
     public void onLoginFail() {
         _loginView.displayMessage("Error, unable to log in.");
+        _loginView.showLoginButton();
         _preferencesUtility.deleteStoredData();
         _loginView.forceLogout();
-        onStart();
     }
 
     @Override
     public void checkLoginStatus() {
         String token = _preferencesUtility.getToken();
         if (token != null) {
-            _repository = new BaseRepository(this, token);
+            _repository = new Repository(this, token);
             _repository.checkLoginStatus();
         }
         else {
-            _repository = new BaseRepository(this, null);
+            _loginView.showLoginButton();
+            _repository = new Repository(this, null);
             _loginView.registerFacebookCallback();
         }
     }

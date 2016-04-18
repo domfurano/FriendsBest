@@ -10,12 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/blue_gray200"
-        android:elevation="4dp"
+        android:elevation="@dimen/toolbar_elevation"
         android:theme="@style/ToolbarStyleLight"/>
     <ProgressBar
         android:id="@+id/history_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"/>
-    <include layout="@layout/query_history_list"/>
+    <include layout="@layout/list_query_history"/>
 </LinearLayout>

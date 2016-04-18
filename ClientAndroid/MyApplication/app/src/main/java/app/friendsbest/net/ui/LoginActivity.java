@@ -6,12 +6,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -28,7 +32,6 @@ import app.friendsbest.net.ui.view.LoginView;
 
 public class LoginActivity extends AppCompatActivity implements LoginView {
 
-    // TODO: What happens if login fails? Handle user logging out.
     private CoordinatorLayout _coordinatorLayout;
     private AppLoginPresenter _presenter;
     private CallbackManager _callbackManager;
@@ -38,6 +41,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppLoginTheme);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
@@ -84,13 +88,36 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
+    public void hideLoginButton() {
+        _loginButton.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showLoginButton() {
+        _loginButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void getUserProfile() {
         _presenter.saveFacebookProfile(Profile.getCurrentProfile());
     }
 
     @Override
     public void forceLogout() {
-        LoginManager.getInstance().logOut();
+        AccessToken currentToken = AccessToken.getCurrentAccessToken();
+        if (currentToken != null) {
+            new GraphRequest(
+                    currentToken,
+                    "/me/permissions/",
+                    null,
+                    HttpMethod.DELETE,
+                    new GraphRequest.Callback() {
+                        @Override
+                        public void onCompleted(GraphResponse response) {
+                            LoginManager.getInstance().logOut();
+                        }
+                    }).executeAsync();
+        }
     }
 
     @Override

@@ -39,6 +39,7 @@ define([
 		
 		$('#search-field-tokenfield').keypress(function (e) {
 		  if (e.which == 13) {
+            $('form#query').attr("disabled", "disabled");
 		    $('form#query').submit();
 		    return false;
 		  }
@@ -116,7 +117,10 @@ define([
 			
 			el = that.$el;
 			
+			el.find(".promptsection").remove();
+			
 			prompts.each(function(prompt) {
+				console.log(prompt.toJSON());
     			promptcard = promptTemplate(prompt.toJSON());
     			el.append(promptcard);
     		});
