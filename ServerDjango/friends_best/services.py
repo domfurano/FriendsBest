@@ -609,7 +609,6 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    # create a notification for every existing query with a matching tag
    queries = Query.objects.select_related('user').filter(tags__lemma__in=lemmas)
    for query in queries:
-      n = Notification(query=query, recommendation=recommendation)
       n, created = Notification.objects.get_or_create(query=query, recommendation=recommendation)
 
       #just for testing
