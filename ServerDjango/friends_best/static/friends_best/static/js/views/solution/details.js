@@ -22,7 +22,9 @@ define([
 		that = this;
 		
 		var backTemplate = _.template(backHTML);
-		this.$el.append(backTemplate(this.solution));
+		var back = this.$el.append(backTemplate(this.solution));
+		back.find(".details").solutiondetails(solution);	
+		
 		$(".back-button").click(function() {
 			console.log("going back");
 			parent.history.go(-1);

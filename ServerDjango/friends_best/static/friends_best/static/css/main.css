@@ -197,10 +197,12 @@
 	}
 	
 	header.solution {
-		height: 120px;
+		height: 80px;
 		background-color: #666;
 		color: #fff;
 	}
+	
+	header.solution 
 	
 	header.solution i {
 		color: #ffffff;
@@ -388,9 +390,8 @@
 		padding: 0;
 	}
 	
-	.list .solution .name {
-		font-size: 18px;
-		padding-top: 3px;
+	.list .solution .thing {
+		color: #333;
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -699,23 +700,21 @@
 		color: #59c939;
 	}
 	
-	.place {
+	.place, .url {
 		display: inline-block;
 		vertical-align: top;
 		padding-top: 3px;
 	}
-	.place .name {
-		color: #333;
-		font-weight: bold;
-		font-size: 15px;
-		line-height: 15px;
+	.place .name, .url .host, .text .custom {
+		font-size: 17px;
+		line-height: 17px;
 		white-space: normal;
 	}
-	.place .address {
-		color: #666;
+	.place .address, .url .full {
 		font-size: 12px;
 		line-height: 1;
 		padding-top: 3px;
+		opacity: .6;
 	}
 	
 	@media (min-width: 320px) { 

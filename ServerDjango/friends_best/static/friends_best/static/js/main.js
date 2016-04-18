@@ -8,7 +8,7 @@ require.config({
     bootstrap: 'vendor/bootstrap',
     tokenfield: 'vendor/bootstrap-tokenfield',
     placefinder: 'placefinder',
-    placedetails: 'placedetails',
+    solutiondetails: 'solutiondetails',
     underscore: 'vendor/underscore',
     backbone: 'vendor/backbone',
     templates: '../templates',

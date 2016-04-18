@@ -2,12 +2,13 @@
   'jquery',
   'underscore',
   'backbone',
+  'solutiondetails',
   'text!templates/home/menu.html',
   'text!templates/standard/back.html',
   'text!templates/standard/list.html',
   'text!templates/profile/recommendation.html',
   'collections/recommendations',
-], function($, _, Backbone, menuHTML, backHTML, listHTML, itemHTML, RecommendationsCollection){
+], function($, _, Backbone, solutiondetails, menuHTML, backHTML, listHTML, itemHTML, RecommendationsCollection){
 
   var view = Backbone.View.extend({
     el: $(".view"),
@@ -47,7 +48,9 @@
 			// Add elements to the list
 		    var itemTemplate = _.template( itemHTML );
 		    this.collection.each(function(i, index) {
-			    this.$list.append(itemTemplate(i.toJSON()));
+			    var item = $(itemTemplate(i.toJSON()));
+			    this.$list.append(item);
+			    item.find(".thing").solutiondetails(i.toJSON());
 		    }, this);
 		    
 		    that = this;
