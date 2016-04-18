@@ -671,6 +671,53 @@
     	width: 200px;
 	}
 	
+	.placebox {
+		background-color: #fff;
+		position: relative;
+		margin: 0;
+		border-radius: 3px;
+		box-shadow: 1px 1px 1px rgba(45, 50, 61, 0.50);
+	}
+	
+	.placebox .current {
+		padding: 5px 0 5px 0;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	
+	.placebox .cancel {
+		padding: 0 5px 10px 10px;
+		cursor: pointer;
+		color: #CCC;
+	}
+	
+	.placebox .next {
+		text-align: right;
+		padding: 13px 10px 0 0;
+		cursor: pointer;
+		color: #59c939;
+	}
+	
+	.placebox .place {
+		display: inline-block;
+		vertical-align: top;
+		padding-top: 3px;
+	}
+	
+	.placebox .place .name {
+		color: #333;
+		font-weight: bold;
+		font-size: 15px;
+		line-height: 15px;
+		white-space: normal;
+	}
+	.placebox .place .address {
+		color: #666;
+		font-size: 12px;
+		line-height: 1;
+		padding-top: 3px;
+	}
+	
 	@media (min-width: 320px) { 
 		.container { max-width: 320px; }
 		.view.login .logo img {
