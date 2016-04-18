@@ -15,7 +15,6 @@ from .models import Accolade
 from .models import Notification
 from .models import RejectedTag
 
-
 import friends_best.serializers
 
 # from .models import RecommendationTag

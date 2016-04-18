@@ -65,7 +65,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Recommendation Type",
+            title: "New Recommendation",
         }));
         
         // Type picker
@@ -92,7 +92,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Place"
+            title: "New Recommendation"
         }));
         
         // Place picker
@@ -112,7 +112,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Website"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -145,7 +145,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Text"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -182,7 +182,7 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "More Details"
+            title: "New Recommendation"
         }));
         
         if (typeof this.prompt != 'undefined') {

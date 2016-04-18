@@ -7,6 +7,7 @@ require.config({
     'jquery.ui.tp': 'vendor/jquery.ui.touch-punch.min',
     bootstrap: 'vendor/bootstrap',
     tokenfield: 'vendor/bootstrap-tokenfield',
+    infobubble: 'vendor/infobubble',
     placefinder: 'vendor/jquery.placefinder',
     underscore: 'vendor/underscore',
     backbone: 'vendor/backbone',
@@ -21,7 +22,7 @@ require.config({
 		  deps: ['jquery', 'bootstrap'],
 	  },
 	  placefinder: {
-		  deps: ['jquery', 'bootstrap'],
+		  deps: ['jquery', 'bootstrap', 'infobubble'],
 	  },
 	  'facebook' : {
 	      exports: 'FB'

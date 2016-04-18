@@ -15,10 +15,31 @@
     // Create Marker
     var marker = new google.maps.Marker({
       map: map,
-      anchorPoint: new google.maps.Point(0, -29)
+      anchorPoint: new google.maps.Point(0, 0)
+    });
+    
+    // Create InfoWindow
+    var infowindow = new google.maps.InfoWindow({
+        pixelOffset: new google.maps.Size(0, 30)
+    });
+    
+    // Create InfoBubble
+    var infoBubble = new InfoBubble({
+        maxWidth: 320,
+        hideCloseButton: true,
+        borderWidth: 1,
+        shadowStyle: 0,
+        borderRadius: 4,
+        pixelOffset: new google.maps.Size(0, 30),
+        padding: 10,
+        backgroundColor: '#fff',
+        backgroundClassName: 'map-location'
     });
     
     autocomplete.addListener('place_changed', function() {
+    
+      // Clear search field
+      settings.input.val("");
     
       marker.setVisible(false);
       
@@ -36,17 +57,10 @@
         map.fitBounds(place.geometry.viewport);
       } else {
         map.setCenter(place.geometry.location);
-        map.setZoom(15);  // Why 17? Because it looks good.
+        map.setZoom(15);
       }
-      marker.setIcon(/** @type {google.maps.Icon} */({
-        animation: google.maps.Animation.DROP,
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(35, 35)
-      }));
       marker.setPosition(place.geometry.location);
-      marker.setVisible(true);
+      //marker.setVisible(true);
 
       var address = '';
       if (place.address_components) {
@@ -56,6 +70,12 @@
           (place.address_components[2] && place.address_components[2].short_name || '')
         ].join(' ');
       }
+      
+      //infowindow.setContent('<div class="map-location"><strong>' + place.name + '</strong><br>' + address + '</div><div class="create"><i class="fa fa-chevron-right fa-2x" style="color:#59c939"></i></div>');
+      infoBubble.setContent('<strong>' + place.name + '</strong><br>' + address);
+      infoBubble.open(map, marker);
+      //infowindow.open(map, marker);
+      
     });
   }
   
