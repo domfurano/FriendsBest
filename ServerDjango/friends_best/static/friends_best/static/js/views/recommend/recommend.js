@@ -4,6 +4,7 @@ define([
   'backbone',
   'models/recommend',
   'placefinder',
+  'solutiondetails',
   'text!templates/standard/cancel.html',
   'text!templates/standard/cancelsubmit.html',
   'text!templates/recommend/picker.html',
@@ -12,7 +13,7 @@ define([
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
   'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
-], function($, _, Backbone, RecommendModel, placefinder, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
+], function($, _, Backbone, RecommendModel, placefinder, solutiondetails, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {
         
@@ -197,11 +198,15 @@ define([
             this.recommendation.set("tagstring", this.prompt.get("tagstring"));
         }
         
-        console.log(this.recommendation.toJSON());
-        
-        // tag and comment entry
+        // template
         var template = _.template( commentsHTML );
-        this.$el.append(template(this.recommendation.toJSON()));
+        comments = $(template(this.recommendation.toJSON()));
+        this.$el.append(comments);
+        
+        // Load thing
+        comments.find(".thing").solutiondetails(this.recommendation.toJSON());
+        
+        // tags
         $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
         
         // Set focus on empty field

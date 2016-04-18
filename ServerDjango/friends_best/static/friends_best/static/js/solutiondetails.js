@@ -1,6 +1,7 @@
 (function($) {
   
   	var map = false;
+  	var service = false;
   
   	function getHostFromURL(href) {
         
@@ -25,17 +26,21 @@
 		var $el = this;
 		
 		console.log($el);
+		console.log(solution);
 		
 		// Map for place
 		if(!map) {
-			map = new google.maps.Map($("<div>"), {});	
+			map = google.maps.Map;	
+		}
+		
+		if(!service) {
+			service = new google.maps.places.PlacesService(document.createElement('div'));
 		}
 		
 		// Get details
 		switch(solution.type) {
 			case 'place':
 				// Load place info
-				service = new google.maps.places.PlacesService(map);
 				service.getDetails({placeId: solution.detail}, gotPlace);
 				break;
 			case 'url':
@@ -74,7 +79,7 @@
 				
 				// Might have had plain text...
 				// Load details
-				details = $("<div class='place'><div class='name'>" + settings.placeid + "</div><div class='address'></div></div>")
+				details = $("<div class='place'><div class='name'>" + solution.detail + "</div><div class='address'>No specific location</div></div>")
 				$el.html(details);
 				
 			}
