@@ -72,9 +72,9 @@ define([
         var pickerTemplate = _.template( pickerHTML );
         this.$el.append(pickerTemplate());
         
-        this.pickerButton("PLACE");
-        this.pickerButton("URL");
-        this.pickerButton("TEXT");
+        this.pickerButton("place");
+        this.pickerButton("url");
+        this.pickerButton("text");
         
     },
     
@@ -86,7 +86,7 @@ define([
         });
     },
     
-    PLACE: function() {
+    place: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
@@ -101,12 +101,17 @@ define([
         
         $.fn.placefinder({
 		  map: $('#map'),
-		  input: $('#place')
+		  input: $('#search'),
+		  result: $('#placebox'),
+		  pick: function(placeid) {
+			  that.recommendation.set("detail", placeid);
+			  that.render();
+		  }
 		});
         
     },
     
-    URL: function() {
+    url: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
@@ -139,7 +144,7 @@ define([
         });
     },
     
-    TEXT: function() {
+    text: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
