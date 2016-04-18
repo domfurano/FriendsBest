@@ -46,6 +46,14 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
         
+        if newUserRecommendation.detail != nil {
+            let URL: NSURL? = NSURL(string: newUserRecommendation.detail!)
+            if let URL = URL {
+                let request: NSURLRequest = NSURLRequest(URL: URL)
+                webView.loadRequest(request)
+            }
+        }
+        
         progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.Default)
         progressView.tintColor = CommonUI.fbGreen
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -137,9 +145,9 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     func createNewRecommendationButtonPressed() {
         if let urlString = webView.URL?.absoluteString {
             NSLog(urlString)
-            newUserRecommendation.type = .URL
+            newUserRecommendation.type = .url
             newUserRecommendation.detail = urlString
-            navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation), animated: true)
+            navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation, type: .NEW), animated: true)
         }
     }
     

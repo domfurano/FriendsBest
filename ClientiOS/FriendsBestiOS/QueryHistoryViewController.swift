@@ -32,6 +32,10 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
+        /* NECESSARY FOR DYNAMIC CELL HEIGHT */
+        tableView.estimatedRowHeight =  60.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
         /* Navigation bar */
         
         title = "Search History"
@@ -59,22 +63,32 @@ class QueryHistoryViewController: UITableViewController {
         
         tableView.separatorStyle = .None
         
+        /* Refresh Control */
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.tintColor = UIColor.whiteColor()
+        refreshControl!.addTarget(self, action: #selector(QueryHistoryViewController.refreshData), forControlEvents: .ValueChanged)
+        
         User.instance.queryHistoryUpdatedClosure = {
             [weak self] in
             self?.tableView.reloadData()
+            self?.refreshControl?.endRefreshing()
         }
     }
     
     override func viewWillAppear(animated: Bool) {
-        FBNetworkDAO.instance.getQueries()
-        
         navigationController?.navigationBarHidden = false
-        navigationController?.toolbarHidden = false
+        navigationController?.toolbarHidden = true
         
         navigationController?.navigationBar.barTintColor = CommonUI.navbarGrayColor
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
 
-        setToolbarItems()
+//        setToolbarItems()
+    }
+    
+    func refreshData() {
+        refreshControl!.beginRefreshing()
+        FBNetworkDAO.instance.getQueries(nil)
     }
     
     /* Toolbar */
@@ -134,20 +148,15 @@ class QueryHistoryViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // TODO: learn about reuseIdentifier
-        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(
-            tags: User.instance.queryHistory.queries[indexPath.row].tags,
-            style: .Default,
-            reuseIdentifier: nil)
+        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(query: User.instance.queryHistory.queries[indexPath.row])
+        cell.setNeedsUpdateConstraints()
+        cell.updateConstraintsIfNeeded()
         return cell
-    }
-    
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 60.0
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let query: Query = User.instance.queryHistory.queries[indexPath.row]
-        navigationController?.pushViewController(SolutionsViewController(tags: query.tags), animated: true)
+        navigationController?.pushViewController(SolutionsViewController(query: query, tags: query.tags), animated: true)
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -161,7 +170,7 @@ class QueryHistoryViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         let query = User.instance.queryHistory.queries[indexPath.row]
-        FBNetworkDAO.instance.deleteQuery(query.ID)
+        FBNetworkDAO.instance.deleteQuery(query.ID, callback: nil)
         User.instance.queryHistory.deleteQueryByID(query.ID)
         tableView.beginUpdates()
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)

@@ -46,12 +46,12 @@ class SolutionDetailViewController: UITableViewController {
     override func viewDidLoad() {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+//        tableView.separatorStyle = .None
         
         tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
         
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
-//        button.setTitle(SOLUTION!.detail, forState: .Normal)
         button.addTarget(
             self,
             action: #selector(SolutionDetailViewController.back),
@@ -64,6 +64,12 @@ class SolutionDetailViewController: UITableViewController {
         leftBBItem.tintColor = UIColor.whiteColor()
         leftBBItem.title = SOLUTION.detail
         navigationItem.leftBarButtonItem = leftBBItem
+        
+        /* Refresh Control */
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.tintColor = UIColor.whiteColor()
+        refreshControl!.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -85,6 +91,14 @@ class SolutionDetailViewController: UITableViewController {
         super.viewDidDisappear(animated)
         
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    func refreshData() {
+        refreshControl?.beginRefreshing()
+        FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query) {
+            self.tableView.reloadData()
+            self.refreshControl?.endRefreshing()
+        }
     }
     
     // This function will be called when the Dynamic Type user setting changes (from the system Settings app)
@@ -110,27 +124,23 @@ class SolutionDetailViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
         if indexPath.section == 0 {
-            let cell: UITableViewCell = UITableViewCell(style: .Default, reuseIdentifier: "main")
-            cell.textLabel?.text = SOLUTION.detail
-            cell.textLabel?.textColor = UIColor.whiteColor()
-            cell.backgroundColor = CommonUI.sdNavbarBgColor
-            cell.userInteractionEnabled = false
-            return cell
-        } else {
-            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Subtitle, reuseIdentifier: "SolutionDetailCell")
-//            let cell: SolutionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("SolutionDetailCell") as! SolutionDetailTableViewCell
-//            let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "detail")
-            let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
-//            cell.nameLabel.text = recommendation.friend.name
-//            cell.commentLabel.text = recommendation.comment
-            cell.textLabel?.text = recommendation.friend.name
-            cell.detailTextLabel?.text = recommendation.comment
-            cell.imageView?.image = recommendation.friend.squarePicture?.image
-            cell.userInteractionEnabled = false
+            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(recommendation: recommendation)
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell
+        } else {
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)            
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
+            return cell
+        }
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            
         }
     }
 }

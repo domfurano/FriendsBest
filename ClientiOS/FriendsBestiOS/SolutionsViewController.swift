@@ -8,6 +8,8 @@
 
 import UIKit
 
+// TODO: Query no longer possiblility of being nil!!!
+
 class SolutionsView: UITableView {
     override func drawRect(rect: CGRect) {
         let context: CGContext = UIGraphicsGetCurrentContext()!
@@ -26,28 +28,28 @@ class SolutionsView: UITableView {
 
 class SolutionsViewController: UITableViewController {
 
-    var QUERY: Query?
+    var QUERY: Query!
     
-    convenience init(tags: [String]) {
+    convenience init(query: Query, tags: [String]) {
         self.init()
         
-        self.QUERY = User.instance.queryHistory.getQueryFromTags(tags)
+        self.QUERY = query
         
         User.instance.querySolutionsUpdatedClosure = {
             [weak self] (queryID: Int) -> Void in
-            if self?.QUERY == nil {
-                let query = User.instance.queryHistory.getQueryByID(queryID)!
-                let incomingTags: [String] = query.tags
-                if User.instance.queryHistory.tagsEqual(tags, tag2: incomingTags) {
-                    self?.QUERY = query
-                }
-            }
+//            if self?.QUERY == nil {
+//                let query = User.instance.queryHistory.getQueryByID(queryID)!
+//                let incomingTags: [String] = query.tags
+//                if User.instance.queryHistory.tagsEqual(tags, tag2: incomingTags) {
+//                    self?.QUERY = query
+//                }
+//            }
             
-            if self?.QUERY != nil {
-                if self?.QUERY!.ID == queryID {
-                    self?.tableView.reloadData()
-                }
+            if self?.QUERY.ID == queryID {
+                self?.tableView.reloadData()
+                self?.refreshControl?.endRefreshing()
             }
+
         }
     }
     
@@ -61,28 +63,51 @@ class SolutionsViewController: UITableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
+        /* NECESSARY FOR DYNAMIC CELL HEIGHT */
+        tableView.estimatedRowHeight =  128.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
             image: CommonUI.nbBackChevron,
             style: .Plain,
             target: self,
             action: #selector(SolutionsViewController.back)
         )
-        leftBBitem.tintColor = UIColor.whiteColor()
+        leftBBitem.tintColor = UIColor.colorFromHex(0xABB4BA)
         
         self.navigationItem.leftBarButtonItem = leftBBitem
         title = "Solutions"
         tableView.separatorStyle = .None
+        
+        /* Refresh Control */
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.tintColor = UIColor.whiteColor()
+        refreshControl!.addTarget(self, action: #selector(SolutionsViewController.refreshData), forControlEvents: .ValueChanged)
     }
     
     override func viewWillAppear(animated: Bool) {
-        if QUERY != nil {
-            FBNetworkDAO.instance.getQuerySolutions(QUERY!.ID)
-        }
         navigationController?.navigationBarHidden = false
-        navigationController?.toolbarHidden = false
+        navigationController?.toolbarHidden = true
         
-        navigationController?.navigationBar.barTintColor = CommonUI.navbarGrayColor
+        navigationController?.navigationBar.barTintColor = UIColor.colorFromHex(0xdedede)
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 28.0)!,
+            NSForegroundColorAttributeName: UIColor.blackColor()
+        ]
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 28.0)!,
+            NSForegroundColorAttributeName: UIColor.whiteColor()
+        ]
+    }
+    
+    func refreshData() {
+        refreshControl!.beginRefreshing()
+        FBNetworkDAO.instance.getQuerySolutions(QUERY, callback: nil)
     }
     
     func back() {
@@ -90,23 +115,15 @@ class SolutionsViewController: UITableViewController {
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if QUERY == nil {
-            return 0
-        } else {
-            return 2
-        }
+        return 2
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if QUERY == nil {
-            return 0
-        }
-        
         if section == 0 {
             return 1
         }
         
-        if let solutionCount = QUERY!.solutions?.count {
+        if let solutionCount = QUERY.solutions?.count {
             return solutionCount
         } else {
             return 0
@@ -115,9 +132,15 @@ class SolutionsViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return SolutionsTagCell(tags: QUERY!.tags, style: .Default, reuseIdentifier: nil)
+            let cell = SolutionsTagCell(tags: QUERY.tags, style: .Default, reuseIdentifier: nil)
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
+            return cell
         } else {
-            let cell: SolutionCell = SolutionCell(detail: QUERY!.solutions![indexPath.row].detail, style: UITableViewCellStyle.Subtitle, reuseIdentifier: nil)
+            let solution: Solution = QUERY.solutions![indexPath.row]
+            let cell: SolutionCell = SolutionCell(solution: solution)
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             return cell
         }
     }
@@ -126,10 +149,6 @@ class SolutionsViewController: UITableViewController {
         if indexPath.section == 0 {
             return
         }
-        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY!.solutions![indexPath.row]), animated: true)
-    }
-    
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 60.0
+        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY.solutions![indexPath.row]), animated: true)
     }
 }

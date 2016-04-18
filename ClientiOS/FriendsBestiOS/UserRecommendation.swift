@@ -9,14 +9,10 @@
 
 class UserRecommendation {
     var tags: [String]?
-    var detail: String?
+    var tagString: String?
+    var placeName: String?
+    var placeWebsite: NSURL?
+    var detail: String? // A detail is the Title of a custom
     var comments: String?
     var type: RecommendationType?
-    
-    func clear() {
-        tags = nil
-        detail = nil
-        comments = nil
-        type = nil
-    }
 }

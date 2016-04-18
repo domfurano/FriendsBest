@@ -47,30 +47,28 @@ class PromptCardView: UIView {
         
         titleLabel.numberOfLines = 2
         titleLabel.textAlignment = .Center
-        titleLabel.font = UIFont(name: "Helvetica Neue", size: 16.0)
+        titleLabel.font = UIFont(name: "Proxima Nova Cond", size: 14.0)!
         
-        tagLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 20.0)
+        tagLabel.font = UIFont(name: "ProximaNovaCond-Bold", size: 28.0)!
         tagLabel.numberOfLines = 2
         tagLabel.lineBreakMode = NSLineBreakMode.ByTruncatingTail
-        
-        subTitleLabel.font = UIFont(name: "Helvetica Neue", size: 10.0)
         
         var attributedString: NSMutableAttributedString
         if prompt.friend != nil {
             attributedString = NSMutableAttributedString(string: "based on a search by \(prompt.friend!.name)")
-            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 20))
-            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Bold", size: 10.0)!, range: NSMakeRange(21, prompt.friend!.name.characters.count))
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Proxima Nova Cond", size: 14.0)!, range: NSMakeRange(0, 20))
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "ProximaNovaCond-Bold", size: 14.0)!, range: NSMakeRange(21, prompt.friend!.name.characters.count))
         } else {
             attributedString = NSMutableAttributedString(string: "based on a search")
-            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue", size: 10.0)!, range: NSMakeRange(0, 16))
+            attributedString.addAttribute(NSFontAttributeName, value: UIFont(name: "Proxima Nova Cond", size: 14.0)!, range: NSMakeRange(0, 17))
         }
         
         if prompt.friend != nil {
             friendPicture = CommonUI.instance.getFacebookProfileUIImageView(prompt.friend!.facebookID, size: CommonUI.FacbookImageSize.square)
         }
         
-        titleLabel.text = "Do you have a recommendation"
-        tagLabel.text = self.prompt!.tagString
+        titleLabel.text = "Do you have a recommendation for"
+        tagLabel.text = self.prompt!.tagString.isEmpty ? self.prompt!.tags.joinWithSeparator(" ") : self.prompt!.tagString
         subTitleLabel.attributedText = attributedString
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false

@@ -39,7 +39,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 
         if error == nil && FBSDKAccessToken.currentAccessToken() != nil {
             // Authenticate with FriendsBest
-            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate(nil)
         }
     }
     

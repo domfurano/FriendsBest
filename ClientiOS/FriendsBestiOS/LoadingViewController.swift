@@ -40,22 +40,32 @@ class LoadingViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
+        view.setNeedsDisplay()
         /* Facebook */
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
             User.instance
             CommonUI.instance
-            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
-            FacebookNetworkDAO.instance.getFacebookData()
-            FBNetworkDAO.instance.getPrompts()
-            FBNetworkDAO.instance.getFriends()
-            FBNetworkDAO.instance.getQueries()
-            FBNetworkDAO.instance.getRecommendationsForUser()            
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate({
+                FacebookNetworkDAO.instance.getFacebookData({ (successful) in
+                    FBNetworkDAO.instance.getFriends({
+                        FBNetworkDAO.instance.getRecommendationsForUser({
+                            FBNetworkDAO.instance.getQueries({
+//                                for query: Query in User.instance.queryHistory.queries {
+//                                    FBNetworkDAO.instance.getQuerySolutions(query, callback: nil)
+//                                }
+                                self.navigationController?.pushViewController(MainScreenViewController(), animated: false)
+                            })
+                        })
+                        
+                    })
+                })
+            })
             
-//            Updater.instance.start()
+            //            Updater.instance.start()
             
-            navigationController?.pushViewController(MainScreenViewController(), animated: false)
+            
         }
     }
     

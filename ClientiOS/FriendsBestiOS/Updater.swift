@@ -23,9 +23,10 @@ class Updater {
     }
     
     private init() {
-        self.timer = Timer(timesPerSecond: 1/5, closure: { () -> Void in
-//            self.checkForNewRecommendations()
-            FBNetworkDAO.instance.getPrompts()
+        self.timer = Timer(timesPerSecond: 1, closure: { () -> Void in
+            if User.instance.prompts.prompts.count < 1 {
+                FBNetworkDAO.instance.getPrompts(nil)
+            }
         })
         timer.startTimer()
     }

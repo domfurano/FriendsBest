@@ -21,8 +21,8 @@ class KolodaOverlayView: OverlayView {
         thumbsUpImageView = UIImageView(frame: bounds)
         thumbsDownImageView = UIImageView(frame: bounds)
         
-        let thumbsUpIcon: FAKFontAwesome = FAKFontAwesome.thumbsUpIconWithSize(ICON_SIZE)
-        let thumbsDownIcon: FAKFontAwesome = FAKFontAwesome.thumbsDownIconWithSize(ICON_SIZE)
+        let thumbsUpIcon: FAKFontAwesome = FAKFontAwesome.plusSquareIconWithSize(ICON_SIZE)
+        let thumbsDownIcon: FAKFontAwesome = FAKFontAwesome.timesCircleIconWithSize(ICON_SIZE)
         
         thumbsUpIcon.addAttribute(
             NSForegroundColorAttributeName,
@@ -50,6 +50,8 @@ class KolodaOverlayView: OverlayView {
         addSubview(thumbsUpImageView)
         addSubview(thumbsDownImageView)
         
+        let offset: CGFloat = 16.0
+        
         addConstraint(
             NSLayoutConstraint(
                 item: thumbsUpImageView,
@@ -58,7 +60,7 @@ class KolodaOverlayView: OverlayView {
                 toItem: self,
                 attribute: .Left,
                 multiplier: 1.0,
-                constant: 32.0))
+                constant: offset))
         
         addConstraint(
             NSLayoutConstraint(
@@ -68,7 +70,7 @@ class KolodaOverlayView: OverlayView {
                 toItem: self,
                 attribute: .Top,
                 multiplier: 1.0,
-                constant: 64.0))
+                constant: offset))
         
         addConstraint(
             NSLayoutConstraint(
@@ -78,7 +80,7 @@ class KolodaOverlayView: OverlayView {
                 toItem: self,
                 attribute: .Right,
                 multiplier: 1.0,
-                constant: -32.0))
+                constant: -offset))
         
         addConstraint(
             NSLayoutConstraint(
@@ -88,7 +90,7 @@ class KolodaOverlayView: OverlayView {
                 toItem: self,
                 attribute: .Top,
                 multiplier: 1.0,
-                constant: 64.0))
+                constant: offset))
     }
 
     required init?(coder aDecoder: NSCoder) {

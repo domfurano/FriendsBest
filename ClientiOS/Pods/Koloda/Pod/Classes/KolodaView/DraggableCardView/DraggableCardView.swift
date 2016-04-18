@@ -28,7 +28,7 @@ public let cardSwipeActionAnimationDuration: NSTimeInterval  = 0.4
 private let cardResetAnimationSpringBounciness: CGFloat = 10.0
 private let cardResetAnimationSpringSpeed: CGFloat = 20.0
 private let cardResetAnimationKey = "resetPositionAnimation"
-private let cardResetAnimationDuration: NSTimeInterval = 0.2
+private let cardResetAnimationDuration: NSTimeInterval = 0.1
 
 public class DraggableCardView: UIView {
     
