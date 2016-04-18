@@ -610,7 +610,7 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    queries = Query.objects.select_related('user').filter(tags__lemma__in=lemmas)
    for query in queries:
       n = Notification(query=query, recommendation=recommendation)
-      n.save()
+      n, created = Notification.objects.get_or_create(query=query, recommendation=recommendation)
 
       #just for testing
       #identifiedUmair = isUmair(query.user)
