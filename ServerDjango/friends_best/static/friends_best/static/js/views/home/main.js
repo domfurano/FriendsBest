@@ -30,7 +30,7 @@ define([
             if (that.collection.length < 1) {
                 that.loadPrompts();
             }
-        }, 6000);
+        }, 1000);
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
@@ -120,7 +120,6 @@ define([
 			el.find(".promptsection").remove();
 			
 			prompts.each(function(prompt) {
-				console.log(prompt.toJSON());
     			promptcard = promptTemplate(prompt.toJSON());
     			el.append(promptcard);
     		});

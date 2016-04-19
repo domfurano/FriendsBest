@@ -29,9 +29,7 @@ function($) {
 		if(!service) {
 			service = new google.maps.places.PlacesService(document.createElement('div'));
 		}
-		
-		console.log(solution.detail + " setup");
-		
+				
 		// Only load place if this is visible...
 		var loaded = false;
 		$el.waypoint({
@@ -43,9 +41,7 @@ function($) {
 		function getDetails() {
 			
 			if(loaded) return;
-			
-			console.log("scrolled on screen");
-			
+						
 			switch(solution.type) {
 				case 'place':
 					// Load place info
@@ -67,9 +63,7 @@ function($) {
 		}
 		
 		function gotPlace(place, status) {
-		
-		    console.log("Got place from Google API, status: " + status);
-		
+				
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
 				
 				loaded = true;

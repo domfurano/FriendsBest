@@ -3,7 +3,6 @@ define([
   'underscore',
   'backbone',
   'app',
-  'views/recommend/add',
   'views/search/results',
   'models/query',
   'text!templates/home/login.html',

@@ -111,7 +111,6 @@ define([
 		
 		// Check login status
 		FB.getLoginStatus(function(response) {
-			console.log(response);
 
 			// Navigate to login if not authorized
 			if(response.status === "connected") {
@@ -129,7 +128,6 @@ define([
 					Backbone.$.ajaxSetup({
 					    //headers: { 'Authorization' :'Token ' + token },
 					    beforeSend: function(jqXHR) {
-    					    console.log(jqXHR);
                             jqXHR.setRequestHeader('Authorization', 'Token ' + token);
                             jqXHR.setRequestHeader('SomeData', 'Token ' + token);
                         }
