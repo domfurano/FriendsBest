@@ -354,7 +354,7 @@ def submitQuery(user, *tags):
                 break
         if not allLemmasMatch:
             # added this line to prevent blank prompts:
-            if query.tagstring != "":
+            if q1.tagstring != "":
                 p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
             #just for testing
