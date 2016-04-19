@@ -8,7 +8,8 @@ define([
   'fb',
   'tokenfield',
   'jquery.ui',
-  'jquery.ui.tp'
+  'jquery.ui.tp',
+  'async!//maps.google.com/maps/api/js?libraries=places&key=AIzaSyA1zoAVAJvKmZGwCFmdwXP3Gi73Ck-kn0k'
 ], function($, _, Backbone, Router, LoginView){
   
   var initialize = function(){

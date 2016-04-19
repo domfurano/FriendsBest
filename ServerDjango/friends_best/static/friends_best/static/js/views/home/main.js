@@ -10,7 +10,7 @@ define([
   'text!templates/home/prompt.html',
   'text!templates/home/menu.html',
   'text!templates/home/deck.html',
-  'text!templates/home/info.html'
+  'text!templates/home/info.html',
 ], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({

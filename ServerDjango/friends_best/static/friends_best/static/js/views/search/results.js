@@ -9,7 +9,6 @@ define([
   'text!templates/standard/list.html',
   'text!templates/search/results/item.html',
   'text!templates/search/results/postback.html',
-  'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
 ], function($, _, Backbone, QueryModel, solutiondetails, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
 
   var ResultsView = Backbone.View.extend({
@@ -71,7 +70,7 @@ define([
     			solution.id = index;
     			var item = $(itemTemplate(solution));
 				this.$list.append(item);
-				item.find(".thing").solutiondetails(solution);
+				item.find(".thing").solutiondetails(solution, {context: this.$list});
 
     		}, this);
     		

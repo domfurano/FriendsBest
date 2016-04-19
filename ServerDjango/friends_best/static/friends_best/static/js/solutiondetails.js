@@ -1,6 +1,6 @@
-(function($) {
+require(['jquery', 'waypoint'],
+function($) {
   
-  	var map = false;
   	var service = false;
   
   	function getHostFromURL(href) {
@@ -19,49 +19,60 @@
     };
   
 	// Constructor
-	$.fn.solutiondetails = function(options) {
+	$.fn.solutiondetails = function(solution, options) {
 		
 		// Setup defaults
-		var solution = $.extend({}, $.fn.solutiondetails.defaults, options);
+		var settings = $.extend({}, $.fn.solutiondetails.defaults, options);
 		var $el = this;
 		
-		console.log($el);
-		console.log(solution);
-		
-		// Map for place
-		if(!map) {
-			map = google.maps.Map;	
-		}
-		
+		// Place service
 		if(!service) {
 			service = new google.maps.places.PlacesService(document.createElement('div'));
 		}
 		
-		// Get details
-		switch(solution.type) {
-			case 'place':
-				// Load place info
-				service.getDetails({placeId: solution.detail}, gotPlace);
-				break;
-			case 'url':
-				// Load url
-				url = getHostFromURL(solution.detail)
-				details = $("<div class='url'><div class='host'>" + url.hostname + "</div><div class='full'>" + url + "</div></div>")
-				$el.html(details);
-				break;
-			default:
-				// Load text
-				details = $("<div class='text'><div class='custom'>" + solution.detail + "</div></div>")
-				$el.html(details);
+		console.log(solution.detail + " setup");
+		
+		// Only load place if this is visible...
+		var loaded = false;
+		$el.waypoint({
+			handler: getDetails,
+			context: settings.context,
+			offset: 'bottom-in-view'
+		});
+		
+		function getDetails() {
+			
+			if(loaded) return;
+			
+			console.log(solution.detail + " on screen");
+			
+			switch(solution.type) {
+				case 'place':
+					// Load place info
+					service.getDetails({placeId: solution.detail}, gotPlace);
+					break;
+				case 'url':
+					// Load url
+					url = getHostFromURL(solution.detail)
+					details = $("<div class='url'><div class='host'>" + url.hostname + "</div><div class='full'>" + url + "</div></div>")
+					$el.html(details);
+					loaded = true;
+					break;
+				default:
+					// Load text
+					details = $("<div class='text'><div class='custom'>" + solution.detail + "</div></div>")
+					$el.html(details);
+					loaded = true;
+			}
 		}
 		
 		function gotPlace(place, status) {
 		
-		    console.log(status);
+		    console.log("Got place from Google API, status: " + status);
 		
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
 				
-				console.log($el);
+				loaded = true;
 				
 				// Build address
 				var address = '';
@@ -77,6 +88,9 @@
 				details = $("<div class='place'><div class='name'>" + place.name + "</div><div class='address'>" + address + "</div></div>")
 				$el.html(details);
 				
+			} else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+				// Try again
+				
 			} else {
 				
 				// Might have had plain text...
@@ -91,6 +105,7 @@
 
 	// placedetails defaults
 	$.fn.solutiondetails.defaults = {
+		context: window
 	};
 	
-})(jQuery);
+});
