@@ -90,7 +90,7 @@ function($) {
 				
 			} else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
 				// Try again
-				getDetails();
+				setTimeout(getDetails,1000);
 			} else {
 				
 				loaded = true;
