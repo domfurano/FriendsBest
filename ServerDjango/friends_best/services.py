@@ -285,11 +285,11 @@ def getAllSubscriptions(user):
 
 # <editor-fold desc="Queries">
 def submitQuery(user, *tagsList):
-    if tagsList.count == 0:
-        return "error: cannot submit query, query must include at least one tag"
-
     #filter out empty tags
     tags = [t for t in tagsList if not t == '']
+
+    if len(tags) == 0:
+        return "error: cannot submit query, query must include at least one tag"
 
     #TODO: delete after testing
     #sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
