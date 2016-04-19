@@ -346,6 +346,13 @@ def deploy(request):
 
 def error(request):
     log = subprocess.check_output(['bash', '/home/dominic/scripts/apache_error_log.sh'])
-    response = HttpResponse('<html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
+    response = HttpResponse('<!DOCTYPE html><html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
+    response.status_code = 200
+    return response
+
+
+def django_error(request):
+    log = subprocess.check_output(['bash', '/home/dominic/scripts/django_error_log.sh'])
+    response = HttpResponse('<!DOCTYPE html><html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
     response.status_code = 200
     return response

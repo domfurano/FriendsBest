@@ -22,7 +22,7 @@ from friends_best.views import FacebookLogin
 from friends_best.views import deploy
 from friends_best.views import queryLink
 from django.views.decorators.csrf import csrf_exempt
-from friends_best.views import error
+from friends_best.views import error, django_error
 
 if settings.DEBUG:
     urlpatterns = [
@@ -32,6 +32,7 @@ if settings.DEBUG:
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^fb/deploy/$', csrf_exempt(deploy)),
         url(r'^fb/error/', error),
+        url(r'^fb/django_error/', django_error),
 #         url(r'^fb/api/me/$', CurrentUserView.as_view())
         # Facebook Postback
         # Facebook Postback
@@ -44,6 +45,7 @@ else:
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^deploy/$', csrf_exempt(deploy)),
         url(r'^error/$', error),
+        url(r'^django_error/', django_error),
 #         url(r'^api/me/$', CurrentUserView.as_view()
 
         # Facebook Postback
