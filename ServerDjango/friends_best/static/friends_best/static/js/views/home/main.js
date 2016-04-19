@@ -26,6 +26,7 @@ define([
         
         this.loadPrompts();        
         
+        // Check for empty prompt collection and go get more...
         this.refresh = setInterval(function() {
             if (that.collection.length < 1) {
                 that.loadPrompts();
@@ -103,15 +104,15 @@ define([
     
     loadPrompts: function() {
         this.collection = new PromptsCollection();
-        this.collection.on("update", this.showPrompts, this);
-		this.collection.fetch();
+        //this.collection.on("reset", this.showPrompts, this);
+		this.collection.fetch({success: this.showPrompts});
     },
     
     showPrompts: function() {
         
-		if(this.visible) {
+		if(that.visible) {
         		
-            prompts = this.collection;
+            prompts = that.collection;
     		
             promptTemplate = _.template(promptHTML);
 			
