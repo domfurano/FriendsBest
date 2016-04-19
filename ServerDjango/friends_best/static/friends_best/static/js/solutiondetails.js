@@ -57,6 +57,8 @@
 		
 		function gotPlace(place, status) {
 		
+		    console.log(status);
+		
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
 				
 				console.log($el);
