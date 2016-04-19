@@ -37,7 +37,7 @@ function($) {
 		$el.waypoint({
 			handler: getDetails,
 			context: settings.context,
-			offset: 'bottom-in-view'
+			offset: '120%'
 		});
 		
 		function getDetails() {

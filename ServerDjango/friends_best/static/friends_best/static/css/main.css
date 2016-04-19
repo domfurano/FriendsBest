@@ -401,6 +401,10 @@
 		text-overflow: ellipsis;
 	}
 	
+	.thing i {
+		opacity: 30%;
+	}
+	
 	.list .solution .count {
 		padding-top: 4px;
 	}
