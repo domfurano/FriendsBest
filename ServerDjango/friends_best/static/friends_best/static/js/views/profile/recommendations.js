@@ -49,7 +49,7 @@
 		    var itemTemplate = _.template( itemHTML );
 		    this.collection.each(function(i, index) {
 			    var item = $(itemTemplate(i.toJSON()));
-			    this.$list.append(item);
+			    this.$list.prepend(item);
 			    item.find(".thing").solutiondetails(i.toJSON(), {context: this.$list.parent()});
 		    }, this);
 		    
