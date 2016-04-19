@@ -44,7 +44,7 @@ function($) {
 			
 			if(loaded) return;
 			
-			console.log(solution.detail + " on screen");
+			console.log("scrolled on screen");
 			
 			switch(solution.type) {
 				case 'place':
@@ -90,8 +90,10 @@ function($) {
 				
 			} else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
 				// Try again
-				
+				getDetails();
 			} else {
+				
+				loaded = true;
 				
 				// Might have had plain text...
 				// Load details
