@@ -50,7 +50,7 @@
 		    this.collection.each(function(i, index) {
 			    var item = $(itemTemplate(i.toJSON()));
 			    this.$list.append(item);
-			    item.find(".thing").solutiondetails(i.toJSON(), {context: this.$list});
+			    item.find(".thing").solutiondetails(i.toJSON(), {context: this.$list.parent()});
 		    }, this);
 		    
 		    that = this;

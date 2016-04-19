@@ -70,7 +70,7 @@ define([
     			solution.id = index;
     			var item = $(itemTemplate(solution));
 				this.$list.append(item);
-				item.find(".thing").solutiondetails(solution, {context: this.$list});
+				item.find(".thing").solutiondetails(solution, {context: this.$list.parent()});
 
     		}, this);
     		
