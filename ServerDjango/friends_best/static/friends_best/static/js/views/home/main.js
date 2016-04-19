@@ -123,6 +123,7 @@ define([
 				if(prompt.get("tagstring") == "") {
 					console.log("suppressed a blank prompt");
 					prompt.destroy();
+					return;
 				}
     			promptcard = promptTemplate(prompt.toJSON());
     			el.append(promptcard);
