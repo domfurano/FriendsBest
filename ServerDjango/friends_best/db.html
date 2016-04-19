@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        $("#form").submit(function() {
+            var url = "/fb/db/";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form").serialize(),
+                success: function(data)
+                {
+                    $('#output').innerHTML = data;
+                }
+            });
+        });
+    </script>
+</head>
+<body style="padding: 12px 12px 12px 12px;">
+    <form id="form">
+        <input type="text" id="query" style="width: 1024px;">
+        <input type="submit">
+    </form>
+    <div>
+        <pre id="output"></pre>
+    </div>
+</body>
+</html>

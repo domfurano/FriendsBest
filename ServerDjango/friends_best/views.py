@@ -356,3 +356,18 @@ def django_error(request):
     response = HttpResponse('<!DOCTYPE html><html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
     response.status_code = 200
     return response
+
+
+def db(request):
+    if request.method == "POST":
+        query = request.POST['query']
+        output = subprocess.check_output(['sqlite3',
+                                          '/home/dominic/FriendsBest/ServerDjango/db.sqlite3',
+                                          query])
+        response = HttpResponse(output.decode())
+        response.status_code = 200
+        return response
+    else:
+        response = HttpResponse('POST')
+        response.status_code = 420
+        return response
