@@ -31,6 +31,13 @@ define([
             if (that.collection.length < 1) {
                 that.loadPrompts();
             }
+            $.get( "/fb/api/notification/", function( data ) {
+              if(data.notifications == 0) {
+                  $("#notification").hide();
+              } else {
+                  $("#notification").show();
+              }
+            });
         }, 1000);
 
 		var searchTemplate = _.template( searchHTML, {} );
@@ -53,7 +60,7 @@ define([
 		
 		$('form#query').submit(function() {
 			
-			var tags = $('#search-field').val().toLowerCase().split(' ');
+			var tags = $('#search-field').val().trim().toLowerCase().split(' ');
 			
 			if(tags.length == 0) return false;
 			if(tags.length == 1 && tags[0] == "") return false;

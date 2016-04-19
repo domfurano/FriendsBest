@@ -198,6 +198,12 @@ class NotificationViewSet(  mixins.DestroyModelMixin,
     
     queryset = Notification.objects.order_by('query')
     
+    # GET
+    def list(self, request):
+        count = Notification.objects.filter(query__user=request.user).count()
+        result = {"notifications" : count}
+        return Response(result)
+    
     def destroy(self, request, pk=None):
         # pk is the id of the recommendation
         try:
