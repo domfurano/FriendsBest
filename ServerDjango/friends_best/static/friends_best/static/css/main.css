@@ -232,6 +232,23 @@
 		width: 100%;
 	}
 	
+	section.max {
+		top:0;
+		bottom: 90px;
+	}
+	
+	section.max .container {
+		height: 100%;
+	}
+	
+	section.max .middle {
+		position: relative;
+		top: 50%;
+		-webkit-transform: translateY(-50%);
+		-ms-transform: translateY(-50%);
+		transform: translateY(-50%);
+	}
+	
 	section.list {
 		bottom: 90px;
 		margin: 0;
@@ -655,6 +672,7 @@
 		padding: 10px 20px;
 		border-radius: 8px;
 		font-size: 20px;
+		cursor: pointer;
 	}
 	
 	.fb-login-button i {
