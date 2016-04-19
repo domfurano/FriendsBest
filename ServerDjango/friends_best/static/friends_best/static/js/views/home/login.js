@@ -7,7 +7,7 @@ define([
   'models/query',
   'text!templates/home/login.html',
   'fb'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, loginHTML){
+], function($, _, Backbone, App, ResultsView, QueryModel, loginHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
