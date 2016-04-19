@@ -35,12 +35,12 @@ define([
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
       
-		$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
+		//$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
 		
-		$('#search-field-tokenfield').keypress(function (e) {
+		$('#search-field').keypress(function (e) {
 		  if (e.which == 13) {
-            $('form#query').attr("disabled", "disabled");
-		    $('form#query').submit();
+            $('#search-field').attr("disabled", "disabled");
+		    $('#search-field').submit();
 		    return false;
 		  }
 		});
@@ -52,7 +52,7 @@ define([
 		
 		$('form#query').submit(function() {
 			
-			var tags = $('#search-field').tokenfield('getTokensList').toLowerCase().split(' ');
+			var tags = $('#search-field').val().toLowerCase().split(' ');
 			
 			if(tags.length == 0) return false;
 			if(tags.length == 1 && tags[0] == "") return false;
