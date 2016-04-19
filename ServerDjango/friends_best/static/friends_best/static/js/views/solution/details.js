@@ -41,6 +41,8 @@ define([
 		commentTemplate = _.template(commentHTML);
         friendcommentTemplate = _.template(friendcommentHTML);
         
+        var legit = 0;
+        
 		_.each(this.solution.recommendations, function(recommendation, index) {
     		console.log(recommendation);
     		
@@ -58,8 +60,10 @@ define([
         		r.name = recommendation.user.name.trim();
                 r.id = recommendation.user.id;
                 list.append(friendcommentTemplate(r));
-    		} else {
+    		} else if(recommendation.comment != "") {
         	    list.append(commentTemplate(r));	
+    		} else {
+        		list.append(commentTemplate({comment: "<i>Anonymous Recommendation</i>"}));
     		}
 					
 		});
