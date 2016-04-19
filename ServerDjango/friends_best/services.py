@@ -82,7 +82,7 @@ _appSecret = "9346ae3c5b2c50801237589b238b0688"
 
 _genericAccessToken = _appId + "|" + _appSecret
 
-_lemmatizer = WordNetLemmatizer() # 'pos' arg = part of speech (defaults to 'noun'); 'n' = noun, 'a' = adjective, 'v' = verb, etc.
+#_lemmatizer = WordNetLemmatizer() # 'pos' arg = part of speech (defaults to 'noun'); 'n' = noun, 'a' = adjective, 'v' = verb, etc.
 
 
 
@@ -268,9 +268,10 @@ def generatePromptsForNewUser(user):
 
 # <editor-fold desc="Subscriptions">
 def addSubscription(user, tagString):
-   lemma = _lemmatizer.lemmatize(word=tagString.lower(), pos='n')
-   t1, created = Tag.get_or_create(tag=tagString, lemma=lemma)
-   s1, created = Subscription.get_or_create(user=user, tag=t1)
+    _lemmatizer = WordNetLemmatizer()
+    lemma = _lemmatizer.lemmatize(word=tagString.lower(), pos='n')
+    t1, created = Tag.get_or_create(tag=tagString, lemma=lemma)
+    s1, created = Subscription.get_or_create(user=user, tag=t1)
 
 
 def removeSubscription(user, tag):
@@ -303,6 +304,7 @@ def submitQuery(user, *tags):
     # create query tags
     lemmas = set()
     tagsWithoutDuplicates = set(tags)
+    _lemmatizer = WordNetLemmatizer()
     for t in tagsWithoutDuplicates:
         lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
         lemmas.add(lemma)
@@ -550,6 +552,7 @@ def modifyRecommendation(recId, newComments, *newTagStrings):
         if oldTagString not in newTagStrings:
             rec.tags.remove(recTag)
 
+    _lemmatizer = WordNetLemmatizer()
     for newTagString in newTagStrings:
         if newTagString not in oldTagStrings:
             newTag, created = Tag.objects.get_or_create(tag=newTagString.lower(), lemma=_lemmatizer.lemmatize(word=newTagString.lower(), pos='n'))
@@ -604,6 +607,7 @@ def createRecommendation(user, detail, thingType, comments, *tags):
 
    # create the recommendationTags
    lemmas = set()
+   _lemmatizer = WordNetLemmatizer()
    for t in tags:
        lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
        lemmas.add(lemma)
@@ -817,14 +821,14 @@ def sendNotification(json_data, topic):
    #data = {'user':'test user', 'tagString': 'test text'}
    data = json_data
 
-   print("notification json_data: %s " % data)
+   #print("notification json_data: %s " % data)
 
    _q.put(data)
    # can be either recommendations or prompts
    #topic = 'recommendations'
 
    response = _gcm.send_topic_message(topic=topic, data=data)
-   print ("notification response: %s" % response)
+   #print ("notification response: %s" % response)
 
    global TIME_TO_WAIT
    #if not response or 'success' not in response:
