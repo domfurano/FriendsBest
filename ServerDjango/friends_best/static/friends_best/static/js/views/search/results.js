@@ -69,7 +69,12 @@ define([
 
     			solution.id = index;
     			var item = $(itemTemplate(solution));
-				this.$list.append(item);
+    			if(solution.notifications) {
+                    this.$list.prepend(item);
+    			} else {
+        		    this.$list.append(item);	
+    			}
+				
 				item.find(".thing").solutiondetails(solution, {context: this.$list.parent()});
 
     		}, this);

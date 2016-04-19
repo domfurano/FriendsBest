@@ -47,7 +47,13 @@ define([
             // Add elements to the list
 		    var itemTemplate = _.template( itemHTML );
 		    this.collection.each(function(i, index) {
-			    this.$list.append(itemTemplate(i.toJSON()));
+    		    item = i.toJSON();
+    		    if(item.notifications) {
+        		    this.$list.prepend(itemTemplate(item));    
+    		    } else {
+        		    this.$list.append(itemTemplate(item));    
+    		    }
+			    
 		    }, this);
 		    
 		    // Make list clickable
