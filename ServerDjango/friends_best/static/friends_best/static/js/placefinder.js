@@ -6,12 +6,17 @@
 		
 		// Hide box
 		settings.result.hide();
-		settings.input.submit(function() {
-		  return false;
-		});
 		
 		// Create autocomplete
-		$.fn.placefinder.autocomplete = new google.maps.places.Autocomplete(settings.input.get(0));
+		input = settings.input.get(0);
+		$.fn.placefinder.autocomplete = new google.maps.places.Autocomplete(input);
+		
+		google.maps.event.addDomListener(input, 'keydown', function(e) { 
+		    if (e.keyCode == 13) { 
+		        e.preventDefault(); 
+		        //placeChanged();
+		    }
+		  }); 
 		
 		// Create Marker
 		$.fn.placefinder.marker = new google.maps.Marker({
