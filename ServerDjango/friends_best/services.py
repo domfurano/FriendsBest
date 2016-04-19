@@ -199,8 +199,7 @@ def generateAnonymousPrompts(user):
 
         if not allLemmasMatch:
             # added this test to prevent blank prompts
-            if query.tagstring != "":
-                p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
+            p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
 
 
 # private helper method (creates a set of random indexes for the specified collection)
@@ -353,9 +352,7 @@ def submitQuery(user, *tags):
             if allLemmasMatch:
                 break
         if not allLemmasMatch:
-            # added this line to prevent blank prompts:
-            if q1.tagstring != "":
-                p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
+            p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
 
             #just for testing
             #identifiedUmair = isUmair(friendUser)
