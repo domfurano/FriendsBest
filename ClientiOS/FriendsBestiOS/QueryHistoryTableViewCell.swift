@@ -25,7 +25,7 @@ class QueryHistoryTableViewCell: UITableViewCell {
         contentContainer.layer.borderColor = UIColor.colorFromHex(0xE4E6E7).CGColor
         contentContainer.layer.borderWidth = 1.0
         contentContainer.backgroundColor = UIColor.whiteColor()
-        contentContainer.alpha = 1.0
+//        contentContainer.alpha = 1.0
         
         contentContainer.layer.shadowColor = UIColor.colorFromHex(0xE4E6E7).CGColor
         contentContainer.layer.shadowRadius = 1.0

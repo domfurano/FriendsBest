@@ -13,7 +13,7 @@ class YourRecommendationTableViewCell: UITableViewCell {
     
     var recommendation: Recommendation!
     
-    private var containerView: UILabel = UILabel.newAutoLayoutView()
+    private var containerView: UIView = UIView.newAutoLayoutView()
     
     private var tagsLabel: UILabel = UILabel.newAutoLayoutView()
     private var titleLabel: UILabel = UILabel.newAutoLayoutView()
@@ -24,9 +24,7 @@ class YourRecommendationTableViewCell: UITableViewCell {
     private var titleLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 22.0)!
     private var subtitleLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 15.0)!
     private var commentsLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 16.0)!
-    
-    private let horizontalInsets: CGFloat = 15.0
-    private let verticalInsets: CGFloat = 10.0
+
     
     convenience init(recommendation: Recommendation) {
         self.init()
@@ -34,19 +32,21 @@ class YourRecommendationTableViewCell: UITableViewCell {
 
         selectionStyle = .None
         
-        if recommendation.type != .text {
-            userInteractionEnabled = true
-        } else {
-            userInteractionEnabled = false
-        }
-        
         setTagsAttributedText(recommendation.tags!)
         titleLabel.text = recommendation.detail
         subtitleLabel.text = "HIYEeeeee!"
         commentsLabel.text = recommendation.comment
         
+//        backgroundColor = UIColor.clearColor()
         backgroundColor = UIColor.clearColor()
+        contentView.backgroundColor = UIColor.clearColor()
         containerView.backgroundColor = UIColor.whiteColor()
+        containerView.layer.borderColor = UIColor.colorFromHex(0xE4E6E8).CGColor
+        containerView.layer.borderWidth = 1.0
+        containerView.layer.shadowColor = UIColor.colorFromHex(0xB8BBBF).CGColor
+        containerView.layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
+        containerView.layer.shadowRadius = 1.0
+        containerView.layer.shadowOpacity = 0.5
         
         tagsLabel.lineBreakMode = .ByTruncatingTail
         tagsLabel.numberOfLines = 1
@@ -70,42 +70,50 @@ class YourRecommendationTableViewCell: UITableViewCell {
         commentsLabel.font = commentsLabelFont
         
         
-        contentView.addSubview(tagsLabel)
-        contentView.addSubview(containerView)
+//        contentView.addSubview(tagsLabel)
         containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
+//        contentView.addSubview(subtitleLabel)
         containerView.addSubview(commentsLabel)
+        contentView.addSubview(containerView)
     }
     
     private var didUpdateConstraints: Bool = false
     override func updateConstraints() {
         if !didUpdateConstraints {
             NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired,  forConstraints: {
-                self.containerView.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                self.tagsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+//                self.contentView.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+//                self.tagsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
                 self.titleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                self.subtitleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+//                self.subtitleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
                 self.commentsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+                self.containerView.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
             })
             
-            tagsLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
-            tagsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-            tagsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             
-            containerView.autoPinEdge(.Top, toEdge: .Bottom, ofView: tagsLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            let horizontalInsets: CGFloat = 15.0
+            let verticalInsets: CGFloat = 10.0
+//
+//            contentView.translatesAutoresizingMaskIntoConstraints = false
+//            contentView.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
+//            contentView.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+//            contentView.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+//            contentView.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
+            
+            
+            containerView.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
             containerView.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             containerView.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             containerView.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
             
-            titleLabel.autoPinEdgeToSuperviewEdge(.Top)
+            titleLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
             titleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             titleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             
-            subtitleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
-            subtitleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+//            subtitleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 4.0, relation: .GreaterThanOrEqual)
+//            subtitleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+//            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             
-            commentsLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: subtitleLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            commentsLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 4.0, relation: .GreaterThanOrEqual)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)

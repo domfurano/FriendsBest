@@ -1,3 +1,4 @@
+
 //
 //  SolutionDetailHeaderTableViewCell.swift
 //  FriendsBest
@@ -19,7 +20,7 @@ class SolutionDetailHeaderTableViewCell: UITableViewCell {
     /* place type */
     var placeTitle: UILabel?
     var placeAddress: UILabel?
-//    ...
+    //    ...
     
     /* url type */
     var urlTitle: UILabel?

@@ -28,11 +28,8 @@ class FBNetworkDAO {
     static let instance: FBNetworkDAO = FBNetworkDAO()
     
     /* Instance members */
-    #if DEBUG
-    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
-    #else
+//    private let friendsBestAPIurl: NSURL! = NSURL(string: "http://localhost:8000/fb/api/")
     private let friendsBestAPIurl: NSURL! = NSURL(string: "https://www.friendsbest.net/fb/api/")
-    #endif
     
     private var friendsBestToken: String? = nil
     
@@ -752,6 +749,7 @@ class FBNetworkDAO {
                                         NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
                                             NetworkQueue.instance.dequeue()
                                             callback?()
+                                            FBNetworkDAO.instance.getRecommendationsForUser(nil)
                                         })
                                         
         }).resume()

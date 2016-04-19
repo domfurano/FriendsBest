@@ -388,6 +388,10 @@ class Prompts {
         assert(false)
     }
     
+    func deleteAllPrompts() {
+        self._prompts.removeAll()
+    }
+    
 }
 
 

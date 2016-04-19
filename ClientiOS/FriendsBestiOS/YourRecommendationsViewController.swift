@@ -58,7 +58,7 @@ class YourRecommendationsViewController: UITableViewController {
         
         self.navigationItem.leftBarButtonItem = leftBBitem
         title = "Your Recommendations"
-        tableView.separatorStyle = .SingleLine
+        tableView.separatorStyle = .None
         
         /* Refresh Control */
         refreshControl = UIRefreshControl()
@@ -131,7 +131,7 @@ class YourRecommendationsViewController: UITableViewController {
     
     func profileButtonPressed() {
         navigationController?.popViewControllerAnimated(true)
-        FBSDKAccessToken.setCurrentAccessToken(nil)
+//        FBSDKAccessToken.setCurrentAccessToken(nil)
     }
     
     func newRecommendationButtonPressed() {

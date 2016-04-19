@@ -189,6 +189,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         Updater.instance.start()
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        Updater.instance.STAHP()
+        User.instance.prompts.deleteAllPrompts()
+    }
+    
     /*** Delegate implementation ***/
     
     func showPromptCards() {
