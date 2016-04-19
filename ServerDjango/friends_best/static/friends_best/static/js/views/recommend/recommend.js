@@ -12,7 +12,7 @@ define([
   'text!templates/recommend/url.html',
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
-  'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
+  'async!//maps.google.com/maps/api/js?libraries=places&key=AIzaSyA1zoAVAJvKmZGwCFmdwXP3Gi73Ck-kn0k',
 ], function($, _, Backbone, RecommendModel, placefinder, solutiondetails, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {

@@ -8,6 +8,7 @@
   'text!templates/standard/list.html',
   'text!templates/profile/recommendation.html',
   'collections/recommendations',
+  'async!//maps.google.com/maps/api/js?libraries=places&key=AIzaSyA1zoAVAJvKmZGwCFmdwXP3Gi73Ck-kn0k',
 ], function($, _, Backbone, solutiondetails, menuHTML, backHTML, listHTML, itemHTML, RecommendationsCollection){
 
   var view = Backbone.View.extend({
