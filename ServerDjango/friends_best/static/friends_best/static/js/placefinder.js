@@ -6,12 +6,12 @@
 		
 		// Hide box
 		settings.result.hide();
-		
-		// Create autocomplete
-		$.fn.placefinder.autocomplete = new google.maps.places.Autocomplete(settings.input.get(0));
 		settings.input.submit(function() {
 		  return false;
 		});
+		
+		// Create autocomplete
+		$.fn.placefinder.autocomplete = new google.maps.places.Autocomplete(settings.input.get(0));
 		
 		// Create Marker
 		$.fn.placefinder.marker = new google.maps.Marker({
