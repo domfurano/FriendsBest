@@ -38,7 +38,7 @@ define([
                   $("#notification").show();
               }
             });
-        }, 1000);
+        }, 5000);
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
