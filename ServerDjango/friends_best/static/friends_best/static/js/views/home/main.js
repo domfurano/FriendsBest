@@ -120,6 +120,10 @@ define([
 			el.find(".promptsection").remove();
 			
 			prompts.each(function(prompt) {
+				if(prompt.get("tagstring") == "") {
+					console.log("suppressed a blank prompt");
+					prompt.destroy();
+				}
     			promptcard = promptTemplate(prompt.toJSON());
     			el.append(promptcard);
     		});
