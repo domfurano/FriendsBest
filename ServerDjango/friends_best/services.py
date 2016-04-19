@@ -127,7 +127,10 @@ def getAllPrompts(user):
        d['name'] = '' + prompt.query.user.first_name + prompt.query.user.last_name
        d['tagstring'] = prompt.query.tagstring
        d['id'] = prompt.id
-       promptList.append(d)
+       if(d['tagstring'] != ""):
+           promptList.append(d)
+       else:
+           prompt.delete()
    return promptList
 
 

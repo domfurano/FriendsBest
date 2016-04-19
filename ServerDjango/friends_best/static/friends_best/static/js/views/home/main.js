@@ -119,7 +119,7 @@ define([
 			
 			el.find(".promptsection").remove();
 			
-			_.each(_.clone(prompts), function(prompt) {
+			prompts.each(function(prompt) {
 				if(prompt.get("tagstring") == "") {
 					console.log("suppressed a blank prompt");
 					prompt.destroy();
