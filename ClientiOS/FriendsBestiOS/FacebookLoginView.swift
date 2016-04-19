@@ -11,6 +11,7 @@ import FBSDKLoginKit
 
 class FacebookLoginView: UIView {
     
+    let whiteLogo: UIImageView = UIImageView(image: UIImage(named: "logo-white.png")!)
     let title: UILabel = UILabel()
     var loginButton: FBSDKLoginButton?
     
@@ -22,13 +23,17 @@ class FacebookLoginView: UIView {
         self.init(frame: CGRectZero)
         self.loginButton = loginButton
         
-        title.text = "FriendsBest"
+        title.text = "FriendsBest let's you search and share recommendations with your Facebook friends."
+        title.numberOfLines = 2
+        title.textAlignment = .Center
         title.textColor = UIColor.whiteColor()
-        title.font = UIFont.boldSystemFontOfSize(50.0)
+        title.font = UIFont(name: "Proxima Nova Cond", size: 16.0)
         
+        whiteLogo.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
+        addSubview(whiteLogo)
         self.addSubview(title)
         self.addSubview(loginButton)
         
@@ -43,30 +48,87 @@ class FacebookLoginView: UIView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         CGContextClearRect(context, bounds)
         
-        CGContextSetFillColorWithColor(context, UIColor.lightGrayColor().CGColor)
-        CGContextFillRect(context, bounds)
+        CommonUI.drawGradientForContext(
+            [
+                UIColor.colorFromHex(0x48ABE1).CGColor,
+                UIColor.colorFromHex(0x3B5998).CGColor
+            ],
+            frame: self.bounds,
+            context: context
+        )
     }
     
     private func addConstraints() {
-        self.addConstraint(
+        addConstraint(
             NSLayoutConstraint(
-                item: title,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
+                item: whiteLogo,
+                attribute: .Width,
+                relatedBy: .Equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: .Width,
                 multiplier: 0.5,
                 constant: 0.0))
         
+        addConstraint(
+            NSLayoutConstraint(
+                item: whiteLogo,
+                attribute: .Height,
+                relatedBy: .Equal,
+                toItem: whiteLogo,
+                attribute: .Width,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: whiteLogo,
+                attribute: .Top,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 32.0))
+        
+        addConstraint(
+            NSLayoutConstraint(
+                item: whiteLogo,
+                attribute: .CenterX,
+                relatedBy: .Equal,
+                toItem: self,
+                attribute: .CenterX,
+                multiplier: 1.0,
+                constant: 0.0))
+        
+        
         self.addConstraint(
             NSLayoutConstraint(
                 item: title,
-                attribute: NSLayoutAttribute.Height,
+                attribute: .Top,
                 relatedBy: NSLayoutRelation.Equal,
+                toItem: whiteLogo,
+                attribute: .Bottom,
+                multiplier: 1.0,
+                constant: 32.0))
+        
+        self.addConstraint(
+            NSLayoutConstraint(
+                item: title,
+                attribute: .Width,
+                relatedBy: .Equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.Height,
-                multiplier: 0.1,
+                attribute: .Width,
+                multiplier: 0.8,
                 constant: 0.0))
+        
+//        self.addConstraint(
+//            NSLayoutConstraint(
+//                item: title,
+//                attribute: NSLayoutAttribute.Height,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: self,
+//                attribute: NSLayoutAttribute.Height,
+//                multiplier: 0.1,
+//                constant: 0.0))
         
         self.addConstraint(
             NSLayoutConstraint(
@@ -91,12 +153,12 @@ class FacebookLoginView: UIView {
         self.addConstraint(
             NSLayoutConstraint(
                 item: loginButton!,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: NSLayoutAttribute.Bottom,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.CenterY,
-                multiplier: 1.5,
-                constant: 0.0))
+                attribute: NSLayoutAttribute.Bottom,
+                multiplier: 1.0,
+                constant: -64.0))
     }
 
     

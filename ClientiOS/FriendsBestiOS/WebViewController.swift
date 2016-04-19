@@ -99,7 +99,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         
         
         urlTextField.delegate = self
-        urlTextField.keyboardType = .URL
+        urlTextField.keyboardType = .WebSearch
         urlTextField.returnKeyType = .Go
         urlTextField.autocapitalizationType = .None
         urlTextField.autocorrectionType = .No

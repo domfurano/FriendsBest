@@ -326,8 +326,8 @@ class Recommendation: Equatable, Hashable {
     private(set) var detail: String
     private(set) var type: RecommendationType
     private(set) var urlTitle: String?
-    private(set) var placeName: String?
-    private(set) var placeAddress: String?
+    var placeName: String?
+    var placeAddress: String?
     var ID: Int
     var tags: [String]?
     var new: Bool?
@@ -342,16 +342,6 @@ class Recommendation: Equatable, Hashable {
         self.detail = detail
         self.type = type
         self.ID = ID
-        NSOperationQueue.mainQueue().addOperationWithBlock {
-            GMSPlacesClient.sharedClient().lookUpPlaceID(self.detail, callback: { (place: GMSPlace?, error: NSError?) in
-                if error == nil {
-                    if let place = place {
-                        self.placeName = place.name
-                        self.placeAddress = place.formattedAddress
-                    }
-                }
-            })
-        }
     }
     
     func userRecommendation() -> UserRecommendation {

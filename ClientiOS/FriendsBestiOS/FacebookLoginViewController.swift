@@ -10,6 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 
+
 class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     let loginButton: FBSDKLoginButton = FBSDKLoginButton()
@@ -19,6 +20,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 //    }
     
     override func loadView() {
+
         view = FacebookLoginView(loginButton: loginButton)
     }
     

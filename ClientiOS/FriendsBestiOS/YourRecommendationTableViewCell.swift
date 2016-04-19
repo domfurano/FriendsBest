@@ -13,12 +13,16 @@ class YourRecommendationTableViewCell: UITableViewCell {
     
     var recommendation: Recommendation!
     
+    private var containerView: UILabel = UILabel.newAutoLayoutView()
+    
     private var tagsLabel: UILabel = UILabel.newAutoLayoutView()
     private var titleLabel: UILabel = UILabel.newAutoLayoutView()
+    private var subtitleLabel: UILabel = UILabel.newAutoLayoutView()
     private var commentsLabel: UILabel = UILabel.newAutoLayoutView()
     
     private var tagsLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 14.0)!
     private var titleLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 22.0)!
+    private var subtitleLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 15.0)!
     private var commentsLabelFont: UIFont = UIFont(name: "Proxima Nova Cond", size: 16.0)!
     
     private let horizontalInsets: CGFloat = 15.0
@@ -38,37 +42,49 @@ class YourRecommendationTableViewCell: UITableViewCell {
         
         setTagsAttributedText(recommendation.tags!)
         titleLabel.text = recommendation.detail
+        subtitleLabel.text = "HIYEeeeee!"
         commentsLabel.text = recommendation.comment
+        
+        backgroundColor = UIColor.clearColor()
+        containerView.backgroundColor = UIColor.whiteColor()
         
         tagsLabel.lineBreakMode = .ByTruncatingTail
         tagsLabel.numberOfLines = 1
         tagsLabel.textColor = UIColor.whiteColor()
         tagsLabel.font = tagsLabelFont
-        
+        tagsLabel.backgroundColor = UIColor.clearColor()
         
         titleLabel.lineBreakMode = .ByTruncatingTail
         titleLabel.numberOfLines = 1
         titleLabel.textColor = UIColor.blackColor()
         titleLabel.font = titleLabelFont
         
+        subtitleLabel.lineBreakMode = .ByTruncatingTail
+        subtitleLabel.numberOfLines = 1
+        subtitleLabel.textColor = UIColor.darkGrayColor()
+        subtitleLabel.font = subtitleLabelFont
         
         commentsLabel.lineBreakMode = .ByTruncatingTail
         commentsLabel.numberOfLines = 0
-        commentsLabel.textColor = UIColor.darkGrayColor()
+        commentsLabel.textColor = UIColor.blackColor()
         commentsLabel.font = commentsLabelFont
         
         
         contentView.addSubview(tagsLabel)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(commentsLabel)
+        contentView.addSubview(containerView)
+        containerView.addSubview(titleLabel)
+        containerView.addSubview(subtitleLabel)
+        containerView.addSubview(commentsLabel)
     }
     
     private var didUpdateConstraints: Bool = false
     override func updateConstraints() {
         if !didUpdateConstraints {
             NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired,  forConstraints: {
+                self.containerView.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+                self.tagsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
                 self.titleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                self.titleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+                self.subtitleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
                 self.commentsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
             })
             
@@ -76,14 +92,24 @@ class YourRecommendationTableViewCell: UITableViewCell {
             tagsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             tagsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             
-            titleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: tagsLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            containerView.autoPinEdge(.Top, toEdge: .Bottom, ofView: tagsLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            containerView.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+            containerView.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+            containerView.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
+            
+            titleLabel.autoPinEdgeToSuperviewEdge(.Top)
             titleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             titleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             
-            commentsLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            subtitleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
+            subtitleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+            
+            commentsLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: subtitleLabel, withOffset: 8.0, relation: .GreaterThanOrEqual)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
             commentsLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
+            
             
             didUpdateConstraints = true
         }

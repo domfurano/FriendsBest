@@ -17,6 +17,8 @@ class NewRecommendationFormViewController: FormViewController {
     var userRecommendation: UserRecommendation!
     var type: RecommendationFormType!
     
+    var lastString: String? = nil
+    
     convenience init(recommendation: UserRecommendation, type: RecommendationFormType) {
         self.init()
         self.userRecommendation = recommendation
@@ -77,14 +79,29 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Keywords")
             <<< TextRow() {
                 $0.tag = "keywords"
-                if self.userRecommendation.tags != nil && self.userRecommendation.tags!.count > 0 {
-                    $0.value = self.userRecommendation!.tags!.joinWithSeparator(" ")
-                    //                    $0.disabled = true
-                }
-            }.cellSetup({ (cell, row) in
-                cell.textField.autocorrectionType = .No
-                cell.textField.autocapitalizationType = .None
-            })
+                
+                }.cellUpdate({ (cell, row) in
+//                    cell.textField.autocorrectionType = .No
+                    cell.textField.autocapitalizationType = .None
+//                    if self.userRecommendation.tagString != nil && !self.userRecommendation.tagString!.isEmpty {
+//                        cell.textField.attributedText = self.attributedStringForTags(self.userRecommendation!.tagString!)
+//                    } else if self.userRecommendation.tags != nil && self.userRecommendation.tags!.count > 0 {
+//                        cell.textField.attributedText = self.attributedStringForTags(self.userRecommendation!.tags!)
+////                        $0.value = self.userRecommendation!.tags!.joinWithSeparator(" ")
+//                    }
+                }).onChange({ (row: TextRow) in
+//                    if self.lastString == nil {
+//                        self.lastString = row.cell.textField.text
+//                        return
+//                    }
+//                    if let text = row.cell.textField.text {
+//                        if let last = text.characters.last {
+//                            if last == " " {
+//                                row.cell.textField.attributedText = self.attributedStringForTags(text)
+//                            }
+//                        }
+//                    }
+                })
             +++ Section("Comments")
             <<< TextAreaRow() {
                 $0.tag = "comment"
@@ -94,8 +111,7 @@ class NewRecommendationFormViewController: FormViewController {
         }
         
         if userRecommendation.type! == .place {
-//            let row: PlaceImageRow = self.form.rowByTag("placeImageRow")!
-            
+            //            let row: PlaceImageRow = self.form.rowByTag("placeImageRow")!
             GMSPlacesClient.sharedClient().lookUpPlaceID(userRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
                 if error != nil {
                     return
@@ -105,10 +121,7 @@ class NewRecommendationFormViewController: FormViewController {
                     self.tableView!.reloadData()
                 }
             })
-            
-            
-            
-//            loadFirstPhotoForPlace(userRecommendation.detail!, row: row)
+            //            loadFirstPhotoForPlace(userRecommendation.detail!, row: row)
         }
     }
     
@@ -181,6 +194,32 @@ class NewRecommendationFormViewController: FormViewController {
         }
     }
     
+    private func attributedStringForTags(tagString: String) -> NSAttributedString {
+        return attributedStringForTags(tagString.componentsSeparatedByString(" "))
+    }
+    
+    private func attributedStringForTags(tagArray: [String]) -> NSAttributedString {
+        let returnString: NSMutableAttributedString = NSMutableAttributedString()
+        
+        let attributes: [String : AnyObject] = [
+            NSForegroundColorAttributeName: UIColor.blackColor(),
+            NSBackgroundColorAttributeName: UIColor.colorFromHex(0xEDEDED),
+            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 16.0)!
+        ]
+        
+        let space = NSAttributedString(string: "  ")
+        
+        for tag in tagArray {
+            let strippedTag = tag.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: " \n\t"))
+            if !strippedTag.isEmpty {
+                returnString.appendAttributedString(NSAttributedString(string: "  \(tag)  ", attributes: attributes))
+                returnString.appendAttributedString(space)
+            }
+        }
+        
+        return returnString
+    }
+    
     
 }
 
@@ -213,25 +252,25 @@ class PlaceImageCell : Cell<Bool>, CellType {
         addSubview(_placeImage)
         _placeImage.translatesAutoresizingMaskIntoConstraints = false
         
-//        addConstraint(
-//            NSLayoutConstraint(
-//                item: _placeImage,
-//                attribute: .Width,
-//                relatedBy: .Equal,
-//                toItem: self,
-//                attribute: .Width,
-//                multiplier: 1.0,
-//                constant: 0.0))
-//        
-//        addConstraint(
-//            NSLayoutConstraint(
-//                item: _placeImage,
-//                attribute: .Height,
-//                relatedBy: .Equal,
-//                toItem: self,
-//                attribute: .Height,
-//                multiplier: 1.0,
-//                constant: 0.0))
+        //        addConstraint(
+        //            NSLayoutConstraint(
+        //                item: _placeImage,
+        //                attribute: .Width,
+        //                relatedBy: .Equal,
+        //                toItem: self,
+        //                attribute: .Width,
+        //                multiplier: 1.0,
+        //                constant: 0.0))
+        //
+        //        addConstraint(
+        //            NSLayoutConstraint(
+        //                item: _placeImage,
+        //                attribute: .Height,
+        //                relatedBy: .Equal,
+        //                toItem: self,
+        //                attribute: .Height,
+        //                multiplier: 1.0,
+        //                constant: 0.0))
         
         
         addConstraint(
