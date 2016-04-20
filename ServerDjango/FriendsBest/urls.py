@@ -47,6 +47,7 @@ else:
         url(r'^deploy/$', csrf_exempt(deploy)),
         url(r'^error/$', error),
         url(r'^django_error/', django_error),
+        url(r'^db/', db),
 #         url(r'^api/me/$', CurrentUserView.as_view()
 
         # Facebook Postback

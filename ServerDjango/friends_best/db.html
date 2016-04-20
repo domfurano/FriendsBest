@@ -3,17 +3,20 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script type="text/javascript">
-        $("#form").submit(function() {
-            var url = "/fb/db/";
+        $(function () {
+            $("#form").submit(function (e) {
+                var url = "https://www.friendsbest.net/fb/db/";
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $("#form").serialize(),
-                success: function(data)
-                {
-                    $('#output').innerHTML = data;
-                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $("#form").serialize(),
+                    success: function (data) {
+                        $('#output').innerHTML = data;
+                    }
+                });
+
+                e.preventDefault();
             });
         });
     </script>
