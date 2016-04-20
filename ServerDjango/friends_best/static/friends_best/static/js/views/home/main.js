@@ -28,9 +28,6 @@ define([
         
         // Check for empty prompt collection and go get more...
         this.refresh = setInterval(function() {
-            if (that.collection.length < 1) {
-                that.loadPrompts();
-            }
             $.get( "/fb/api/notification/", function( data ) {
               if(data.notifications == 0) {
                   $("#notification").hide();
@@ -151,7 +148,13 @@ define([
     				if(ui.position.left < -distance) {
     					ui.helper.animate({left: "-=600"}, 200, function() {
     						ui.helper.parent().remove();
-    						prompts.get(ui.helper.attr("id")).destroy();
+    						prompts.get(ui.helper.attr("id")).destroy({
+        						success: function() {
+            						if (prompts.length < 1) {
+                                        that.loadPrompts();
+                                    }
+        						}
+    						});
     					});
     				// Right: recommend
     				} else if(ui.position.left > distance) {
