@@ -59,8 +59,8 @@ _naughtyWords = ([
     'penis',
     'crap',
     'boner',
-    '',
-    '',
+    'dildo',
+    'dildos',
     '',
 ])
 
@@ -112,11 +112,6 @@ def getPrompts(user):
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
 
-    if isRay(user):
-        print("ray's current prompt count is %s" % prompts.count())
-        for p in prompts:
-            print(p.__str__)
-
     if prompts.count() == 0:
         generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
@@ -151,10 +146,6 @@ def generateAnonymousPrompts(user):
     if queryCount == 0:
         return
 
-    userIsRay = isRay(user)
-    if userIsRay:
-        print("ray query count = %s" % queryCount)
-
     # create list of most frequent tags associated with prompts that have been rejected by the user (get random 15 of top 20)
     rejectedTags = RejectedTag.objects.select_related('tag__lemma').filter(user=user)
     rtCount = rejectedTags.count()
@@ -173,9 +164,6 @@ def generateAnonymousPrompts(user):
 
     # exclude any queries with tag lemmas included in the bad lemma list
     queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
-
-    if userIsRay:
-        print("ray query count after excluding queries with bad tags = %s" % queriesByStrangers.count())
 
     # select random queries and generate prompts for them
     randomIndexes = generateRandomIndexes(5, queryCount)
@@ -213,9 +201,6 @@ def generateAnonymousPrompts(user):
         if not allLemmasMatch:
             # added this test to prevent blank prompts
             p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
-
-            if userIsRay:
-                print("ray - prompt generated")
 
 
 # private helper method (creates a set of random indexes for the specified collection)
