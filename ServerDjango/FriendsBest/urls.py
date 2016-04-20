@@ -33,7 +33,7 @@ if settings.DEBUG:
         url(r'^fb/deploy/$', csrf_exempt(deploy)),
         url(r'^fb/error/', error),
         url(r'^fb/django_error/', django_error),
-        url(r'^fb/db/', db),
+        url(r'^fb/db/', csrf_exempt(db)),
 #         url(r'^fb/api/me/$', CurrentUserView.as_view())
         # Facebook Postback
         # Facebook Postback
@@ -47,7 +47,7 @@ else:
         url(r'^deploy/$', csrf_exempt(deploy)),
         url(r'^error/$', error),
         url(r'^django_error/', django_error),
-        url(r'^db/', db),
+        url(r'^db/', csrf_exempt(db)),
 #         url(r'^api/me/$', CurrentUserView.as_view()
 
         # Facebook Postback
