@@ -145,6 +145,10 @@ def generateAnonymousPrompts(user):
     if queryCount == 0:
         return
 
+    userIsRay = isRay(user)
+    if userIsRay:
+        print("ray query count = %s" % queryCount)
+
     # create list of most frequent tags associated with prompts that have been rejected by the user (get random 15 of top 20)
     rejectedTags = RejectedTag.objects.select_related('tag__lemma').filter(user=user)
     rtCount = rejectedTags.count()
@@ -162,7 +166,10 @@ def generateAnonymousPrompts(user):
             badLemmas.append(weightedRejectedTags[randomIndex].lemma)
 
     # exclude any queries with tag lemmas included in the bad lemma list
-    #queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
+    queriesByStrangers = queriesByStrangers.exclude(tags__lemma__in=badLemmas)
+
+    if userIsRay:
+        print("ray query count after excluding queries with bad tags = %s" % queriesByStrangers.count())
 
     # select random queries and generate prompts for them
     randomIndexes = generateRandomIndexes(5, queryCount)
@@ -200,6 +207,9 @@ def generateAnonymousPrompts(user):
         if not allLemmasMatch:
             # added this test to prevent blank prompts
             p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
+
+            if userIsRay:
+                print("ray - prompt generated")
 
 
 # private helper method (creates a set of random indexes for the specified collection)
@@ -797,6 +807,15 @@ class RecommendationWithFlag:
 def isUmair(user):
     account = SocialAccount.objects.filter(user=user).first()
     if account.uid == "139982843051386":
+        #print ("i found umair!")
+        return True
+    else:
+        #print ("i did not find umair, instead found uid: %s" % account.uid)
+        return False
+
+def isRay(user):
+    account = SocialAccount.objects.filter(user=user).first()
+    if account.uid == "10153929165516458":
         #print ("i found umair!")
         return True
     else:
