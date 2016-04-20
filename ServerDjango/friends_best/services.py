@@ -111,6 +111,10 @@ def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
+
+    if isRay(user):
+        print("ray's current prompt count is %s" % prompts.count())
+
     if prompts.count() == 0:
         generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
