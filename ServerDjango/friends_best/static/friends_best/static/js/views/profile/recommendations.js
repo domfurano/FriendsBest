@@ -18,12 +18,13 @@
 		console.log("initialize");
 		this.visible = true;
 		this.collection = new RecommendationsCollection();
-		this.collection.on("update", this.list, this);
-		this.collection.fetch();
+		//this.collection.on("update", this.list, this);
+		this.collection.fetch({ success: this.list });
 	},
 
     render: function(){
-	    console.log("render");
+	    
+	    that = this;
 	    
 	    // Back
 	    var backTemplate = _.template( backHTML );
@@ -41,21 +42,25 @@
     
     list: function() {
 
-	    if(this.visible) {		    
+	    if(that.visible) {		    
 		    // Clear the list
-			this.$list.html("");
+			that.$list.html("");
 			
 			// Add elements to the list
 		    var itemTemplate = _.template( itemHTML );
-		    this.collection.each(function(i, index) {
+		    that.collection.each(function(i, index) {
 			    var item = $(itemTemplate(i.toJSON()));
-			    this.$list.prepend(item);
-			    item.find(".thing").solutiondetails(i.toJSON(), {context: this.$list.parent()});
-		    }, this);
+			    that.$list.prepend(item);
+			    item.find(".thing").solutiondetails(i.toJSON(), {context: that.$list.parent()});
+		    });
 		    
-		    that = this;
-		    this.$list.find(".delete").click(function() {
-    		    that.trash($(this).attr("id"));
+		    // Activate delete buttons
+		    that.$list.find(".delete").click(function() {
+    		    id = $(this).attr("id");
+    		    // Delete model
+    		    that.trash(id)
+    		    // Delete UI
+    		    $("#rec"+id).remove();
 		    }) 
 		    
 	    }
