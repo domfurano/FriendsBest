@@ -747,6 +747,10 @@
 		opacity: .6;
 	}
 	
+	.delete i.fa-times {
+    	color: #F00;
+	}
+	
 	@media (min-width: 320px) { 
 		.container { max-width: 320px; }
 		.view.login .logo img {

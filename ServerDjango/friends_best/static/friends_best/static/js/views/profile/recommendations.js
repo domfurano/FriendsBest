@@ -55,22 +55,25 @@
 		    });
 		    
 		    // Activate delete buttons
-		    that.$list.find(".delete").click(function() {
+		    that.$list.find(".delete").one("click", function() {
     		    id = $(this).attr("id");
-    		    // Delete model
-    		    that.trash(id)
-    		    // Delete UI
-    		    $("#rec"+id).remove();
+    		    that.trash(id, $(this));
 		    }) 
 		    
 	    }
 
 	},
     
-    trash: function(id) {
-        if(confirm("Do you really want to delete this?")) {
-            this.collection.get(id).destroy();
-        }
+    trash: function(id, $button) {
+        // Convert to X
+        $button.find("i").toggleClass("fa-trash-o fa-times")
+        that = this;
+        $button.one("click", function() {
+            // Delete model
+            that.collection.get(id).destroy();
+            // Delete UI
+            $("#rec"+id).remove();
+        });
     },
     
     remove: function() {
