@@ -359,8 +359,8 @@ def django_error(request):
 
 
 def db(request):
-    if request.method == "POST":
-        query = request.POST.get('query')
+    if request.method == 'POST':
+        query = request.POST.get('query', '')
         output = subprocess.check_output(['sqlite3',
                                           '/home/dominic/FriendsBest/ServerDjango/db.sqlite3',
                                           query])
