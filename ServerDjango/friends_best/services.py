@@ -114,6 +114,8 @@ def getPrompts(user):
 
     if isRay(user):
         print("ray's current prompt count is %s" % prompts.count())
+        for p in prompts:
+            print(p.__str__)
 
     if prompts.count() == 0:
         generateAnonymousPrompts(user)
