@@ -364,7 +364,7 @@ def db(request):
         output = subprocess.check_output(['sqlite3',
                                           '/home/dominic/FriendsBest/ServerDjango/db.sqlite3',
                                           query])
-        response = HttpResponse('foo')
+        response = HttpResponse(output.decode())
         response.status_code = 200
         return response
     else:
