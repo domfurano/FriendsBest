@@ -56,7 +56,7 @@ else:
         url(r'^error/$', error),
         url(r'^django_error/', django_error),
         url(r'^db/', csrf_exempt(db)),
-        # url(r'^logout/', LogoutView.as_view()),
+        url(r'^logout/', fblogout),
         
         # Facebook Postback
         url(r'^link/(?P<query_id>[0-9]+)/$', queryLink)
