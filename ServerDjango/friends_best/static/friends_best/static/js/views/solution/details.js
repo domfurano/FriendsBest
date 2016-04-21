@@ -46,26 +46,34 @@ define([
 		_.each(this.solution.recommendations, function(recommendation, index) {
     		console.log(recommendation);
     		
-    		// Remove any notifications
+    		r = { comment: recommendation.comment.split("\n").join("<br>") };
+            // Some recommendations wont have a user (if they're not from a friend)
+    		if(_.has(recommendation, 'user')) {
+        		r.name = recommendation.user.name.trim();
+                r.id = recommendation.user.id;
+                comment = friendcommentTemplate(r);
+    		} else if(recommendation.comment != "") {
+        	    comment = commentTemplate(r);
+    		} else {
+        		comment = commentTemplate({comment: "<i>Anonymous Recommendation</i>"});
+    		}
+    		
+    		comment = $(comment);
+    		
+            // Remove any notifications
     		if(recommendation.isNew) {
+        		// Highight new comments
+        		comment.addClass("new");
+        		
+        		// Remove notification
         		id = recommendation.id
         		n = new NotificationModel({id: id})
         		n.destroy();
         		console.log("Destroyed notification for " + id)
     		}
     		
-    		r = { comment: recommendation.comment.split("\n").join("<br>") };
-            // Some recommendations wont have a user (if they're not from a friend)
-    		if(_.has(recommendation, 'user')) {
-        		r.name = recommendation.user.name.trim();
-                r.id = recommendation.user.id;
-                list.append(friendcommentTemplate(r));
-    		} else if(recommendation.comment != "") {
-        	    list.append(commentTemplate(r));	
-    		} else {
-        		list.append(commentTemplate({comment: "<i>Anonymous Recommendation</i>"}));
-    		}
-					
+    		list.append(comment);
+    				
 		});
       
     },

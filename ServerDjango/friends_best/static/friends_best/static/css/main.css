@@ -442,6 +442,10 @@
 		-webkit-border-radius: 5px;
 	}
 	
+	.list .comment.new {
+    	border: solid 1px #F00;
+	}
+	
 	.list .comment div {
 		padding: 0;
 		font-size: 14px;
