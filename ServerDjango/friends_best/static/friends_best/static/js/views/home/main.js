@@ -30,6 +30,8 @@ define([
       
         that = this;
 		
+		this.$el.removeClass("login");
+		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
         
