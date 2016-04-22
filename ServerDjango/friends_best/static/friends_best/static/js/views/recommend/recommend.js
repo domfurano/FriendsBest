@@ -234,15 +234,24 @@ define([
 	                
                     // Delete the prompt
                     if (typeof that.prompt != 'undefined') {
-                      that.prompt.destroy();
+						that.prompt.destroy({
+							success: function() {
+								// Go back in history
+								parent.history.go(-1);
+								return false;
+							}
+						});
+                    } else {
+	                    // Go back in history
+						parent.history.go(-1);
+						return false;
                     }
-                    
-                    // Go back in history
-		            parent.history.go(-1);
-		            return false;
                 },
                 error: function(model, response, options) {
-					// What to do here?
+					// What to do here? Bail out, oh well.
+					// Go back in history
+					parent.history.go(-1);
+					return false;
                 }
             });
     
