@@ -27,7 +27,7 @@ class ProfileView: UIView {
 
 class ProfileViewController: UIViewController {
     
-    let largeProfilePicture: UIImageView = CommonUI.instance.largePicture
+    let largeProfilePicture: UIImageView = User.instance.myLargeRoundedImage
     
     var nameLabel: UILabel = UILabel()
     var recommendationsButton: UIButton = UIButton()

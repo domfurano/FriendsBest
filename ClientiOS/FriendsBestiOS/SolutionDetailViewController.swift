@@ -48,7 +48,7 @@ class SolutionDetailViewController: UITableViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
 //        tableView.separatorStyle = .None
         
-        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
+//        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
         
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
@@ -67,9 +67,9 @@ class SolutionDetailViewController: UITableViewController {
         
         /* Refresh Control */
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = UIColor.colorFromHex(0x949494)
-        refreshControl!.tintColor = UIColor.whiteColor()
-        refreshControl!.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+        refreshControl?.backgroundColor = UIColor.colorFromHex(0x949494)
+        refreshControl?.tintColor = UIColor.whiteColor()
+        refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -96,8 +96,8 @@ class SolutionDetailViewController: UITableViewController {
     func refreshData() {
         refreshControl?.beginRefreshing()
         FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query!) {
-            self.tableView.reloadData()
             self.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
         }
     }
     
@@ -126,37 +126,41 @@ class SolutionDetailViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let recommendation: FriendRecommendation = SOLUTION.recommendations[indexPath.row]
         if indexPath.section == 0 {
-            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(recommendation: recommendation)
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
-            return cell
-        } else {
-            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)
+            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(style: .Default, reuseIdentifier: .None)
             switch recommendation.solution!.type {
             case .text:
+                cell.setupForCellDisplay(recommendation.solution!.detail, subtitle: "")
                 break
             case .place:
-                GooglePlace.loadPlace(recommendation.solution!.detail, callback: { (place) in
-                    cell.setupForViewing(place.name)
-                })
+                cell.setupForCellDisplay(recommendation.solution!.placeName!, subtitle: recommendation.solution!.placeAddress!)
                 break
             case .url:
-                if let url: NSURL = NSURL(string: recommendation.solution!.detail) {
-                    if let host: String = url.host {
-                        cell.setupForViewing(host)
-                    }
-                }
+                cell.setupForCellDisplay(recommendation.solution!.urlTitle, subtitle: recommendation.solution!.urlSubtitle)
                 break
             }
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
+            return cell
+        } else {
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Default, reuseIdentifier: .None)
+            if let friend: Friend = recommendation.friend {
+                cell.setupCellForDisplay(
+                    friend.smallRoundedPicture.image!,
+                    name: friend.name,
+                    comment: recommendation.comment
+                )
+            } else {
+                cell.setupCellForDisplay(
+                    CommonUI.instance.defaultProfileImage,
+                    name: "Anonymous FriendsBest User",
+                    comment: recommendation.comment
+                )
+            }
             return cell
         }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
-            
+            // TODO: Goto rec
         }
     }
 }

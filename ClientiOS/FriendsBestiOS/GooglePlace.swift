@@ -36,11 +36,11 @@ class GooglePlace: NSObject, NSCoding {
     
     // MARK: Static methods
     
-    static func loadPlace(placeID: String, callback: (place: GooglePlace) -> Void) {
+    static func loadPlace(placeID: String, callback: ((successful: Bool, place: GooglePlace?) -> Void)?) {
         PINCache.sharedCache().objectForKey(placeID) { (cache: PINCache, key: String, object: AnyObject?) in
             if let place: GooglePlace = object as? GooglePlace {
                 dispatch_async(dispatch_get_main_queue(), {
-                    callback(place: place)
+                    callback?(successful: true, place: place)
                 })
             } else {
                 dispatch_async(dispatch_get_main_queue(), {
@@ -48,12 +48,13 @@ class GooglePlace: NSObject, NSCoding {
                         if error != nil {
                             NSLog("\(error!.description)")
                             NSLog("\(error!.debugDescription)")
+                            callback?(successful: false, place: nil)
                         } else {
                             if let gmsPlace = gmsPlace {
                                 let place: GooglePlace = GooglePlace(placeID: placeID, name: gmsPlace.name, formattedAddress: gmsPlace.formattedAddress)
                                 PINCache.sharedCache().setObject(place, forKey: placeID)
                                 dispatch_async(dispatch_get_main_queue(), {
-                                    callback(place: place)
+                                    callback?(successful: true, place: place)
                                 })
                             }
                         }
@@ -74,7 +75,7 @@ class GooglePlace: NSObject, NSCoding {
     @objc required convenience init?(coder aDecoder: NSCoder) {
         let placeID: String = aDecoder.decodeObjectForKey(PropertyKey.placeIDKey) as! String
         let name: String = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
-        let formattedAddress: String = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
+        let formattedAddress: String = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as! String
         self.init(placeID: placeID, name: name, formattedAddress: formattedAddress)
     }
     

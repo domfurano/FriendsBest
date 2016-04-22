@@ -70,7 +70,7 @@ class CommonUI {
     static let yesColor: UIColor = UIColor(red: 0.35, green: 0.79, blue: 0.22, alpha: 0.5)
     
     /* Default profile picture */
-    static let defaultProfileImage: UIImage = FAKFontAwesome.userIconWithSize(CGFloat(180.0)).imageWithSize(CGSize(width: 180.0, height: 180.0))
+    let defaultProfileImage: UIImage = FAKFontAwesome.userIconWithSize(CGFloat(50.0)).imageWithSize(CGSize(width: 50.0, height: 50.0)).roundedImage()
     
     /* Facebook profile pictures */
     enum FacbookImageSize: String {
@@ -79,18 +79,6 @@ class CommonUI {
         case album = "album"
         case large = "large"
         case square = "square"
-    }
-    
-    /* Images */
-    var largePicture: UIImageView {
-        get {
-            return CommonUI.instance.getFacebookProfileUIImageView(User.instance.myFacebookID, size: CGSize(width: 200, height: 200), closure: nil)
-        }
-    }
-    var squarePicture: UIImageView {
-        get {
-            return CommonUI.instance.getFacebookProfileUIImageView(User.instance.myFacebookID, facebookSize: .square, closure: nil, payload: nil)
-        }
     }
     
     private init() { }
@@ -150,29 +138,41 @@ class CommonUI {
         }
     }
     
-    func getFacebookProfileUIImageView(facebookID: String, facebookSize: FacbookImageSize, closure: ((AnyObject?) -> Void)?, payload: AnyObject?) -> UIImageView {
-        let facebookProfileUIImageView: UIImageView = UIImageView()
-        
-        let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture?type=\(facebookSize.rawValue)")
-        
-        if pictureURL != nil {
-            facebookProfileUIImageView.pin_updateWithProgress = true
-            facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
-                if result.image != nil {
-                    facebookProfileUIImageView.image = result.image!.roundedImage()
-                    closure?(payload)
-                }
-            })
-        }
-        
-        return facebookProfileUIImageView
+    
+//    func getFacebookProfileUIImageView(facebookID: String, facebookSize: FacbookImageSize, closure: ((AnyObject?) -> Void)?, payload: AnyObject?) -> UIImageView {
+//        let facebookProfileUIImageView: UIImageView = UIImageView()
+//        
+//        let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture?type=\(facebookSize.rawValue)")
+//        
+//        if pictureURL != nil {
+//            facebookProfileUIImageView.pin_updateWithProgress = true
+//            facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
+//                if result.image != nil {
+//                    facebookProfileUIImageView.image = result.image!.roundedImage()
+//                    closure?(payload)
+//                }
+//            })
+//        }
+//        
+//        return facebookProfileUIImageView
+//    }
+    
+    private let smallRoundedPictureSize: CGSize = CGSize(width: 50, height: 50)
+    private let largeRoundedPictureSize: CGSize = CGSize(width: 200, height: 200)
+    
+    func getSmallRoundedFacebookProfileImageView(facebookID: String, closure: (() -> Void)?) -> UIImageView {
+        return getFacebookProfileUIImageView(facebookID, size: smallRoundedPictureSize, closure: closure)
+    }
+    
+    func getLargeRoundedFacebookProfileImageView(facebookID: String, closure: (() -> Void)?) -> UIImageView {
+        return getFacebookProfileUIImageView(facebookID, size: largeRoundedPictureSize, closure: closure)
     }
     
     func getFacebookProfileUIImageView(facebookID: String, size: CGSize, closure: (() -> Void)?) -> UIImageView {
         let facebookProfileUIImageView: UIImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        facebookProfileUIImageView.image = FAKFontAwesome.userIconWithSize(CGFloat(size.width)).imageWithSize(CGSize(width: size.width, height: size.height))
         
         let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture??width=\(Int(size.width))&height=\(Int(size.height))")
-        
         if pictureURL != nil {
             facebookProfileUIImageView.pin_updateWithProgress = true
             facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
@@ -185,6 +185,7 @@ class CommonUI {
         
         return facebookProfileUIImageView
     }
+    
     
     func setUIButtonWithFacebookProfileImage(button: UIButton) {
         var facebookProfileUIImageView: UIImageView? = nil
@@ -207,9 +208,11 @@ class CommonUI {
 extension UIImage{
     
     func roundedImage() -> UIImage {
-        let cornerRadius: CGFloat = min(self.size.width, self.size.height) / 2.0
+        let minDimension: CGFloat = min(self.size.width, self.size.height)
+        let size: CGSize = CGSize(width: minDimension, height: minDimension)
+        let cornerRadius: CGFloat = minDimension / 2.0
         UIGraphicsBeginImageContextWithOptions(self.size, false, 0.0)
-        let bounds = CGRect(origin: CGPointZero, size: self.size)
+        let bounds = CGRect(origin: CGPointZero, size: size)
         UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).addClip()
         self.drawInRect(bounds)
         let finalImage = UIGraphicsGetImageFromCurrentImageContext()

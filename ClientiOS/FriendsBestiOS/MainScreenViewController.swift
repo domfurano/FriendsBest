@@ -223,7 +223,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
             let cardView: PromptCardView = cardViews[Int(index)]
-            FBNetworkDAO.instance.deletePrompt(cardView.prompt!, callback: nil)
+            FBNetworkDAO.instance.deletePromptAsync(cardView.prompt!, callback: nil)
         } else {
             didSwipeRight = true
             let prompt: Prompt = cardViews[Int(index)].prompt!
@@ -239,7 +239,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         }
         User.instance.myPrompts.removeAll()
         cardViews.removeAll()
-        FBNetworkDAO.instance.getPrompts(nil)
     }
     
     func kolodaShouldApplyAppearAnimation(koloda: KolodaView) -> Bool {
@@ -417,7 +416,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
             FBNetworkDAO.instance.postNewQuery(tags, callback: {
-                self.navigationController?.pushViewController(SolutionsViewController(query: nil, tags: tags), animated: true)
+                self.navigationController?.pushViewController(SolutionsViewController(query: nil , tags: tags), animated: true)
             })
         }
         self.searchController.active = false

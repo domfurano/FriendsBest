@@ -350,6 +350,10 @@ class FBNetworkDAO {
             
             let solutions: [Solution] = self.parseSolutions(solutionsDictArray)
             
+            for solution: Solution in solutions {
+                solution.query = query
+            }
+            
             dispatch_async(dispatch_get_main_queue(), {
                 self.networkDAODelegate?.querySolutionsFetched(forYourQuery: query, solutions: solutions)
                 callback?()
@@ -622,15 +626,21 @@ class FBNetworkDAO {
     func deletePrompt(prompt: Prompt, callback: (() -> Void)?) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._deletePrompt(prompt, callback: callback)
+            self?._deletePrompt(false, prompt: prompt, callback: callback)
             }, description: "deletePrompt()"))
     }
     
-    private func _deletePrompt(prompt: Prompt, callback: (() -> Void)?) {
+    func deletePromptAsync(prompt: Prompt, callback: (() -> Void)?) {
+        _deletePrompt(true, prompt: prompt, callback: callback)
+    }
+    
+    private func _deletePrompt(async: Bool, prompt: Prompt, callback: (() -> Void)?) {
         guard let token = self.friendsBestToken else {
-            postFacebookTokenAndAuthenticate(nil)
-            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
+            postFacebookTokenAndAuthenticate(nil)
+            if !async {
+                NetworkQueue.instance.tryAgain()
+            }
             return
         }
         
@@ -642,21 +652,23 @@ class FBNetworkDAO {
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
-        
         request.HTTPMethod = "DELETE"
-        //        request.addValue("application/json", forHTTPHeaderField: "Accept")
         
         session.dataTaskWithRequest(request, completionHandler: {
             (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
             
             if let error = error {
                 NSLog("Error - FriendsBest API - deletePrompt() - \(error.localizedDescription)")
-                NetworkQueue.instance.tryAgain()
+                if !async {
+                    NetworkQueue.instance.tryAgain()
+                }
                 return
             }
             
             if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [204, 404], funcName: "deletePrompt") {
-                NetworkQueue.instance.dequeue()
+                if !async {
+                    NetworkQueue.instance.dequeue()
+                }
                 return
             }
             
@@ -664,7 +676,10 @@ class FBNetworkDAO {
                 self.networkDAODelegate?.promptDeleted(prompt)
                 callback?()
             })
-            NetworkQueue.instance.dequeue()
+            
+            if !async {
+                NetworkQueue.instance.dequeue()
+            }
         }).resume()
     }
     

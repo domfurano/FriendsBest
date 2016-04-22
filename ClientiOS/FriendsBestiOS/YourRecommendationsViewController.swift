@@ -30,6 +30,7 @@ class YourRecommendationsView: UITableView {
 class YourRecommendationsViewController: UITableViewController {
     
     var placePicker: GMSPlacePicker?
+    let cellID: String = "yourRecommendation"
     
     override func loadView() {
         view = YourRecommendationsView()
@@ -43,6 +44,8 @@ class YourRecommendationsViewController: UITableViewController {
         /* NECESSARY FOR DYNAMIC CELL HEIGHT */
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        tableView.registerClass(YourRecommendationTableViewCell.self, forCellReuseIdentifier: cellID)
         
         User.instance.closureNewUserRecommendation = { (index: Int) in
             self.refreshControl?.endRefreshing()
@@ -152,45 +155,39 @@ class YourRecommendationsViewController: UITableViewController {
         return User.instance.myRecommendations.count
     }
     
+    var didCallBack: Bool = false
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
-        let cell: YourRecommendationTableViewCell = YourRecommendationTableViewCell()//tableView.dequeueReusableCellWithIdentifier("reusableIdentifier") as! YourRecommendationTableViewCell
+        let cell: YourRecommendationTableViewCell = tableView.dequeueReusableCellWithIdentifier(cellID) as! YourRecommendationTableViewCell
+        cell.updateFonts()
         cell.setupForViewing(
             recommendation.tagString,
             title: recommendation.detail,
-            subtitle: "",
+            subtitle: "placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder ",
             comments: recommendation.comments
         )
         switch recommendation.type {
         case .text:
             break
         case .place:
-            GooglePlace.loadPlace(recommendation.detail, callback: { (place: GooglePlace) in
-                cell.setupForViewing(
-                    recommendation.tagString,
-                    title: place.name,
-                    subtitle: place.formattedAddress != nil ? place.formattedAddress! : "",
-                    comments: recommendation.comments
-                )
-            })
-            break
-        case .url:
-            var different: Bool = false
-            var urlTitle: String = recommendation.detail
-            if let url: NSURL = NSURL(string: urlTitle) {
-                if let host: String = url.host {
-                    urlTitle = host
-                    different = true
-                }
-            }
             cell.setupForViewing(
                 recommendation.tagString,
-                title: urlTitle,
-                subtitle: different ? recommendation.detail : "",
+                title: recommendation.placeName!,
+                subtitle: recommendation.placeAddress!,
+                comments: recommendation.comments
+            )
+            break
+        case .url:
+            cell.setupForViewing(
+                recommendation.tagString,
+                title: recommendation.urlTitle,
+                subtitle: recommendation.urlSubtitle,
                 comments: recommendation.comments
             )
             break
         }
+        cell.setNeedsUpdateConstraints()
+        cell.updateConstraintsIfNeeded()
         return cell
     }
     

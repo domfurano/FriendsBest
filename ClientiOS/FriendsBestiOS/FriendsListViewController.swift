@@ -79,18 +79,8 @@ class FriendsListViewController: UITableViewController {
         let friend: Friend = User.instance.myFriends[indexPath.row]
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
         cell.textLabel?.text = friend.name
-        cell.imageView?.image = CommonUI.defaultProfileImage
-        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(
-            friend.facebookID,
-            facebookSize: CommonUI.FacbookImageSize.square,
-            closure: { (indexPath: AnyObject?) in
-                self.tableView.reloadRowsAtIndexPaths([indexPath as! NSIndexPath], withRowAnimation: .Fade)
-            },
-            payload: indexPath
-        ).image
-//        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(friend.facebookID, size: .square, closure: { (indexPath: AnyObject?)
-//            cell.setNeedsDisplay()
-//        }, payload: indexPath).image
+        cell.imageView?.image = CommonUI.instance.defaultProfileImage
+        cell.imageView?.image = friend.smallRoundedPicture.image
         cell.userInteractionEnabled = false
         return cell
     }

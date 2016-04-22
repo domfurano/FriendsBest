@@ -13,6 +13,7 @@ class Updater {
     static let instance: Updater = Updater()
     
     private var timer: Timer!
+    private var gettingPrompts: Bool = false
     
     func STAHP () {
         self.timer.cancelTimer()
@@ -25,7 +26,12 @@ class Updater {
     private init() {
         self.timer = Timer(timesPerSecond: 1, closure: { () -> Void in
             if User.instance.myPrompts.count < 1 {
-                FBNetworkDAO.instance.getPrompts(nil)
+                if !self.gettingPrompts {
+                    self.gettingPrompts = true
+                    FBNetworkDAO.instance.getPrompts({
+                        self.gettingPrompts = false
+                    })
+                }
             }
         })
         timer.startTimer()

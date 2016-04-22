@@ -50,14 +50,41 @@ class LoadingViewController: UIViewController {
             User.instance
             CommonUI.instance
             FBNetworkDAO.instance.postFacebookTokenAndAuthenticate({
-                FacebookNetworkDAO.instance.getFacebookData({ (successful) in
-                    FBNetworkDAO.instance.getFriends({
-                        FBNetworkDAO.instance.getRecommendationsForUser({
-                            FBNetworkDAO.instance.getQueries({
+                FBNetworkDAO.instance.getRecommendationsForUser({
+                    for userRecommendation: UserRecommendation in User.instance.myRecommendations {
+                        if userRecommendation.type == .place {
+                            GooglePlace.loadPlace(userRecommendation.detail, callback: { (successful: Bool, place: GooglePlace?) in
+                                if successful {
+                                    userRecommendation.placeName = place!.name
+                                    userRecommendation.placeAddress = place!.formattedAddress == nil ? "" : place!.formattedAddress!
+                                } else {
+                                    NSLog("GOOGLE PLACE ERROR!!!")
+                                }
+                            })
+                        }
+                    }
+                    FBNetworkDAO.instance.getQueries({
+                        for query: Query in User.instance.myQueries {
+                            for solution: Solution in query.solutions {
+                                if solution.type == .place {
+                                    GooglePlace.loadPlace(solution.detail, callback: { (successful: Bool, place: GooglePlace?) in
+                                        if successful {
+                                            solution.placeName = place!.name
+                                            solution.placeAddress = place!.formattedAddress == nil ? "" : place!.formattedAddress!
+                                        } else {
+                                            NSLog("GOOGLE PLACE ERROR!!!")
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                        FacebookNetworkDAO.instance.getFacebookData({ (successful) in
+                            FBNetworkDAO.instance.getFriends({
                                 self.navigationController?.pushViewController(MainScreenViewController(), animated: false)
                             })
                         })
                     })
+                    
                 })
             })
         }

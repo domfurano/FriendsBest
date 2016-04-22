@@ -32,6 +32,8 @@ class NewRecommendationFormViewController: FormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView?.separatorStyle = .None
+        
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
             image: CommonUI.nbTimes,
             style: .Plain,

@@ -29,6 +29,7 @@ class SolutionsView: UITableView {
 class SolutionsViewController: UITableViewController {
 
     var QUERY: Query?
+    let solutionCellID: String = "solutionCell"
     
     convenience init(query: Query?, tags: [String]) {
         self.init()
@@ -57,6 +58,8 @@ class SolutionsViewController: UITableViewController {
         /* NECESSARY FOR DYNAMIC CELL HEIGHT */
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        tableView.registerClass(SolutionCell.self, forCellReuseIdentifier: solutionCellID)
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
             image: CommonUI.nbBackChevron,
@@ -97,10 +100,12 @@ class SolutionsViewController: UITableViewController {
     }
     
     func refreshData() {
-        refreshControl?.beginRefreshing()
-        FBNetworkDAO.instance.getQuerySolutions(QUERY!, callback: {
-            self.refreshControl?.endRefreshing()
-        })
+        if QUERY != nil {
+            refreshControl?.beginRefreshing()
+            FBNetworkDAO.instance.getQuerySolutions(QUERY!, callback: {
+                self.refreshControl?.endRefreshing()
+            })
+        }
     }
     
     func back() {
@@ -121,30 +126,28 @@ class SolutionsViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = SolutionsTagCell(tags: QUERY!.tags, style: .Default, reuseIdentifier: nil)
+            let cell = SolutionsTagCell(tags: QUERY!.tagString.componentsSeparatedByString(" "), style: .Default, reuseIdentifier: nil)
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell
         } else {
-            let cell: SolutionCell = SolutionCell()
+            let cell: SolutionCell = tableView.dequeueReusableCellWithIdentifier(solutionCellID) as! SolutionCell
             let solution: Solution = QUERY!.solutions[indexPath.row]
-            cell.setupForViewing(solution.detail)
+            cell.titleLabel.text = solution.detail
             switch solution.type {
             case .text:
                 break
             case .place:
-                GooglePlace.loadPlace(solution.detail, callback: { (place) in
-                    cell.setupForViewing(place.name)
-                })
+                cell.titleLabel.text = solution.placeName!
+                cell.subtitleLabel.text = solution.placeAddress!
                 break
             case .url:
-                if let url: NSURL = NSURL(string: solution.detail) {
-                    if let host: String = url.host {
-                        cell.setupForViewing(host)
-                    }
-                }
+                cell.titleLabel.text = solution.urlTitle
+                cell.subtitleLabel.text = solution.urlSubtitle
                 break
             }
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             return cell
         }
     }

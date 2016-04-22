@@ -33,12 +33,15 @@ class User: NetworkDAODelegate {
     /* Member variables */
     var myName: String? = nil
     var myFacebookID: String {
+        NSLog("My facebook id: \(FBSDKAccessToken.currentAccessToken().userID)")
         return FBSDKAccessToken.currentAccessToken().userID
     }
     var myQueries: [Query] = []
     var myPrompts: [Prompt] = []
     var myFriends: [Friend] = []
     var myRecommendations: [UserRecommendation] = []
+    var myLargeRoundedImage: UIImageView!
+    var mySmallRoundedImage: UIImageView!
     
     
     /* Private constructor */
@@ -53,6 +56,9 @@ class User: NetworkDAODelegate {
             }
             return Friend(facebookID: facebookID, name: name, muted: muted == nil ? false : muted!)
         }
+        
+        myLargeRoundedImage = CommonUI.instance.getLargeRoundedFacebookProfileImageView(myFacebookID, closure: nil)
+        mySmallRoundedImage = CommonUI.instance.getSmallRoundedFacebookProfileImageView(myFacebookID, closure: nil)
     }
 
     
@@ -210,12 +216,31 @@ class User: NetworkDAODelegate {
     }
 }
 
+//func getFacebookProfileUIImageView(facebookID: String, size: CGSize, closure: (() -> Void)?) -> UIImageView {
+//    let facebookProfileUIImageView: UIImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+//    
+//    let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture??width=\(Int(size.width))&height=\(Int(size.height))")
+//    
+//    if pictureURL != nil {
+//        facebookProfileUIImageView.pin_updateWithProgress = true
+//        facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
+//            if result.image != nil {
+//                facebookProfileUIImageView.image = result.image!.roundedImage()
+//                closure?()
+//            }
+//        })
+//    }
+//    
+//    return facebookProfileUIImageView
+//}
+
 
 class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
     var muted: Bool?
-    private(set) var squarePicture: UIImageView
+    private(set) var smallRoundedPicture: UIImageView
+    private(set) var largeSquarePicture: UIImageView
     var hashValue: Int {
         return facebookID.hashValue
     }
@@ -224,8 +249,8 @@ class Friend: Equatable, Hashable {
         self.facebookID = facebookID
         self.name = name
         self.muted = muted
-        self.squarePicture = CommonUI.instance.getFacebookProfileUIImageView(facebookID, facebookSize: .square, closure: nil, payload: nil)
-        
+        self.smallRoundedPicture = CommonUI.instance.getSmallRoundedFacebookProfileImageView(facebookID, closure: nil)
+        self.largeSquarePicture = CommonUI.instance.getLargeRoundedFacebookProfileImageView(facebookID, closure: nil)
     }
 }
 
@@ -476,8 +501,12 @@ class Solution: Equatable, Hashable {
     private(set) var pinid: Bool
     private(set) var type: SolutionType
     private(set) var notificationCount: Int
-    private(set) var query: Query?
+    var query: Query?
     private(set) var recommendations: [FriendRecommendation]
+    var placeName: String?
+    var placeAddress: String?
+    var urlTitle: String
+    var urlSubtitle: String
     
     var hashValue: Int {
         return self.ID
@@ -490,6 +519,17 @@ class Solution: Equatable, Hashable {
         self.type = type
         self.notificationCount = notificationCount
         self.recommendations = recommendations
+        
+        urlTitle = detail
+        urlSubtitle = ""
+        if type == .url {
+            if let url: NSURL = NSURL(string: detail) {
+                if let host: String = url.host {
+                    urlTitle = host
+                    urlSubtitle = detail
+                }
+            }
+        }
         
         self.recommendations.forEach { (recommendation: FriendRecommendation) in
             recommendation.solution = self
@@ -521,7 +561,7 @@ class FriendRecommendation: Equatable, Hashable {
         self.isNew = isNew
         self.friend = friend
     }
-    
+   
     func setSolution(solution: Solution) {
         self.solution = solution
     }
@@ -538,6 +578,10 @@ class UserRecommendation: Equatable, Hashable {
     private(set) var detail: String
     private(set) var comments: String
     private(set) var type: SolutionType
+    var placeName: String?
+    var placeAddress: String?
+    var urlTitle: String
+    var urlSubtitle: String
     var hashValue: Int {
         return self.ID
     }
@@ -549,6 +593,17 @@ class UserRecommendation: Equatable, Hashable {
         self.detail = detail
         self.comments = comments
         self.type = type
+        
+        urlTitle = detail
+        urlSubtitle = ""
+        if type == .url {
+            if let url: NSURL = NSURL(string: detail) {
+                if let host: String = url.host {
+                    urlTitle = host
+                    urlSubtitle = detail
+                }
+            }
+        }
     }
     
     func newRecommendation() -> NewRecommendation {
