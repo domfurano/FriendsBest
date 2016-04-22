@@ -12,7 +12,8 @@ define([
   'text!templates/home/menu.html',
   'text!templates/home/deck.html',
   'text!templates/home/info.html',
-], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, tutorialHTML, menuHTML, deckHTML, infoHTML){
+  'lity'
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, tutorialHTML, menuHTML, deckHTML, infoHTML, lity){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -105,11 +106,12 @@ define([
         $el = this.$el;
         $el.append(tutorialTemplate());
         
-/*
+
         $("#play").click(function() {
-            $("video").get(0).play();
+            lightbox = lity();
+            lightbox('//vimeo.com/163816408');
         });
-*/
+
     },
     
     loadPrompts: function() {

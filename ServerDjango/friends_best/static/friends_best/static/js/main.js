@@ -13,7 +13,8 @@ require.config({
     'backbone': 'vendor/backbone',
     'templates': '../templates',
     'facebook': '//connect.facebook.net/en_US/sdk',
-    'waypoint' : 'vendor/jquery.waypoints'
+    'waypoint' : 'vendor/jquery.waypoints',
+    'lity': 'vendor/lity'
   },
   shim: {
 	  'jquery.ui.tp': {
