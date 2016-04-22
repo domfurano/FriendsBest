@@ -172,7 +172,10 @@ define([
     						prompts.get(ui.helper.attr("id")).destroy({
         						success: function() {
             						if (prompts.length < 1) {
-                                        setTimeout(that.loadPrompts, 1000);
+                						setTimeout(function() {
+                    						console.log("prompts!");
+                    						that.loadPrompts();
+                						}, 1000);
                                     }
         						}
     						});
