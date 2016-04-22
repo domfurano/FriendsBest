@@ -8,14 +8,22 @@ define([
   'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
+  'text!templates/home/tutorial.html',
   'text!templates/home/menu.html',
   'text!templates/home/deck.html',
   'text!templates/home/info.html',
-], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, tutorialHTML, menuHTML, deckHTML, infoHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
     visible: true,
+    tutorial: false,
+
+    initialize: function(options) {
+        if(options.tutorial) {
+            this.tutorial = true;
+        }
+    },
 
     render: function(){
       
@@ -24,9 +32,12 @@ define([
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
         
-        this.loadPrompts();        
+        if(!this.tutorial) {
+            this.loadPrompts();        
+        } else {
+            this.loadTutorial();
+        }
         
-        // Check for empty prompt collection and go get more...
         this.refresh = setInterval(function() {
             $.get( "/fb/api/notification/", function( data ) {
               if(data.notifications == 0) {
@@ -39,8 +50,6 @@ define([
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
-      
-		//$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
 		
 		$('#search-field').keypress(function (e) {
 		  if (e.which == 13) {
@@ -91,6 +100,18 @@ define([
 	    clearInterval(this.refresh);
     },
     
+    loadTutorial: function() {
+        tutorialTemplate = _.template(tutorialHTML);
+        $el = this.$el;
+        $el.append(tutorialTemplate());
+        
+/*
+        $("#play").click(function() {
+            $("video").get(0).play();
+        });
+*/
+    },
+    
     loadPrompts: function() {
         this.collection = new PromptsCollection();
         //this.collection.on("reset", this.showPrompts, this);
@@ -136,7 +157,7 @@ define([
     						prompts.get(ui.helper.attr("id")).destroy({
         						success: function() {
             						if (prompts.length < 1) {
-                                        that.loadPrompts();
+                                        setTimeout(that.loadPrompts, 1000);
                                     }
         						}
     						});

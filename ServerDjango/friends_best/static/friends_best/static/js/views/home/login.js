@@ -28,8 +28,8 @@ define([
 					FB.api('/me', function(response) {
 						console.log('Good to see you, ' + response.name + '.');
 						require(['app'],function(App){
-							// App.router.navigate('', {trigger: true, replace: true});
-							window.location.href = "/";
+							App.router.navigate('', {trigger: true, replace: true});
+							window.location.href = "/#loggedin";
 						});
 					});
 				} else {

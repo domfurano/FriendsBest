@@ -25,7 +25,7 @@
     }
     
     .view.login {
-	    background: #ffffff; /* Old browsers */
+	    background: #3b5998; /* Old browsers */
 		background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
 		background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
 		background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
@@ -536,6 +536,30 @@
 		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
 		-webkit-transform: translateZ(0);
 		cursor: ew-resize;
+	}
+	
+	.tutorial {
+		height: 100%;
+		min-height: 160px;
+	    background: #3b5998; /* Old browsers */
+		background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		color: #fff;
+		-webkit-border-radius: 8px;
+		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
+		-webkit-transform: translateZ(0);
+	}
+	
+	.tutorial .topic {
+    	font-size: 20px;
+    	font-weight: bold;
+	}
+	
+	.tutorial #play, .tutorial #skip {
+    	cursor: pointer;
+    	padding-top: 10px;
+    	padding-bottom: 10px;
 	}
 	
     .info {
