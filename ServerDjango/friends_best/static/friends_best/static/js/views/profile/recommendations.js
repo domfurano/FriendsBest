@@ -2,12 +2,13 @@
   'jquery',
   'underscore',
   'backbone',
+  'solutiondetails',
   'text!templates/home/menu.html',
   'text!templates/standard/back.html',
   'text!templates/standard/list.html',
   'text!templates/profile/recommendation.html',
   'collections/recommendations',
-], function($, _, Backbone, menuHTML, backHTML, listHTML, itemHTML, RecommendationsCollection){
+], function($, _, Backbone, solutiondetails, menuHTML, backHTML, listHTML, itemHTML, RecommendationsCollection){
 
   var view = Backbone.View.extend({
     el: $(".view"),
@@ -17,12 +18,13 @@
 		console.log("initialize");
 		this.visible = true;
 		this.collection = new RecommendationsCollection();
-		this.collection.on("update", this.list, this);
-		this.collection.fetch();
+		//this.collection.on("update", this.list, this);
+		this.collection.fetch({ success: this.list });
 	},
 
     render: function(){
-	    console.log("render");
+	    
+	    that = this;
 	    
 	    // Back
 	    var backTemplate = _.template( backHTML );
@@ -40,29 +42,38 @@
     
     list: function() {
 
-	    if(this.visible) {		    
+	    if(that.visible) {		    
 		    // Clear the list
-			this.$list.html("");
+			that.$list.html("");
 			
 			// Add elements to the list
 		    var itemTemplate = _.template( itemHTML );
-		    this.collection.each(function(i, index) {
-			    this.$list.append(itemTemplate(i.toJSON()));
-		    }, this);
+		    that.collection.each(function(i, index) {
+			    var item = $(itemTemplate(i.toJSON()));
+			    that.$list.prepend(item);
+			    item.find(".thing").solutiondetails(i.toJSON(), {context: that.$list.parent()});
+		    });
 		    
-		    that = this;
-		    this.$list.find(".delete").click(function() {
-    		    that.trash($(this).attr("id"));
+		    // Activate delete buttons
+		    that.$list.find(".delete").one("click", function() {
+    		    id = $(this).attr("id");
+    		    that.trash(id, $(this));
 		    }) 
 		    
 	    }
 
 	},
     
-    trash: function(id) {
-        if(confirm("Do you really want to delete this?")) {
-            this.collection.get(id).destroy();
-        }
+    trash: function(id, $button) {
+        // Convert to X
+        $button.find("i").toggleClass("fa-trash-o fa-times")
+        that = this;
+        $button.one("click", function() {
+            // Delete model
+            that.collection.get(id).destroy();
+            // Delete UI
+            $("#rec"+id).remove();
+        });
     },
     
     remove: function() {

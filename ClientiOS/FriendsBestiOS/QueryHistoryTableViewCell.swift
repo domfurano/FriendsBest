@@ -2,189 +2,92 @@
 //  QueryHistoryTableViewCell.swift
 //  FriendsBest
 //
-//  Created by Dominic Furano on 3/5/16.
+//  Created by Dominic Furano on 4/13/16.
 //  Copyright © 2016 Dominic Furano. All rights reserved.
 //
 
-import Foundation
 import UIKit
-
+import PureLayout
 
 class QueryHistoryTableViewCell: UITableViewCell {
+    var QUERY: Query!
+    var contentContainer: UIView!
+    var tagsLabel: UILabel!
     
-    var tags: [String] = []
-    var tagLabels: [UILabel] = []
-    var new: Bool?
-    
-    var background: UIView = UIView()
-    
-    convenience init(tags: [String], style: UITableViewCellStyle, reuseIdentifier: String?) {
-        self.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.tags = tags
-        selectionStyle = .None // No distinct style when selected
+    convenience init(query: Query) {
+        self.init()
+        QUERY = query
+
+        selectionStyle = .None
         backgroundColor = UIColor.clearColor()
         
-        background.backgroundColor = UIColor.whiteColor()
-        background.layer.cornerRadius = 2.0
-        background.layer.shadowOpacity = 0.33
-        background.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
-        background.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(background)
+        contentContainer = UIView.newAutoLayoutView()
+        contentContainer.layer.borderColor = UIColor.colorFromHex(0xE4E6E7).CGColor
+        contentContainer.layer.borderWidth = 1.0
+        contentContainer.backgroundColor = UIColor.whiteColor()
+//        contentContainer.alpha = 1.0
         
-        for tag in tags {
-            let label: UILabel = CommonUI.tagLabel(tag)
-            tagLabels.append(label)
-            contentView.addSubview(label)
+        contentContainer.layer.shadowColor = UIColor.colorFromHex(0xE4E6E7).CGColor
+        contentContainer.layer.shadowRadius = 1.0
+        contentContainer.layer.shadowOpacity = 0.33
+        contentContainer.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
+
+        tagsLabel = UILabel.newAutoLayoutView()
+        tagsLabel.attributedText = attributedStringForTags(QUERY.tagString.componentsSeparatedByString(" "))
+        tagsLabel.lineBreakMode = .ByTruncatingTail
+        tagsLabel.numberOfLines = 0
+
+        contentView.addSubview(contentContainer)
+        contentContainer.addSubview(tagsLabel)
+    }
+    
+    private var didUpdateConstraints: Bool = false
+    override func updateConstraints() {
+        if !didUpdateConstraints {
+            NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired,  forConstraints: {
+                self.contentContainer.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+                self.tagsLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+            })
+            
+            let ccInsetVertical: CGFloat = 4.0
+            let ccInsetHorizontal: CGFloat = 16.0
+            contentContainer.autoPinEdgeToSuperviewEdge(.Top, withInset: ccInsetVertical)
+            contentContainer.autoPinEdgeToSuperviewEdge(.Leading, withInset: ccInsetHorizontal)
+            contentContainer.autoPinEdgeToSuperviewEdge(.Trailing, withInset: ccInsetHorizontal)
+            contentContainer.autoPinEdgeToSuperviewEdge(.Bottom, withInset: ccInsetVertical)
+            
+            let tlInset: CGFloat = 12.0
+            tagsLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: tlInset)
+            tagsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: tlInset)
+            tagsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: tlInset)
+            tagsLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: tlInset)
+            
+            didUpdateConstraints = true
         }
+        
+        super.updateConstraints() // required
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    private func attributedStringForTags(tagArray: [String]) -> NSAttributedString {
+        let returnString: NSMutableAttributedString = NSMutableAttributedString()
         
-        addConstraint(
-            NSLayoutConstraint(
-                item: background,
-                attribute: .CenterX,
-                relatedBy: .Equal,
-                toItem: self,
-                attribute: .CenterX,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
+//        let paragraphStyle = NSMutableParagraphStyle()
+//        paragraphStyle.lineSpacing = 30
         
-        addConstraint(
-            NSLayoutConstraint(
-                item: background,
-                attribute: .CenterY,
-                relatedBy: .Equal,
-                toItem: self,
-                attribute: .CenterY,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
+        let attributes: [String : AnyObject] = [
+            NSForegroundColorAttributeName: UIColor.blackColor(),
+            NSBackgroundColorAttributeName: UIColor.colorFromHex(0xEDEDED),
+            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 16.0)!
+            ]
         
-        addConstraint(
-            NSLayoutConstraint(
-                item: background,
-                attribute: .Width,
-                relatedBy: .Equal,
-                toItem: self,
-                attribute: .Width,
-                multiplier: 0.8,
-                constant: 0.0
-            )
-        )
+        let space = NSAttributedString(string: "  ")
         
-        addConstraint(
-            NSLayoutConstraint(
-                item: background,
-                attribute: .Height,
-                relatedBy: .Equal,
-                toItem: self,
-                attribute: .Height,
-                multiplier: 0.8,
-                constant: 0.0
-            )
-        )
-        
-        var prevLabel: UILabel? = nil
-        
-        for label in tagLabels {
-            
-            addConstraint(
-                NSLayoutConstraint(
-                    item: label,
-                    attribute: .Height,
-                    relatedBy: .Equal,
-                    toItem: background,
-                    attribute: .Height,
-                    multiplier: 0.66,
-                    constant: 0.0
-                )
-            )
-            
-            addConstraint(
-                NSLayoutConstraint(
-                    item: label,
-                    attribute: .CenterY,
-                    relatedBy: .Equal,
-                    toItem: background,
-                    attribute: .CenterY,
-                    multiplier: 1.0,
-                    constant: 0.0
-                )
-            )
-            
-            if prevLabel == nil {
-                addConstraint(
-                    NSLayoutConstraint(
-                        item: label,
-                        attribute: .Left,
-                        relatedBy: .Equal,
-                        toItem: background,
-                        attribute: .Left,
-                        multiplier: 1.2,
-                        constant: 0.0
-                    )
-                )
-            } else {
-                addConstraint(
-                    NSLayoutConstraint(
-                        item: label,
-                        attribute: .Left,
-                        relatedBy: .Equal,
-                        toItem: prevLabel,
-                        attribute: .Right,
-                        multiplier: 1.1,
-                        constant: 0.0
-                    )
-                )
-            }
-            
-            prevLabel = label
+        for tag in tagArray {
+            returnString.appendAttributedString(NSAttributedString(string: "  \(tag)  ", attributes: attributes))
+            returnString.appendAttributedString(space)
         }
+        
+        return returnString
     }
+    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

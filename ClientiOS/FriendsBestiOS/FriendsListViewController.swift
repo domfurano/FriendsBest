@@ -43,12 +43,12 @@ class FriendsListViewController: UITableViewController {
     
     override func viewWillAppear(animated: Bool) {
         navigationController?.navigationBarHidden = false
-        navigationController?.toolbarHidden = false
+        navigationController?.toolbarHidden = true
         
         navigationController?.navigationBar.barTintColor = CommonUI.navbarBlueColor
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
         
-        setToolbarItems()
+//        setToolbarItems()
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -63,7 +63,7 @@ class FriendsListViewController: UITableViewController {
         let friend: Friend = User.instance.friends[indexPath.row]
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
         cell.textLabel?.text = friend.name
-        cell.imageView?.image = friend.squarePicture?.image
+        cell.imageView?.image = friend.squarePicture.image
         cell.userInteractionEnabled = false
         return cell
     }

@@ -16,7 +16,7 @@ class FacebookNetworkDAO {
     
     private init() { }
     
-    func getFacebookData() {
+    func getFacebookData(callback: ((successful: Bool) -> Void)?) {
         let request: FBSDKGraphRequest = FBSDKGraphRequest(
             graphPath: "me",
             parameters: ["fields": "email,name"]
@@ -28,10 +28,12 @@ class FacebookNetworkDAO {
             {
                 let dict: NSDictionary = result as! NSDictionary
                 User.instance.name = dict["name"] as? String
+                callback?(successful: true)
             }
             else
             {
                 NSLog("error \(error)")
+                callback?(successful: false)
             }
         }
     }

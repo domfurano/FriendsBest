@@ -4,6 +4,7 @@ define([
   'backbone',
   'models/recommend',
   'placefinder',
+  'solutiondetails',
   'text!templates/standard/cancel.html',
   'text!templates/standard/cancelsubmit.html',
   'text!templates/recommend/picker.html',
@@ -11,8 +12,7 @@ define([
   'text!templates/recommend/url.html',
   'text!templates/recommend/text.html',
   'text!templates/recommend/comments.html',
-  'async!//maps.google.com/maps/api/js?sensor=false&libraries=places',
-], function($, _, Backbone, RecommendModel, placefinder, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
+], function($, _, Backbone, RecommendModel, placefinder, solutiondetails, cancelHTML, cancelsubmitHTML, pickerHTML, placeHTML, urlHTML, textHTML, commentsHTML){
 
     var getLocation = function(href) {
         
@@ -65,16 +65,16 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Recommendation Type",
+            title: "New Recommendation",
         }));
         
         // Type picker
         var pickerTemplate = _.template( pickerHTML );
         this.$el.append(pickerTemplate());
         
-        this.pickerButton("PLACE");
-        this.pickerButton("URL");
-        this.pickerButton("TEXT");
+        this.pickerButton("place");
+        this.pickerButton("url");
+        this.pickerButton("text");
         
     },
     
@@ -86,33 +86,41 @@ define([
         });
     },
     
-    PLACE: function() {
+    place: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Place"
+            title: "New Recommendation"
         }));
         
         // Place picker
         var template = _.template( placeHTML );
         this.$el.append(template());
         
+        that = this;
         $.fn.placefinder({
 		  map: $('#map'),
-		  input: $('#place')
+		  input: $('#search'),
+		  result: $('#placebox'),
+		  pick: function(name, address, placeid) {
+			  that.recommendation.set("detail", placeid);
+			  that.recommendation.set("name", name);
+			  that.recommendation.set("address", address);
+			  that.render();
+		  }
 		});
         
     },
     
-    URL: function() {
+    url: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Website"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -139,13 +147,13 @@ define([
         });
     },
     
-    TEXT: function() {
+    text: function() {
         // Cancel UI
         var cancelTemplate = _.template( cancelHTML );
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "Text"
+            title: "New Recommendation"
         }));
         
         // Text entry
@@ -182,20 +190,25 @@ define([
         this.$el.append(cancelTemplate({
             color: "#ffffff",
             background: "#59c939",
-            title: "More Details"
+            title: "New Recommendation"
         }));
         
         if (typeof this.prompt != 'undefined') {
             this.recommendation.set("tagstring", this.prompt.get("tagstring"));
         }
         
-        console.log(this.recommendation.toJSON());
-        
-        // tag and comment entry
+        // template
         var template = _.template( commentsHTML );
-        this.$el.append(template(this.recommendation.toJSON()));
+        comments = $(template(this.recommendation.toJSON()));
+        this.$el.append(comments);
+        
+        // Load thing
+        comments.find(".thing").solutiondetails(this.recommendation.toJSON());
+        
+        // tags
         $('#tags').tokenfield({delimiter : ' ', createTokensOnBlur: true});
         
+        // Set focus on empty field
         if (this.recommendation.get("tagstring") == "") {
 	        $('#tags-tokenfield').focus();
         } else {
@@ -221,15 +234,24 @@ define([
 	                
                     // Delete the prompt
                     if (typeof that.prompt != 'undefined') {
-                      that.prompt.destroy();
+						that.prompt.destroy({
+							success: function() {
+								// Go back in history
+								parent.history.go(-1);
+								return false;
+							}
+						});
+                    } else {
+	                    // Go back in history
+						parent.history.go(-1);
+						return false;
                     }
-                    
-                    // Go back in history
-		            parent.history.go(-1);
-		            return false;
                 },
                 error: function(model, response, options) {
-					// What to do here?
+					// What to do here? Bail out, oh well.
+					// Go back in history
+					parent.history.go(-1);
+					return false;
                 }
             });
     

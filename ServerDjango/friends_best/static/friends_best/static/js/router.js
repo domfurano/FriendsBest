@@ -24,7 +24,8 @@ define([
 			"login":					"login",			// #login
 			"profile":					"profile",			// #profile
 			"profile/recommendations":	"recommendations",	// #profile/recommendations
-			"profile/friends":			"friends"			// #profile/friends
+			"profile/friends":			"friends",			// #profile/friends
+			"loggedin":                 "loggedin"
 		},
 		initialize: function() {
 		},
@@ -75,7 +76,7 @@ define([
 		var app_router = new AppRouter;
 		
 		app_router.on('route:main', function(){
-			this.render(new HomeView(), true);
+			this.render(new HomeView({tutorial: false}), true);
 		});
 		
 		app_router.on('route:searchhistory', function(){
@@ -88,6 +89,10 @@ define([
 		
 		app_router.on('route:recommend', function(){
 			this.render(new RecommendView());
+		});
+		
+		app_router.on('route:loggedin', function(){
+    		this.render(new HomeView({tutorial: true}), true);
 		});
 		
 		app_router.on('route:login', function(){
@@ -111,7 +116,6 @@ define([
 		
 		// Check login status
 		FB.getLoginStatus(function(response) {
-			console.log(response);
 
 			// Navigate to login if not authorized
 			if(response.status === "connected") {
@@ -129,7 +133,6 @@ define([
 					Backbone.$.ajaxSetup({
 					    //headers: { 'Authorization' :'Token ' + token },
 					    beforeSend: function(jqXHR) {
-    					    console.log(jqXHR);
                             jqXHR.setRequestHeader('Authorization', 'Token ' + token);
                             jqXHR.setRequestHeader('SomeData', 'Token ' + token);
                         }

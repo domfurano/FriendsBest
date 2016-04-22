@@ -3,12 +3,9 @@ define([
   'underscore',
   'backbone',
   'app',
-  'views/recommend/add',
-  'views/search/results',
-  'models/query',
   'text!templates/home/login.html',
   'fb'
-], function($, _, Backbone, App, Recommend, ResultsView, QueryModel, loginHTML){
+], function($, _, Backbone, App, loginHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
@@ -29,8 +26,9 @@ define([
 					FB.api('/me', function(response) {
 						console.log('Good to see you, ' + response.name + '.');
 						require(['app'],function(App){
-							// App.router.navigate('', {trigger: true, replace: true});
-							window.location.href = "/";
+							App.router.navigate('', {trigger: true, replace: true});
+							window.location = "/#loggedin";
+							window.location.reload(true);
 						});
 					});
 				} else {

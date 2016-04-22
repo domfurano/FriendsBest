@@ -1,5 +1,4 @@
 from logging import warning, error
-## from .models import User
 from django.contrib.auth.models import User
 from .models import Friendship
 from .models import Query
@@ -15,11 +14,8 @@ from .models import Accolade
 from .models import Notification
 from .models import RejectedTag
 
-
 import friends_best.serializers
 
-# from .models import RecommendationTag
-# from .models import QueryTag
 from .models import Tag
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -60,36 +56,15 @@ _naughtyWords = ([
     'penis',
     'crap',
     'boner',
-    '',
-    '',
-    '',
+    'dildo',
+    'dildos',
 ])
 
-
-
-
+# Facebook stuff
 _baseFacebookURL = 'https://graph.facebook.com/v2.5'
-
-# paul's app:
-# _appId = "106243083075609"
-# _appSecret = "fb3095e2871ce3f42f43163b0a903c23"
-# my user id: 10208457124655040
-# long term token : CAABgoKU6ABkBACYatShqKKOIizPUp1E33IwIypcUDjuVyaOAWrA4ZAHZAWPWfqQ7eNIqTTkAA7vx6DM73MC5Q2ajmFSZBHuWQs0P1oMZBvYtZAyMuKibaOZA1jZBChtzPekFu0cuEBlsP413hGZCZBGtRHQ2jiOZBx2BWhiL0ZC0pBNUNaxaOO4g7dm
-
-# TODO: enable these variables (and disable Paul's) before checkin
-# ray's app:
 _appId = "1519942364964737"
 _appSecret = "9346ae3c5b2c50801237589b238b0688"
-
 _genericAccessToken = _appId + "|" + _appSecret
-
-_lemmatizer = WordNetLemmatizer() # 'pos' arg = part of speech (defaults to 'noun'); 'n' = noun, 'a' = adjective, 'v' = verb, etc.
-
-
-
-# for reference:
-# https://docs.djangoproject.com/en/1.9/ref/models/querysets/
-# https://docs.djangoproject.com/en/1.9/topics/db/queries/
 
 
 def userTest(user):
@@ -112,6 +87,7 @@ def getPrompts(user):
     # Get prompts, ordered by query timestamp
     prompts = Prompt.objects.filter(user=user).order_by('query__timestamp')
     # if user has no prompts, generate some anonymous prompts and return them
+
     if prompts.count() == 0:
         generateAnonymousPrompts(user)
         return Prompt.objects.filter(user=user).order_by('query__timestamp')
@@ -128,7 +104,10 @@ def getAllPrompts(user):
        d['name'] = '' + prompt.query.user.first_name + prompt.query.user.last_name
        d['tagstring'] = prompt.query.tagstring
        d['id'] = prompt.id
-       promptList.append(d)
+       if(d['tagstring'] != ""):
+           promptList.append(d)
+       else:
+           prompt.delete()
    return promptList
 
 
@@ -196,6 +175,7 @@ def generateAnonymousPrompts(user):
                 break
 
         if not allLemmasMatch:
+            # added this test to prevent blank prompts
             p, created = Prompt.objects.get_or_create(user=user, query=query, isAnonymous=True)
 
 
@@ -249,7 +229,6 @@ def deletePrompt(promptId):
 
 def forwardPrompt(user, friendUserId, queryId):
    p, created = Prompt.objects.get_or_create(user=User.objects.get(id=friendUserId), query=Query.objects.get(id=queryId))
-   # TODO: how do we tell the client who forwarded the prompt???
 
 
 # this will ensure that new users get normal prompts immediately
@@ -265,9 +244,10 @@ def generatePromptsForNewUser(user):
 
 # <editor-fold desc="Subscriptions">
 def addSubscription(user, tagString):
-   lemma = _lemmatizer.lemmatize(word=tagString.lower(), pos='n')
-   t1, created = Tag.get_or_create(tag=tagString, lemma=lemma)
-   s1, created = Subscription.get_or_create(user=user, tag=t1)
+    _lemmatizer = WordNetLemmatizer()
+    lemma = _lemmatizer.lemmatize(word=tagString.lower(), pos='n')
+    t1, created = Tag.get_or_create(tag=tagString, lemma=lemma)
+    s1, created = Subscription.get_or_create(user=user, tag=t1)
 
 
 def removeSubscription(user, tag):
@@ -280,12 +260,12 @@ def getAllSubscriptions(user):
 
 
 # <editor-fold desc="Queries">
-def submitQuery(user, *tags):
-    if tags.count == 0:
-        return "error: cannot submit query, query must include at least one tag"
+def submitQuery(user, *tagsList):
+    #filter out empty tags
+    tags = [t for t in tagsList if not t == '']
 
-    #TODO: delete after testing
-    #sendNotification({'user':'test user 666', 'text': 'test text 666'}, "recommendations")
+    if len(tags) == 0:
+        return "error: cannot submit query, query must include at least one tag"
 
    # create hash of tags and ordered string
     taghash = ' '.join(sorted(set(tags)))
@@ -300,6 +280,7 @@ def submitQuery(user, *tags):
     # create query tags
     lemmas = set()
     tagsWithoutDuplicates = set(tags)
+    _lemmatizer = WordNetLemmatizer()
     for t in tagsWithoutDuplicates:
         lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
         lemmas.add(lemma)
@@ -308,18 +289,9 @@ def submitQuery(user, *tags):
 
     q1.save()
 
-
-    # check for inappropriate words in query
-
-
     for tag in tagsWithoutDuplicates:
         if tag in _naughtyWords:
             return q1
-
-    # create self prompt as a test
-    # remove this when we can test that friends work
-    #p, created = Prompt.objects.get_or_create(user=user, query=q1)
-
 
     # create prompts for all of user's friends (but only if the friend doesn't already have a relevant recommendation)
     allFriends = getAllFriendUsers(user)
@@ -350,10 +322,6 @@ def submitQuery(user, *tags):
                 break
         if not allLemmasMatch:
             p, created = Prompt.objects.get_or_create(user=friendUser, query=q1, isAnonymous=False)
-
-            #just for testing
-            #identifiedUmair = isUmair(friendUser)
-            #print ("found umair while creating prompts?: " + "yes" if identifiedUmair else "no")
             if created and isUmair(friendUser):
                 sendNotification(friends_best.serializers.PromptSerializer(p).data, "prompts")
 
@@ -371,7 +339,6 @@ def getQuerySolutions(query):
    tags = query.tags.all()
    lemmas = [tag.lemma for tag in tags]
 
-   #recommendations = Recommendation.objects.filter(tags__in=tags).all()
    # match query tag lemmas with recommendation tag lemmas
    recommendations = Recommendation.objects.filter(tags__lemma__in=lemmas).all()
 
@@ -380,7 +347,6 @@ def getQuerySolutions(query):
        things.append(recommendation.thing)
    things = set(things)  # put in a set to eliminate duplicates
 
-    #TODO: take into account the number of recommendation tags that don't match
    weightedThings = []  # list of tuples (thing, average recommendation lemma match for that thing)
    for thing in things:
        # get average number of matching lemmas for each recommendation
@@ -440,9 +406,6 @@ def getQuerySolutions(query):
 def getQueryHistory(user):
    # Order-by done to return the queries in the right order (from oldest run to newest)
    return Query.objects.filter(user=user).order_by('timestamp').prefetch_related('tags').all()
-   # TODO: wouldn't we want to just return the query object and then derive from it the tagstring?
-   # ANSWER: From what I read, prefetching related reduces the number of selects made to the database.
-   # See https://docs.djangoproject.com/en/dev/ref/models/querysets/
 
 
 def getQuery(user, queryId):
@@ -547,6 +510,7 @@ def modifyRecommendation(recId, newComments, *newTagStrings):
         if oldTagString not in newTagStrings:
             rec.tags.remove(recTag)
 
+    _lemmatizer = WordNetLemmatizer()
     for newTagString in newTagStrings:
         if newTagString not in oldTagStrings:
             newTag, created = Tag.objects.get_or_create(tag=newTagString.lower(), lemma=_lemmatizer.lemmatize(word=newTagString.lower(), pos='n'))
@@ -595,12 +559,12 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    else:
        return "error: thing type '" + thingType + "' is invalid."
 
-
    recommendation = Recommendation(thing=thing, user=user, comments=comments)
    recommendation.save()
 
    # create the recommendationTags
    lemmas = set()
+   _lemmatizer = WordNetLemmatizer()
    for t in tags:
        lemma = _lemmatizer.lemmatize(word=t.lower(), pos='n')
        lemmas.add(lemma)
@@ -610,12 +574,8 @@ def createRecommendation(user, detail, thingType, comments, *tags):
    # create a notification for every existing query with a matching tag
    queries = Query.objects.select_related('user').filter(tags__lemma__in=lemmas)
    for query in queries:
-      n = Notification(query=query, recommendation=recommendation)
-      n.save()
+      n, created = Notification.objects.get_or_create(query=query, recommendation=recommendation)
 
-      #just for testing
-      #identifiedUmair = isUmair(query.user)
-      #print ("found umair while creating recommendation?: " + "yes" if identifiedUmair else "no")
       if isUmair(query.user):
           sendNotification(friends_best.serializers.RecommendationSerializer(recommendation).data, "recommendations")
 
@@ -710,7 +670,7 @@ def createPin(thingId, queryId):
     for rec in recs:
         a, created = Accolade.objects.get_or_create(user=rec.user, recommendation=rec)
     
-    # return new or exisiting pin
+    # return new or existing pin
     return pin
 
 
@@ -794,6 +754,15 @@ def isUmair(user):
         #print ("i did not find umair, instead found uid: %s" % account.uid)
         return False
 
+def isRay(user):
+    account = SocialAccount.objects.filter(user=user).first()
+    if account.uid == "10153929165516458":
+        #print ("i found umair!")
+        return True
+    else:
+        #print ("i did not find umair, instead found uid: %s" % account.uid)
+        return False
+
 
 from gcm import *
 from threading import Timer
@@ -811,18 +780,15 @@ def sendNotification(json_data, topic):
    if not topic == "recommendations" and not topic == "prompts":
        return "error: notification topic must be 'recommendations' or 'prompts'"
 
-   # Hard coded value, replace with actual server data
-   #data = {'user':'test user', 'tagString': 'test text'}
    data = json_data
 
-   print("notification json_data: %s " % data)
+   #print("notification json_data: %s " % data)
 
    _q.put(data)
    # can be either recommendations or prompts
-   #topic = 'recommendations'
 
    response = _gcm.send_topic_message(topic=topic, data=data)
-   print ("notification response: %s" % response)
+   #print ("notification response: %s" % response)
 
    global TIME_TO_WAIT
    #if not response or 'success' not in response:

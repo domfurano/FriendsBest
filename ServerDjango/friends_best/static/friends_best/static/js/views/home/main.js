@@ -8,39 +8,56 @@ define([
   'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
+  'text!templates/home/tutorial.html',
   'text!templates/home/menu.html',
   'text!templates/home/deck.html',
-  'text!templates/home/info.html'
-], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
+  'text!templates/home/info.html',
+  'lity'
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, tutorialHTML, menuHTML, deckHTML, infoHTML, lity){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
     visible: true,
+    tutorial: false,
+
+    initialize: function(options) {
+        if(options.tutorial) {
+            this.tutorial = true;
+        }
+    },
 
     render: function(){
       
         that = this;
 		
+		this.$el.removeClass("login");
+		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
         
-        this.loadPrompts();        
+        if(!this.tutorial) {
+            this.loadPrompts();        
+        } else {
+            this.loadTutorial();
+        }
         
         this.refresh = setInterval(function() {
-            if (that.collection.length < 1) {
-                that.loadPrompts();
-            }
-        }, 6000);
+            $.get( "/fb/api/notification/", function( data ) {
+              if(data.notifications == 0) {
+                  $("#notification").hide();
+              } else {
+                  $("#notification").show();
+              }
+            });
+        }, 5000);
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
-      
-		$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
 		
-		$('#search-field-tokenfield').keypress(function (e) {
+		$('#search-field').keypress(function (e) {
 		  if (e.which == 13) {
-            $('form#query').attr("disabled", "disabled");
-		    $('form#query').submit();
+            $('#search-field').attr("disabled", "disabled");
+		    $('#search-field').submit();
 		    return false;
 		  }
 		});
@@ -52,7 +69,7 @@ define([
 		
 		$('form#query').submit(function() {
 			
-			var tags = $('#search-field').tokenfield('getTokensList').toLowerCase().split(' ');
+			var tags = $('#search-field').val().trim().toLowerCase().split(' ');
 			
 			if(tags.length == 0) return false;
 			if(tags.length == 1 && tags[0] == "") return false;
@@ -77,21 +94,6 @@ define([
 				}});
 			return false;
 		});
-		
-		// Logout (TEMP)
-		$("#facebookCircleIcon").click(function() {
-
-/*
-			FB.logout(function(response) {
- 				document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
- 				location.reload();
-			});
-*/
-
-            // Load profile menu instead via profile route
-            
-			
-		});
  
     },
     
@@ -101,17 +103,41 @@ define([
 	    clearInterval(this.refresh);
     },
     
+    loadTutorial: function() {
+        
+        that = this;
+        
+        tutorialTemplate = _.template(tutorialHTML);
+        $el = this.$el;
+        $el.append(tutorialTemplate());
+        
+        $("#skip").click(function() {
+           $(".tutorialsection").remove();
+           window.location = "/";
+           that.loadPrompts();
+        });
+
+        $("#play").click(function() {
+            
+            $("#skip").html("start using FriendsBest");
+            
+            lightbox = lity();
+            lightbox('//vimeo.com/163816408');
+        });
+
+    },
+    
     loadPrompts: function() {
         this.collection = new PromptsCollection();
-        this.collection.on("update", this.showPrompts, this);
-		this.collection.fetch();
+        //this.collection.on("reset", this.showPrompts, this);
+		this.collection.fetch({success: this.showPrompts});
     },
     
     showPrompts: function() {
         
-		if(this.visible) {
+		if(that.visible) {
         		
-            prompts = this.collection;
+            prompts = that.collection;
     		
             promptTemplate = _.template(promptHTML);
 			
@@ -120,9 +146,8 @@ define([
 			el.find(".promptsection").remove();
 			
 			prompts.each(function(prompt) {
-				console.log(prompt.toJSON());
-    			promptcard = promptTemplate(prompt.toJSON());
-    			el.append(promptcard);
+				promptcard = promptTemplate(prompt.toJSON());
+				el.append(promptcard);
     		});
     		
             // Prompts
@@ -144,7 +169,16 @@ define([
     				if(ui.position.left < -distance) {
     					ui.helper.animate({left: "-=600"}, 200, function() {
     						ui.helper.parent().remove();
-    						prompts.get(ui.helper.attr("id")).destroy();
+    						prompts.get(ui.helper.attr("id")).destroy({
+        						success: function() {
+            						if (prompts.length < 1) {
+                						setTimeout(function() {
+                    						console.log("prompts!");
+                    						that.loadPrompts();
+                						}, 1000);
+                                    }
+        						}
+    						});
     					});
     				// Right: recommend
     				} else if(ui.position.left > distance) {

@@ -10,6 +10,7 @@ import UIKit
 import FBSDKCoreKit
 import FBSDKLoginKit
 
+
 class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     let loginButton: FBSDKLoginButton = FBSDKLoginButton()
@@ -19,6 +20,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 //    }
     
     override func loadView() {
+
         view = FacebookLoginView(loginButton: loginButton)
     }
     
@@ -39,7 +41,7 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 
         if error == nil && FBSDKAccessToken.currentAccessToken() != nil {
             // Authenticate with FriendsBest
-            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate(nil)
         }
     }
     

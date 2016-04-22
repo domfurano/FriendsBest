@@ -27,6 +27,13 @@
 			this.$el.find(".photo").append(image);
 		}
 		
+		$("#logout").click(function() {
+    		FB.logout(function(response) {
+     			//document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+     			window.location.href = "/fb/logout";
+            });
+		});
+		
     },
     
     remove: function() {

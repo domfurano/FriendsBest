@@ -36,7 +36,6 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     //    static let instance: MainScreenViewController = MainScreenViewController() // ?????
     
     /* Google */
-    let placesClient: GMSPlacesClient = GMSPlacesClient()
     var placePicker: GMSPlacePicker?
     var currentPlace: GMSPlace? = nil // TODO: Move this to possible the User class
     
@@ -82,6 +81,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.searchBarStyle = .Minimal
         searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.autocapitalizationType = .None
         navigationItem.titleView = searchController.searchBar
         
         
@@ -152,7 +152,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             self.pickerHidden()
         }
         
-        placesClient.currentPlaceWithCallback { (placeLikelihoods, error) -> Void in
+        GMSPlacesClient.sharedClient().currentPlaceWithCallback { (placeLikelihoods, error) -> Void in
             guard error == nil else {
                 NSLog("Current Place error: \(error!.localizedDescription)")
                 return
@@ -180,7 +180,18 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         setToolbarItems()
         
-        newUserRecommendation.clear()
+        newUserRecommendation = UserRecommendation()
+        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        Updater.instance.start()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        Updater.instance.STAHP()
+        User.instance.prompts.deleteAllPrompts()
     }
     
     /*** Delegate implementation ***/
@@ -189,20 +200,21 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         var changed: Bool = false
         outerloop: for prompt in User.instance.prompts.prompts {
             for cardView in self.cardViews {
-                if cardView.prompt!.ID == prompt.ID {
+                if prompt.ID == cardView.prompt!.ID {
                     continue outerloop
                 }
             }
             
             changed = true
-            let cardView: PromptCardView = PromptCardView(frame: CGRectZero, prompt: prompt)
-            self.cardViews.append(cardView)
+            let cardView: PromptCardView = PromptCardView(frame: CGRectMake(0,0,1,1), prompt: prompt)
+            self.cardViews.insert(cardView, atIndex: 0)
             cardView.translatesAutoresizingMaskIntoConstraints = false
             kolodaView.addSubview(cardView)
         }
         
         if changed {
             kolodaView.resetCurrentCardIndex()
+            
         }
     }
     
@@ -222,11 +234,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
             let cardView: PromptCardView = cardViews[Int(index)]
-            FBNetworkDAO.instance.deletePrompt(cardView.prompt!.ID)
+            FBNetworkDAO.instance.deletePrompt(cardView.prompt!.ID, callback: nil)
         } else {
             didSwipeRight = true
+            let prompt: Prompt = cardViews[Int(index)].prompt!
             newUserRecommendation = UserRecommendation()
-            newUserRecommendation.tags = cardViews[Int(index)].prompt!.tags
+            newUserRecommendation.tags = prompt.tags
+            newUserRecommendation.tagString = prompt.tagString
             showNewRecommendationViews()
         }
     }
@@ -239,7 +253,11 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
             User.instance.prompts.deletePrompt(prompt.ID)
         }
         cardViews.removeAll()
-        FBNetworkDAO.instance.getPrompts()
+        FBNetworkDAO.instance.getPrompts(nil)
+    }
+    
+    func kolodaShouldApplyAppearAnimation(koloda: KolodaView) -> Bool {
+        return true
     }
     
     // datasource
@@ -256,6 +274,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
         return KolodaOverlayView()
+    }
+    
+    func kolodaSwipeThresholdMargin(koloda: KolodaView) -> CGFloat? {
+        return koloda.frame.width / 3.0
     }
     
     /*** end Koloda ***/
@@ -335,12 +357,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /*** Recommendation Picker ***/
     
     func pickCustom() {
-        newUserRecommendation.type = .TEXT
+        newUserRecommendation.type = .text
         newUserRecommendation.detail = ""
-        navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation), animated: true)
+        navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation, type: .NEW), animated: true)
     }
     
     func pickLink() {
+        newUserRecommendation.type = .url
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         navigationController?.pushViewController(WebViewController(recommendation: newUserRecommendation), animated: true)
@@ -349,11 +372,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func pickPlace() {
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-
+        
+        let userRecommendation: UserRecommendation = newUserRecommendation // Hand off this reference
+        
         var latitude: Double = 39.4997605
         var longitude: Double = -111.547028
         var offset: Double = 10.0
-
+        
         if locationManager.location != nil {
             latitude = locationManager.location!.coordinate.latitude
             longitude = locationManager.location!.coordinate.longitude
@@ -382,10 +407,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 NSLog("Place address: \(place.formattedAddress)")
                 NSLog("Place attributions: \(place.attributions)")
                 
-                self.newUserRecommendation.type = .PLACE
-                self.newUserRecommendation.detail = place.placeID
+                userRecommendation.type = .place
+                userRecommendation.detail = place.placeID
+                userRecommendation.placeName = place.name
+                userRecommendation.placeWebsite = place.website
                 
-                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: self.newUserRecommendation), animated: true)
+                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: userRecommendation, type: .NEW), animated: true)
                 
             } else {
                 NSLog("No place selected")
@@ -403,8 +430,9 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
-            FBNetworkDAO.instance.postNewQuery(tags)
-            navigationController?.pushViewController(SolutionsViewController(tags: tags), animated: true)
+            FBNetworkDAO.instance.postNewQuery(tags, callback: { (query: Query) in
+                self.navigationController?.pushViewController(SolutionsViewController(query: query, tags: tags), animated: true)
+            })
         }
         self.searchController.active = false
     }

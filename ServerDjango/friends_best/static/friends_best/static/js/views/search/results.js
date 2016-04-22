@@ -3,12 +3,13 @@ define([
   'underscore',
   'backbone',
   'models/query',
+  'solutiondetails',
   'views/solution/details',
   'text!templates/search/results/back.html',
   'text!templates/standard/list.html',
   'text!templates/search/results/item.html',
   'text!templates/search/results/postback.html',
-], function($, _, Backbone, QueryModel, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
+], function($, _, Backbone, QueryModel, solutiondetails, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -65,10 +66,17 @@ define([
     		var solutions = this.model.get("solutions");
     		itemTemplate = _.template(itemHTML);
     		_.each(solutions, function(solution, index) {
-        		solution.id = index;
-        		solution.name = solution.detail.split("\n")[0].trim();
-        		solution.longname = solution.detail.split("\n").join("<br>");
-    			this.$list.append(itemTemplate(solution));
+
+    			solution.id = index;
+    			var item = $(itemTemplate(solution));
+    			if(solution.notifications) {
+                    this.$list.prepend(item);
+    			} else {
+        		    this.$list.append(item);	
+    			}
+				
+				item.find(".thing").solutiondetails(solution, {context: this.$list.parent()});
+
     		}, this);
     		
     		// Make the list clickable

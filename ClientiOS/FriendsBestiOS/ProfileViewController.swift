@@ -33,7 +33,7 @@ class ProfileViewController: UIViewController {
     var recommendationsButton: UIButton = UIButton()
     var friendsButton: UIButton = UIButton()
     var logoutButton: UIButton = UIButton()
-    var removeAccountButton: UIButton = UIButton()
+//    var removeAccountButton: UIButton = UIButton()
     
     override func loadView() {
         self.view = ProfileView()
@@ -44,37 +44,41 @@ class ProfileViewController: UIViewController {
         recommendationsButton.setTitle("Recommendations", forState: .Normal)
         friendsButton.setTitle("Friends using FriendsBest", forState: .Normal)
         logoutButton.setTitle("Logout", forState: .Normal)
-        removeAccountButton.setTitle("Remove Account", forState: .Normal)
+//        removeAccountButton.setTitle("Remove Account", forState: .Normal)
         
         recommendationsButton.contentHorizontalAlignment = .Left
         friendsButton.contentHorizontalAlignment = .Left
+        logoutButton.contentHorizontalAlignment = .Left
         
         recommendationsButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 0)
         friendsButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 0)
-        logoutButton.contentEdgeInsets = UIEdgeInsetsMake(8, 0, 8, 0)
-        removeAccountButton.contentEdgeInsets = UIEdgeInsetsMake(8, 0, 8, 0)
+        logoutButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 0)
+//        removeAccountButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 0)
         
         nameLabel.font = UIFont(name: "Proxima Nova Cond", size: 28.0)!
         recommendationsButton.titleLabel?.font = UIFont(name: "Proxima Nova Cond", size: 20.0)!
         friendsButton.titleLabel?.font = UIFont(name: "Proxima Nova Cond", size: 20.0)!
         logoutButton.titleLabel?.font = UIFont(name: "Proxima Nova Cond", size: 20.0)!
-        removeAccountButton.titleLabel?.font = UIFont(name: "Proxima Nova Cond", size: 20.0)!
+//        removeAccountButton.titleLabel?.font = UIFont(name: "Proxima Nova Cond", size: 20.0)!
+        
+        nameLabel.numberOfLines = 1
+        nameLabel.lineBreakMode = .ByTruncatingTail
         
         recommendationsButton.titleLabel!.textColor = UIColor.whiteColor()
         friendsButton.titleLabel?.textColor = UIColor.whiteColor()
         logoutButton.titleLabel?.textColor = UIColor.whiteColor()
-        removeAccountButton.titleLabel?.textColor = UIColor.whiteColor()
+//        removeAccountButton.titleLabel?.textColor = UIColor.whiteColor()
         
         recommendationsButton.backgroundColor = CommonUI.fbGreen
         friendsButton.backgroundColor = CommonUI.fbBlue
         logoutButton.backgroundColor = CommonUI.navbarGrayColor
-        removeAccountButton.backgroundColor = CommonUI.navbarGrayColor
+//        removeAccountButton.backgroundColor = CommonUI.navbarGrayColor
         
         largeProfilePicture.layer.cornerRadius = largeProfilePicture.frame.size.width / 2.0
         recommendationsButton.layer.cornerRadius = 4.0
         friendsButton.layer.cornerRadius = 4.0
         logoutButton.layer.cornerRadius = 4.0
-        removeAccountButton.layer.cornerRadius = 4.0
+//        removeAccountButton.layer.cornerRadius = 4.0
         
         largeProfilePicture.clipsToBounds = true
         nameLabel.sizeToFit()
@@ -84,14 +88,14 @@ class ProfileViewController: UIViewController {
         recommendationsButton.translatesAutoresizingMaskIntoConstraints = false
         friendsButton.translatesAutoresizingMaskIntoConstraints = false
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
-        removeAccountButton.translatesAutoresizingMaskIntoConstraints = false
+//        removeAccountButton.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(largeProfilePicture)
         view.addSubview(nameLabel)
         view.addSubview(recommendationsButton)
         view.addSubview(friendsButton)
         view.addSubview(logoutButton)
-        view.addSubview(removeAccountButton)
+//        view.addSubview(removeAccountButton)
         
         recommendationsButton.addTarget(
             self,
@@ -108,11 +112,11 @@ class ProfileViewController: UIViewController {
             action: #selector(ProfileViewController.logoutButtonPushed),
             forControlEvents: .TouchUpInside
         )
-        removeAccountButton.addTarget(
-            self,
-            action: #selector(ProfileViewController.removeButtonPressed),
-            forControlEvents: .TouchUpInside
-        )
+//        removeAccountButton.addTarget(
+//            self,
+//            action: #selector(ProfileViewController.removeButtonPressed),
+//            forControlEvents: .TouchUpInside
+//        )
         
         addConstraints()
     }
@@ -177,7 +181,7 @@ class ProfileViewController: UIViewController {
         )
         newRecommendationButton.tintColor = CommonUI.fbGreen
         
-        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
+        toolbarItems = [homeButton, CommonUI.flexibleSpace]//CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
     }
     
     func homeButtonPressed() {
@@ -267,9 +271,29 @@ class ProfileViewController: UIViewController {
                 multiplier: 1.0,
                 constant: 0.0))
         
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: removeAccountButton,
+//                attribute: NSLayoutAttribute.Right,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: friendsButton,
+//                attribute: NSLayoutAttribute.Right,
+//                multiplier: 1.0,
+//                constant: 0.0))
+        
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: logoutButton,
+//                attribute: NSLayoutAttribute.Right,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.CenterX,
+//                multiplier: 1.0,
+//                constant: -8.0))
+        
         view.addConstraint(
             NSLayoutConstraint(
-                item: removeAccountButton,
+                item: logoutButton,
                 attribute: NSLayoutAttribute.Right,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: friendsButton,
@@ -277,25 +301,15 @@ class ProfileViewController: UIViewController {
                 multiplier: 1.0,
                 constant: 0.0))
         
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: logoutButton,
-                attribute: NSLayoutAttribute.Right,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: -8.0))
-        
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: removeAccountButton,
-                attribute: NSLayoutAttribute.Left,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.CenterX,
-                multiplier: 1.0,
-                constant: 8.0))
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: removeAccountButton,
+//                attribute: NSLayoutAttribute.Left,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: view,
+//                attribute: NSLayoutAttribute.CenterX,
+//                multiplier: 1.0,
+//                constant: 8.0))
         
         view.addConstraint(
             NSLayoutConstraint(
@@ -327,15 +341,15 @@ class ProfileViewController: UIViewController {
                 multiplier: 1.0,
                 constant: 12.0))
         
-        view.addConstraint(
-            NSLayoutConstraint(
-                item: removeAccountButton,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: friendsButton,
-                attribute: NSLayoutAttribute.Bottom,
-                multiplier: 1.0,
-                constant: 12.0))
+//        view.addConstraint(
+//            NSLayoutConstraint(
+//                item: removeAccountButton,
+//                attribute: NSLayoutAttribute.Top,
+//                relatedBy: NSLayoutRelation.Equal,
+//                toItem: friendsButton,
+//                attribute: NSLayoutAttribute.Bottom,
+//                multiplier: 1.0,
+//                constant: 12.0))
         
         view.addConstraint(
             NSLayoutConstraint(

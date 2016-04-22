@@ -22,7 +22,9 @@ define([
 		that = this;
 		
 		var backTemplate = _.template(backHTML);
-		this.$el.append(backTemplate(this.solution));
+		var back = this.$el.append(backTemplate(this.solution));
+		back.find(".details").solutiondetails(solution);	
+		
 		$(".back-button").click(function() {
 			console.log("going back");
 			parent.history.go(-1);
@@ -39,27 +41,39 @@ define([
 		commentTemplate = _.template(commentHTML);
         friendcommentTemplate = _.template(friendcommentHTML);
         
+        var legit = 0;
+        
 		_.each(this.solution.recommendations, function(recommendation, index) {
     		console.log(recommendation);
-    		
-    		// Remove any notifications
-    		if(recommendation.isNew) {
-        		id = recommendation.id
-        		n = new NotificationModel({id: id})
-        		n.destroy();
-        		console.log("Destroyed notification for " + id)
-    		}
     		
     		r = { comment: recommendation.comment.split("\n").join("<br>") };
             // Some recommendations wont have a user (if they're not from a friend)
     		if(_.has(recommendation, 'user')) {
         		r.name = recommendation.user.name.trim();
                 r.id = recommendation.user.id;
-                list.append(friendcommentTemplate(r));
+                comment = friendcommentTemplate(r);
+    		} else if(recommendation.comment != "") {
+        	    comment = commentTemplate(r);
     		} else {
-        	    list.append(commentTemplate(r));	
+        		comment = commentTemplate({comment: "<i>Anonymous Recommendation</i>"});
     		}
-					
+    		
+    		comment = $(comment);
+    		
+            // Remove any notifications
+    		if(recommendation.isNew) {
+        		// Highight new comments
+        		comment.addClass("new");
+        		
+        		// Remove notification
+        		id = recommendation.id
+        		n = new NotificationModel({id: id})
+        		n.destroy();
+        		console.log("Destroyed notification for " + id)
+    		}
+    		
+    		list.append(comment);
+    				
 		});
       
     },

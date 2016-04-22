@@ -8,6 +8,7 @@
 
 import UIKit
 import FBSDKCoreKit
+import GoogleMaps
 
 class LoadingView: UIView {
     override func drawRect(rect: CGRect) {
@@ -40,22 +41,70 @@ class LoadingViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
+        view.setNeedsDisplay()
         /* Facebook */
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
             User.instance
             CommonUI.instance
-            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate()
-            FacebookNetworkDAO.instance.getFacebookData()
-            FBNetworkDAO.instance.getPrompts()
-            FBNetworkDAO.instance.getFriends()
-            FBNetworkDAO.instance.getQueries()
-            FBNetworkDAO.instance.getRecommendationsForUser()            
-            
-//            Updater.instance.start()
-            
-            navigationController?.pushViewController(MainScreenViewController(), animated: false)
+            FBNetworkDAO.instance.postFacebookTokenAndAuthenticate({
+                FacebookNetworkDAO.instance.getFacebookData({ (successful) in
+                    FBNetworkDAO.instance.getFriends({
+                        FBNetworkDAO.instance.getRecommendationsForUser({
+                            FBNetworkDAO.instance.getQueries({
+                                
+                                for recommendation: Recommendation in User.instance.recommendations {
+                                    if recommendation.type == .place {
+                                        NSOperationQueue.mainQueue().addOperationWithBlock {
+                                            GMSPlacesClient.sharedClient().lookUpPlaceID(recommendation.detail, callback: { (place: GMSPlace?, error: NSError?) in
+                                                if error != nil {
+                                                    NSLog("\(error!.description)")
+                                                    NSLog("\(error!.debugDescription)")
+                                                } else {
+                                                    if let place = place {
+                                                        recommendation.placeName = place.name
+                                                        recommendation.placeAddress = place.formattedAddress
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }
+                                }
+                                
+                                for query: Query in User.instance.queryHistory.queries {
+                                    if let solutions = query.solutions {
+                                        for solution: Solution in solutions {
+                                            if solution.type == .place {
+                                                NSOperationQueue.mainQueue().addOperationWithBlock {
+                                                    GMSPlacesClient.sharedClient().lookUpPlaceID(solution.detail, callback: { (place: GMSPlace?, error: NSError?) in
+                                                        if error != nil {
+                                                            NSLog("\(error!.description)")
+                                                        } else {
+                                                            if let place = place {
+                                                                solution.placeName = place.name
+                                                                solution.placeAddress = place.formattedAddress
+                                                                
+                                                                for recommendation: Recommendation in solution.recommendations {
+                                                                    recommendation.placeName = place.name
+                                                                    recommendation.placeAddress = place.formattedAddress
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                self.navigationController?.pushViewController(MainScreenViewController(), animated: false)
+                            })
+                        })
+                        
+                    })
+                })
+            })            
         }
     }
     

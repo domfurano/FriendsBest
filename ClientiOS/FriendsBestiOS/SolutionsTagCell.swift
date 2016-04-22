@@ -87,8 +87,8 @@ class SolutionsTagCell: UITableViewCell {
                         relatedBy: .Equal,
                         toItem: prevLabel,
                         attribute: .Right,
-                        multiplier: 1.1,
-                        constant: 0.0
+                        multiplier: 1.0,
+                        constant: 8.0
                     )
                 )
             }

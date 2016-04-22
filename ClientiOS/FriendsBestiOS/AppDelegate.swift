@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         // Google
-        GMSServices.provideAPIKey("AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8")
+        GMSServices.provideAPIKey("AIzaSyAYaNO8DDk-1s_IFnQgBA3QGqce21JwIZg")
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         

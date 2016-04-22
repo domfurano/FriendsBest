@@ -10,6 +10,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.shortcuts import redirect
 import hmac
 import os
 import json
@@ -198,6 +199,12 @@ class NotificationViewSet(  mixins.DestroyModelMixin,
     
     queryset = Notification.objects.order_by('query')
     
+    # GET
+    def list(self, request):
+        count = Notification.objects.filter(query__user=request.user).count()
+        result = {"notifications" : count}
+        return Response(result)
+    
     def destroy(self, request, pk=None):
         # pk is the id of the recommendation
         try:
@@ -297,6 +304,13 @@ class FacebookLogin(SocialLoginView):
         if firsttime:
             generatePromptsForNewUser(self.user)
 
+# This exists to clear the facebook logout cookie
+def fblogout(request):
+    response = redirect('/')
+    response.delete_cookie('fblo_1519942364964737')
+    response.delete_cookie('sessionid')
+    response.delete_cookie('csrftoken')
+    return response
 
 def deploy(request):
     if request.method != 'POST':
@@ -340,6 +354,28 @@ def deploy(request):
 
 def error(request):
     log = subprocess.check_output(['bash', '/home/dominic/scripts/apache_error_log.sh'])
-    response = HttpResponse('<html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
+    response = HttpResponse('<!DOCTYPE html><html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
     response.status_code = 200
     return response
+
+
+def django_error(request):
+    log = subprocess.check_output(['bash', '/home/dominic/scripts/django_log.sh'])
+    response = HttpResponse('<!DOCTYPE html><html><head></head><body><pre>' + log.decode() + '</pre></body></html>')
+    response.status_code = 200
+    return response
+
+
+def db(request):
+    if request.method == 'POST':
+        query = request.POST.get('query', '')
+        output = subprocess.check_output(['sqlite3',
+                                          '/home/dominic/FriendsBest/ServerDjango/db.sqlite3',
+                                          query])
+        response = HttpResponse(output.decode())
+        response.status_code = 200
+        return response
+    else:
+        response = HttpResponse('POST')
+        response.status_code = 420
+        return response

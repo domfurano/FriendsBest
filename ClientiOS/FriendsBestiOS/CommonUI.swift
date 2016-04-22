@@ -114,6 +114,7 @@ class CommonUI {
     static func tagLabel(tag: String) -> UILabel {
         let label: UILabel = UILabel()
         label.text = "  \(tag)  " // TODO: This is a hack. Probably want to subclass UILabel eventually
+        label.font = UIFont(name: "Proxima Nova Cond", size: 16.0)
         label.backgroundColor = UIColor.colorFromHex(0xededed)
         label.layer.shadowOpacity = 0.33
         label.layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
@@ -221,8 +222,6 @@ extension UIColor {
                        alpha: 1.0)
     }
 }
-
-
 
 
 

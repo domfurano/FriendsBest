@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#form").submit(function (e) {
+                var url = "https://www.friendsbest.net/fb/db/";
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: $("#form").serialize(),
+                    success: function (data) {
+                        $('#output').html(data);
+                    }
+                });
+
+                e.preventDefault();
+            });
+        });
+    </script>
+</head>
+<body style="padding: 12px 12px 12px 12px;">
+    <form id="form">
+        <input type="text" name="query" style="width: 1024px;">
+        <input type="submit">
+    </form>
+    <div>
+        <pre id="output"></pre>
+    </div>
+</body>
+</html>

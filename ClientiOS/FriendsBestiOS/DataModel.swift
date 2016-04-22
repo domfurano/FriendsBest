@@ -95,7 +95,7 @@ class Friend: Equatable, Hashable {
     private(set) var facebookID: String
     private(set) var name: String
     var muted: Bool?
-    private(set) var squarePicture: UIImageView?
+    private(set) var squarePicture: UIImageView = UIImageView()
     var hashValue: Int {
         return facebookID.hashValue
     }
@@ -270,6 +270,9 @@ class Solution: Equatable, Hashable {
     private(set) var _recommendations: Set<Recommendation>
     private(set) var detail: String
     private(set) var type: RecommendationType
+    private(set) var query: Query
+    var placeName: String?
+    var placeAddress: String?
     
     var recommendations: [Recommendation] {
         get {
@@ -285,10 +288,21 @@ class Solution: Equatable, Hashable {
         return self.detail.hash
     }
     
-    init(recommendations: Set<Recommendation>, detail: String, type: RecommendationType) {
+    init(recommendations: Set<Recommendation>, detail: String, type: RecommendationType, query: Query) {
         self._recommendations = recommendations
         self.detail = detail
         self.type = type
+        self.query = query
+        NSOperationQueue.mainQueue().addOperationWithBlock { 
+            GMSPlacesClient.sharedClient().lookUpPlaceID(self.detail, callback: { (place: GMSPlace?, error: NSError?) in
+                if error == nil {
+                    if let place = place {
+                        self.placeName = place.name
+                        self.placeAddress = place.formattedAddress
+                    }
+                }
+            })
+        }
     }
 }
 
@@ -298,17 +312,22 @@ func ==(lhs: Solution, rhs: Solution) -> Bool {
 
 
 enum RecommendationType: String {
-    case TEXT
-    case PLACE
-    case URL
+    case text
+    case place
+    case url
 }
+
+import GoogleMaps
 
 class Recommendation: Equatable, Hashable {
     
-    private(set) var friend: Friend
+    private(set) var friend: Friend?
     private(set) var comment: String
     private(set) var detail: String
     private(set) var type: RecommendationType
+    private(set) var urlTitle: String?
+    var placeName: String?
+    var placeAddress: String?
     var ID: Int
     var tags: [String]?
     var new: Bool?
@@ -317,12 +336,21 @@ class Recommendation: Equatable, Hashable {
         return self.ID
     }
     
-    init(friend: Friend, comment: String, detail: String, type: RecommendationType, ID: Int) {
+    init(friend: Friend?, comment: String, detail: String, type: RecommendationType, ID: Int) {
         self.friend = friend
         self.comment = comment
         self.detail = detail
         self.type = type
         self.ID = ID
+    }
+    
+    func userRecommendation() -> UserRecommendation {
+        let userRecommendation: UserRecommendation = UserRecommendation()
+        userRecommendation.type = type
+        userRecommendation.detail = detail
+        userRecommendation.tags = tags
+        userRecommendation.comments = comment
+        return userRecommendation
     }
 }
 
@@ -360,6 +388,10 @@ class Prompts {
         assert(false)
     }
     
+    func deleteAllPrompts() {
+        self._prompts.removeAll()
+    }
+    
 }
 
 
@@ -374,7 +406,7 @@ class Prompt: Equatable, Hashable {
     var hashValue: Int {
         return self.ID
     }
-
+    
     init(article: String, tags: [String], tagString: String, friend: Friend?, ID: Int) {
         self.article = article
         self.tags = tags
