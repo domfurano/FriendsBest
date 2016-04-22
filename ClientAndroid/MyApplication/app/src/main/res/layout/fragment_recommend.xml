@@ -96,8 +96,10 @@
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="@dimen/vertical_margin"
             android:layout_marginRight="@dimen/side_margin"
+            android:elevation="6dp"
+            app:pressedTranslationZ="12dp"
             app:backgroundTint="@color/appGreen"
             android:src="@drawable/ic_create_light_vector"
-            />
+            app:rippleColor="@android:color/white"/>
     </LinearLayout>
 </ScrollView>

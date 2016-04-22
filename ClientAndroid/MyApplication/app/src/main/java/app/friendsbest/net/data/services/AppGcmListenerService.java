@@ -59,7 +59,7 @@ public class AppGcmListenerService extends GcmListenerService {
                     message = user + " recommends " + detail;
                 }
                 else {
-                    message =  user + " and " + _recommendationMessages + "+ others made recommendations";
+                    message =  "From " + user + " and " + _recommendationMessages + " others";
                     title = "New Recommendations";
                 }
                 sendNotification(RECOMMENDATION_ID, message, title);

@@ -62,11 +62,19 @@ public class RecommendationFragment extends Fragment implements OnListItemClickL
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        _presenter.onResume();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         while (!_deleteQueue.isEmpty()) {
             _presenter.deleteRecommendation(_deleteQueue.poll());
         }
+
+        _presenter.onPause();
     }
 
     private void init(Bundle arguments) {

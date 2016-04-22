@@ -65,6 +65,18 @@ public class PostRecommendationFragment extends Fragment implements RecommendVie
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        _presenter.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _presenter.onPause();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_create) {
             submitData();

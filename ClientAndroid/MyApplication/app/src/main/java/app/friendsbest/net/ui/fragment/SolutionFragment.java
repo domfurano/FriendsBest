@@ -56,11 +56,11 @@ public class SolutionFragment extends Fragment implements
     private CallbackManager _callbackManager;
     private ShareDialog _shareDialog;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Nullable
@@ -73,7 +73,7 @@ public class SolutionFragment extends Fragment implements
         _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         _adapter = new SolutionAdapter(getActivity(), _solutions, this);
         _recyclerView.setAdapter(_adapter);
-        if (_solutions.size() > 0){
+        if (_solutions.size() > 1){
             hideProgressBar();
         }
         return rootView;
@@ -89,6 +89,7 @@ public class SolutionFragment extends Fragment implements
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange(_queryResult.getTagString());
         _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
+        _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
         _listener.showBottomNavigationBar();
 
         if (savedInstanceState != null) {
@@ -100,10 +101,21 @@ public class SolutionFragment extends Fragment implements
         }
         else {
             _presenter = new SolutionPresenter(this, getActivity().getApplicationContext());
-            _presenter.getData(_queryResult);
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        _presenter.onResume();
+        _presenter.getData(_queryResult);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _presenter.onPause();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.friendsbest.net.R;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
 import app.friendsbest.net.presenter.AppLoginPresenter;
 import app.friendsbest.net.ui.view.LoginView;
 
@@ -52,6 +52,16 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         _coordinatorLayout = (CoordinatorLayout) findViewById(R.id.login_coordinator_layout);
         _facebookTokenMap = new HashMap<>();
         _presenter = new AppLoginPresenter(this, getApplicationContext());
+    }
+
+    public void onResume(){
+        super.onResume();
+        _presenter.onResume();
+    }
+
+    public void onPause() {
+        super.onPause();
+        _presenter.onPause();
     }
 
     @Override

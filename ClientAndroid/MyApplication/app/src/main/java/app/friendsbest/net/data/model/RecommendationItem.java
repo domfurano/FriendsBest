@@ -3,7 +3,9 @@ package app.friendsbest.net.data.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RecommendationItem {
+import java.util.Comparator;
+
+public class RecommendationItem implements Comparator {
 
     @SerializedName("comment")
     @Expose
@@ -20,7 +22,6 @@ public class RecommendationItem {
     @SerializedName("id")
     @Expose
     private int _id;
-
 
     public String getComment() {
         return _comment;
@@ -52,5 +53,35 @@ public class RecommendationItem {
 
     public void setId(int id) {
         _id = id;
+    }
+
+    @Override
+    public int compare(Object lhs, Object rhs) {
+        RecommendationItem leftHand = (RecommendationItem) lhs;
+        RecommendationItem rightHand = (RecommendationItem) lhs;
+
+        if (leftHand.isNew() && !rightHand.isNew()) {
+            return 1;
+        }
+        else if (!leftHand.isNew() && rightHand.isNew()) {
+            return -1;
+        }
+        else {
+            User leftUser = leftHand.getUser();
+            User rightUser = rightHand.getUser();
+
+            if (leftHand != null && rightHand != null) {
+                return leftUser.getName().compareTo(rightUser.getName());
+            }
+            else if (leftHand != null) {
+                return 1;
+            }
+            else if (rightHand != null) {
+                return -1;
+            }
+            else {
+                return leftHand.getComment().compareTo(rightHand.getComment());
+            }
+        }
     }
 }

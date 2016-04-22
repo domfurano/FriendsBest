@@ -3,11 +3,15 @@ package app.friendsbest.net.presenter;
 import android.content.Context;
 
 import com.facebook.Profile;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.Map;
 
-import app.friendsbest.net.data.services.Repository;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.events.LoginEvent;
+import app.friendsbest.net.data.utilities.BusProvider;
+import app.friendsbest.net.data.utilities.Repository;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
 import app.friendsbest.net.presenter.interfaces.LoginPresenter;
 import app.friendsbest.net.ui.view.LoginView;
 
@@ -16,11 +20,12 @@ public class AppLoginPresenter implements LoginPresenter {
     private LoginView _loginView;
     private PreferencesUtility _preferencesUtility;
     private Repository _repository;
+    private Bus _bus;
 
     public AppLoginPresenter(LoginView loginView, Context context){
         _loginView = loginView;
+        _bus = BusProvider.getInstance();
         _preferencesUtility = PreferencesUtility.getInstance(context);
-        onStart();
     }
 
     @Override
@@ -46,12 +51,12 @@ public class AppLoginPresenter implements LoginPresenter {
     public void checkLoginStatus() {
         String token = _preferencesUtility.getToken();
         if (token != null) {
-            _repository = new Repository(this, token);
+            _repository = new Repository(token, _bus);
             _repository.checkLoginStatus();
         }
         else {
             _loginView.showLoginButton();
-            _repository = new Repository(this, null);
+            _repository = new Repository(_bus);
             _loginView.registerFacebookCallback();
         }
     }
@@ -66,23 +71,19 @@ public class AppLoginPresenter implements LoginPresenter {
         _preferencesUtility.saveUserName(profile.getName());
     }
 
-    @Override
-    public void sendToPresenter(Map<String, String> responseData) {
-        if (responseData != null) {
-            String value;
-            if ((value = responseData.get(PreferencesUtility.ACCESS_TOKEN_KEY)) != null){
-                _preferencesUtility.saveToken(value);
+    @Subscribe
+    public void onLoadLoginEvent(LoginEvent event) {
+        if (event != null) {
+            if (event.isAccessTokenKey()) {
+                _preferencesUtility.saveToken(event.getKeyValue());
                 _loginView.getUserProfile();
                 onUserLogin();
-            }
-            else if (responseData.containsKey(PreferencesUtility.FACEBOOK_TOKEN_KEY)) {
-                _repository.getAuthToken(responseData);
-            }
-            else if ((value = responseData.get(PreferencesUtility.LOGIN_VALIDITY_KEY)) != null) {
-                if (value.equals(PreferencesUtility.VALID)) {
+            } else if (event.isFacebookToken()) {
+                _repository.getAuthToken(event.getLoginEvent());
+            } else if (event.isLoginValidityKey()) {
+                if (event.getKeyValue().equals(PreferencesUtility.VALID)) {
                     _loginView.startMainView();
-                }
-                else {
+                } else {
                     onLoginFail();
                 }
             }
@@ -90,5 +91,16 @@ public class AppLoginPresenter implements LoginPresenter {
         else {
             onLoginFail();
         }
+    }
+
+    @Override
+    public void onPause() {
+        _bus.unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+        _bus.register(this);
+        onStart();
     }
 }

@@ -1,4 +1,4 @@
-package app.friendsbest.net.data.services;
+package app.friendsbest.net.data.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;

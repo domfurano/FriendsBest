@@ -49,7 +49,8 @@
                     android:layout_height="@dimen/icon_medium"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/ic_home_active_vector"/>
+                    android:src="@drawable/ic_home_active_vector"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -69,17 +70,20 @@
 
             <RelativeLayout
                 android:id="@+id/bottom_navigation_create"
+                android:background="?attr/selectableItemBackground"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.33">
 
                 <ImageButton
                     android:id="@+id/bottom_navigation_create_icon"
+                    android:transitionName="add_recommendation_button"
                     android:layout_width="@dimen/icon_medium"
                     android:layout_height="@dimen/icon_medium"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/ic_create_green"/>
+                    android:src="@drawable/ic_create_green"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

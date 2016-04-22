@@ -23,6 +23,9 @@ public class PromptCard {
     @SerializedName("article")
     @Expose
     private String _article;
+    @SerializedName("urgent")
+    @Expose
+    private boolean _urgent;
 
     public String getTagstring() {
         return _tagstring;
@@ -62,5 +65,13 @@ public class PromptCard {
 
     public void setArticle(String article) {
         this._article = article;
+    }
+
+    public boolean isUrgent() {
+        return _urgent;
+    }
+
+    public void setUrgent(boolean urgent) {
+        _urgent = urgent;
     }
 }

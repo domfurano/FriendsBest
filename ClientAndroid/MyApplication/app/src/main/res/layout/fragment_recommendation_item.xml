@@ -4,6 +4,29 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:id="@+id/recommendation_item_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:layout_marginBottom="@dimen/padding_medium">
+
+        <ImageView
+            android:id="@+id/recommendation_item_info_icon"
+            android:layout_width="@dimen/icon_small"
+            android:layout_height="@dimen/icon_small"
+            android:layout_marginLeft="@dimen/margin_large"/>
+        <TextView
+            android:layout_toRightOf="@+id/recommendation_item_info_icon"
+            android:id="@+id/recommendation_item_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/padding_medium"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/solution_item_recycler_view"
         android:layout_width="match_parent"

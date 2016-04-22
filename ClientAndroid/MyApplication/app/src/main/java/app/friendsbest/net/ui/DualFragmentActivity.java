@@ -16,6 +16,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +36,7 @@ import app.friendsbest.net.R;
 import app.friendsbest.net.data.model.OnListItemClickListener;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.data.services.ImageService;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
 import app.friendsbest.net.data.services.RegistrationIntentService;
 import app.friendsbest.net.presenter.DualFragmentPresenter;
 import app.friendsbest.net.ui.fragment.FriendFragment;
@@ -75,6 +77,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
     private DualFragmentPresenter _fragmentPresenter;
     private BroadcastReceiver _broadcastReceiver;
     private LinearLayout _bottomNavigationBar;
+    private GoogleApiClient _googleApiClient;
     private ImageButton _recommendationButton;
     private boolean _isReceiverRegistered;
     private ImageView _profileButton;
@@ -117,16 +120,15 @@ public class DualFragmentActivity extends AppCompatActivity implements
         registerReceiver();
         String pictureUri = PreferencesUtility.getInstance(getApplicationContext()).getProfilePictureUri();
         ImageService.getInstance(getApplicationContext()).retrieveImage(_profileButton, pictureUri, 36, 36);
-
         setSupportActionBar(_toolbar);
-        new GoogleApiClient
+        _googleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build();
 
-        _fragmentPresenter = new DualFragmentPresenter(this, getApplicationContext());
+        _fragmentPresenter = new DualFragmentPresenter(this);
         _fragmentPresenter.setContentClass(PROMPT_QUERY_ID);
         hideSupportActionBar();
         TYPEFACE = FontManager
@@ -167,7 +169,7 @@ public class DualFragmentActivity extends AppCompatActivity implements
 
     @Override
     public void setContentFragment(String fragmentId) {
-        Fragment fragment = getFragmentTypeByTag(fragmentId);
+        Fragment fragment = _fragmentPresenter.getFragmentByTag(fragmentId);
         startFragment(fragment, fragmentId);
     }
 
@@ -180,6 +182,11 @@ public class DualFragmentActivity extends AppCompatActivity implements
     @Override
     public void onFragmentTitleChange(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public void onFragmentSubtitleChange(String subtitle) {
+        _toolbar.setSubtitle(subtitle);
     }
 
     @Override
@@ -196,13 +203,13 @@ public class DualFragmentActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentChange(String fragmentTag) {
-        Fragment fragment = getFragmentTypeByTag(fragmentTag);
+        Fragment fragment = _fragmentPresenter.getFragmentByTag(fragmentTag);
         startFragment(fragment, fragmentTag);
     }
 
     @Override
     public void onFragmentChange(String fragmentTag, Bundle bundle) {
-        Fragment fragment = getFragmentTypeByTag(fragmentTag);
+        Fragment fragment = _fragmentPresenter.getFragmentByTag(fragmentTag);
         fragment.setArguments(bundle);
         startFragment(fragment, fragmentTag);
     }
@@ -240,35 +247,6 @@ public class DualFragmentActivity extends AppCompatActivity implements
         }
     }
 
-    private Fragment getFragmentTypeByTag(String fragmentTag){
-        switch (fragmentTag) {
-            case ADD_RECOMMENDATION_ID:
-                return new RecommendationOptionFragment();
-            case CREATE_RECOMMENDATION_ID:
-                return new PostRecommendationFragment();
-            case SEARCH_HISTORY_ID:
-                return new QueryHistoryFragment();
-            case VIEW_SOLUTION_ID:
-                return new SolutionFragment();
-            case VIEW_SOLUTION_ITEM_ID:
-                return new RecommendationItemFragment();
-            case PROFILE_ID:
-                return new ProfileFragment();
-            case NAVIGATION_ID:
-                return new NavigationFragment();
-            case FRIENDS_ID:
-                return new FriendFragment();
-            case VIEW_RECOMMENDATIONS_ID:
-                return new RecommendationFragment();
-            case PROMPT_QUERY_ID:
-                return new PromptFragment();
-            case WEB_VIEW_ID:
-                return new WebFragment();
-            default:
-                return null;
-        }
-    }
-
     private void startFragment(Fragment fragment, String fragmentTag) {
         FragmentManager manager = getFragmentManager();
         if (fragment == null) {
@@ -279,10 +257,12 @@ public class DualFragmentActivity extends AppCompatActivity implements
             _activeButton = fragmentTag;
             if (backStackFragment == null || !backStackFragment.isVisible()) {
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.replace(R.id.dual_fragment_content_frame, fragment, fragmentTag);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                fragmentTransaction.commit();
+                fragmentTransaction
+                        .replace(R.id.dual_fragment_content_frame, fragment, fragmentTag)
+                        .addSharedElement(_recommendationButton, "Add Recommendation")
+                        .addToBackStack(null)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .commit();
             }
         }
     }
@@ -331,5 +311,9 @@ public class DualFragmentActivity extends AppCompatActivity implements
                     new IntentFilter(RegistrationIntentService.REGISTRATION_COMPLETE));
             _isReceiverRegistered = true;
         }
+    }
+
+    public GoogleApiClient getGoogleApiClient(){
+        return _googleApiClient;
     }
 }

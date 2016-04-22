@@ -18,9 +18,11 @@ public class QueryHistoryAdapter extends RecyclerView.Adapter<QueryHistoryAdapte
 
     private final OnListItemClickListener<Query> _listener;
     private final LayoutInflater _inflater;
+    private Context _context;
     private List<Query> _queries = new ArrayList<>();
 
     public QueryHistoryAdapter(Context context, List<Query> queries, OnListItemClickListener listener) {
+        _context = context;
         _inflater = LayoutInflater.from(context);
         _queries = queries;
         _listener = listener;

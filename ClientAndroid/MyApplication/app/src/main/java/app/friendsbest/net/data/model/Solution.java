@@ -23,6 +23,10 @@ public class Solution {
     @Expose
     private int _notifications;
 
+    @SerializedName("address")
+    @Expose
+    private String _address;
+
     public String getType() {
         return _type;
     }
@@ -61,6 +65,14 @@ public class Solution {
 
     public void setNotifications(int notifications) {
         _notifications = notifications;
+    }
+
+    public String getAddress() {
+        return _address;
+    }
+
+    public void setAddress(String address) {
+        _address = address;
     }
 
     @Override

@@ -2,6 +2,7 @@ package app.friendsbest.net.data.model;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,12 +70,18 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
         public void bind(final Recommendation recommendation, final OnListItemClickListener listener) {
             List<String> tags = recommendation.getTags();
             StringBuilder sb = new StringBuilder(tags.get(0));
+            String type = recommendation.getType();
             for (int i = 1; i < tags.size(); i++) {
                 sb.append(" ").append(tags.get(i));
             }
+
             _commentTextView.setText(recommendation.getComment());
             _detailTextView.setText(recommendation.getDetail());
             _tagsTextView.setText(sb.toString());
+
+            if (type.equals("url")) {
+                Linkify.addLinks(_detailTextView, Linkify.WEB_URLS);
+            }
 
             _deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
