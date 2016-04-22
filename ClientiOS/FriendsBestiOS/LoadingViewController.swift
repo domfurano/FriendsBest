@@ -9,6 +9,7 @@
 import UIKit
 import FBSDKCoreKit
 import GoogleMaps
+import PINCache
 
 class LoadingView: UIView {
     override func drawRect(rect: CGRect) {
@@ -53,58 +54,12 @@ class LoadingViewController: UIViewController {
                     FBNetworkDAO.instance.getFriends({
                         FBNetworkDAO.instance.getRecommendationsForUser({
                             FBNetworkDAO.instance.getQueries({
-                                
-                                for recommendation: Recommendation in User.instance.recommendations {
-                                    if recommendation.type == .place {
-                                        NSOperationQueue.mainQueue().addOperationWithBlock {
-                                            GMSPlacesClient.sharedClient().lookUpPlaceID(recommendation.detail, callback: { (place: GMSPlace?, error: NSError?) in
-                                                if error != nil {
-                                                    NSLog("\(error!.description)")
-                                                    NSLog("\(error!.debugDescription)")
-                                                } else {
-                                                    if let place = place {
-                                                        recommendation.placeName = place.name
-                                                        recommendation.placeAddress = place.formattedAddress
-                                                    }
-                                                }
-                                            })
-                                        }
-                                    }
-                                }
-                                
-                                for query: Query in User.instance.queryHistory.queries {
-                                    if let solutions = query.solutions {
-                                        for solution: Solution in solutions {
-                                            if solution.type == .place {
-                                                NSOperationQueue.mainQueue().addOperationWithBlock {
-                                                    GMSPlacesClient.sharedClient().lookUpPlaceID(solution.detail, callback: { (place: GMSPlace?, error: NSError?) in
-                                                        if error != nil {
-                                                            NSLog("\(error!.description)")
-                                                        } else {
-                                                            if let place = place {
-                                                                solution.placeName = place.name
-                                                                solution.placeAddress = place.formattedAddress
-                                                                
-                                                                for recommendation: Recommendation in solution.recommendations {
-                                                                    recommendation.placeName = place.name
-                                                                    recommendation.placeAddress = place.formattedAddress
-                                                                }
-                                                            }
-                                                        }
-                                                    })
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                
                                 self.navigationController?.pushViewController(MainScreenViewController(), animated: false)
                             })
                         })
-                        
                     })
                 })
-            })            
+            })
         }
     }
     

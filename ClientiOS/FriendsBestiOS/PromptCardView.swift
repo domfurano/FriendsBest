@@ -64,11 +64,11 @@ class PromptCardView: UIView {
         }
         
         if prompt.friend != nil {
-            friendPicture = CommonUI.instance.getFacebookProfileUIImageView(prompt.friend!.facebookID, size: CommonUI.FacbookImageSize.square)
+            friendPicture = CommonUI.instance.getFacebookProfileUIImageView(prompt.friend!.facebookID, facebookSize: CommonUI.FacbookImageSize.square, closure: nil, payload: nil)
         }
         
         titleLabel.text = "Do you have a recommendation for"
-        tagLabel.text = self.prompt!.tagString.isEmpty ? self.prompt!.tags.joinWithSeparator(" ") : self.prompt!.tagString
+        tagLabel.text = self.prompt!.tagString//.isEmpty ? self.prompt!.tags.joinWithSeparator(" ") : self.prompt!.tagString
         subTitleLabel.attributedText = attributedString
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false

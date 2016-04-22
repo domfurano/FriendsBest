@@ -28,33 +28,24 @@ class SolutionsView: UITableView {
 
 class SolutionsViewController: UITableViewController {
 
-    var QUERY: Query!
+    var QUERY: Query?
     
-    convenience init(query: Query, tags: [String]) {
+    convenience init(query: Query?, tags: [String]) {
         self.init()
-        
         self.QUERY = query
-        
-        User.instance.querySolutionsUpdatedClosure = {
-            [weak self] (queryID: Int) -> Void in
-//            if self?.QUERY == nil {
-//                let query = User.instance.queryHistory.getQueryByID(queryID)!
-//                let incomingTags: [String] = query.tags
-//                if User.instance.queryHistory.tagsEqual(tags, tag2: incomingTags) {
-//                    self?.QUERY = query
-//                }
-//            }
-            
-            if self?.QUERY.ID == queryID {
-                self?.tableView.reloadData()
-                self?.refreshControl?.endRefreshing()
-            }
-
-        }
     }
     
     override func loadView() {
-        view = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+        tableView = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+        
+//        User.instance.closureNewSolution = { (forQuery: Query, index: Int) in
+//            if self.QUERY.ID == forQuery.ID {
+//                self.tableView.beginUpdates()
+//                self.tableView.insertRowsAtIndexPaths([NSIndexPath(index: index)], withRowAnimation: .Left)
+//                self.tableView.endUpdates()
+//                self.refreshControl?.endRefreshing()
+//            }
+//        }
     }
     
     override func viewDidLoad() {
@@ -106,8 +97,10 @@ class SolutionsViewController: UITableViewController {
     }
     
     func refreshData() {
-        refreshControl!.beginRefreshing()
-        FBNetworkDAO.instance.getQuerySolutions(QUERY, callback: nil)
+        refreshControl?.beginRefreshing()
+        FBNetworkDAO.instance.getQuerySolutions(QUERY!, callback: {
+            self.refreshControl?.endRefreshing()
+        })
     }
     
     func back() {
@@ -121,26 +114,37 @@ class SolutionsViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 1
-        }
-        
-        if let solutionCount = QUERY.solutions?.count {
-            return solutionCount
         } else {
-            return 0
+            return QUERY!.solutions.count
         }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = SolutionsTagCell(tags: QUERY.tags, style: .Default, reuseIdentifier: nil)
+            let cell = SolutionsTagCell(tags: QUERY!.tags, style: .Default, reuseIdentifier: nil)
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell
         } else {
-            let solution: Solution = QUERY.solutions![indexPath.row]
-            let cell: SolutionCell = SolutionCell(solution: solution)
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
+            let cell: SolutionCell = SolutionCell()
+            let solution: Solution = QUERY!.solutions[indexPath.row]
+            cell.setupForViewing(solution.detail)
+            switch solution.type {
+            case .text:
+                break
+            case .place:
+                GooglePlace.loadPlace(solution.detail, callback: { (place) in
+                    cell.setupForViewing(place.name)
+                })
+                break
+            case .url:
+                if let url: NSURL = NSURL(string: solution.detail) {
+                    if let host: String = url.host {
+                        cell.setupForViewing(host)
+                    }
+                }
+                break
+            }
             return cell
         }
     }
@@ -149,6 +153,6 @@ class SolutionsViewController: UITableViewController {
         if indexPath.section == 0 {
             return
         }
-        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY.solutions![indexPath.row]), animated: true)
+        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY!.solutions[indexPath.row]), animated: true)
     }
 }

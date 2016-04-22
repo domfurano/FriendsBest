@@ -14,15 +14,19 @@ enum RecommendationFormType {
 }
 
 class NewRecommendationFormViewController: FormViewController {
-    var userRecommendation: UserRecommendation!
+    var newRecommendation: NewRecommendation!
     var type: RecommendationFormType!
     
     var lastString: String? = nil
     
-    convenience init(recommendation: UserRecommendation, type: RecommendationFormType) {
+    convenience init(newRecommendation: NewRecommendation, type: RecommendationFormType) {
         self.init()
-        self.userRecommendation = recommendation
+        self.newRecommendation = newRecommendation
         self.type = type
+    }
+    
+    override func loadView() {
+        view = NewRecommendationFormView()
     }
     
     override func viewDidLoad() {
@@ -56,19 +60,19 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Recommendation")
             <<< TextRow() {
                 $0.tag = "detail"
-                switch self.userRecommendation.type! {
+                switch self.newRecommendation.type! {
                 case .text:
-                    $0.value = self.userRecommendation.detail!
+                    $0.value = self.newRecommendation.detail!
                     $0.disabled = false
                 case .url:
-                    $0.value = self.userRecommendation.detail!
+                    $0.value = self.newRecommendation.detail!
                     $0.disabled = false
                     break
                 case .place:
-                    if self.userRecommendation.placeName != nil {
-                        $0.value = self.userRecommendation.placeName!
-                    } else {
-                    }
+//                    if self.userRecommendation.placeName != nil {
+//                        $0.value = self.userRecommendation.placeName!
+//                    } else {
+//                    }
                     $0.disabled = true
                     break
                 }
@@ -105,14 +109,14 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Comments")
             <<< TextAreaRow() {
                 $0.tag = "comment"
-                if self.userRecommendation.comments != nil {
-                    $0.value = self.userRecommendation.comments
+                if self.newRecommendation.comments != nil {
+                    $0.value = self.newRecommendation.comments
                 }
         }
         
-        if userRecommendation.type! == .place {
+        if newRecommendation.type! == .place {
             //            let row: PlaceImageRow = self.form.rowByTag("placeImageRow")!
-            GMSPlacesClient.sharedClient().lookUpPlaceID(userRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
+            GMSPlacesClient.sharedClient().lookUpPlaceID(newRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
                 if error != nil {
                     return
                 }
@@ -146,13 +150,13 @@ class NewRecommendationFormViewController: FormViewController {
             return
         }
         
-        if userRecommendation.type! == .text {
-            userRecommendation.detail = (values["detail"]!! as! String)
+        if newRecommendation.type! == .text {
+            newRecommendation.detail = (values["detail"]!! as! String)
         }
-        userRecommendation.tags = (values["keywords"]!! as! String).componentsSeparatedByString(" ")
-        userRecommendation.comments = values["comments"] == nil ? "" : (values["comments"]!! as! String)
+        newRecommendation.tags = (values["keywords"]!! as! String).componentsSeparatedByString(" ")
+        newRecommendation.comments = values["comments"] == nil ? "" : (values["comments"]!! as! String)
         
-        FBNetworkDAO.instance.postNewRecommendtaion(userRecommendation, callback: nil)
+        FBNetworkDAO.instance.postNewRecommendtaion(newRecommendation, callback: nil)
         
         for vc in (navigationController?.viewControllers)! {
             if vc.isKindOfClass(MainScreenViewController) {
@@ -306,5 +310,21 @@ class PlaceImageCell : Cell<Bool>, CellType {
     }
     
     func valueChanged() {
+    }
+}
+
+class NewRecommendationFormView: UITableView {
+    override func drawRect(rect: CGRect) {
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
+        
+        CommonUI.drawGradientForContext(
+            [
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
+            ],
+            frame: self.bounds,
+            context: context
+        )
     }
 }

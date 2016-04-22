@@ -67,7 +67,7 @@ class SolutionDetailViewController: UITableViewController {
         
         /* Refresh Control */
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x949494)
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
     }
@@ -95,7 +95,7 @@ class SolutionDetailViewController: UITableViewController {
     
     func refreshData() {
         refreshControl?.beginRefreshing()
-        FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query) {
+        FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query!) {
             self.tableView.reloadData()
             self.refreshControl?.endRefreshing()
         }
@@ -124,14 +124,30 @@ class SolutionDetailViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let recommendation: Recommendation = SOLUTION.recommendations[indexPath.row]
+        let recommendation: FriendRecommendation = SOLUTION.recommendations[indexPath.row]
         if indexPath.section == 0 {
             let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(recommendation: recommendation)
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell
         } else {
-            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)            
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)
+            switch recommendation.solution!.type {
+            case .text:
+                break
+            case .place:
+                GooglePlace.loadPlace(recommendation.solution!.detail, callback: { (place) in
+                    cell.setupForViewing(place.name)
+                })
+                break
+            case .url:
+                if let url: NSURL = NSURL(string: recommendation.solution!.detail) {
+                    if let host: String = url.host {
+                        cell.setupForViewing(host)
+                    }
+                }
+                break
+            }
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell

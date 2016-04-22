@@ -119,19 +119,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         /* Closure implementations */
         
-        User.instance.promptsFetchedClosure = {
-            [weak self] in
-            self?.showPromptCards()
-        }
-        
-        User.instance.newSolutionAlert = {
-            [weak self] in
-            self?.showAlert()
-        }
-        
-        User.instance.newRecommendationAlert = {
-            [weak self] in
-            self?.showAlert()
+        User.instance.closureNewPrompts = {
+            self.showPromptCards()
         }
         
         recommendationPicker.buttonPushedDelegate = { buttonType in
@@ -180,8 +169,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         setToolbarItems()
         
-        newUserRecommendation = UserRecommendation()
-        
+        newRecommendation = NewRecommendation()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -191,14 +179,14 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func viewWillDisappear(animated: Bool) {
         Updater.instance.STAHP()
-        User.instance.prompts.deleteAllPrompts()
+        User.instance.myPrompts.removeAll()
     }
     
     /*** Delegate implementation ***/
     
     func showPromptCards() {
         var changed: Bool = false
-        outerloop: for prompt in User.instance.prompts.prompts {
+        outerloop: for prompt in User.instance.myPrompts {
             for cardView in self.cardViews {
                 if prompt.ID == cardView.prompt!.ID {
                     continue outerloop
@@ -218,29 +206,29 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         }
     }
     
-    func showAlert() {
-        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
-        navigationItem.leftBarButtonItem = historyIconBarButtonAlert
-    }
+    // TODO: Show alert if total of new notifications is > 0
+//    func showAlert() {
+//        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
+//        navigationItem.leftBarButtonItem = historyIconBarButtonAlert
+//    }
     
     
     /*** Koloda ***/
     
     var didSwipeRight: Bool = false
-    var newUserRecommendation: UserRecommendation = UserRecommendation()
+    var newRecommendation: NewRecommendation = NewRecommendation()
     
     // delegate
     
     func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
             let cardView: PromptCardView = cardViews[Int(index)]
-            FBNetworkDAO.instance.deletePrompt(cardView.prompt!.ID, callback: nil)
+            FBNetworkDAO.instance.deletePrompt(cardView.prompt!, callback: nil)
         } else {
             didSwipeRight = true
             let prompt: Prompt = cardViews[Int(index)].prompt!
-            newUserRecommendation = UserRecommendation()
-            newUserRecommendation.tags = prompt.tags
-            newUserRecommendation.tagString = prompt.tagString
+            newRecommendation.tags = prompt.tags
+            newRecommendation.tagString = prompt.tagString
             showNewRecommendationViews()
         }
     }
@@ -249,9 +237,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         if didSwipeRight {
             return
         }
-        for prompt in User.instance.prompts.prompts {
-            User.instance.prompts.deletePrompt(prompt.ID)
-        }
+        User.instance.myPrompts.removeAll()
         cardViews.removeAll()
         FBNetworkDAO.instance.getPrompts(nil)
     }
@@ -357,23 +343,23 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /*** Recommendation Picker ***/
     
     func pickCustom() {
-        newUserRecommendation.type = .text
-        newUserRecommendation.detail = ""
-        navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation, type: .NEW), animated: true)
+        newRecommendation.type = .text
+        newRecommendation.detail = ""
+        navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendation, type: .NEW), animated: true)
     }
     
     func pickLink() {
-        newUserRecommendation.type = .url
+        newRecommendation.type = .url
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
-        navigationController?.pushViewController(WebViewController(recommendation: newUserRecommendation), animated: true)
+        navigationController?.pushViewController(WebViewController(newRecommendation: newRecommendation), animated: true)
     }
     
     func pickPlace() {
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         
-        let userRecommendation: UserRecommendation = newUserRecommendation // Hand off this reference
+        let newRecommendationRef: NewRecommendation = newRecommendation // Hand off this reference
         
         var latitude: Double = 39.4997605
         var longitude: Double = -111.547028
@@ -407,12 +393,12 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 NSLog("Place address: \(place.formattedAddress)")
                 NSLog("Place attributions: \(place.attributions)")
                 
-                userRecommendation.type = .place
-                userRecommendation.detail = place.placeID
-                userRecommendation.placeName = place.name
-                userRecommendation.placeWebsite = place.website
+                newRecommendationRef.type = .place
+                newRecommendationRef.detail = place.placeID
+//                userRecommendation.placeName = place.name
+//                userRecommendation.placeWebsite = place.website
                 
-                self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: userRecommendation, type: .NEW), animated: true)
+                self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendationRef, type: .NEW), animated: true)
                 
             } else {
                 NSLog("No place selected")
@@ -430,8 +416,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
-            FBNetworkDAO.instance.postNewQuery(tags, callback: { (query: Query) in
-                self.navigationController?.pushViewController(SolutionsViewController(query: query, tags: tags), animated: true)
+            FBNetworkDAO.instance.postNewQuery(tags, callback: {
+                self.navigationController?.pushViewController(SolutionsViewController(query: nil, tags: tags), animated: true)
             })
         }
         self.searchController.active = false
