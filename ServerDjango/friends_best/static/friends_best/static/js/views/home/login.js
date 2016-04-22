@@ -29,7 +29,8 @@ define([
 						console.log('Good to see you, ' + response.name + '.');
 						require(['app'],function(App){
 							App.router.navigate('', {trigger: true, replace: true});
-							window.location.href = "/#loggedin";
+							window.location = "/#loggedin";
+							window.location.reload(true);
 						});
 					});
 				} else {
