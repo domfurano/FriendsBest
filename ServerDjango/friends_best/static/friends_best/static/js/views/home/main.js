@@ -113,6 +113,7 @@ define([
         
         $("#skip").click(function() {
            $(".tutorialsection").remove();
+           window.location = "/";
            that.loadPrompts();
         });
 
