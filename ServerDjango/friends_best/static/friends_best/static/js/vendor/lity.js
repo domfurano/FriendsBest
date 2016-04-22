@@ -211,7 +211,7 @@
             );
         }
 
-        return '<div class="lity-iframe-container"><iframe frameborder="0" allowfullscreen src="' + url + '"></iframe></div>';
+        return '<div class="lity-iframe-container"><iframe frameborder="0" byline="0" title="0" allowfullscreen src="' + url + '"></iframe></div>';
     }
 
     function lity(options) {
