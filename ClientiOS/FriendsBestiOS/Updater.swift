@@ -24,7 +24,7 @@ class Updater {
     
     private init() {
         self.timer = Timer(timesPerSecond: 1, closure: { () -> Void in
-            if User.instance.prompts.prompts.count < 1 {
+            if User.instance.myPrompts.count < 1 {
                 FBNetworkDAO.instance.getPrompts(nil)
             }
         })

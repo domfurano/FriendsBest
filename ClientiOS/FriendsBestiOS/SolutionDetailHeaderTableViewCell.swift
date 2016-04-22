@@ -12,7 +12,7 @@ import PureLayout
 import GoogleMaps
 
 class SolutionDetailHeaderTableViewCell: UITableViewCell {
-    var RECOMMENDATION: Recommendation!
+    var RECOMMENDATION: FriendRecommendation!
     
     /* text type */
     var textTitle: UILabel?
@@ -25,7 +25,7 @@ class SolutionDetailHeaderTableViewCell: UITableViewCell {
     /* url type */
     var urlTitle: UILabel?
     
-    convenience init(recommendation: Recommendation) {
+    convenience init(recommendation: FriendRecommendation) {
         self.init()
         RECOMMENDATION = recommendation
         backgroundColor = UIColor.clearColor()
@@ -33,23 +33,23 @@ class SolutionDetailHeaderTableViewCell: UITableViewCell {
         
         contentView.backgroundColor = CommonUI.sdNavbarBgColor
         
-        switch RECOMMENDATION.type {
+        switch RECOMMENDATION.solution!.type {
         case .text:
             textTitle = UILabel.newAutoLayoutView()
             textTitle?.numberOfLines = 0
-            textTitle?.text = RECOMMENDATION.detail
+            textTitle?.text = RECOMMENDATION.solution!.detail
             textTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
             textTitle?.textColor = UIColor.whiteColor()
             contentView.addSubview(textTitle!)
             break
         case .place:
             placeTitle = UILabel.newAutoLayoutView()
-            placeTitle?.text = RECOMMENDATION.placeName
+//            placeTitle?.text = RECOMMENDATION.placeName
             placeTitle?.numberOfLines = 0
             placeTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
             placeTitle?.textColor = UIColor.whiteColor()
             placeAddress = UILabel.newAutoLayoutView()
-            placeAddress?.text = RECOMMENDATION.placeAddress
+//            placeAddress?.text = RECOMMENDATION.placeAddress
             placeAddress?.font = UIFont(name: "Proxima Nova Cond", size: 18.0)
             placeAddress?.numberOfLines = 0
             placeAddress?.textColor = UIColor.whiteColor()
@@ -59,7 +59,7 @@ class SolutionDetailHeaderTableViewCell: UITableViewCell {
         case .url:
             urlTitle = UILabel.newAutoLayoutView()
             urlTitle?.numberOfLines = 0
-            urlTitle?.text = RECOMMENDATION.detail
+            urlTitle?.text = RECOMMENDATION.solution!.detail
             urlTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
             urlTitle?.textColor = UIColor.whiteColor()
             contentView.addSubview(urlTitle!)
@@ -74,7 +74,7 @@ class SolutionDetailHeaderTableViewCell: UITableViewCell {
             let horizontalInsets: CGFloat = 15.0
             let verticalInsets: CGFloat = 10.0
             
-            switch RECOMMENDATION.type {
+            switch RECOMMENDATION.solution!.type {
             case .text:
                 NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: {
                     self.textTitle?.autoSetContentCompressionResistancePriorityForAxis(.Vertical)

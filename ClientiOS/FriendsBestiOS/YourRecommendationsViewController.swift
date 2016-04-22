@@ -9,6 +9,7 @@
 import UIKit
 import FBSDKCoreKit
 import GoogleMaps
+import PINCache
 
 class YourRecommendationsView: UITableView {
     override func drawRect(rect: CGRect) {
@@ -43,9 +44,12 @@ class YourRecommendationsViewController: UITableViewController {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
         
-        User.instance.userRecommendationsFetchedClosure = {
+        User.instance.closureNewUserRecommendation = { (index: Int) in
             self.refreshControl?.endRefreshing()
-            self.tableView.reloadData()
+            self.tableView.beginUpdates()
+            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
+            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
+            self.tableView.endUpdates()
         }
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
@@ -79,7 +83,9 @@ class YourRecommendationsViewController: UITableViewController {
     
     func refreshData() {
         refreshControl?.beginRefreshing()
-        FBNetworkDAO.instance.getRecommendationsForUser(nil)
+        FBNetworkDAO.instance.getRecommendationsForUser({
+            self.refreshControl?.endRefreshing()
+        })
     }
     
     func back() {
@@ -143,17 +149,48 @@ class YourRecommendationsViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.recommendations.count
+        return User.instance.myRecommendations.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let recommendation: Recommendation = User.instance.recommendations[indexPath.row]
-        
-        let cell: YourRecommendationTableViewCell = YourRecommendationTableViewCell(recommendation: recommendation)
-        
-        cell.setNeedsUpdateConstraints()
-        cell.updateConstraintsIfNeeded()
-        
+        let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
+        let cell: YourRecommendationTableViewCell = YourRecommendationTableViewCell()//tableView.dequeueReusableCellWithIdentifier("reusableIdentifier") as! YourRecommendationTableViewCell
+        cell.setupForViewing(
+            recommendation.tagString,
+            title: recommendation.detail,
+            subtitle: "",
+            comments: recommendation.comments
+        )
+        switch recommendation.type {
+        case .text:
+            break
+        case .place:
+            GooglePlace.loadPlace(recommendation.detail, callback: { (place: GooglePlace) in
+                cell.setupForViewing(
+                    recommendation.tagString,
+                    title: place.name,
+                    subtitle: place.formattedAddress != nil ? place.formattedAddress! : "",
+                    comments: recommendation.comments
+                )
+            })
+            break
+        case .url:
+            var different: Bool = false
+            var urlTitle: String = recommendation.detail
+            if let url: NSURL = NSURL(string: urlTitle) {
+                if let host: String = url.host {
+                    urlTitle = host
+                    different = true
+                }
+            }
+            cell.setupForViewing(
+                recommendation.tagString,
+                title: urlTitle,
+                subtitle: different ? recommendation.detail : "",
+                comments: recommendation.comments
+            )
+            break
+        }
         return cell
     }
     
@@ -163,24 +200,23 @@ class YourRecommendationsViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let button1 = UITableViewRowAction(style: .Default, title: "Delete", handler: { (action, indexPath) in
-            let recommendation = User.instance.recommendations[indexPath.row]
-            FBNetworkDAO.instance.deleteRecommendation(recommendation.ID, callback: nil)
-            User.instance.recommendations.removeAtIndex(indexPath.row)
+            let deletedRecommendation: UserRecommendation = User.instance.myRecommendations.removeAtIndex(indexPath.row)
+            FBNetworkDAO.instance.deleteUserRecommendation(deletedRecommendation, callback: nil)
             tableView.beginUpdates()
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
             tableView.endUpdates()
         })
         button1.backgroundColor = UIColor.colorFromHex(0xE54154)
         let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
-            let recommendation: Recommendation = User.instance.recommendations[indexPath.row]
-            self.navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: recommendation.userRecommendation(), type: .EDIT), animated: true)
+            let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
+            self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: recommendation.newRecommendation(), type: .EDIT), animated: true)
         })
         button2.backgroundColor = UIColor.colorFromHex(0xEF8944)
         return [button1, button2]
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let recommendation = User.instance.recommendations[indexPath.row]
+        let recommendation = User.instance.myRecommendations[indexPath.row]
         switch recommendation.type {
         case .text:
             break
@@ -204,7 +240,7 @@ class YourRecommendationsViewController: UITableViewController {
             })
             break
         case .url:
-            self.navigationController?.pushViewController(WebViewController(recommendation: recommendation.userRecommendation()), animated: true)
+            self.navigationController?.pushViewController(WebViewController(newRecommendation: recommendation.newRecommendation()), animated: true)
             break
         }
     }

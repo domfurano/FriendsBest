@@ -12,7 +12,7 @@ import UIKit
 class FriendsListViewController: UITableViewController {
     
     override func loadView() {
-        view = GradientTableView()
+        tableView = GradientTableView()
     }
     
     override func viewDidLoad() {
@@ -20,8 +20,17 @@ class FriendsListViewController: UITableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        User.instance.userRecommendationsFetchedClosure = {
-            self.tableView.reloadData()
+        /* Refresh Control */
+        refreshControl = UIRefreshControl()
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x869ECC)
+        refreshControl!.tintColor = UIColor.whiteColor()
+        refreshControl!.addTarget(self, action: #selector(FriendsListViewController.refreshData), forControlEvents: .ValueChanged)
+        
+        User.instance.closureNewFriend = { (index: Int) in
+            self.tableView.beginUpdates()
+            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
+            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            self.tableView.endUpdates()
         }
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
@@ -35,6 +44,13 @@ class FriendsListViewController: UITableViewController {
         self.navigationItem.leftBarButtonItem = leftBBitem
         title = "Facebook Friends"
         tableView.separatorStyle = .None
+    }
+    
+    func refreshData() {
+        self.refreshControl?.beginRefreshing()
+        FBNetworkDAO.instance.getFriends({
+            self.refreshControl?.endRefreshing()
+        })
     }
     
     func back() {
@@ -56,14 +72,25 @@ class FriendsListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.friends.count
+        return User.instance.myFriends.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let friend: Friend = User.instance.friends[indexPath.row]
+        let friend: Friend = User.instance.myFriends[indexPath.row]
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
         cell.textLabel?.text = friend.name
-        cell.imageView?.image = friend.squarePicture.image
+        cell.imageView?.image = CommonUI.defaultProfileImage
+        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(
+            friend.facebookID,
+            facebookSize: CommonUI.FacbookImageSize.square,
+            closure: { (indexPath: AnyObject?) in
+                self.tableView.reloadRowsAtIndexPaths([indexPath as! NSIndexPath], withRowAnimation: .Fade)
+            },
+            payload: indexPath
+        ).image
+//        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(friend.facebookID, size: .square, closure: { (indexPath: AnyObject?)
+//            cell.setNeedsDisplay()
+//        }, payload: indexPath).image
         cell.userInteractionEnabled = false
         return cell
     }

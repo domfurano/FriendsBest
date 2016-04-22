@@ -12,15 +12,11 @@ import GoogleMaps
 
 class SolutionCell: UITableViewCell {
     
-    var SOLUTION: Solution!
-    
     var background: UIView = UIView.newAutoLayoutView()
     var detailLabel: UILabel = UILabel.newAutoLayoutView()
     
-    convenience init(solution: Solution) {
-        self.init()
-        
-        self.SOLUTION = solution
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .None // No distinct style when selected
         backgroundColor = UIColor.clearColor()
@@ -30,128 +26,45 @@ class SolutionCell: UITableViewCell {
         background.layer.shadowOpacity = 0.33
         background.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
 
-        
-        if SOLUTION.type == .place {
-            detailLabel.text = SOLUTION.placeName
-        } else {
-            detailLabel.text = SOLUTION.detail
-        }
-        
         detailLabel.font = UIFont(name: "Proxima Nova Cond", size: 18.0)!
-
-        background.addSubview(detailLabel)
+        
         contentView.addSubview(background)
-
+        contentView.addSubview(detailLabel)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupForViewing(title: String) {
+        detailLabel.text = title
+        
+        setNeedsUpdateConstraints()
+        updateConstraintsIfNeeded()
     }
     
     var didUpdateContraints: Bool = false
     override func updateConstraints() {
-        super.updateConstraints()
-        
         if !didUpdateContraints {
-            
-            let horizontalInsets: CGFloat = 15.0
-            let verticalInsets: CGFloat = 12.0
-            
             let constraints: ALConstraintsBlock = {
                 self.background.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
                 self.detailLabel.autoSetContentCompressionResistancePriorityForAxis(.Horizontal)
             }
             NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: constraints)
             
-            background.autoPinEdgeToSuperviewEdge(.Top, withInset: 5.0)
-            background.autoPinEdgeToSuperviewEdge(.Leading, withInset: 15.0)
-            background.autoPinEdgeToSuperviewEdge(.Trailing, withInset: 15.0)
-            background.autoPinEdgeToSuperviewEdge(.Bottom, withInset: 5.0)
+            let backgroundInset: CGFloat = 8.0
+            background.autoPinEdgeToSuperviewEdge(.Top, withInset: backgroundInset)
+            background.autoPinEdgeToSuperviewEdge(.Leading, withInset: backgroundInset)
+            background.autoPinEdgeToSuperviewEdge(.Trailing, withInset: backgroundInset)
+            background.autoPinEdgeToSuperviewEdge(.Bottom, withInset: backgroundInset)
             
-            detailLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
-            detailLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-            detailLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
-            detailLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
-            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: background,
-//                    attribute: .CenterX,
-//                    relatedBy: .Equal,
-//                    toItem: self,
-//                    attribute: .CenterX,
-//                    multiplier: 1.0,
-//                    constant: 0.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: background,
-//                    attribute: .CenterY,
-//                    relatedBy: .Equal,
-//                    toItem: self,
-//                    attribute: .CenterY,
-//                    multiplier: 1.0,
-//                    constant: 0.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: background,
-//                    attribute: .Width,
-//                    relatedBy: .Equal,
-//                    toItem: self,
-//                    attribute: .Width,
-//                    multiplier: 0.9,
-//                    constant: 0.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: background,
-//                    attribute: .Height,
-//                    relatedBy: .Equal,
-//                    toItem: self,
-//                    attribute: .Height,
-//                    multiplier: 0.8,
-//                    constant: 0.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: detailLabel,
-//                    attribute: .Left,
-//                    relatedBy: .Equal,
-//                    toItem: background,
-//                    attribute: .Left,
-//                    multiplier: 1.0,
-//                    constant: 8.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: detailLabel,
-//                    attribute: .Right,
-//                    relatedBy: .Equal,
-//                    toItem: background,
-//                    attribute: .Right,
-//                    multiplier: 1.0,
-//                    constant: -8.0
-//                )
-//            )
-//            
-//            addConstraint(
-//                NSLayoutConstraint(
-//                    item: detailLabel,
-//                    attribute: .CenterY,
-//                    relatedBy: .Equal,
-//                    toItem: background,
-//                    attribute: .CenterY,
-//                    multiplier: 1.0,
-//                    constant: 0.0
-//                )
-//            )
+            let detailVerticalInset: CGFloat = 20.0
+            let detailHorizontalInset: CGFloat = 16.0
+            detailLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: detailVerticalInset)
+            detailLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: detailHorizontalInset)
+            detailLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: detailHorizontalInset)
+            detailLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: detailVerticalInset)
         }
+        super.updateConstraints()
     }
 }

@@ -20,16 +20,16 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     var forwardButton: UIBarButtonItem!
     var reloadButton: UIBarButtonItem!
     
-    var newUserRecommendation: UserRecommendation!
+    var newRecommendation: NewRecommendation!
     var webView: WKWebView {
         get {
             return view as! WKWebView
         }
     }
     
-    convenience init(recommendation: UserRecommendation) {
+    convenience init(newRecommendation: NewRecommendation) {
         self.init()
-        newUserRecommendation = recommendation
+        self.newRecommendation = newRecommendation
     }
     
     deinit {
@@ -46,9 +46,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
         webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
         
-        if newUserRecommendation.detail != nil {
-            let URL: NSURL? = NSURL(string: newUserRecommendation.detail!)
-            if let URL = URL {
+        if newRecommendation.detail != nil {
+            if let URL: NSURL = NSURL(string: newRecommendation.detail!) {
                 let request: NSURLRequest = NSURLRequest(URL: URL)
                 webView.loadRequest(request)
             }
@@ -145,9 +144,9 @@ class WebViewController: UIViewController, WKNavigationDelegate, UITextFieldDele
     func createNewRecommendationButtonPressed() {
         if let urlString = webView.URL?.absoluteString {
             NSLog(urlString)
-            newUserRecommendation.type = .url
-            newUserRecommendation.detail = urlString
-            navigationController?.pushViewController(NewRecommendationFormViewController(recommendation: newUserRecommendation, type: .NEW), animated: true)
+            newRecommendation.type = .url
+            newRecommendation.detail = urlString
+            navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendation, type: .NEW), animated: true)
         }
     }
     

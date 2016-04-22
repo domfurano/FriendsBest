@@ -12,13 +12,13 @@ import PureLayout
 // TODO: Cell isn't displaying all text
 
 class SolutionDetailTableViewCell: UITableViewCell {
-    var RECOMMENDATION: Recommendation!
+    var RECOMMENDATION: FriendRecommendation!
     
     var friendImageView: UIImageView = UIImageView.newAutoLayoutView()
     var nameLabel: UILabel = UILabel.newAutoLayoutView()
     var commentLabel: UILabel = UILabel.newAutoLayoutView()
     
-    convenience init(recommendation: Recommendation) {
+    convenience init(recommendation: FriendRecommendation) {
         self.init()
         RECOMMENDATION = recommendation
         userInteractionEnabled = false
@@ -48,6 +48,10 @@ class SolutionDetailTableViewCell: UITableViewCell {
         commentLabel.textColor = UIColor.darkGrayColor()
         
         contentView.addSubview(commentLabel)
+    }
+    
+    func setupCellForDisplay(recommendation: FriendRecommendation) {
+        
     }
     
     var didUpdateConstraints: Bool = false

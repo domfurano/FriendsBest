@@ -40,7 +40,7 @@ class ProfileViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        nameLabel.text = User.instance.name!
+        nameLabel.text = User.instance.myName!
         recommendationsButton.setTitle("Recommendations", forState: .Normal)
         friendsButton.setTitle("Friends using FriendsBest", forState: .Normal)
         logoutButton.setTitle("Logout", forState: .Normal)

@@ -4,10 +4,11 @@
 use_frameworks!
 
 target 'FriendsBest' do
-    pod "Koloda"
+    pod 'Koloda'
     pod 'Eureka', '~> 1.5'
     pod 'PureLayout'
     pod 'PINRemoteImage'
+    pod 'PINCache'
     pod 'GoogleMaps'
 end
 

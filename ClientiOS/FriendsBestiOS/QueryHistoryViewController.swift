@@ -65,15 +65,22 @@ class QueryHistoryViewController: UITableViewController {
         
         /* Refresh Control */
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0xD9DCDF)
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(QueryHistoryViewController.refreshData), forControlEvents: .ValueChanged)
         
-        User.instance.queryHistoryUpdatedClosure = {
-            [weak self] in
-            self?.tableView.reloadData()
-            self?.refreshControl?.endRefreshing()
+        User.instance.closureNewQuery = { (index: Int) in
+            self.tableView.beginUpdates()
+            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
+            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
+            self.tableView.endUpdates()
+            self.refreshControl?.endRefreshing()
         }
+//        User.instance.queryHistoryUpdatedClosure = {
+//            [weak self] in
+//            self?.tableView.reloadData()
+//            self?.refreshControl?.endRefreshing()
+//        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -87,8 +94,10 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     func refreshData() {
-        refreshControl!.beginRefreshing()
-        FBNetworkDAO.instance.getQueries(nil)
+        refreshControl?.beginRefreshing()
+        FBNetworkDAO.instance.getQueries({
+            self.refreshControl?.endRefreshing()
+        })
     }
     
     /* Toolbar */
@@ -143,19 +152,19 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.queryHistory.queries.count;
+        return User.instance.myQueries.count;
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // TODO: learn about reuseIdentifier
-        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(query: User.instance.queryHistory.queries[indexPath.row])
+        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(query: User.instance.myQueries[indexPath.row])
         cell.setNeedsUpdateConstraints()
         cell.updateConstraintsIfNeeded()
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let query: Query = User.instance.queryHistory.queries[indexPath.row]
+        let query: Query = User.instance.myQueries[indexPath.row]
         navigationController?.pushViewController(SolutionsViewController(query: query, tags: query.tags), animated: true)
     }
     
@@ -169,9 +178,8 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let query = User.instance.queryHistory.queries[indexPath.row]
-        FBNetworkDAO.instance.deleteQuery(query.ID, callback: nil)
-        User.instance.queryHistory.deleteQueryByID(query.ID)
+        let query: Query = User.instance.myQueries.removeAtIndex(indexPath.row)
+        FBNetworkDAO.instance.deleteQuery(query, callback: nil)
         tableView.beginUpdates()
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
         tableView.endUpdates()

@@ -19,6 +19,7 @@ DEPENDENCIES:
   - Eureka (~> 1.5)
   - GoogleMaps
   - Koloda
+  - PINCache
   - PINRemoteImage
   - PureLayout
 
