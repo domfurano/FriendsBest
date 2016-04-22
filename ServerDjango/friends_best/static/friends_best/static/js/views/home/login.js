@@ -3,11 +3,9 @@ define([
   'underscore',
   'backbone',
   'app',
-  'views/search/results',
-  'models/query',
   'text!templates/home/login.html',
   'fb'
-], function($, _, Backbone, App, ResultsView, QueryModel, loginHTML){
+], function($, _, Backbone, App, loginHTML){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
