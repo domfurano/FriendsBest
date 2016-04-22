@@ -104,12 +104,22 @@ define([
     },
     
     loadTutorial: function() {
+        
+        that = this;
+        
         tutorialTemplate = _.template(tutorialHTML);
         $el = this.$el;
         $el.append(tutorialTemplate());
         
+        $("#skip").click(function() {
+           $(".tutorialsection").remove();
+           that.loadPrompts();
+        });
 
         $("#play").click(function() {
+            
+            $("#skip").html("start using FriendsBest");
+            
             lightbox = lity();
             lightbox('//vimeo.com/163816408');
         });
