@@ -25,7 +25,7 @@ define([
 			"profile":					"profile",			// #profile
 			"profile/recommendations":	"recommendations",	// #profile/recommendations
 			"profile/friends":			"friends",			// #profile/friends
-			"loggedin":                 "loggedin"
+			"tutorial":                 "tutorial"
 		},
 		initialize: function() {
 		},
@@ -91,7 +91,7 @@ define([
 			this.render(new RecommendView());
 		});
 		
-		app_router.on('route:loggedin', function(){
+		app_router.on('route:tutorial', function(){
     		this.render(new HomeView({tutorial: true}), true);
 		});
 		

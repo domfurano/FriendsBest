@@ -188,15 +188,7 @@
     	padding-right:5px;
 	}
 	
-    .menu .left .button {
-    	font-size: 16px;
-	}
-
-	.menu .right {
-    	padding-left:5px;
-	}
-	
-	.menu .right .button {
+    .menu .button {
     	font-size: 16px;
 	}
 	

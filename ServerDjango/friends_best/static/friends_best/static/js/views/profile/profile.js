@@ -5,7 +5,8 @@
   'text!templates/home/menu.html',
   'text!templates/profile/menu.html',
   'models/me',
-], function($, _, Backbone, menuHTML, profileMenuHTML, meModel){
+  'lity'
+], function($, _, Backbone, menuHTML, profileMenuHTML, meModel, lity){
 
   var view = Backbone.View.extend({
     el: $(".view"),
@@ -32,6 +33,11 @@
      			//document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
      			window.location.href = "/fb/logout";
             });
+		});
+		
+		$("#tutorial").click(function() {
+            lightbox = lity();
+            lightbox('//vimeo.com/163816408');
 		});
 		
     },
