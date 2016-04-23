@@ -60,179 +60,153 @@ class User: NetworkDAODelegate {
         myLargeRoundedImage = CommonUI.instance.getLargeRoundedFacebookProfileImageView(myFacebookID, closure: nil)
         mySmallRoundedImage = CommonUI.instance.getSmallRoundedFacebookProfileImageView(myFacebookID, closure: nil)
     }
-
-    
-//    func getFriendByID(id: String) -> Friend? {
-//        for friend in myFriends {
-//            if friend.facebookID == id {
-//                return friend
-//            }
-//        }
-//        return nil
-//    }
     
     
     /* Delegation */
-//    var queryHistoryUpdatedClosure: () -> Void = {}
-//    var promptsFetchedClosure: () -> Void = {}
-//    var userRecommendationsFetchedClosure: () -> Void = {}
-//    var friendsFetchedClosure: () -> Void = {}
-    
-    var closureSolutionUpdated: (forQuery: Query, index: Int) -> Void = {_ in }
-    var closureRecommendationUpdated: (forSolution: Solution, index: Int) -> Void = {_ in }
-    var closureNewRecommendation: (forSolution: Solution, index: Int) -> Void = {_ in }
-    var closureNewSolution: (forQuery: Query, index: Int) -> Void = {_ in }
-    
-    var closureNewQuery: (index: Int) -> Void = {_ in }
-//    var closureNewSolutions: (queryID: Int) -> Void = {_ in }
-    var closureDeletedQuery: (index: Int) -> Void = {_ in }
-    
-    var closureNewPrompts: () -> Void = { }
-    var closureDeletedPrompt: (index: Int) -> Void = {_ in }
-    
-    var closureNewUserRecommendation: (index: Int) -> Void = {_ in }
-    var closureDeletedUserRecommendation: (index: Int) -> Void = {_ in }
-    
-    var closureNewFriend: (index: Int) -> Void = {_ in }
-    
-    /* Delegate implementations */
-    
-    
-//    func setQueries(networkQueries: [Query]) {
-//        for networkQuery: Query in networkQueries {
-//            if let queryIndex: Int = myQueries.indexOf(networkQuery) {
-//                let query: Query = myQueries[queryIndex]
-//                query.setSolutions(networkQuery.solutions)
-//                // Don't have to update the query because it is immutable.
-//                // TODO: call a closure?
-//            } else {
-//                myQueries.insert(networkQuery, atIndex: 0)
-//            }
-//        }
-//    }
-    
+
+    var closurePromptsNew: () -> Void = { }
+    func promptsFetched(prompts: [Prompt]) {
+        self.myPrompts = prompts
+        closurePromptsNew()
+    }
+    var closurePromptDeleted: () -> Void = { }
+    func promptDeleted(prompt: Prompt) {
+        closurePromptDeleted()
+    }
+    var closureQueryNew: (query: Query) -> Void = { _ in }
+    func queryFetched(query: Query) {
+        self.myQueries.insert(query, atIndex: 0)
+        closureQueryNew(query: query)
+    }
+    var closureQueriesNew: () -> Void = { }
     func queriesFetched(queries: [Query]) {
-        for query: Query in queries {
-            queryFetched(query)
+        self.myQueries = queries.reverse()
+        closureQueriesNew()
+    }
+    var closureQueryDeleted: () -> Void = { }
+    func queryDeleted(query: Query) {
+        if let index: Int = self.myQueries.indexOf(query) {
+            myQueries.removeAtIndex(index)
+            closureQueryDeleted()
         }
+    }
+    var closureSolutionsFetchedForQuery: (query: Query) -> Void = { _ in }
+    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution]) {
+        query.solutions = solutions
+        closureSolutionsFetchedForQuery(query: query)
+    }
+    var closureUserRecommendationNew: () -> Void = { }
+    func userRecommendationFetched(userRecommendation: UserRecommendation) {
+        self.myRecommendations.insert(userRecommendation, atIndex: 0)
+        closureUserRecommendationNew()
+    }
+    var closureUserRecommendationsNew: () -> Void = { }
+    func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
+        self.myRecommendations = userRecommendations
+        closureUserRecommendationsNew()
+    }
+    var closureUserRecommendationDeleted: () -> Void = { }
+    func userRecommendationDeleted(userRecommendation: UserRecommendation) {
+        if let index: Int = self.myRecommendations.indexOf(userRecommendation) {
+            myRecommendations.removeAtIndex(index)
+            closureUserRecommendationDeleted()
+        }
+    }
+    var closureFriendsNew: () -> Void = { }
+    func friendsFetched(friends: [Friend]) {
+        self.myFriends = friends
+        closureFriendsNew()
+    }
+//    var closureNewQuery: (query: Query, index: Int) -> Void = {_ in }
+//    var closureDeletedQuery: (index: Int) -> Void = {_ in }
+//    
+//    var closureNewSolution: (forQuery: Query, index: Int) -> Void = {_ in }
+//    var closureSolutionUpdated: (forQuery: Query, index: Int) -> Void = {_ in }
+//    
+//    var closureNewRecommendation: (forSolution: Solution, index: Int) -> Void = {_ in }
+//    var closureRecommendationUpdated: (forSolution: Solution, index: Int) -> Void = {_ in }
+//    
+//    var closureNewPrompts: () -> Void = { }
+//    var closureDeletedPrompt: (index: Int) -> Void = {_ in }
+//    
+//    var closureNewUserRecommendation: (index: Int) -> Void = {_ in }
+//    var closureDeletedUserRecommendation: (index: Int) -> Void = {_ in }
+//    
+//    var closureNewFriend: (index: Int) -> Void = {_ in }
+//    
+//    /* Delegate implementations */
+//
+//    
+//    func queriesFetched(queries: [Query]) {
 //        for query: Query in queries {
 //            queryFetched(query)
 //        }
-    }
-    func queryFetched(query: Query) {
-        if let queryIndex: Int = myQueries.indexOf(query) {
-            let myQuery: Query = myQueries[queryIndex]
-            myQuery.setSolutions(query.solutions)
-            // Don't have to update the query because it is immutable.
-        } else {
-            myQueries.insert(query, atIndex: 0)
-            closureNewQuery(index: 0)
-        }
-//        if !myQueries.contains(query) {
+//    }
+//    func queryFetched(query: Query) {
+//        if let queryIndex: Int = myQueries.indexOf(query) {
+//            let myQuery: Query = myQueries[queryIndex]
+//            myQuery.setSolutions(query.solutions)
+//            // Don't have to update the query because it is immutable.
+//        } else {
 //            myQueries.insert(query, atIndex: 0)
-//            closureNewQuery(index: 0)
+//            closureNewQuery(query: query, index: 0)
 //        }
-    }
-    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution]) {
-        query.setSolutions(solutions)
-    }
-    func queryDeleted(query: Query) {
-        if let queryIndex: Int = myQueries.indexOf(query) {
-            myQueries.removeAtIndex(queryIndex)
-            closureDeletedQuery(index: queryIndex)
-        }
-    }
-    func promptsFetched(prompts: [Prompt]) {
-        for prompt: Prompt in prompts {
-            if !myPrompts.contains(prompt) {
-                myPrompts.append(prompt)
-            }
-        }
-        closureNewPrompts()
-    }
-    func promptDeleted(prompt: Prompt) {
-        if let promptIndex: Int = myPrompts.indexOf(prompt) {
-            myPrompts.removeAtIndex(promptIndex)
-            closureDeletedPrompt(index: promptIndex)
-        }
-    }
-    func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
-        for userRecommendation: UserRecommendation in userRecommendations {
-            userRecommendationFetched(userRecommendation)
-        }
-    }
-    func userRecommendationFetched(userRecommendation: UserRecommendation) {
-        if !myRecommendations.contains(userRecommendation) {
-            myRecommendations.insert(userRecommendation, atIndex: 0)
-            closureNewUserRecommendation(index: 0)
-        }
-    }
-    func userRecommendationDeleted(userRecommendation: UserRecommendation) {
-        if let userRecommendationIndex: Int = myRecommendations.indexOf(userRecommendation) {
-            myRecommendations.removeAtIndex(userRecommendationIndex)
-            closureDeletedUserRecommendation(index: userRecommendationIndex)
-        }        
-    }
-    func friendsFetched(friends: [Friend]) {
-        for friend: Friend in friends {
-            if !myFriends.contains(friend) {
-                myFriends.append(friend)
-                closureNewFriend(index: myFriends.endIndex - 1)
-            }
-        }
-    }
-//    func queriesFetched() {
-//        queryHistoryUpdatedClosure()
 //    }
-//    
-//    func querySolutionsFetched(forQueryID queryID: Int) {
-//        querySolutionsUpdatedClosure(queryID: queryID)
+//    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution]) {
+//        query.setSolutions(solutions)
 //    }
-//    
-//    func newQueryFetched(query: Query) {
-////        querySolutionsUpdatedClosure(queryID: queryID)
+//    func queryDeleted(query: Query) {
+//        if let queryIndex: Int = myQueries.indexOf(query) {
+//            myQueries.removeAtIndex(queryIndex)
+//            closureDeletedQuery(index: queryIndex)
+//        }
 //    }
-//    
-//    func promptsFetched() {
-//        promptsFetchedClosure()
+//    func promptsFetched(prompts: [Prompt]) {
+//        for prompt: Prompt in prompts {
+//            if !myPrompts.contains(prompt) {
+//                myPrompts.append(prompt)
+//            }
+//        }
+//        closureNewPrompts()
 //    }
-//    
-//    func userRecommendationsFetched() {
-//        userRecommendationsFetchedClosure()
+//    func promptDeleted(prompt: Prompt) {
+//        if let promptIndex: Int = myPrompts.indexOf(prompt) {
+//            myPrompts.removeAtIndex(promptIndex)
+//            closureDeletedPrompt(index: promptIndex)
+//        }
 //    }
-//    
+//    func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
+//        for userRecommendation: UserRecommendation in userRecommendations {
+//            userRecommendationFetched(userRecommendation)
+//        }
+//        for i in (0...myRecommendations.count - 1).reverse() {
+//            if !userRecommendations.contains(myRecommendations[i]) {
+//                myRecommendations.removeAtIndex(i)
+//                closureDeletedUserRecommendation(index: i)
+//            }
+//        }
+//    }
+//    func userRecommendationFetched(userRecommendation: UserRecommendation) {
+//        if !myRecommendations.contains(userRecommendation) {
+//            myRecommendations.insert(userRecommendation, atIndex: 0)
+//            closureNewUserRecommendation(index: 0)
+//        }
+//    }
+//    func userRecommendationDeleted(userRecommendation: UserRecommendation) {
+//        if let userRecommendationIndex: Int = myRecommendations.indexOf(userRecommendation) {
+//            myRecommendations.removeAtIndex(userRecommendationIndex)
+//            closureDeletedUserRecommendation(index: userRecommendationIndex)
+//        }        
+//    }
 //    func friendsFetched(friends: [Friend]) {
-//        for friend in friends {
-//            if !self.myFriends.contains(friend) {
-//                self.myFriends.append(friend)
+//        for friend: Friend in friends {
+//            if !myFriends.contains(friend) {
+//                myFriends.append(friend)
+//                closureNewFriend(index: myFriends.endIndex - 1)
 //            }
 //        }
 //    }
-    
-    
-    /* Serialization */
-    private func serialize() {
-        
-    }
 }
-
-//func getFacebookProfileUIImageView(facebookID: String, size: CGSize, closure: (() -> Void)?) -> UIImageView {
-//    let facebookProfileUIImageView: UIImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-//    
-//    let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture??width=\(Int(size.width))&height=\(Int(size.height))")
-//    
-//    if pictureURL != nil {
-//        facebookProfileUIImageView.pin_updateWithProgress = true
-//        facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
-//            if result.image != nil {
-//                facebookProfileUIImageView.image = result.image!.roundedImage()
-//                closure?()
-//            }
-//        })
-//    }
-//    
-//    return facebookProfileUIImageView
-//}
 
 
 class Friend: Equatable, Hashable {
@@ -253,99 +227,9 @@ class Friend: Equatable, Hashable {
         self.largeSquarePicture = CommonUI.instance.getLargeRoundedFacebookProfileImageView(facebookID, closure: nil)
     }
 }
-
 func ==(lhs: Friend, rhs: Friend) -> Bool {
     return lhs.facebookID == rhs.facebookID
 }
-
-
-//class QueryHistory {
-//    private var _queries: Set<Query>
-//    
-//    var queries: [Query] {
-//        get {
-//            return self._queries.sort({
-//                return $0.accessed.compare($1.accessed) == NSComparisonResult.OrderedDescending
-//            })
-//        }
-//    }
-//    
-//    init() {
-//        self._queries = []
-//    }
-//    
-//    init(queries: [Query]) {
-//        self._queries = Set(queries)
-//    }
-//    
-//    func appendQuery(query: Query) {
-//        self._queries.insert(query)
-//    }
-//    
-//    func deleteQueryByID(queryID: Int) {
-//        for query in self._queries {
-//            if query.ID == queryID {
-//                self._queries.remove(query)
-//                break
-//            }
-//        }
-//    }
-//    
-//    func getQueryByID(ID: Int) -> Query? {
-//        for query in self._queries {
-//            if query.ID == ID {
-//                return query
-//            }
-//        }
-//        return nil
-//    }
-//    
-//    func getQueryFromTagHash(tagHash: String) -> Query? {
-//        for query in self._queries {
-//            if query.tagHash == tagHash {
-//                return query
-//            }
-//        }
-//        return nil
-//    }
-//    
-//    func getQueryFromTags(tags: [String]) -> Query? {
-//        for query in self._queries {
-//            if tagsEqual(query.tags, tag2: tags) {
-//                return query
-//            }
-//        }
-//        return nil
-//    }
-//    
-//    func tagsEqual(tag1: [String], tag2: [String]) -> Bool {
-//        if (tag1.count != tag2.count) {
-//            return false
-//        }
-//        var tagsEqual: Bool = true
-//        for tag1_tag in tag1 {
-//            var tagFound: Bool = false
-//            for tag2_tag in tag2 {
-//                if tag1_tag == tag2_tag {
-//                    tagFound = true
-//                    break
-//                }
-//            }
-//            tagsEqual = tagsEqual && tagFound
-//        }
-//        return tagsEqual
-//    }
-//    
-////    func setQuerySolutionsForQueryID(solutions: Set<Solution>, queryID: Int) {
-////        for query in self._queries {
-////            if query.ID == queryID {
-////                query.setSolutions(solutions)
-////                break
-////            }
-////        }
-////    }
-//}
-
 
 
 class Query: Hashable, Equatable {
@@ -378,112 +262,116 @@ class Query: Hashable, Equatable {
     }
     
     func setSolutions(networkSolutions: [Solution]) {
-        for networkSolution: Solution in networkSolutions {
-            if let existingSolutionIndex: Int = self.solutions.indexOf(networkSolution) {
-                let existingSolution: Solution = self.solutions[existingSolutionIndex]
-                if updateSolution(existingSolution, networkSolution: networkSolution) {
-                    User.instance.closureSolutionUpdated(forQuery: self, index: existingSolutionIndex)
-                }
-                
-                for networkRecommendation in networkSolution.recommendations {
-                    if let existingRecommendationIndex: Int = existingSolution.recommendations.indexOf(networkRecommendation) {
-                        let existingRecommendation = existingSolution.recommendations[existingRecommendationIndex]
-                        if updateRecommendation(existingRecommendation, networkRecommendation: networkRecommendation) {
-                            User.instance.closureRecommendationUpdated(forSolution: existingSolution, index: existingRecommendationIndex)
-                        }
-                    } else {
-                        existingSolution.recommendations.insert(networkRecommendation, atIndex: 0)
-                        User.instance.closureNewRecommendation(forSolution: existingSolution, index: 0)
-                    }
-                }
-                
-            } else {
-                self.solutions.append(networkSolution)
-                networkSolution.query = self
-                User.instance.closureNewSolution(forQuery: self, index: self.solutions.endIndex)
-            }
-        }
+        self.solutions = networkSolutions
     }
     
-    @warn_unused_result
-    private func updateSolution(solution: Solution, networkSolution: Solution) -> Bool {
-        assert(solution.ID == networkSolution.ID)
-        
-        var changed: Bool = false
-        
-        if solution.detail != networkSolution.detail {
-            solution.detail = networkSolution.detail
-            changed = true
-        }
-        
-        if solution.pinid != networkSolution.pinid {
-            solution.pinid = networkSolution.pinid
-            changed = true
-        }
-        
-        if solution.type != networkSolution.type {
-            solution.type = networkSolution.type
-            changed = true
-        }
-        
-        if solution.notificationCount != networkSolution.notificationCount {
-            solution.notificationCount = networkSolution.notificationCount
-            changed = true
-        }
-        
-        if solution.query != networkSolution.query {
-            solution.query = networkSolution.query
-            changed = true
-        }
-        
-        return changed
-    }
-    
-    @warn_unused_result
-    private func updateRecommendation(recommendation: FriendRecommendation, networkRecommendation: FriendRecommendation) -> Bool {
-        assert(recommendation.ID == networkRecommendation.ID)
-        
-        var changed: Bool = false
-        
-        if recommendation.comment != networkRecommendation.comment {
-            recommendation.comment = networkRecommendation.comment
-            changed = true
-        }
-        
-        if recommendation.isNew != networkRecommendation.isNew {
-            recommendation.isNew = networkRecommendation.isNew
-            changed = true
-        }
-        
-        // Friend
-        if recommendation.friend != nil {
-            if networkRecommendation.friend != nil {
-                assert(recommendation.friend == networkRecommendation.friend)
-            } else {
-                recommendation.friend = nil
-                changed = true
-            }
-        } else {
-            if networkRecommendation.friend != nil {
-                recommendation.friend = networkRecommendation.friend
-                changed = true
-            } else {
-                // Both are nil and nothing is to be done.
-            }
-        }
-        
-        if recommendation.comment != networkRecommendation.comment {
-            recommendation.comment = networkRecommendation.comment
-            changed = true
-        }
-        
-        if recommendation.comment != networkRecommendation.comment {
-            recommendation.comment = networkRecommendation.comment
-            changed = true
-        }
-        
-        return changed
-    }
+//    func setSolutions(networkSolutions: [Solution]) {
+//        for networkSolution: Solution in networkSolutions {
+//            if let existingSolutionIndex: Int = self.solutions.indexOf(networkSolution) {
+//                let existingSolution: Solution = self.solutions[existingSolutionIndex]
+//                if updateSolution(existingSolution, networkSolution: networkSolution) {
+//                    User.instance.closureSolutionUpdated(forQuery: self, index: existingSolutionIndex)
+//                }
+//                
+//                for networkRecommendation in networkSolution.recommendations {
+//                    if let existingRecommendationIndex: Int = existingSolution.recommendations.indexOf(networkRecommendation) {
+//                        let existingRecommendation = existingSolution.recommendations[existingRecommendationIndex]
+//                        if updateRecommendation(existingRecommendation, networkRecommendation: networkRecommendation) {
+//                            User.instance.closureRecommendationUpdated(forSolution: existingSolution, index: existingRecommendationIndex)
+//                        }
+//                    } else {
+//                        existingSolution.recommendations.insert(networkRecommendation, atIndex: 0)
+//                        User.instance.closureNewRecommendation(forSolution: existingSolution, index: 0)
+//                    }
+//                }
+//                
+//            } else {
+//                self.solutions.append(networkSolution)
+//                networkSolution.query = self
+//                User.instance.closureNewSolution(forQuery: self, index: self.solutions.endIndex)
+//            }
+//        }
+//    }
+//    
+//    @warn_unused_result
+//    private func updateSolution(solution: Solution, networkSolution: Solution) -> Bool {
+//        assert(solution.ID == networkSolution.ID)
+//        
+//        var changed: Bool = false
+//        
+//        if solution.detail != networkSolution.detail {
+//            solution.detail = networkSolution.detail
+//            changed = true
+//        }
+//        
+//        if solution.pinid != networkSolution.pinid {
+//            solution.pinid = networkSolution.pinid
+//            changed = true
+//        }
+//        
+//        if solution.type != networkSolution.type {
+//            solution.type = networkSolution.type
+//            changed = true
+//        }
+//        
+//        if solution.notificationCount != networkSolution.notificationCount {
+//            solution.notificationCount = networkSolution.notificationCount
+//            changed = true
+//        }
+//        
+//        if solution.query != networkSolution.query {
+//            solution.query = networkSolution.query
+//            changed = true
+//        }
+//        
+//        return changed
+//    }
+//    
+//    @warn_unused_result
+//    private func updateRecommendation(recommendation: FriendRecommendation, networkRecommendation: FriendRecommendation) -> Bool {
+//        assert(recommendation.ID == networkRecommendation.ID)
+//        
+//        var changed: Bool = false
+//        
+//        if recommendation.comment != networkRecommendation.comment {
+//            recommendation.comment = networkRecommendation.comment
+//            changed = true
+//        }
+//        
+//        if recommendation.isNew != networkRecommendation.isNew {
+//            recommendation.isNew = networkRecommendation.isNew
+//            changed = true
+//        }
+//        
+//        // Friend
+//        if recommendation.friend != nil {
+//            if networkRecommendation.friend != nil {
+//                assert(recommendation.friend == networkRecommendation.friend)
+//            } else {
+//                recommendation.friend = nil
+//                changed = true
+//            }
+//        } else {
+//            if networkRecommendation.friend != nil {
+//                recommendation.friend = networkRecommendation.friend
+//                changed = true
+//            } else {
+//                // Both are nil and nothing is to be done.
+//            }
+//        }
+//        
+//        if recommendation.comment != networkRecommendation.comment {
+//            recommendation.comment = networkRecommendation.comment
+//            changed = true
+//        }
+//        
+//        if recommendation.comment != networkRecommendation.comment {
+//            recommendation.comment = networkRecommendation.comment
+//            changed = true
+//        }
+//        
+//        return changed
+//    }
 }
 func ==(lhs: Query, rhs: Query) -> Bool {
     return lhs.ID == rhs.ID
@@ -503,14 +391,18 @@ class Solution: Equatable, Hashable {
     private(set) var notificationCount: Int
     var query: Query?
     private(set) var recommendations: [FriendRecommendation]
-    var placeName: String?
-    var placeAddress: String?
+    var placeName: String
+    var placeAddress: String
+    var latitude: Double = 39.4997605
+    var longitude: Double = -111.547028
     var urlTitle: String
     var urlSubtitle: String
     
     var hashValue: Int {
         return self.ID
     }
+    
+    var closureSolutionUpdated: () -> Void = { }
     
     init(ID: Int, detail: String, pinid: Bool, type: SolutionType, notificationCount: Int, recommendations: [FriendRecommendation]) {
         self.ID = ID
@@ -520,16 +412,32 @@ class Solution: Equatable, Hashable {
         self.notificationCount = notificationCount
         self.recommendations = recommendations
         
-        urlTitle = detail
-        urlSubtitle = ""
+        self.placeName = detail
+        self.placeAddress = ""
+        
+        self.urlTitle = detail
+        self.urlSubtitle = ""
         if type == .url {
             if let url: NSURL = NSURL(string: detail) {
                 if let host: String = url.host {
-                    urlTitle = host
-                    urlSubtitle = detail
+                    self.urlTitle = host
+                    self.urlSubtitle = detail
                 }
             }
         }
+        
+        if self.type == .place {
+            GooglePlace.loadPlace(self.detail, callback: { (successful, place) in
+                if successful {
+                    self.placeName = place!.name
+                    self.placeAddress = place!.formattedAddress == nil ? " " : place!.formattedAddress!
+                    self.latitude = place!.latitude
+                    self.longitude = place!.longitude
+                    self.closureSolutionUpdated()
+                }
+            })
+        }
+        
         
         self.recommendations.forEach { (recommendation: FriendRecommendation) in
             recommendation.solution = self
@@ -578,13 +486,17 @@ class UserRecommendation: Equatable, Hashable {
     private(set) var detail: String
     private(set) var comments: String
     private(set) var type: SolutionType
-    var placeName: String?
-    var placeAddress: String?
+    var placeName: String
+    var placeAddress: String
+    var latitude: Double = 39.4997605
+    var longitude: Double = -111.547028
     var urlTitle: String
     var urlSubtitle: String
     var hashValue: Int {
         return self.ID
     }
+    
+    var closureUserRecommendationUpdated: () -> Void = { }
     
     init(ID: Int, tags: [String], detail: String, comments: String, type: SolutionType) {
         self.ID = ID
@@ -593,9 +505,10 @@ class UserRecommendation: Equatable, Hashable {
         self.detail = detail
         self.comments = comments
         self.type = type
-        
-        urlTitle = detail
-        urlSubtitle = ""
+        self.placeName = self.detail
+        self.placeAddress = " "
+        self.urlTitle = detail
+        self.urlSubtitle = ""
         if type == .url {
             if let url: NSURL = NSURL(string: detail) {
                 if let host: String = url.host {
@@ -604,6 +517,18 @@ class UserRecommendation: Equatable, Hashable {
                 }
             }
         }
+        
+        if self.type == .place {
+            GooglePlace.loadPlace(self.detail, callback: { (successful, place) in
+                if successful {
+                    self.placeName = place!.name
+                    self.placeAddress = place!.formattedAddress == nil ? " " : place!.formattedAddress!
+                    self.latitude = place!.latitude
+                    self.longitude = place!.longitude
+                    self.closureUserRecommendationUpdated()
+                }
+            })
+        }        
     }
     
     func newRecommendation() -> NewRecommendation {
@@ -613,6 +538,8 @@ class UserRecommendation: Equatable, Hashable {
         newRecommendation.detail = detail
         newRecommendation.comments = comments
         newRecommendation.type = type
+        newRecommendation.placeName = placeName
+        newRecommendation.IDFromEditedUserRecommendation = ID
         return newRecommendation
     }
 }
@@ -627,6 +554,12 @@ class NewRecommendation {
     var detail: String?
     var comments: String?
     var type: SolutionType?
+    var placeName: String?
+    var IDFromEditedUserRecommendation: Int?
+    
+    func userRecommendation() -> UserRecommendation {
+        return UserRecommendation(ID: IDFromEditedUserRecommendation!, tags: tags!, detail: detail!, comments: comments!, type: type!)
+    }
 }
 
 

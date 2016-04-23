@@ -26,11 +26,8 @@ class FriendsListViewController: UITableViewController {
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(FriendsListViewController.refreshData), forControlEvents: .ValueChanged)
         
-        User.instance.closureNewFriend = { (index: Int) in
-            self.tableView.beginUpdates()
-            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-            self.tableView.endUpdates()
+        User.instance.closureFriendsNew = { [weak self] in
+            self?.tableView.reloadData()
         }
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
@@ -87,38 +84,38 @@ class FriendsListViewController: UITableViewController {
     
     /* Toolbar */
     
-    func setToolbarItems() {
-        let homeButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.home_image,
-            style: .Plain,
-            target: self,
-            action: #selector(ProfileViewController.homeButtonPressed)
-        )
-        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
-        
-        let profileButton: UIButton = UIButton(type: .Custom)
-        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-        profileButton.layer.masksToBounds = true
-        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
-        profileButton.addTarget(
-            self,
-            action: #selector(ProfileViewController.profileButtonPressed),
-            forControlEvents: UIControlEvents.TouchUpInside
-        )
-        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-        
-        
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image,
-            style: .Plain,
-            target: self,
-            action: #selector(ProfileViewController.newRecommendationButtonPressed)
-        )
-        newRecommendationButton.tintColor = CommonUI.fbGreen
-        
-        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
-    }
+//    func setToolbarItems() {
+//        let homeButton: UIBarButtonItem = UIBarButtonItem(
+//            image: CommonUI.home_image,
+//            style: .Plain,
+//            target: self,
+//            action: #selector(ProfileViewController.homeButtonPressed)
+//        )
+//        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
+//        
+//        let profileButton: UIButton = UIButton(type: .Custom)
+//        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
+//        profileButton.layer.masksToBounds = true
+//        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
+//        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
+//        profileButton.addTarget(
+//            self,
+//            action: #selector(ProfileViewController.profileButtonPressed),
+//            forControlEvents: UIControlEvents.TouchUpInside
+//        )
+//        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
+//        
+//        
+//        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
+//            image: CommonUI.fa_plus_square_image,
+//            style: .Plain,
+//            target: self,
+//            action: #selector(ProfileViewController.newRecommendationButtonPressed)
+//        )
+//        newRecommendationButton.tintColor = CommonUI.fbGreen
+//        
+//        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
+//    }
     
     func homeButtonPressed() {
         for viewController: UIViewController in navigationController!.viewControllers {
@@ -134,10 +131,5 @@ class FriendsListViewController: UITableViewController {
     
     func newRecommendationButtonPressed() {
         return
-    }
-    
-    
-    
-    
-    
+    }    
 }

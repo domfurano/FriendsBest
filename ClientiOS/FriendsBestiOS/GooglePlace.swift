@@ -15,6 +15,8 @@ class GooglePlace: NSObject, NSCoding {
     // MARK: Properties
     var placeID: String
     var name: String
+    var latitude: Double
+    var longitude: Double
     var formattedAddress: String?
     var addressComponents: [String: String]?
     var picture: UIImageView?
@@ -24,13 +26,17 @@ class GooglePlace: NSObject, NSCoding {
         static let placeIDKey = "ID"
         static let nameKey = "name"
         static let formattedAddressKey = "photo"
+        static let latitudeKey = "latitude"
+        static let longitudeKey = "longitude"
     }
     
     
-    init(placeID: String, name: String, formattedAddress: String?) {
+    init(placeID: String, name: String, formattedAddress: String?, latitude: Double, longitude: Double) {
         self.placeID = placeID
         self.name = name
         self.formattedAddress = formattedAddress
+        self.latitude = latitude
+        self.longitude = longitude
         super.init()
     }
     
@@ -51,7 +57,13 @@ class GooglePlace: NSObject, NSCoding {
                             callback?(successful: false, place: nil)
                         } else {
                             if let gmsPlace = gmsPlace {
-                                let place: GooglePlace = GooglePlace(placeID: placeID, name: gmsPlace.name, formattedAddress: gmsPlace.formattedAddress)
+                                let place: GooglePlace = GooglePlace(
+                                    placeID: placeID,
+                                    name: gmsPlace.name,
+                                    formattedAddress: gmsPlace.formattedAddress,
+                                    latitude: gmsPlace.coordinate.latitude,
+                                    longitude: gmsPlace.coordinate.longitude
+                                )
                                 PINCache.sharedCache().setObject(place, forKey: placeID)
                                 dispatch_async(dispatch_get_main_queue(), {
                                     callback?(successful: true, place: place)
@@ -70,13 +82,17 @@ class GooglePlace: NSObject, NSCoding {
         aCoder.encodeObject(placeID, forKey: PropertyKey.placeIDKey)
         aCoder.encodeObject(name, forKey: PropertyKey.nameKey)
         aCoder.encodeObject(formattedAddress, forKey: PropertyKey.formattedAddressKey)
+        aCoder.encodeDouble(latitude, forKey: PropertyKey.latitudeKey)
+        aCoder.encodeDouble(longitude, forKey: PropertyKey.longitudeKey)
     }
 
     @objc required convenience init?(coder aDecoder: NSCoder) {
         let placeID: String = aDecoder.decodeObjectForKey(PropertyKey.placeIDKey) as! String
         let name: String = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
         let formattedAddress: String = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as! String
-        self.init(placeID: placeID, name: name, formattedAddress: formattedAddress)
+        let latitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.latitudeKey)
+        let longitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.longitudeKey)
+        self.init(placeID: placeID, name: name, formattedAddress: formattedAddress, latitude: latitude, longitude: longitude)
     }
     
 }

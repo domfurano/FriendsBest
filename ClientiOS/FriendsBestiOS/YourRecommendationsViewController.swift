@@ -47,12 +47,14 @@ class YourRecommendationsViewController: UITableViewController {
         
         tableView.registerClass(YourRecommendationTableViewCell.self, forCellReuseIdentifier: cellID)
         
-        User.instance.closureNewUserRecommendation = { (index: Int) in
-            self.refreshControl?.endRefreshing()
-            self.tableView.beginUpdates()
-            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
-            self.tableView.endUpdates()
+        User.instance.closureUserRecommendationNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        User.instance.closureUserRecommendationsNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        User.instance.closureUserRecommendationDeleted = { [weak self] in
+            self?.tableView.reloadData()
         }
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
@@ -140,7 +142,6 @@ class YourRecommendationsViewController: UITableViewController {
     
     func profileButtonPressed() {
         navigationController?.popViewControllerAnimated(true)
-//        FBSDKAccessToken.setCurrentAccessToken(nil)
     }
     
     func newRecommendationButtonPressed() {
@@ -158,12 +159,15 @@ class YourRecommendationsViewController: UITableViewController {
     var didCallBack: Bool = false
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
+        recommendation.closureUserRecommendationUpdated = { [weak self] in
+            self?.tableView.reloadData()
+        }
         let cell: YourRecommendationTableViewCell = tableView.dequeueReusableCellWithIdentifier(cellID) as! YourRecommendationTableViewCell
         cell.updateFonts()
         cell.setupForViewing(
             recommendation.tagString,
             title: recommendation.detail,
-            subtitle: "placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder ",
+            subtitle: "",
             comments: recommendation.comments
         )
         switch recommendation.type {
@@ -172,8 +176,8 @@ class YourRecommendationsViewController: UITableViewController {
         case .place:
             cell.setupForViewing(
                 recommendation.tagString,
-                title: recommendation.placeName!,
-                subtitle: recommendation.placeAddress!,
+                title: recommendation.placeName,
+                subtitle: recommendation.placeAddress,
                 comments: recommendation.comments
             )
             break
@@ -218,26 +222,18 @@ class YourRecommendationsViewController: UITableViewController {
         case .text:
             break
         case .place:
-            GMSPlacesClient.sharedClient().lookUpPlaceID(recommendation.detail, callback: { (place: GMSPlace?, error: NSError?) in
-                if error == nil {
-                    if let place = place {
-                        let offset = 0.001
-                        let center: CLLocationCoordinate2D = place.coordinate
-                        let northEast = CLLocationCoordinate2DMake(center.latitude + offset, center.longitude + offset)
-                        let southWest = CLLocationCoordinate2DMake(center.latitude - offset, center.longitude - offset)
-                        let viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
-                        
-                        let config = GMSPlacePickerConfig(viewport: viewport)
-                        self.placePicker = GMSPlacePicker(config: config)
-                        self.placePicker?.pickPlaceWithCallback({ (place: GMSPlace?, error: NSError?) in
-                            
-                        })
-                    }
+            if let strippedName: String = recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
+//                let URLString: String = "http://maps.google.com/?q=\(strippedName)&sll=\(recommendation.latitude),\(recommendation.longitude)&t=m"
+                let URLString: String = "http://maps.google.com/?id=\(recommendation.detail)"
+                if let URL: NSURL = NSURL(string: URLString) {
+                    UIApplication.sharedApplication().openURL(URL)
                 }
-            })
+            }
             break
         case .url:
-            self.navigationController?.pushViewController(WebViewController(newRecommendation: recommendation.newRecommendation()), animated: true)
+            if let URL: NSURL = NSURL(string: recommendation.detail) {
+                UIApplication.sharedApplication().openURL(URL)
+            }
             break
         }
     }

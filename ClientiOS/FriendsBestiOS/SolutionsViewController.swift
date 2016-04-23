@@ -38,15 +38,21 @@ class SolutionsViewController: UITableViewController {
     
     override func loadView() {
         tableView = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
-        
-//        User.instance.closureNewSolution = { (forQuery: Query, index: Int) in
-//            if self.QUERY.ID == forQuery.ID {
-//                self.tableView.beginUpdates()
-//                self.tableView.insertRowsAtIndexPaths([NSIndexPath(index: index)], withRowAnimation: .Left)
-//                self.tableView.endUpdates()
-//                self.refreshControl?.endRefreshing()
-//            }
-//        }
+
+        User.instance.closureQueryNew = { [weak self] (query) in
+            if self?.QUERY == nil {
+                self?.QUERY = query
+                self?.addRefreshControl()
+            }
+            self?.tableView.reloadData()
+        }
+        User.instance.closureSolutionsFetchedForQuery = { [weak self] (query) in
+            if self?.QUERY == nil {
+                self?.QUERY = query
+                self?.addRefreshControl()
+            }
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewDidLoad() {
@@ -73,11 +79,22 @@ class SolutionsViewController: UITableViewController {
         title = "Solutions"
         tableView.separatorStyle = .None
         
+        if QUERY != nil {
+            addRefreshControl()
+        }
+        
+    }
+    
+    func addRefreshControl() {
         /* Refresh Control */
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0xf0f0f0)
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(SolutionsViewController.refreshData), forControlEvents: .ValueChanged)
+    }
+    
+    func removeRefreshControl() {
+        refreshControl = nil
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -113,7 +130,11 @@ class SolutionsViewController: UITableViewController {
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        if QUERY != nil {
+            return 2
+        } else {
+            return 0
+        }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -133,13 +154,16 @@ class SolutionsViewController: UITableViewController {
         } else {
             let cell: SolutionCell = tableView.dequeueReusableCellWithIdentifier(solutionCellID) as! SolutionCell
             let solution: Solution = QUERY!.solutions[indexPath.row]
+            solution.closureSolutionUpdated = { [weak self] in
+                self?.tableView.reloadData()
+            }
             cell.titleLabel.text = solution.detail
             switch solution.type {
             case .text:
                 break
             case .place:
-                cell.titleLabel.text = solution.placeName!
-                cell.subtitleLabel.text = solution.placeAddress!
+                cell.titleLabel.text = solution.placeName
+                cell.subtitleLabel.text = solution.placeAddress
                 break
             case .url:
                 cell.titleLabel.text = solution.urlTitle

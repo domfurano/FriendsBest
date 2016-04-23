@@ -13,14 +13,14 @@ import FBSDKCoreKit
 
 
 protocol NetworkDAODelegate: class {
-    func queriesFetched(queries: [Query])
-    func queryFetched(query: Query)
-    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution])
-    func queryDeleted(query: Query)
     func promptsFetched(prompts: [Prompt])
     func promptDeleted(prompt: Prompt)
-    func userRecommendationsFetched(userRecommendations: [UserRecommendation])
+    func queryFetched(query: Query)
+    func queriesFetched(queries: [Query])
+    func queryDeleted(query: Query)
+    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution])
     func userRecommendationFetched(userRecommendation: UserRecommendation)
+    func userRecommendationsFetched(userRecommendations: [UserRecommendation])
     func userRecommendationDeleted(userRecommendation: UserRecommendation)
     func friendsFetched(friends: [Friend])
 }
@@ -538,9 +538,9 @@ class FBNetworkDAO {
     }
     
     
-    func putRecommendation(userRecommendation: UserRecommendation, callback: (() -> Void)?) {
-        deleteUserRecommendation(userRecommendation) {
-            self.postNewRecommendtaion(userRecommendation.newRecommendation(), callback: {
+    func putRecommendation(newRecommendation: NewRecommendation, callback: (() -> Void)?) {
+        deleteUserRecommendation(newRecommendation.userRecommendation()) {
+            self.postNewRecommendtaion(newRecommendation, callback: {
                 callback?()
             })
         }

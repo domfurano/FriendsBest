@@ -70,6 +70,7 @@ class SolutionDetailViewController: UITableViewController {
         refreshControl?.backgroundColor = UIColor.colorFromHex(0x949494)
         refreshControl?.tintColor = UIColor.whiteColor()
         refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -125,6 +126,9 @@ class SolutionDetailViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let recommendation: FriendRecommendation = SOLUTION.recommendations[indexPath.row]
+        recommendation.solution!.closureSolutionUpdated = { [weak self] in
+            self?.tableView.reloadData()
+        }
         if indexPath.section == 0 {
             let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(style: .Default, reuseIdentifier: .None)
             switch recommendation.solution!.type {
@@ -132,7 +136,7 @@ class SolutionDetailViewController: UITableViewController {
                 cell.setupForCellDisplay(recommendation.solution!.detail, subtitle: "")
                 break
             case .place:
-                cell.setupForCellDisplay(recommendation.solution!.placeName!, subtitle: recommendation.solution!.placeAddress!)
+                cell.setupForCellDisplay(recommendation.solution!.placeName, subtitle: recommendation.solution!.placeAddress)
                 break
             case .url:
                 cell.setupForCellDisplay(recommendation.solution!.urlTitle, subtitle: recommendation.solution!.urlSubtitle)
@@ -160,7 +164,23 @@ class SolutionDetailViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
-            // TODO: Goto rec
+            switch SOLUTION.type {
+            case .text:
+                break
+            case .place:
+                if let strippedName: String = SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
+                    let URLString: String = "http://maps.apple.com/?q=\(strippedName)&sll=\(SOLUTION.latitude),\(SOLUTION.longitude)&t=m"
+                    if let URL: NSURL = NSURL(string: URLString) {
+                        UIApplication.sharedApplication().openURL(URL)
+                    }
+                }
+                break
+            case .url:
+                if let URL: NSURL = NSURL(string: SOLUTION.detail) {
+                    UIApplication.sharedApplication().openURL(URL)
+                }
+                break
+            }
         }
     }
 }

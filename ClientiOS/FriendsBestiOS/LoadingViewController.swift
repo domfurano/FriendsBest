@@ -47,6 +47,7 @@ class LoadingViewController: UIViewController {
         if FBSDKAccessToken.currentAccessToken() == nil {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
+//            PINCache.sharedCache().removeAllObjects()
             User.instance
             CommonUI.instance
             FBNetworkDAO.instance.postFacebookTokenAndAuthenticate({

@@ -160,28 +160,7 @@ class ProfileViewController: UIViewController {
         )
         homeButton.tintColor = UIColor.colorFromHex(0x646d77)
         
-        let profileButton: UIButton = UIButton(type: .Custom)
-        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-        profileButton.layer.masksToBounds = true
-        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
-        profileButton.addTarget(
-            self,
-            action: #selector(ProfileViewController.profileButtonPressed),
-            forControlEvents: UIControlEvents.TouchUpInside
-        )
-        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-        
-        
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image,
-            style: .Plain,
-            target: self,
-            action: #selector(ProfileViewController.newRecommendationButtonPressed)
-        )
-        newRecommendationButton.tintColor = CommonUI.fbGreen
-        
-        toolbarItems = [homeButton, CommonUI.flexibleSpace]//CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
+        toolbarItems = [CommonUI.flexibleSpace, homeButton, CommonUI.flexibleSpace]
     }
     
     func homeButtonPressed() {

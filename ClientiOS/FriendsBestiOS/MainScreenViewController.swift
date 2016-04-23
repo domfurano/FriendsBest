@@ -119,7 +119,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         /* Closure implementations */
         
-        User.instance.closureNewPrompts = {
+        User.instance.closurePromptsNew = {
             self.showPromptCards()
         }
         
@@ -394,8 +394,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 
                 newRecommendationRef.type = .place
                 newRecommendationRef.detail = place.placeID
-//                userRecommendation.placeName = place.name
-//                userRecommendation.placeWebsite = place.website
+                newRecommendationRef.placeName = place.name
                 
                 self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendationRef, type: .NEW), animated: true)
                 
@@ -415,9 +414,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
-            FBNetworkDAO.instance.postNewQuery(tags, callback: {
-                self.navigationController?.pushViewController(SolutionsViewController(query: nil , tags: tags), animated: true)
-            })
+            FBNetworkDAO.instance.postNewQuery(tags, callback: nil)
+            self.navigationController?.pushViewController(SolutionsViewController(query: nil , tags: tags), animated: true)
         }
         self.searchController.active = false
     }

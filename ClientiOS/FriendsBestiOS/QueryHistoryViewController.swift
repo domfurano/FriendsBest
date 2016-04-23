@@ -69,18 +69,15 @@ class QueryHistoryViewController: UITableViewController {
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(QueryHistoryViewController.refreshData), forControlEvents: .ValueChanged)
         
-        User.instance.closureNewQuery = { (index: Int) in
-            self.tableView.beginUpdates()
-            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
-            self.tableView.endUpdates()
-            self.refreshControl?.endRefreshing()
+        User.instance.closureQueryNew = { [weak self] (query) in
+            self?.tableView.reloadData()
         }
-//        User.instance.queryHistoryUpdatedClosure = {
-//            [weak self] in
-//            self?.tableView.reloadData()
-//            self?.refreshControl?.endRefreshing()
-//        }
+        User.instance.closureQueryDeleted = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        User.instance.closureQueriesNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
