@@ -56,7 +56,6 @@ define([
 		
 		$('#search-field').keypress(function (e) {
 		  if (e.which == 13) {
-            $('#search-field').attr("disabled", "disabled");
 		    $('#search-field').submit();
 		    return false;
 		  }
@@ -68,6 +67,10 @@ define([
 		});
 		
 		$('form#query').submit(function() {
+			
+			$('#search-field').attr("disabled", "disabled");
+			
+			$(".submit i").toggleClass("fa-search fa-refresh fa-spin");
 			
 			var tags = $('#search-field').val().trim().toLowerCase().split(' ');
 			
@@ -186,7 +189,6 @@ define([
             			    prompt = prompts.get(ui.helper.attr("id"));
             			    tags = prompt.get("tagstring");
             			    $('#search-field').val(tags);
-            			    $('#search-field').attr("disabled", "disabled");
             			    $('#search-field').submit();
         			    });
                     } else if(ui.position.left > distance) {
