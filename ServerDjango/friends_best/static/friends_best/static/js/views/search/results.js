@@ -9,7 +9,8 @@ define([
   'text!templates/standard/list.html',
   'text!templates/search/results/item.html',
   'text!templates/search/results/postback.html',
-], function($, _, Backbone, QueryModel, solutiondetails, SolutionView, backHTML, listHTML, itemHTML, postbackHTML){
+    'text!templates/search/results/delete.html',
+], function($, _, Backbone, QueryModel, solutiondetails, SolutionView, backHTML, listHTML, itemHTML, postbackHTML, deleteHTML){
 
   var ResultsView = Backbone.View.extend({
     el: $(".view"),
@@ -38,20 +39,13 @@ define([
 		listTemplate = _.template(listHTML);
 		this.$el.append(listTemplate());
 		this.$list = $(".listcontainer");
-		
-        // Delete button
-        model = this.model;
-        $(".delete").click(function() {
-            if(confirm("Do you really want to delete this search?")) {
-                model.destroy();
-                parent.history.go(-1);
-            }
-        });
  
     },
     
     list: function() {
         if(this.visible) {	
+            
+            model = this.model;
             
             // Load tags into the search field
     		tags = $(".tags");
@@ -109,6 +103,16 @@ define([
                     method: 'share',
                     href: url,
                 }, function(response){});
+            });
+            
+            // Add the delete button
+    		deleteTemplate = _.template(deleteHTML);
+            this.$list.append(deleteTemplate());
+            $(".delete").click(function() {
+                if(confirm("Do you really want to delete this search?")) {
+                    model.destroy();
+                    parent.history.go(-1);
+                }
             });
 		}
     },

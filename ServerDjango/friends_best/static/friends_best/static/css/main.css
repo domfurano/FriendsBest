@@ -383,7 +383,7 @@
 		background-color: #3b5998;
 		color: #fff;
 		padding: 10px 10px 8px 15px;
-		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.10);
 		-webkit-border-radius: 5px;
         cursor: pointer;
 	}
@@ -397,6 +397,20 @@
 		padding-top: 3px;
 		font-style: normal;
 		font-weight: bold;
+	}
+	
+	.list .delete {
+		margin-bottom: 10px;
+		background-color: #e8edef;
+		color: #666;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.10);
+		-webkit-border-radius: 5px;
+        cursor: pointer;
+	}
+	
+	.list .delete div {
+    	padding: 0;
 	}
 	
 	.list .postback i {

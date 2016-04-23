@@ -159,14 +159,14 @@ define([
     		distance = 30;
     		$('.swipable').draggable({
     			revert: function(ui, ui2) {
-    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
+    				if($(this).position().left < -distance || $(this).position().left > distance || $(this).position().top < -distance) return false;
     				else return true;
     			},
-    			axis: "x",
+    			//axis: "x",
     			scroll: false,
     			stop: function(event, ui) {	
-        			// Left: delete prompt
     				if(ui.position.left < -distance) {
+        				// Left: delete prompt
     					ui.helper.animate({left: "-=600"}, 200, function() {
     						ui.helper.parent().remove();
     						prompts.get(ui.helper.attr("id")).destroy({
@@ -180,8 +180,16 @@ define([
         						}
     						});
     					});
-    				// Right: recommend
-    				} else if(ui.position.left > distance) {
+    				} else if(ui.position.top < -distance) {
+        			    // Up: search
+        			    ui.helper.animate({top: "-=600"}, 200, function() {
+            			    prompt = prompts.get(ui.helper.attr("id"));
+            			    tags = prompt.get("tagstring");
+            			    $('#search-field').val(tags);
+            			    $('#search-field').submit();
+        			    });
+                    } else if(ui.position.left > distance) {
+                        // Right: recommend
     					ui.helper.animate({left: "+=600"}, 200, function() {
         					//prompts.get(ui.helper.attr("id")).destroy();
     						require(['app'],function(App){
