@@ -186,6 +186,7 @@ define([
             			    prompt = prompts.get(ui.helper.attr("id"));
             			    tags = prompt.get("tagstring");
             			    $('#search-field').val(tags);
+            			    $('#search-field').attr("disabled", "disabled");
             			    $('#search-field').submit();
         			    });
                     } else if(ui.position.left > distance) {
