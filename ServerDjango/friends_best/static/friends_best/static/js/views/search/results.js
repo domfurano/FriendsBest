@@ -108,7 +108,7 @@ define([
             // Add the delete button
     		deleteTemplate = _.template(deleteHTML);
             this.$list.append(deleteTemplate());
-            $(".delete").click(function() {
+            $(".trash").click(function() {
                 if(confirm("Do you really want to delete this search?")) {
                     model.destroy();
                     parent.history.go(-1);

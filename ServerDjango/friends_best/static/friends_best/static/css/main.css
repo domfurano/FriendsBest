@@ -399,7 +399,7 @@
 		font-weight: bold;
 	}
 	
-	.list .delete {
+	.list .trash {
 		margin-bottom: 10px;
 		background-color: #e8edef;
 		color: #666;
@@ -409,7 +409,7 @@
         cursor: pointer;
 	}
 	
-	.list .delete div {
+	.list .trash div {
     	padding: 0;
 	}
 	
@@ -787,6 +787,8 @@
 		line-height: 1;
 		padding-top: 3px;
 		opacity: .6;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 	
 	.delete i.fa-times {

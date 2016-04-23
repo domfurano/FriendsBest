@@ -31,6 +31,13 @@ define([
 			return false;
 		});
 		
+		$(".details").on("click", ".url, .place", function() {
+    		url = $(this).attr("data-url");
+    		if(url) {
+        		window.open(url, "_blank");
+    		}
+		});
+		
 		commentsTemplate = _.template(commentsHTML);
 		that.$el.append(commentsTemplate(this.solution));
 		
