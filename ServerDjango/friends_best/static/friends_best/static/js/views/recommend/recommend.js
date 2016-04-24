@@ -134,7 +134,7 @@ define([
             // Get url
             text = $("#detail").val();
             if(text != "") {
-                that.recommendation.set("detail", text);
+                that.recommendation.set("detail", getLocation(text));
                 that.recommendation.set("host", getLocation(text).hostname);
                 that.render();
             }
