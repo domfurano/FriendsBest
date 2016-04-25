@@ -603,17 +603,25 @@ def getFriendship(user1, user2ID):
 
 
 def muteFriendship(friend1Id, friend2Id):
-   user1 = User.objects.filter(id=friend1Id)[0]
-   user2 = User.objects.filter(id=friend2Id)[0]
-   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
-   friendship.muted = True
+    user1 = User.objects.filter(id=friend1Id)[0]
+    user2 = User.objects.filter(id=friend2Id)[0]
+    f1 = Friendship.objects.filter(userOne=user1, userTwo=user2)[0]
+    f1.muted = True
+    f1.save()
+    f2 = Friendship.objects.filter(userOne=user2, userTwo=user1)[0]
+    f2.muted = True
+    f2.save()
 
 
 def unmuteFriendship(friend1Id, friend2Id):
-   user1 = User.objects.filter(id=friend1Id)[0]
-   user2 = User.objects.filter(id=friend2Id)[0]
-   friendship = Friendship.objects.filter(userOne=user1, userTwo=user2)
-   friendship.muted = False
+    user1 = User.objects.filter(id=friend1Id)[0]
+    user2 = User.objects.filter(id=friend2Id)[0]
+    f1 = Friendship.objects.filter(userOne=user1, userTwo=user2)[0]
+    f1.muted = False
+    f1.save()
+    f2 = Friendship.objects.filter(userOne=user2, userTwo=user1)[0]
+    f2.muted = False
+    f2.save()
 
 
 def deleteFriendship(user1, user2):
