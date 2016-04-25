@@ -707,7 +707,7 @@ def isFriendsWith(user1, user2):
 def getAllFriendUsers(user):
    allFriends = []
    for friendship in Friendship.objects.filter(userTwo=user, muted=False):
-       allFriends.append(friendship.userTwo)
+       allFriends.append(friendship.userOne)
    return allFriends
 
 
