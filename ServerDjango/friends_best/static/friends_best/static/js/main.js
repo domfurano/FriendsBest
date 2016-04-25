@@ -29,6 +29,9 @@ require.config({
 	  'solutiondetails' : {
 		  deps: ['jquery', 'waypoint'],
 	  },
+	  'waypoint': {
+    	  deps: ['jquery'],
+	  },
 	  'facebook' : {
 	      exports: 'FB'
 	  },
