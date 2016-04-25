@@ -15,6 +15,7 @@ class SolutionCell: UITableViewCell {
     var background: UIView = UIView.newAutoLayoutView()
     var titleLabel: UILabel = UILabel.newAutoLayoutView()
     var subtitleLabel: UILabel = UILabel.newAutoLayoutView()
+    var notification: UIImageView = UIImageView.newAutoLayoutView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,13 +42,23 @@ class SolutionCell: UITableViewCell {
         subtitleLabel.font = UIFont(name: "Proxima Nova Cond", size: 12.0)!
         subtitleLabel.textColor = UIColor.darkGrayColor()
         
+        let alertIcon: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(18)
+        alertIcon.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor())
+        let alertImage: UIImage = alertIcon.imageWithSize(CGSize(width: 18.0, height: 18.0))
+        notification.image = alertImage
+        
         contentView.addSubview(background)
         background.addSubview(titleLabel)
         background.addSubview(subtitleLabel)
+        background.addSubview(notification)
     }
     
-    func setupForViewing(title: String) {
-        titleLabel.text = title
+    func setupForViewing(showAlert: Bool) {
+        if showAlert {
+            notification.alpha = 1.0
+        } else {
+            notification.alpha = 0.0
+        }
         
         setNeedsUpdateConstraints()
         updateConstraintsIfNeeded()
@@ -74,12 +85,17 @@ class SolutionCell: UITableViewCell {
             let detailHorizontalInset: CGFloat = 18.0
             titleLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: detailVerticalInset)
             titleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: detailHorizontalInset)
-            titleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: detailHorizontalInset)
+//            titleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: detailHorizontalInset)
+            titleLabel.autoPinEdge(.Trailing, toEdge: .Leading, ofView: notification, withOffset: 8.0, relation: .LessThanOrEqual)
             
             subtitleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: 0.2, relation: .GreaterThanOrEqual)
             subtitleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: detailHorizontalInset)
-            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: detailHorizontalInset)
+//            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: detailHorizontalInset)
+            subtitleLabel.autoPinEdge(.Trailing, toEdge: .Leading, ofView: notification, withOffset: 8.0, relation: .LessThanOrEqual)
             subtitleLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: detailVerticalInset)
+            
+            notification.autoAlignAxisToSuperviewAxis(.Horizontal)
+            notification.autoPinEdgeToSuperviewEdge(.Trailing, withInset: 8.0)
         }
         super.updateConstraints()
     }

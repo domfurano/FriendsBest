@@ -81,6 +81,12 @@ class CommonUI {
         case square = "square"
     }
     
+    /* Friend muting icons */
+    static let muteIconFloat: CGFloat = 16.0
+    static let muteIconSize: CGSize = CGSize(width: muteIconFloat, height: muteIconFloat)
+    static let unmutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeUpIconWithSize(muteIconFloat).imageWithSize(muteIconSize))
+    static let mutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeOffIconWithSize(muteIconFloat).imageWithSize(muteIconSize))
+    
     private init() { }
     
     static func drawGradientForContext(colors: [CGColor], frame: CGRect, context: CGContext) {
@@ -177,7 +183,7 @@ class CommonUI {
             facebookProfileUIImageView.pin_updateWithProgress = true
             facebookProfileUIImageView.pin_setImageFromURL(pictureURL, completion: { (result: PINRemoteImageManagerResult) in
                 if result.image != nil {
-                    facebookProfileUIImageView.image = result.image!.roundedImage()
+                    facebookProfileUIImageView.image = result.image!//.roundedImage()
                     closure?()
                 }
             })
@@ -190,7 +196,7 @@ class CommonUI {
     func setUIButtonWithFacebookProfileImage(button: UIButton) {
         var facebookProfileUIImageView: UIImageView? = nil
         
-        let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(User.instance.myFacebookID)/picture?type=\(FacbookImageSize.square.rawValue)")
+        let pictureURL: NSURL? = NSURL(string: "https://graph.facebook.com/\(USER.myFacebookID)/picture?type=\(FacbookImageSize.square.rawValue)")
         
         if pictureURL != nil {
             facebookProfileUIImageView = UIImageView()

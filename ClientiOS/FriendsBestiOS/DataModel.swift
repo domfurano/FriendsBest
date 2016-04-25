@@ -9,25 +9,12 @@
 import Foundation
 import FBSDKCoreKit
 
-//var MODEL_QUEUE: dispatch_queue_t = dispatch_queue_create("MODEL_QUEUE", nil)
-
-//protocol NetworkDAODelegate: class {
-//    func queriesFetched(query: [Query])
-//    func querySolutionsFetched(forQuery query: Query, solutions: [Solution])
-//    func newQueryFetched(query: Query)
-//    func queryDeleted(query: Query)
-//    func promptsFetched(prompts: [Prompt])
-//    func promptDeleted(prompt: Prompt)
-//    func userRecommendationsFetched(userRecommendations: [UserRecommendation])
-//    func userRecommendationFetched(userRecommendation: UserRecommendation)
-//    func userRecommendationDeleted(userRecommendation: UserRecommendation)
-//    func friendsFetched(friends: [Friend])
-//}
+var USER: User = User()
 
 class User: NetworkDAODelegate {
     
     /* Singleton instance */
-    static let instance: User = User()
+//    static let instance: User = User()
     
     
     /* Member variables */
@@ -45,7 +32,7 @@ class User: NetworkDAODelegate {
     
     
     /* Private constructor */
-    private init() {
+    init() {
         // Delegate assignment
         FBNetworkDAO.instance.networkDAODelegate = self
         FBNetworkDAO.instance.getFriend = { (facebookID: String, name: String, muted: Bool?) in
@@ -56,11 +43,41 @@ class User: NetworkDAODelegate {
             }
             return Friend(facebookID: facebookID, name: name, muted: muted == nil ? false : muted!)
         }
-        
         myLargeRoundedImage = CommonUI.instance.getLargeRoundedFacebookProfileImageView(myFacebookID, closure: nil)
         mySmallRoundedImage = CommonUI.instance.getSmallRoundedFacebookProfileImageView(myFacebookID, closure: nil)
     }
     
+    func notificationsTotal() -> Int {
+        var count: Int = 0
+        for query in myQueries {
+            count += query.notificationCount
+        }
+        return count
+    }
+    
+    
+    private func notifyIfNeeded() {
+        NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "notifications", object: nil))
+    }
+    
+    private func sortQueries() {
+        for query: Query in myQueries {
+            for solution: Solution in query.solutions {
+                solution.recommendations = solution.recommendations.reverse()
+                solution.recommendations.sortInPlace({ (rec1: FriendRecommendation, rec2: FriendRecommendation) -> Bool in
+                    return rec1.isNew
+                })
+            }
+            query.solutions = query.solutions.reverse()
+            query.solutions.sortInPlace({ (sol1: Solution, sol2: Solution) -> Bool in
+                return sol1.notificationCount > sol2.notificationCount
+            })
+        }
+        myQueries = myQueries.reverse()
+        myQueries.sortInPlace { (q1: Query, q2: Query) -> Bool in
+            return q1.notificationCount > q2.notificationCount
+        }
+    }
     
     /* Delegation */
 
@@ -76,12 +93,15 @@ class User: NetworkDAODelegate {
     var closureQueryNew: (query: Query) -> Void = { _ in }
     func queryFetched(query: Query) {
         self.myQueries.insert(query, atIndex: 0)
+        sortQueries()
         closureQueryNew(query: query)
     }
     var closureQueriesNew: () -> Void = { }
     func queriesFetched(queries: [Query]) {
-        self.myQueries = queries.reverse()
+        self.myQueries = queries
+        sortQueries()
         closureQueriesNew()
+        notifyIfNeeded()
     }
     var closureQueryDeleted: () -> Void = { }
     func queryDeleted(query: Query) {
@@ -93,16 +113,19 @@ class User: NetworkDAODelegate {
     var closureSolutionsFetchedForQuery: (query: Query) -> Void = { _ in }
     func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution]) {
         query.solutions = solutions
+        sortQueries()
         closureSolutionsFetchedForQuery(query: query)
     }
     var closureUserRecommendationNew: () -> Void = { }
     func userRecommendationFetched(userRecommendation: UserRecommendation) {
         self.myRecommendations.insert(userRecommendation, atIndex: 0)
+        sortQueries()
         closureUserRecommendationNew()
     }
     var closureUserRecommendationsNew: () -> Void = { }
     func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
         self.myRecommendations = userRecommendations
+        sortQueries()
         closureUserRecommendationsNew()
     }
     var closureUserRecommendationDeleted: () -> Void = { }
@@ -117,95 +140,11 @@ class User: NetworkDAODelegate {
         self.myFriends = friends
         closureFriendsNew()
     }
-//    var closureNewQuery: (query: Query, index: Int) -> Void = {_ in }
-//    var closureDeletedQuery: (index: Int) -> Void = {_ in }
-//    
-//    var closureNewSolution: (forQuery: Query, index: Int) -> Void = {_ in }
-//    var closureSolutionUpdated: (forQuery: Query, index: Int) -> Void = {_ in }
-//    
-//    var closureNewRecommendation: (forSolution: Solution, index: Int) -> Void = {_ in }
-//    var closureRecommendationUpdated: (forSolution: Solution, index: Int) -> Void = {_ in }
-//    
-//    var closureNewPrompts: () -> Void = { }
-//    var closureDeletedPrompt: (index: Int) -> Void = {_ in }
-//    
-//    var closureNewUserRecommendation: (index: Int) -> Void = {_ in }
-//    var closureDeletedUserRecommendation: (index: Int) -> Void = {_ in }
-//    
-//    var closureNewFriend: (index: Int) -> Void = {_ in }
-//    
-//    /* Delegate implementations */
-//
-//    
-//    func queriesFetched(queries: [Query]) {
-//        for query: Query in queries {
-//            queryFetched(query)
-//        }
-//    }
-//    func queryFetched(query: Query) {
-//        if let queryIndex: Int = myQueries.indexOf(query) {
-//            let myQuery: Query = myQueries[queryIndex]
-//            myQuery.setSolutions(query.solutions)
-//            // Don't have to update the query because it is immutable.
-//        } else {
-//            myQueries.insert(query, atIndex: 0)
-//            closureNewQuery(query: query, index: 0)
-//        }
-//    }
-//    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution]) {
-//        query.setSolutions(solutions)
-//    }
-//    func queryDeleted(query: Query) {
-//        if let queryIndex: Int = myQueries.indexOf(query) {
-//            myQueries.removeAtIndex(queryIndex)
-//            closureDeletedQuery(index: queryIndex)
-//        }
-//    }
-//    func promptsFetched(prompts: [Prompt]) {
-//        for prompt: Prompt in prompts {
-//            if !myPrompts.contains(prompt) {
-//                myPrompts.append(prompt)
-//            }
-//        }
-//        closureNewPrompts()
-//    }
-//    func promptDeleted(prompt: Prompt) {
-//        if let promptIndex: Int = myPrompts.indexOf(prompt) {
-//            myPrompts.removeAtIndex(promptIndex)
-//            closureDeletedPrompt(index: promptIndex)
-//        }
-//    }
-//    func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
-//        for userRecommendation: UserRecommendation in userRecommendations {
-//            userRecommendationFetched(userRecommendation)
-//        }
-//        for i in (0...myRecommendations.count - 1).reverse() {
-//            if !userRecommendations.contains(myRecommendations[i]) {
-//                myRecommendations.removeAtIndex(i)
-//                closureDeletedUserRecommendation(index: i)
-//            }
-//        }
-//    }
-//    func userRecommendationFetched(userRecommendation: UserRecommendation) {
-//        if !myRecommendations.contains(userRecommendation) {
-//            myRecommendations.insert(userRecommendation, atIndex: 0)
-//            closureNewUserRecommendation(index: 0)
-//        }
-//    }
-//    func userRecommendationDeleted(userRecommendation: UserRecommendation) {
-//        if let userRecommendationIndex: Int = myRecommendations.indexOf(userRecommendation) {
-//            myRecommendations.removeAtIndex(userRecommendationIndex)
-//            closureDeletedUserRecommendation(index: userRecommendationIndex)
-//        }        
-//    }
-//    func friendsFetched(friends: [Friend]) {
-//        for friend: Friend in friends {
-//            if !myFriends.contains(friend) {
-//                myFriends.append(friend)
-//                closureNewFriend(index: myFriends.endIndex - 1)
-//            }
-//        }
-//    }
+    var closureFriendMutingSet: () -> Void = { }
+    func friendMutingSet(friend: Friend, muted: Bool) {
+        friend.muted = muted
+        closureFriendMutingSet()
+    }
 }
 
 
@@ -264,114 +203,6 @@ class Query: Hashable, Equatable {
     func setSolutions(networkSolutions: [Solution]) {
         self.solutions = networkSolutions
     }
-    
-//    func setSolutions(networkSolutions: [Solution]) {
-//        for networkSolution: Solution in networkSolutions {
-//            if let existingSolutionIndex: Int = self.solutions.indexOf(networkSolution) {
-//                let existingSolution: Solution = self.solutions[existingSolutionIndex]
-//                if updateSolution(existingSolution, networkSolution: networkSolution) {
-//                    User.instance.closureSolutionUpdated(forQuery: self, index: existingSolutionIndex)
-//                }
-//                
-//                for networkRecommendation in networkSolution.recommendations {
-//                    if let existingRecommendationIndex: Int = existingSolution.recommendations.indexOf(networkRecommendation) {
-//                        let existingRecommendation = existingSolution.recommendations[existingRecommendationIndex]
-//                        if updateRecommendation(existingRecommendation, networkRecommendation: networkRecommendation) {
-//                            User.instance.closureRecommendationUpdated(forSolution: existingSolution, index: existingRecommendationIndex)
-//                        }
-//                    } else {
-//                        existingSolution.recommendations.insert(networkRecommendation, atIndex: 0)
-//                        User.instance.closureNewRecommendation(forSolution: existingSolution, index: 0)
-//                    }
-//                }
-//                
-//            } else {
-//                self.solutions.append(networkSolution)
-//                networkSolution.query = self
-//                User.instance.closureNewSolution(forQuery: self, index: self.solutions.endIndex)
-//            }
-//        }
-//    }
-//    
-//    @warn_unused_result
-//    private func updateSolution(solution: Solution, networkSolution: Solution) -> Bool {
-//        assert(solution.ID == networkSolution.ID)
-//        
-//        var changed: Bool = false
-//        
-//        if solution.detail != networkSolution.detail {
-//            solution.detail = networkSolution.detail
-//            changed = true
-//        }
-//        
-//        if solution.pinid != networkSolution.pinid {
-//            solution.pinid = networkSolution.pinid
-//            changed = true
-//        }
-//        
-//        if solution.type != networkSolution.type {
-//            solution.type = networkSolution.type
-//            changed = true
-//        }
-//        
-//        if solution.notificationCount != networkSolution.notificationCount {
-//            solution.notificationCount = networkSolution.notificationCount
-//            changed = true
-//        }
-//        
-//        if solution.query != networkSolution.query {
-//            solution.query = networkSolution.query
-//            changed = true
-//        }
-//        
-//        return changed
-//    }
-//    
-//    @warn_unused_result
-//    private func updateRecommendation(recommendation: FriendRecommendation, networkRecommendation: FriendRecommendation) -> Bool {
-//        assert(recommendation.ID == networkRecommendation.ID)
-//        
-//        var changed: Bool = false
-//        
-//        if recommendation.comment != networkRecommendation.comment {
-//            recommendation.comment = networkRecommendation.comment
-//            changed = true
-//        }
-//        
-//        if recommendation.isNew != networkRecommendation.isNew {
-//            recommendation.isNew = networkRecommendation.isNew
-//            changed = true
-//        }
-//        
-//        // Friend
-//        if recommendation.friend != nil {
-//            if networkRecommendation.friend != nil {
-//                assert(recommendation.friend == networkRecommendation.friend)
-//            } else {
-//                recommendation.friend = nil
-//                changed = true
-//            }
-//        } else {
-//            if networkRecommendation.friend != nil {
-//                recommendation.friend = networkRecommendation.friend
-//                changed = true
-//            } else {
-//                // Both are nil and nothing is to be done.
-//            }
-//        }
-//        
-//        if recommendation.comment != networkRecommendation.comment {
-//            recommendation.comment = networkRecommendation.comment
-//            changed = true
-//        }
-//        
-//        if recommendation.comment != networkRecommendation.comment {
-//            recommendation.comment = networkRecommendation.comment
-//            changed = true
-//        }
-//        
-//        return changed
-//    }
 }
 func ==(lhs: Query, rhs: Query) -> Bool {
     return lhs.ID == rhs.ID

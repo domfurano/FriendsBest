@@ -62,6 +62,9 @@ class NewRecommendationFormViewController: FormViewController {
                     $0.disabled = true
                     break
                 }
+                if type == .EDIT {
+                    $0.disabled = true
+                }
                 }.cellSetup({ (cell, row) in
                     cell.textField.autocorrectionType = .No
                     cell.textField.autocapitalizationType = .None
@@ -89,7 +92,11 @@ class NewRecommendationFormViewController: FormViewController {
         navigationController?.navigationBarHidden = false
         navigationController?.navigationBar.barTintColor = CommonUI.fbGreen
         navigationController?.toolbarHidden = true
-        title = "New Recommendation"
+        if type == .NEW {
+            title = "New Recommendation"
+        } else {
+            title = "Edit Recommendation"
+        }
     }
     
     func dismiss() {
@@ -108,7 +115,7 @@ class NewRecommendationFormViewController: FormViewController {
             newRecommendation.detail = (values["detail"]!! as! String)
         }
         newRecommendation.tags = (values["keywords"]!! as! String).componentsSeparatedByString(" ")
-        newRecommendation.comments = values["comments"] == nil ? "" : (values["comments"]!! as! String)
+        newRecommendation.comments = values["comments"]! == nil ? "" : (values["comments"]!! as! String)
         
         if self.type == .NEW {
             FBNetworkDAO.instance.postNewRecommendtaion(newRecommendation, callback: nil)
@@ -116,11 +123,15 @@ class NewRecommendationFormViewController: FormViewController {
             FBNetworkDAO.instance.putRecommendation(newRecommendation, callback: nil)
         }
         
-        for vc in (navigationController?.viewControllers)! {
-            if vc.isKindOfClass(MainScreenViewController) {
-                navigationController?.popToViewController(vc, animated: true)
-                break
+        if type == .NEW {
+            for vc in (navigationController?.viewControllers)! {
+                if vc.isKindOfClass(MainScreenViewController) {
+                    navigationController?.popToViewController(vc, animated: true)
+                    break
+                }
             }
+        } else {
+            navigationController?.popViewControllerAnimated(true)
         }
     }
 }

@@ -20,13 +20,20 @@ class FriendsListViewController: UITableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
+        /* NECESSARY FOR DYNAMIC CELL HEIGHT */
+        tableView.estimatedRowHeight =  128.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
         /* Refresh Control */
         refreshControl = UIRefreshControl()
         refreshControl!.backgroundColor = UIColor.colorFromHex(0x869ECC)
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(FriendsListViewController.refreshData), forControlEvents: .ValueChanged)
         
-        User.instance.closureFriendsNew = { [weak self] in
+        USER.closureFriendsNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        USER.closureFriendMutingSet = { [weak self] in
             self?.tableView.reloadData()
         }
         
@@ -64,23 +71,56 @@ class FriendsListViewController: UITableViewController {
 //        setToolbarItems()
     }
     
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+    
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.myFriends.count
+        return USER.myFriends.count
     }
     
+    static let cellSize: CGFloat = 16.0
+    let unmutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeUpIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
+    let mutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeOffIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let friend: Friend = User.instance.myFriends[indexPath.row]
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
-        cell.textLabel?.text = friend.name
-        cell.imageView?.image = CommonUI.instance.defaultProfileImage
-        cell.imageView?.image = friend.smallRoundedPicture.image
-        cell.userInteractionEnabled = false
+        let friend: Friend = USER.myFriends[indexPath.row]
+        let cell: FriendCell = FriendCell()
+        cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: unmutedImageView.image!)
+        if let muted = friend.muted {
+            if muted {
+                cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: mutedImageView.image!)
+            }
+            cell.muteButtonSelectedDelegate = { [weak self] in
+                FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: { [weak self] in
+                    self?.tableView.reloadData()
+                    })
+            }
+        }
+        
         return cell
     }
+    
+    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+        let friend: Friend = USER.myFriends[indexPath.row]
+        if let muted = friend.muted {
+            let friend: Friend = USER.myFriends[indexPath.row]
+            FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: nil)
+        }
+    }
+    
+//    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+//        let friend: Friend = USER.myFriends[indexPath.row]
+//        if let muted = friend.muted {
+//            let friend: Friend = USER.myFriends[indexPath.row]
+//            FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: nil)
+//        }
+//    }
     
     /* Toolbar */
     

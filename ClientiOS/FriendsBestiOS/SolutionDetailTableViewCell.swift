@@ -45,10 +45,19 @@ class SolutionDetailTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupCellForDisplay(friendImage: UIImage, name: String, comment: String) {
+    func setupCellForDisplay(friendImage: UIImage, name: String, comment: String, showAlert: Bool) {
         friendImageView.image = friendImage
         nameLabel.text = name
         commentLabel.text = comment
+        
+        if showAlert {
+//            contentView.layer.shadowColor = UIColor.redColor().CGColor
+//            contentView.layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
+//            contentView.layer.shadowOpacity = 0.5
+//            contentView.layer.shadowRadius = 1.0
+            contentView.layer.borderColor = UIColor.redColor().CGColor
+            contentView.layer.borderWidth = 0.5
+        }
         
         setNeedsUpdateConstraints()
         updateConstraintsIfNeeded()

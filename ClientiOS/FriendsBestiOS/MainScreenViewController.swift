@@ -67,6 +67,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     deinit {
         NSLog("MainScreenViewController - deinit")
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func loadView() {
@@ -119,7 +120,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         /* Closure implementations */
         
-        User.instance.closurePromptsNew = {
+        USER.closurePromptsNew = {
             self.showPromptCards()
         }
         
@@ -158,6 +159,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         locationManager.startUpdatingLocation()
         
         addConstraints()
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(MainScreenViewController.showAlert),
+            name: "notifications",
+            object: nil
+        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -178,15 +186,23 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     override func viewWillDisappear(animated: Bool) {
-        Updater.instance.STAHP()
-        User.instance.myPrompts.removeAll()
+//        Updater.instance.STAHP()
+        USER.myPrompts.removeAll()
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(true, animated: false)
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(false, animated: false)
     }
     
     /*** Delegate implementation ***/
     
     func showPromptCards() {
         var changed: Bool = false
-        outerloop: for prompt in User.instance.myPrompts {
+        outerloop: for prompt in USER.myPrompts {
             for cardView in self.cardViews {
                 if prompt.ID == cardView.prompt!.ID {
                     continue outerloop
@@ -206,11 +222,17 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         }
     }
     
-    // TODO: Show alert if total of new notifications is > 0
-//    func showAlert() {
-//        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
-//        navigationItem.leftBarButtonItem = historyIconBarButtonAlert
-//    }
+    func showAlert(notification: NSNotification) {
+        if notification.name == "notifications" {
+            if USER.notificationsTotal() > 0 {
+                let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
+                navigationItem.leftBarButtonItem = historyIconBarButtonAlert
+            } else {
+                let historyIconBarButtonPlain: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonPlain)
+                navigationItem.leftBarButtonItem = historyIconBarButtonPlain
+            }
+        }
+    }
     
     
     /*** Koloda ***/
@@ -237,7 +259,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         if didSwipeRight {
             return
         }
-        User.instance.myPrompts.removeAll()
+        USER.myPrompts.removeAll()
         cardViews.removeAll()
     }
     

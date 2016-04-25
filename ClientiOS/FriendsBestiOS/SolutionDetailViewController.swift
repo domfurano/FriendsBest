@@ -28,6 +28,9 @@ class SolutionDetailViewController: UITableViewController {
     
     var SOLUTION: Solution!
     
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }    
     
     convenience init(solution: Solution) {
         self.init()
@@ -71,6 +74,13 @@ class SolutionDetailViewController: UITableViewController {
         refreshControl?.tintColor = UIColor.whiteColor()
         refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
         
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(SolutionDetailViewController.showAlert),
+            name: "notifications",
+            object: nil
+        )
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -91,7 +101,24 @@ class SolutionDetailViewController: UITableViewController {
     {
         super.viewDidDisappear(animated)
         
+        for recommendation: FriendRecommendation in SOLUTION.recommendations {
+            if recommendation.isNew {
+                FBNetworkDAO.instance.deleteNotification(recommendation, callback: nil)
+            }
+        }
+        
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    func showAlert(notification: NSNotification) {
+        for query: Query in USER.myQueries {
+            for solution: Solution in query.solutions {
+                if solution.ID == SOLUTION.ID {
+                    SOLUTION = solution
+                }
+            }
+        }
+        tableView.reloadData()
     }
     
     func refreshData() {
@@ -149,13 +176,15 @@ class SolutionDetailViewController: UITableViewController {
                 cell.setupCellForDisplay(
                     friend.smallRoundedPicture.image!,
                     name: friend.name,
-                    comment: recommendation.comment
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
                 )
             } else {
                 cell.setupCellForDisplay(
                     CommonUI.instance.defaultProfileImage,
                     name: "Anonymous FriendsBest User",
-                    comment: recommendation.comment
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
                 )
             }
             return cell

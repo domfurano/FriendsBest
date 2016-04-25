@@ -48,11 +48,11 @@ class LoadingViewController: UIViewController {
             navigationController?.pushViewController(FacebookLoginViewController(), animated: false)
         } else {
 //            PINCache.sharedCache().removeAllObjects()
-            User.instance
+            USER = User()
             CommonUI.instance
             FBNetworkDAO.instance.postFacebookTokenAndAuthenticate({
                 FBNetworkDAO.instance.getRecommendationsForUser({
-                    for userRecommendation: UserRecommendation in User.instance.myRecommendations {
+                    for userRecommendation: UserRecommendation in USER.myRecommendations {
                         if userRecommendation.type == .place {
                             GooglePlace.loadPlace(userRecommendation.detail, callback: { (successful: Bool, place: GooglePlace?) in
                                 if successful {
@@ -65,7 +65,7 @@ class LoadingViewController: UIViewController {
                         }
                     }
                     FBNetworkDAO.instance.getQueries({
-                        for query: Query in User.instance.myQueries {
+                        for query: Query in USER.myQueries {
                             for solution: Solution in query.solutions {
                                 if solution.type == .place {
                                     GooglePlace.loadPlace(solution.detail, callback: { (successful: Bool, place: GooglePlace?) in

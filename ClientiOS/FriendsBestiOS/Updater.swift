@@ -12,20 +12,23 @@ class Updater {
     
     static let instance: Updater = Updater()
     
-    private var timer: Timer!
+    private var promptTimer: Timer!
+    private var queryTimer: Timer!
     private var gettingPrompts: Bool = false
     
     func STAHP () {
-        self.timer.cancelTimer()
+        self.promptTimer.cancelTimer()
+        self.queryTimer.cancelTimer()
     }
     
     func start() {
-        self.timer.startTimer()
+        self.promptTimer.startTimer()
+        self.queryTimer.startTimer()
     }
     
     private init() {
-        self.timer = Timer(timesPerSecond: 1, closure: { () -> Void in
-            if User.instance.myPrompts.count < 1 {
+        self.promptTimer = Timer(timesPerSecond: 1.0, closure: { () -> Void in
+            if USER.myPrompts.count < 1 {
                 if !self.gettingPrompts {
                     self.gettingPrompts = true
                     FBNetworkDAO.instance.getPrompts({
@@ -34,16 +37,17 @@ class Updater {
                 }
             }
         })
-        timer.startTimer()
+        promptTimer.startTimer()
+        
+        self.queryTimer = Timer(timesPerSecond: 1.0 / 3.0, closure: { () -> Void in
+            FBNetworkDAO.instance._getQueries(true, callback: {
+
+            })
+        })
+        queryTimer.startTimer()
     }
     
-    
-    
-//    private func checkForNewRecommendations() {
-//        for query in User.instance.queryHistory.queries {
-//            FBNetworkDAO.instance._getQuerySolutions(query.ID)
-//        }
-//    }
-    
-    
+    deinit {
+        STAHP()
+    }
 }

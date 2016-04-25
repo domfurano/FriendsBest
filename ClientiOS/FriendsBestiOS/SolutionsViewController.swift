@@ -7,8 +7,9 @@
 //
 
 import UIKit
-
-// TODO: Query no longer possiblility of being nil!!!
+import FBSDKCoreKit
+import FBSDKLoginKit
+import FBSDKShareKit
 
 class SolutionsView: UITableView {
     override func drawRect(rect: CGRect) {
@@ -26,10 +27,22 @@ class SolutionsView: UITableView {
     }
 }
 
-class SolutionsViewController: UITableViewController {
-
+class SolutionsViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
+    let searchController = UISearchController(searchResultsController: nil)
+    var filteredSolutions: [Solution] = []
+    var searching: Bool {
+        return searchController.active && searchController.searchBar.text != ""
+    }
+    
     var QUERY: Query?
     let solutionCellID: String = "solutionCell"
+    var loading: Bool {
+        return QUERY == nil
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
     
     convenience init(query: Query?, tags: [String]) {
         self.init()
@@ -38,21 +51,6 @@ class SolutionsViewController: UITableViewController {
     
     override func loadView() {
         tableView = SolutionsView(frame: CGRectZero, style: UITableViewStyle.Grouped)
-
-        User.instance.closureQueryNew = { [weak self] (query) in
-            if self?.QUERY == nil {
-                self?.QUERY = query
-                self?.addRefreshControl()
-            }
-            self?.tableView.reloadData()
-        }
-        User.instance.closureSolutionsFetchedForQuery = { [weak self] (query) in
-            if self?.QUERY == nil {
-                self?.QUERY = query
-                self?.addRefreshControl()
-            }
-            self?.tableView.reloadData()
-        }
     }
     
     override func viewDidLoad() {
@@ -64,6 +62,18 @@ class SolutionsViewController: UITableViewController {
         /* NECESSARY FOR DYNAMIC CELL HEIGHT */
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        definesPresentationContext = true
+        
+        searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        
+        searchController.searchBar.barTintColor = UIColor.colorFromHex(0xdedede)
+        searchController.searchBar.translucent = false
+        searchController.searchBar.autocapitalizationType = .None
+        tableView.tableHeaderView = searchController.searchBar
         
         tableView.registerClass(SolutionCell.self, forCellReuseIdentifier: solutionCellID)
         
@@ -79,10 +89,36 @@ class SolutionsViewController: UITableViewController {
         title = "Solutions"
         tableView.separatorStyle = .None
         
-        if QUERY != nil {
-            addRefreshControl()
+        addRefreshControl()
+        
+        
+        USER.closureQueryNew = { [weak self] (query) in
+            if self != nil {
+                if self!.loading {
+                    self!.QUERY = query
+                    self!.addRefreshControl()
+                }
+                self!.refreshControl?.endRefreshing()
+                self!.tableView.reloadData()
+            }
+        }
+        USER.closureSolutionsFetchedForQuery = { [weak self] (query) in
+            if self != nil {
+                if self!.loading {
+                    self!.QUERY = query
+                    self!.addRefreshControl()
+                }
+                self!.refreshControl?.endRefreshing()
+                self!.tableView.reloadData()
+            }
         }
         
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(SolutionsViewController.showAlert),
+            name: "notifications",
+            object: nil
+        )
     }
     
     func addRefreshControl() {
@@ -109,15 +145,60 @@ class SolutionsViewController: UITableViewController {
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
     }
     
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        if loading {
+            refreshControl?.beginRefreshing()
+        }
+    }
+    
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
         navigationController?.navigationBar.titleTextAttributes = [
             NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 28.0)!,
             NSForegroundColorAttributeName: UIColor.whiteColor()
         ]
+        searchController.active = false
+    }
+    
+    func showAlert(notification: NSNotification) {
+        if !loading {
+            for query: Query in USER.myQueries {
+                if query.ID == QUERY!.ID {
+                    QUERY = query
+                }
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(true, animated: false)
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(false, animated: false)
+    }
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        if loading {
+            return
+        }
+        
+        filteredSolutions.removeAll(keepCapacity: true)
+        for solution: Solution in QUERY!.solutions {
+            if  solution.placeName.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString)
+                || solution.detail.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString)
+                || solution.urlTitle.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString) {
+                filteredSolutions.append(solution)
+            }
+        }
+        
+        tableView.reloadData()
     }
     
     func refreshData() {
-        if QUERY != nil {
+        if !loading {
             refreshControl?.beginRefreshing()
             FBNetworkDAO.instance.getQuerySolutions(QUERY!, callback: {
                 self.refreshControl?.endRefreshing()
@@ -130,19 +211,46 @@ class SolutionsViewController: UITableViewController {
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if QUERY != nil {
-            return 2
+        if loading {
+            return 1
         } else {
-            return 0
+            return 3
         }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
+        if loading {
+            return 0
         } else {
-            return QUERY!.solutions.count
+            if section == 0 {
+                return 1
+            } else if section == 1 {
+                if searching {
+                    return filteredSolutions.count
+                } else {
+                    return QUERY!.solutions.count
+                }
+            } else {
+                return 1
+            }
         }
+    }
+    
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if loading {
+            return "loading..."
+        } else {
+            if section == 0 {
+                return "Keywords"
+            } else if section == 1 {
+                if QUERY!.solutions.isEmpty {
+                    return "No solutions"
+                } else {
+                    return "Solutions"
+                }
+            }
+        }
+        return nil
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -151,9 +259,16 @@ class SolutionsViewController: UITableViewController {
             cell.setNeedsUpdateConstraints()
             cell.updateConstraintsIfNeeded()
             return cell
-        } else {
+        } else if indexPath.section == 1 {
             let cell: SolutionCell = tableView.dequeueReusableCellWithIdentifier(solutionCellID) as! SolutionCell
-            let solution: Solution = QUERY!.solutions[indexPath.row]
+            
+            let solution: Solution
+            if searching {
+                solution = filteredSolutions[indexPath.row]
+            } else {
+                solution = QUERY!.solutions[indexPath.row]
+            }
+            
             solution.closureSolutionUpdated = { [weak self] in
                 self?.tableView.reloadData()
             }
@@ -170,16 +285,20 @@ class SolutionsViewController: UITableViewController {
                 cell.subtitleLabel.text = solution.urlSubtitle
                 break
             }
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
+            cell.setupForViewing(solution.notificationCount > 0)
             return cell
+        } else {
+            let fbShareCell = FacebookShareCell()
+            fbShareCell.setupForViewing(QUERY!.tagString)
+            return fbShareCell
         }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
             return
+        } else if indexPath.section == 1 {
+            navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY!.solutions[indexPath.row]), animated: true)
         }
-        navigationController?.pushViewController(SolutionDetailViewController(solution: QUERY!.solutions[indexPath.row]), animated: true)
     }
 }
