@@ -611,6 +611,7 @@ def muteFriendship(friend1Id, friend2Id):
     f2 = Friendship.objects.filter(userOne=user2, userTwo=user1)[0]
     f2.muted = True
     f2.save()
+    print('muted user1: %s and user2: %s' % friend1Id, friend2Id)
 
 
 def unmuteFriendship(friend1Id, friend2Id):
@@ -622,6 +623,7 @@ def unmuteFriendship(friend1Id, friend2Id):
     f2 = Friendship.objects.filter(userOne=user2, userTwo=user1)[0]
     f2.muted = False
     f2.save()
+    print('unmuted user1: %s and user2: %s' % friend1Id, friend2Id)
 
 
 def deleteFriendship(user1, user2):
