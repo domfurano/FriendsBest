@@ -28,7 +28,7 @@ define([
         l.href = href;
         return {
 	        host: l.hostname,
-	        href: href;
+	        href: href
 	    };
     };
 
