@@ -26,7 +26,10 @@ define([
         
         var l = document.createElement("a");
         l.href = href;
-        return l;
+        return {
+	        host: l.hostname,
+	        href: href;
+	    };
     };
 
   var view = Backbone.View.extend({
