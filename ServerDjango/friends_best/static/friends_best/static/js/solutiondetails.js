@@ -4,7 +4,7 @@ function($) {
   	var service = false;
   
   	function getHostFromURL(href) {
-        
+        href = href.toString();
         if(href.indexOf("://") == -1) {
             if(href.indexOf("//") > -1) {
                 href = "http:" + href;
