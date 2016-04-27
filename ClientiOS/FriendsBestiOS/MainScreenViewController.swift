@@ -33,8 +33,6 @@ class MainView: UIView {
 
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate, KolodaViewDataSource, KolodaViewDelegate {
     
-    //    static let instance: MainScreenViewController = MainScreenViewController() // ?????
-    
     /* Google */
     var placePicker: GMSPlacePicker?
     var currentPlace: GMSPlace? = nil // TODO: Move this to possible the User class
@@ -65,6 +63,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Location manager */
     var locationManager: CLLocationManager = CLLocationManager()
     
+    /* Sad timer */
+    var setAnimationTimer: Timer = Timer(timesPerSecond: 1.0) { 
+        dispatch_async(dispatch_get_main_queue(), {
+            UIView.setAnimationsEnabled(true)
+        })
+    }
+    
     deinit {
         NSLog("MainScreenViewController - deinit")
         NSNotificationCenter.defaultCenter().removeObserver(self)
@@ -75,6 +80,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     override func viewDidLoad() {
+        setAnimationTimer.startTimer()
         
         /* Search controller */
         
@@ -267,6 +273,10 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         return true
     }
     
+    func kolodaShouldTransparentizeNextCard(koloda: KolodaView) -> Bool {
+        return false
+    }
+    
     // datasource
     
     func kolodaNumberOfCards(koloda: KolodaView) -> UInt {
@@ -356,20 +366,25 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         recommendationPickerShown = false
         if didSwipeRight {
             didSwipeRight = false
-            kolodaView.revertAction()
+            kolodaView.revertAction({ _ in
+                
+            })
         }
     }
     
     
     /*** Recommendation Picker ***/
+    var picked: Bool = false
     
     func pickCustom() {
+        picked = true
         newRecommendation.type = .text
         newRecommendation.detail = ""
         navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendation, type: .NEW), animated: true)
     }
     
     func pickLink() {
+        picked = true
         newRecommendation.type = .url
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
@@ -377,6 +392,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func pickPlace() {
+        picked = true
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         

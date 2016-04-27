@@ -49,6 +49,8 @@ class SolutionDetailViewController: UITableViewController {
     override func viewDidLoad() {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        title = "Details"
 //        tableView.separatorStyle = .None
         
 //        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
@@ -197,9 +199,14 @@ class SolutionDetailViewController: UITableViewController {
             case .text:
                 break
             case .place:
-                if let strippedName: String = SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
-                    let URLString: String = "http://maps.apple.com/?q=\(strippedName)&sll=\(SOLUTION.latitude),\(SOLUTION.longitude)&t=m"
-                    if let URL: NSURL = NSURL(string: URLString) {
+                let URLString: String?
+                if SOLUTION.placeName.containsString("°") {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                } else {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                }
+                if URLString != nil {
+                    if let URL: NSURL = NSURL(string: URLString!) {
                         UIApplication.sharedApplication().openURL(URL)
                     }
                 }

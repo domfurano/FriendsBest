@@ -47,7 +47,7 @@ public class KolodaViewAnimator {
         
         firstCardAppearAnimation.toValue = NSNumber(float: 1.0)
         firstCardAppearAnimation.fromValue =  NSNumber(float: 0.0)
-        firstCardAppearAnimation.duration = 1.0
+        firstCardAppearAnimation.duration = 0.0
         firstCardAppearAnimation.completionBlock = { _, finished in
             completion?(finished)
         }

@@ -11,8 +11,6 @@ import CoreData
 import FBSDKCoreKit
 import GoogleMaps
 
-let GOOGLE_API_KEY: String = "AIzaSyC7VG-bEW5bKaNA6DjEK58NH3YpzNE9gEI"
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -25,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
         // Google
-        GMSServices.provideAPIKey(GOOGLE_API_KEY)
+        GMSServices.provideAPIKey(GooglePlace.GOOGLE_API_KEY)//GOOGLE_API_KEY)
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         

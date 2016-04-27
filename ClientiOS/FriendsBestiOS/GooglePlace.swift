@@ -14,6 +14,9 @@ class GooglePlace: NSObject, NSCoding {
     //"AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8"
 //    static let APIKey: String = "AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8"//"AIzaSyAYaNO8DDk-1s_IFnQgBA3QGqce21JwIZg"
     
+    
+    static let GOOGLE_API_KEY: String = "AIzaSyCiW8jCl6JfJd5kx7js7cb-e32GTXNopyE"// FB:"AIzaSyC7VG-bEW5bKaNA6DjEK58NH3YpzNE9gEI"
+    
     // MARK: Properties
     var placeID: String
     var name: String
@@ -70,7 +73,7 @@ class GooglePlace: NSObject, NSCoding {
                                     longitude: gmsPlace.coordinate.longitude,
                                     cid: nil
                                 )
-//                                loadCid(placeID)
+                                loadCid(placeID)
                                 PINCache.sharedCache().setObject(place, forKey: placeID)
                                 dispatch_async(dispatch_get_main_queue(), {
                                     callback?(successful: true, place: place)
@@ -83,64 +86,64 @@ class GooglePlace: NSObject, NSCoding {
         }
     }
     
-//    static func loadCid(placeID: String) {
-//        let URLString: String = "https://maps.googleapis.com/maps/api/place/details/json?key=\(APIKey)&placeid=\(placeID)"
-//        
-//        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
-//        //        configuration.HTTPAdditionalHeaders = ["Authorization": token]
-//        let session: NSURLSession = NSURLSession(configuration: configuration)
-//        
-//        //        let queryString: String = "query/"
-//        guard let queryURL: NSURL = NSURL(string: URLString) else {
-//            return
-//        }
-//        
-//        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
-//        request.HTTPMethod = "GET"
-//        request.addValue("application/json", forHTTPHeaderField: "Accept")
-//        request.addValue("hovercraft.FriendsBestiOS", forHTTPHeaderField: "referer")
-//        
-//        session.dataTaskWithRequest(request, completionHandler: {
-//            (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
-//            
-//            if let error = error {
-//                NSLog("Error - Google API - loadCid() - \(error.localizedDescription)")
-//                NetworkQueue.instance.tryAgain()
-//                return
-//            }
-//            
-//            guard let data = data else {
-//                NSLog("Error - Google API - loadCid() - no data")
-//                NetworkQueue.instance.tryAgain()
-//                return
-//            }
-//            
-//            let resultDict: NSDictionary?
-//            do {
-//                resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
-//            } catch {
-//                NSLog("Error - Google API - loadCid() - Unable to parse JSON")
-//            }
-//            
-//            //            if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [201], funcName: "postNewQuery") {
-//            //                NetworkQueue.instance.tryAgain()
-//            //                return
-//            //            }
-//            
-//            //            guard let queryDict: NSDictionary = self.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
-//            //                NetworkQueue.instance.tryAgain()
-//            //                return
-//            //            }
-//            //
-//            //            let query: Query = self.getQuery(queryDict)
-//            
-//            //            dispatch_async(dispatch_get_main_queue(), {
-//            //                self.networkDAODelegate?.queryFetched(query)
-//            //                callback?()
-//            //            })
-//            //            NetworkQueue.instance.dequeue()
-//        }).resume()
-//    }
+    static func loadCid(placeID: String) {
+        let URLString: String = "https://maps.googleapis.com/maps/api/place/details/json?key=\(GOOGLE_API_KEY)&placeid=\(placeID)"
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        //        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        //        let queryString: String = "query/"
+        guard let queryURL: NSURL = NSURL(string: URLString) else {
+            return
+        }
+        
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        request.HTTPMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("hovercraft.FriendsBestiOS", forHTTPHeaderField: "referer")
+        
+        session.dataTaskWithRequest(request, completionHandler: {
+            (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            
+            if let error = error {
+                NSLog("Error - Google API - loadCid() - \(error.localizedDescription)")
+                NetworkQueue.instance.tryAgain()
+                return
+            }
+            
+            guard let data = data else {
+                NSLog("Error - Google API - loadCid() - no data")
+                NetworkQueue.instance.tryAgain()
+                return
+            }
+            
+            let resultDict: NSDictionary?
+            do {
+                resultDict = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions()) as? NSDictionary
+            } catch {
+                NSLog("Error - Google API - loadCid() - Unable to parse JSON")
+            }
+            
+            //            if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [201], funcName: "postNewQuery") {
+            //                NetworkQueue.instance.tryAgain()
+            //                return
+            //            }
+            
+            //            guard let queryDict: NSDictionary = self.getNSDictionaryFromJSONdata(data, funcName: "postNewQuery") else {
+            //                NetworkQueue.instance.tryAgain()
+            //                return
+            //            }
+            //
+            //            let query: Query = self.getQuery(queryDict)
+            
+            //            dispatch_async(dispatch_get_main_queue(), {
+            //                self.networkDAODelegate?.queryFetched(query)
+            //                callback?()
+            //            })
+            //            NetworkQueue.instance.dequeue()
+        }).resume()
+    }
     
     // MARK: NSCoding
     
@@ -156,8 +159,8 @@ class GooglePlace: NSObject, NSCoding {
     @objc required convenience init?(coder aDecoder: NSCoder) {
         let placeID: String = aDecoder.decodeObjectForKey(PropertyKey.placeIDKey) as! String
         let name: String = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
-        let formattedAddress: String = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as! String
-        let cid: String = aDecoder.decodeObjectForKey(PropertyKey.cidKey) as! String
+        let formattedAddress: String? = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as? String
+        let cid: String? = aDecoder.decodeObjectForKey(PropertyKey.cidKey) as? String
         let latitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.latitudeKey)
         let longitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.longitudeKey)
         self.init(placeID: placeID, name: name, formattedAddress: formattedAddress, latitude: latitude, longitude: longitude, cid: cid)

@@ -39,7 +39,7 @@ class Updater {
         })
         promptTimer.startTimer()
         
-        self.queryTimer = Timer(timesPerSecond: 1.0 / 3.0, closure: { () -> Void in
+        self.queryTimer = Timer(timesPerSecond: 1.0 / 6.0, closure: { () -> Void in
             FBNetworkDAO.instance._getQueries(true, callback: {
 
             })

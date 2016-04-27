@@ -84,7 +84,7 @@ class FriendsListViewController: UITableViewController {
         return USER.myFriends.count
     }
     
-    static let cellSize: CGFloat = 16.0
+    static let cellSize: CGFloat = 32.0
     let unmutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeUpIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
     let mutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeOffIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
     

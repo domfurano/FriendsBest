@@ -204,12 +204,14 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
             tableView.endUpdates()
         })
-        button1.backgroundColor = UIColor.colorFromHex(0xE54154)
+        //89.8, 25.5, 32.9
+        button1.backgroundColor = UIColor(red: 0.898, green: 0.255, blue: 0.329, alpha: 0.5)//(.colorFromHex(0xE54154)
         let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
             let recommendation: UserRecommendation = USER.myRecommendations[indexPath.row]
             self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: recommendation.newRecommendation(), type: .EDIT), animated: true)
         })
-        button2.backgroundColor = UIColor.colorFromHex(0xEF8944)
+        //93.7, 53.7, 26.7
+        button2.backgroundColor = UIColor(red: 0.937, green: 0.537, blue: 0.267, alpha: 0.5)//.colorFromHex(0xEF8944)
         return [button1, button2]
     }
     
@@ -219,17 +221,17 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
         case .text:
             break
         case .place:
-            let alphaNumericName: String = recommendation.placeName.stringByTrimmingCharactersInSet(NSCharacterSet.alphanumericCharacterSet().invertedSet)
-            let plusJoinedName: String = alphaNumericName.stringByReplacingOccurrencesOfString(" ", withString: "+")
-            //            if let strippedName: String = recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
-//            let URLString: String = "https://www.google.com/maps/place/\(plusJoinedName)/@\(recommendation.latitude),\(recommendation.longitude)/"//,[zoom]z
-            //                let URLString: String = "http://maps.google.com/?cid=\(recommendation.detail)"
-//            let URLString: String = "http://maps.apple.com/?q=\(plusJoinedName)&sll=\(recommendation.latitude),\(recommendation.longitude)&t=m"
-            let URLString: String = "https://maps.google.com/?q=\(plusJoinedName)&center=\(recommendation.latitude),\(recommendation.longitude)"
-            if let URL: NSURL = NSURL(string: URLString) {
-                UIApplication.sharedApplication().openURL(URL)
+            let URLString: String?
+            if recommendation.placeName.containsString("°") {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(recommendation.latitude),\(recommendation.longitude),17z"
+            } else {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(recommendation.latitude),\(recommendation.longitude),17z"
             }
-            //            }
+            if URLString != nil {
+                if let URL: NSURL = NSURL(string: URLString!) {
+                    UIApplication.sharedApplication().openURL(URL)
+                }
+            }
             break
         case .url:
             if let URL: NSURL = NSURL(string: recommendation.detail) {
