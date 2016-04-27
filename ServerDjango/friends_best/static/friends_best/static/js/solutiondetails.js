@@ -50,7 +50,7 @@ function($) {
 				case 'url':
 					// Load url
 					url = getHostFromURL(solution.detail)
-					details = $("<div class='url' data-url='" + url + "'><div class='host'>" + url.hostname + "</div><div class='full'>" + url + "</div></div>")
+					details = $("<div class='url' data-url='" + url.href + "'><div class='host'>" + url.hostname + "</div><div class='full'>" + url.href + "</div></div>")
 					$el.html(details);
 					loaded = true;
 					break;
