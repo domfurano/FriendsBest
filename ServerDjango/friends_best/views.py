@@ -10,6 +10,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.shortcuts import redirect
 import hmac
 import os
 import json
@@ -303,6 +304,13 @@ class FacebookLogin(SocialLoginView):
         if firsttime:
             generatePromptsForNewUser(self.user)
 
+# This exists to clear the facebook logout cookie
+def fblogout(request):
+    response = redirect('/')
+    response.delete_cookie('fblo_1519942364964737')
+    response.delete_cookie('sessionid')
+    response.delete_cookie('csrftoken')
+    return response
 
 def deploy(request):
     if request.method != 'POST':

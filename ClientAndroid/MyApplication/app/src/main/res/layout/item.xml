@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_horizontal"
@@ -25,7 +25,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="14dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:gravity="center_horizontal"

@@ -14,7 +14,7 @@
         android:layout_marginLeft="@dimen/side_margin"
         android:layout_marginRight="@dimen/side_margin"
         android:padding="@dimen/padding_medium"
-        app:cardBackgroundColor="@color/blue_gray200"
+        app:cardBackgroundColor="@color/blue_gray100"
         app:cardCornerRadius="8dp">
 
         <LinearLayout
@@ -24,15 +24,28 @@
             android:orientation="horizontal"
             android:padding="@dimen/padding_smaller">
 
-            <TextView
-                android:id="@+id/solution_item_title"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="Apple TV"
-                android:layout_marginLeft="@dimen/side_margin"
                 android:layout_gravity="center_vertical"
-                android:textSize="@dimen/text_title_size"/>
+                android:layout_weight="5">
+
+                <TextView
+                    android:id="@+id/solution_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Apple TV"
+                    android:layout_marginLeft="@dimen/side_margin"
+                    android:textSize="@dimen/text_title_size"/>
+                <TextView
+                    android:id="@+id/solution_item_subtitle"
+                    android:layout_below="@+id/solution_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/side_margin"
+                    android:textColor="@color/gray600"
+                    android:textSize="@dimen/text_caption_size"/>
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/solution_arrow_right"

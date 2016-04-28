@@ -8,20 +8,24 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.presenter.PromptPresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
@@ -37,11 +41,12 @@ public class PromptFragment extends Fragment implements
 
     public static final String BUNDLE_TAG = "promptFragmentTag";
     private long INTERVAL = 6500l;
-    public static IViewContainer _viewContainer;
-    public static ICardAdapter _cardAdapter;
+    public static PromptViewContainer _viewContainer;
+    public static PromptCardAdapter _cardAdapter;
 
     private OnFragmentInteractionListener _listener;
     private PromptPresenter _presenter;
+    private LinearLayout _rootLayout;
     private SwipeFlingAdapterView _adapterView;
     private ImageView _historyBtn;
     private TextView _updateView;
@@ -63,6 +68,7 @@ public class PromptFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initialize(getArguments());
         setHasOptionsMenu(true);
+        _rootLayout = (LinearLayout) view.findViewById(R.id.fragment_main_root_layout);
         _adapterView = (SwipeFlingAdapterView) view.findViewById(R.id.fragment_main_swipe_card);
         _historyBtn = (ImageView) view.findViewById(R.id.fragment_main_query_results_button);
         _updateView = (TextView) view.findViewById(R.id.fragment_main_query_results_update);
@@ -76,8 +82,17 @@ public class PromptFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        _rootLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (v != _searchField && _searchField.hasFocus()) {
+                    _searchField.clearFocus();
+                }
+                return false;
+            }
+        });
         _historyBtn.setOnClickListener(this);
-        _searchField.setOnClickListener(this);
+        _searchField.setOnFocusChangeListener(this);
         _searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -105,6 +120,18 @@ public class PromptFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        _presenter.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _presenter.onPause();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         _handler.removeCallbacks(_runnable);
@@ -125,9 +152,17 @@ public class PromptFragment extends Fragment implements
         }
     }
 
+    /**
+     * Hide keyboard when search field loses focus.
+     */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-
+        Log.i("Prompt", "onFocusChange " + v.getId() + " actual " + R.id.fragment_main_query_field);
+        if (v == _searchField && !hasFocus) {
+            InputMethodManager methodManager = (InputMethodManager)
+                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            methodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -140,7 +175,7 @@ public class PromptFragment extends Fragment implements
             if (_cards.size() == 1)
                 _presenter.getData();
 
-            _cardAdapter = new ICardAdapter(_cards, getActivity());
+            _cardAdapter = new PromptCardAdapter(_cards, getActivity());
             _adapterView.setAdapter(_cardAdapter);
             _cardAdapter.notifyDataSetChanged();
             _adapterView.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
@@ -180,7 +215,6 @@ public class PromptFragment extends Fragment implements
         int visibility = View.INVISIBLE;
         if (hasUpdate) {
             visibility = View.VISIBLE;
-            INTERVAL += 10000;
         }
         _updateView.setVisibility(visibility);
     }
@@ -193,7 +227,7 @@ public class PromptFragment extends Fragment implements
 
     private void fetchBackgroundData() {
         _presenter.getData();
-        _presenter.getQueryUpdates();
+        _presenter.getNotificationUpdate();
         Log.i("Poo in the loo", "Called runnable");
         _handler.postDelayed(_runnable, INTERVAL);
     }
@@ -221,18 +255,18 @@ public class PromptFragment extends Fragment implements
         _presenter.deletePromptCard(deletedCard.getId());
     }
 
-    public static class IViewContainer {
+    public static class PromptViewContainer {
         public static FrameLayout background;
         public TextView friendText;
         public TextView tagStringText;
     }
 
-    public class ICardAdapter extends BaseAdapter {
+    public class PromptCardAdapter extends BaseAdapter {
 
         public List<PromptCard> _promptCards;
         public Context _context;
 
-        private ICardAdapter(List<PromptCard> apps, Context context) {
+        private PromptCardAdapter(List<PromptCard> apps, Context context) {
             _promptCards = apps;
             _context = context;
         }
@@ -260,17 +294,23 @@ public class PromptFragment extends Fragment implements
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 rowView = inflater.inflate(R.layout.item, parent, false);
 
-                _viewContainer = new IViewContainer();
+                _viewContainer = new PromptViewContainer();
                 _viewContainer.tagStringText = (TextView) rowView.findViewById(R.id.bookText);
                 _viewContainer.friendText = (TextView) rowView.findViewById(R.id.bookText1);
                 _viewContainer.background = (FrameLayout) rowView.findViewById(R.id.background);
                 rowView.setTag(_viewContainer);
             } else {
-                _viewContainer = (IViewContainer) convertView.getTag();
+                _viewContainer = (PromptViewContainer) convertView.getTag();
             }
 
-            String searchBy = "Based on a search by ";
-            _viewContainer.friendText.setText(searchBy + _promptCards.get(position).getFriend().getName());
+            String searchBy = "Based on a search ";
+            Friend friend = _promptCards.get(position).getFriend();
+
+            if (friend.getName().length() > 0) {
+                _viewContainer.friendText.setText(searchBy + "by " + _promptCards.get(position).getFriend().getName());
+            } else {
+                _viewContainer.friendText.setText(searchBy);
+            }
             _viewContainer.tagStringText.setText(_promptCards.get(position).getTagstring());
             return rowView;
         }

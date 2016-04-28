@@ -10,10 +10,17 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import app.friendsbest.net.R;
+import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.fragment.SolutionFragment;
 
 public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.SolutionViewHolder> {
@@ -22,6 +29,7 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
     public static final int BUTTON_ITEM = 1;
     private List<Solution> _solutions = new ArrayList<>();
     private final LayoutInflater _inflater;
+    private final Context _context;
     private final OnListItemClickListener<Solution> _listener;
 
     public SolutionAdapter(Context context,
@@ -30,6 +38,7 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
         _inflater = LayoutInflater.from(context);
         _solutions = solutions;
         _listener = listener;
+        _context = context;
     }
 
     @Override
@@ -70,18 +79,47 @@ public class SolutionAdapter extends RecyclerView.Adapter<SolutionAdapter.Soluti
 
         CardView _cardView;
         TextView _titleView;
+        TextView _subtitleView;
         ImageView _arrowRight;
 
         public SolutionViewHolder(View itemView) {
             super(itemView);
             _cardView = (CardView) itemView.findViewById(R.id.solution_item_card_view);
             _titleView = (TextView) itemView.findViewById(R.id.solution_item_title);
+            _subtitleView = (TextView) itemView.findViewById(R.id.solution_item_subtitle);
             _arrowRight = (ImageView) itemView.findViewById(R.id.solution_arrow_right);
         }
 
         public void bind(final Solution solution, final OnListItemClickListener listener) {
             String detail = solution.getDetail();
-            _titleView.setText(detail);
+            String type = solution.getType();
+            _subtitleView.setVisibility(View.GONE);
+            if (type.equals("place")) {
+                String placeId = solution.getDetail();
+                GoogleApiClient apiClient = ((DualFragmentActivity) _context).getGoogleApiClient();
+                Places.GeoDataApi.getPlaceById(apiClient, placeId).setResultCallback(new ResultCallback<PlaceBuffer>() {
+                    @Override
+                    public void onResult(PlaceBuffer places) {
+                        if (places.getStatus().isSuccess() && places.getCount() > 0) {
+                            final Place myPlace = places.get(0);
+                            String name = myPlace.getName().toString();
+                            String address = myPlace.getAddress().toString();
+                            _titleView.setText(name);
+                            _subtitleView.setText(address);
+                            _subtitleView.setVisibility(View.VISIBLE);
+                            solution.setDetail(name);
+                            solution.setAddress(address);
+                        }
+                        else {
+                            _titleView.setText(solution.getDetail());
+                        }
+                        places.release();
+                    }
+                });
+            }
+            else {
+                _titleView.setText(detail);
+            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

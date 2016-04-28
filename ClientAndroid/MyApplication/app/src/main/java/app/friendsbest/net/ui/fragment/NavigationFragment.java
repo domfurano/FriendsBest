@@ -12,7 +12,7 @@ import android.widget.TextView;
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.services.FontManager;
 import app.friendsbest.net.data.services.ImageService;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
 import app.friendsbest.net.ui.DualFragmentActivity;
 
 public class NavigationFragment extends Fragment implements View.OnClickListener {

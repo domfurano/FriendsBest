@@ -1,5 +1,6 @@
 package app.friendsbest.net.ui.fragment;
 
+import android.animation.Animator;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +21,7 @@ import com.facebook.login.LoginManager;
 
 import app.friendsbest.net.R;
 import app.friendsbest.net.data.services.ImageService;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
 import app.friendsbest.net.presenter.ProfilePresenter;
 import app.friendsbest.net.ui.DualFragmentActivity;
 import app.friendsbest.net.ui.LoginActivity;
@@ -37,6 +40,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private PreferencesUtility _preferencesUtility;
     private String _storedFriendsList;
     private String _storedRecommendationList;
+    private ProfilePresenter _presenter;
 
     @Nullable
     @Override
@@ -64,7 +68,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         _listener.onFragmentTitleChange("Profile");
         _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
         _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
-        new ProfilePresenter(this, getActivity().getApplicationContext());
+        _presenter = new ProfilePresenter(this, getActivity().getApplicationContext());
         _preferencesUtility = PreferencesUtility.getInstance(getActivity().getApplicationContext());
         _profileGreeting.setText(_preferencesUtility.getUserName());
         _friendsCard.setOnClickListener(this);
@@ -73,6 +77,18 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         String uri = _preferencesUtility.getProfilePictureUri();
         ImageService.getInstance(getActivity().getApplicationContext())
                 .retrieveImage(_profilePicture, uri, 100, 100);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        _presenter.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _presenter.onPause();
     }
 
     public void setRecommendationsCount(int count) {

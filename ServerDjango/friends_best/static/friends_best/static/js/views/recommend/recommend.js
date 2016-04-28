@@ -26,7 +26,10 @@ define([
         
         var l = document.createElement("a");
         l.href = href;
-        return l;
+        return {
+	        host: l.hostname,
+	        href: href
+	    };
     };
 
   var view = Backbone.View.extend({
@@ -134,7 +137,7 @@ define([
             // Get url
             text = $("#detail").val();
             if(text != "") {
-                that.recommendation.set("detail", text);
+                that.recommendation.set("detail", getLocation(text).href);
                 that.recommendation.set("host", getLocation(text).hostname);
                 that.render();
             }
@@ -234,15 +237,24 @@ define([
 	                
                     // Delete the prompt
                     if (typeof that.prompt != 'undefined') {
-                      that.prompt.destroy();
+						that.prompt.destroy({
+							success: function() {
+								// Go back in history
+								parent.history.go(-1);
+								return false;
+							}
+						});
+                    } else {
+	                    // Go back in history
+						parent.history.go(-1);
+						return false;
                     }
-                    
-                    // Go back in history
-		            parent.history.go(-1);
-		            return false;
                 },
                 error: function(model, response, options) {
-					// What to do here?
+					// What to do here? Bail out, oh well.
+					// Go back in history
+					parent.history.go(-1);
+					return false;
                 }
             });
     

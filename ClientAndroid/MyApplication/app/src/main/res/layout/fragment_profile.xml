@@ -37,6 +37,7 @@
             android:id="@+id/profile_recommendations_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
             app:cardBackgroundColor="@color/appGreen"
             app:cardCornerRadius="10dp"
             android:layout_marginTop="@dimen/margin_small">
@@ -75,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             app:cardCornerRadius="10dp"
+            android:foreground="?attr/selectableItemBackground"
             app:cardBackgroundColor="@color/colorAccent"
             android:layout_below="@+id/profile_recommendations_button">
             <RelativeLayout

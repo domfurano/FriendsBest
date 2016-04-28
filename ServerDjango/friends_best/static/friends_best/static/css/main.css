@@ -1,7 +1,11 @@
     html {
-	  position: relative;
+	  position: fixed;
 	  min-height: 100%;
 	  overflow: hidden;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
 	}
     body {
 	    position: absolute;
@@ -25,7 +29,7 @@
     }
     
     .view.login {
-	    background: #ffffff; /* Old browsers */
+	    background: #3b5998; /* Old browsers */
 		background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
 		background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
 		background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
@@ -184,15 +188,7 @@
     	padding-right:5px;
 	}
 	
-    .menu .left .button {
-    	font-size: 16px;
-	}
-
-	.menu .right {
-    	padding-left:5px;
-	}
-	
-	.menu .right .button {
+    .menu .button {
     	font-size: 16px;
 	}
 	
@@ -387,7 +383,7 @@
 		background-color: #3b5998;
 		color: #fff;
 		padding: 10px 10px 8px 15px;
-		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.10);
 		-webkit-border-radius: 5px;
         cursor: pointer;
 	}
@@ -401,6 +397,20 @@
 		padding-top: 3px;
 		font-style: normal;
 		font-weight: bold;
+	}
+	
+	.list .trash {
+		margin-bottom: 10px;
+		background-color: #e8edef;
+		color: #666;
+		padding: 10px 10px 8px 15px;
+		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.10);
+		-webkit-border-radius: 5px;
+        cursor: pointer;
+	}
+	
+	.list .trash div {
+    	padding: 0;
 	}
 	
 	.list .postback i {
@@ -440,6 +450,10 @@
 		padding: 10px 10px 8px 15px;
 		box-shadow: 1px 1px 3px rgba(45, 50, 61, 0.50);
 		-webkit-border-radius: 5px;
+	}
+	
+	.list .comment.new {
+    	border: solid 1px #F00;
 	}
 	
 	.list .comment div {
@@ -531,7 +545,35 @@
 		-webkit-border-radius: 8px;
 		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
 		-webkit-transform: translateZ(0);
-		cursor: ew-resize;
+		cursor: move;
+	}
+	
+	.tutorial {
+		height: 100%;
+		min-height: 160px;
+	    background: #3b5998; /* Old browsers */
+		background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		color: #fff;
+		-webkit-border-radius: 8px;
+		box-shadow: 0px 0px 3px rgba(45, 50, 61, 0.28);
+		-webkit-transform: translateZ(0);
+	}
+	
+	.tutorial .topic {
+    	font-size: 20px;
+    	font-weight: bold;
+	}
+	
+	.tutorial #play, .tutorial #skip {
+    	cursor: pointer;
+    	padding-top: 10px;
+    	padding-bottom: 10px;
+	}
+	
+	.tutorial #skip {
+        font-size: 16px;	
 	}
 	
     .info {
@@ -745,6 +787,12 @@
 		line-height: 1;
 		padding-top: 3px;
 		opacity: .6;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	
+	.delete i.fa-times {
+    	color: #F00;
 	}
 	
 	@media (min-width: 320px) { 

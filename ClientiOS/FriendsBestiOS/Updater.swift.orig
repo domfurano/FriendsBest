@@ -1,0 +1,62 @@
+//
+//  UpdateBullshitter.swift
+//  FriendsBest
+//
+//  Created by Dominic Furano on 3/9/16.
+//  Copyright © 2016 Dominic Furano. All rights reserved.
+//
+
+import Foundation
+
+class Updater {
+    
+    static let instance: Updater = Updater()
+    
+    private var promptTimer: Timer!
+    private var queryTimer: Timer!
+    private var gettingPrompts: Bool = false
+    
+    func STAHP () {
+        self.promptTimer.cancelTimer()
+        self.queryTimer.cancelTimer()
+    }
+    
+    func start() {
+        self.promptTimer.startTimer()
+        self.queryTimer.startTimer()
+    }
+    
+    private init() {
+<<<<<<< HEAD
+        self.promptTimer = Timer(timesPerSecond: 1.0, closure: { () -> Void in
+            dispatch_async(dispatch_get_main_queue(), {
+                if USER.myPrompts.count < 1 {
+                    if !self.gettingPrompts {
+                        self.gettingPrompts = true
+                        FBNetworkDAO.instance.getPrompts({
+                            self.gettingPrompts = false
+                        })
+                    }
+                }
+            })
+=======
+        self.timer = Timer(timesPerSecond: 1, closure: { () -> Void in
+            if User.instance.myPrompts.count < 1 {
+                FBNetworkDAO.instance.getPrompts(nil)
+            }
+>>>>>>> master
+        })
+        promptTimer.startTimer()
+        
+        self.queryTimer = Timer(timesPerSecond: 1.0 / 3.0, closure: { () -> Void in
+            dispatch_async(dispatch_get_main_queue(), {
+                FBNetworkDAO.instance.getQueries(nil)
+            })
+        })
+        queryTimer.startTimer()
+    }
+    
+    deinit {
+        STAHP()
+    }
+}

@@ -1,13 +1,16 @@
 package app.friendsbest.net.presenter;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
+import app.friendsbest.net.data.events.LoadQueryEvent;
 import app.friendsbest.net.data.model.Query;
-import app.friendsbest.net.data.services.Repository;
-import app.friendsbest.net.data.services.PreferencesUtility;
+import app.friendsbest.net.data.utilities.BusProvider;
+import app.friendsbest.net.data.utilities.PreferencesUtility;
+import app.friendsbest.net.data.utilities.Repository;
 import app.friendsbest.net.presenter.interfaces.ListPresenter;
 import app.friendsbest.net.ui.view.FragmentView;
 
@@ -18,19 +21,13 @@ public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
 
     public QueryHistoryPresenter(FragmentView view, Context context){
         _view = view;
-        _repository = new Repository(this, PreferencesUtility.getInstance(context).getToken());
-        onStart();
+        _repository = new Repository(PreferencesUtility.getInstance(context).getToken(), BusProvider.getInstance());
     }
 
-    private void onStart() {
-        _view.showProgressBar();
-        getData();
-    }
-
-    public void closeRepository() {
-        _repository.cancelRequest();
-        _repository = null;
-    }
+    @Subscribe
+    public void onQueriesLoaded(LoadQueryEvent event) {
+        _view.hideProgressBar();
+        _view.displayContent(event.getEventList());    }
 
     @Override
     public void getData() {
@@ -38,15 +35,14 @@ public class QueryHistoryPresenter implements ListPresenter<List<Query>> {
     }
 
     @Override
-    public void getData(List<Query> content) {
-        getData();
+    public void onPause() {
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
-    public void sendToPresenter(List<Query> responseData) {
-        _view.hideProgressBar();
-        if (responseData != null)
-            _view.displayContent(responseData);
+    public void onResume() {
+        _view.showProgressBar();
+        BusProvider.getInstance().register(this);
+        getData();
     }
-
 }

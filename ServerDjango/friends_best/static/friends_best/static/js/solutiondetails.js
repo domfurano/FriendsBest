@@ -4,7 +4,7 @@ function($) {
   	var service = false;
   
   	function getHostFromURL(href) {
-        
+        href = href.toString();
         if(href.indexOf("://") == -1) {
             if(href.indexOf("//") > -1) {
                 href = "http:" + href;
@@ -50,7 +50,7 @@ function($) {
 				case 'url':
 					// Load url
 					url = getHostFromURL(solution.detail)
-					details = $("<div class='url'><div class='host'>" + url.hostname + "</div><div class='full'>" + url + "</div></div>")
+					details = $("<div class='url' data-url='" + url.href + "'><div class='host'>" + url.hostname + "</div><div class='full'>" + url.href + "</div></div>")
 					$el.html(details);
 					loaded = true;
 					break;
@@ -79,7 +79,7 @@ function($) {
 				}
 				
 				// Load details
-				details = $("<div class='place'><div class='name'>" + place.name + "</div><div class='address'>" + address + "</div></div>")
+				details = $("<div class='place' data-url='" + place.url + "'><div class='name'>" + place.name + "</div><div class='address'>" + address + "</div></div>")
 				$el.html(details);
 				
 			} else if(status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {

@@ -1,0 +1,81 @@
+html {
+}
+
+body {
+	font-family: "proxima-nova-condensed", helvetica, sans-serif;
+	
+    background: #ffffff; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ffffff 0%, #e8edef 80%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#e8edef 80%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #ffffff 0%,#e8edef 80%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+.project {
+    background: #3b5998; /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, rgba(72, 171, 225, 1) 0%, #3b5998 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	color: #fff;
+	padding-top: 40px;
+	padding-bottom: 60px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    color: inherit;
+}
+
+.logo {
+    text-align: center;
+    font-size: 30px;
+    padding-bottom: 30px;
+}
+
+.logo img {
+    width: 150px;
+}
+
+.abstract {
+    font-size: 16px;
+}
+
+.person {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+@media (min-width: 768) { 
+    .person {
+        margin-top: -70px;
+    }
+}
+
+.photo {
+    padding: 15px;
+    width: 100%;
+    border-radius: 50%;
+}
+
+.col-xs-12 .photo {
+    width: 75%;
+}
+
+.name {
+    font-size: 22px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.email {
+    opacity: .70;
+    font-size: 14px;
+}
+
+.contributions {
+    padding-top: 10px;
+    font-size: 16px;
+}

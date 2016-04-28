@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 public interface OnFragmentInteractionListener {
     void onFragmentTitleChange(String title);
+    void onFragmentSubtitleChange(String subtitle);
     void onFragmentToolbarColorChange(int id);
     void onFragmentStatusBarChange(int id);
     void onFragmentChange(String fragmentTag);

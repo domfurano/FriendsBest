@@ -6,9 +6,8 @@ import java.util.Map;
 import app.friendsbest.net.data.model.Friend;
 import app.friendsbest.net.data.model.PromptCard;
 import app.friendsbest.net.data.model.Query;
-import app.friendsbest.net.data.model.Recommendation;
-import app.friendsbest.net.data.model.RecommendationItem;
 import app.friendsbest.net.data.model.QueryResult;
+import app.friendsbest.net.data.model.Recommendation;
 import app.friendsbest.net.data.model.RecommendationPost;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -46,6 +45,9 @@ public interface RestClientService {
 
     @DELETE("recommend/{id}/")
     Call<Void> deleteRecommendation(@Path("id") int id);
+
+    @GET("notification")
+    Call<Map<String, Integer>> getNotificationCount();
 
     @DELETE("notification/{id}/")
     Call<Void> deleteNotification(@Path("id") int id);

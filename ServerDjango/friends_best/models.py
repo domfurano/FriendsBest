@@ -3,14 +3,6 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-# class User(models.Model):
-#     userName = models.CharField(max_length=50, unique=True)
-#     token = models.CharField(max_length=60, default="1")
-#     facebookUserId = models.CharField(max_length=60, default="facebook1")
-#
-#     def __str__(self):
-#         return self.userName
-
 
 # DO NOT COMMIT MIGRATIONS
 
@@ -149,7 +141,6 @@ class Pin(models.Model):
 
 
 # allows users to listen for queries which include a specified tag (from any user)
-# TODO: should we store a single tag for multiple subscriptions, or just use a list of tags???
 class Subscription(models.Model):
     user = models.ForeignKey(User)
     tag = models.ForeignKey(Tag)
@@ -170,14 +161,6 @@ class Accolade(models.Model):
 
     class Meta:
         unique_together = (("user", "recommendation"),)
-
-
-#class UserEvents(models.Model):
-#    user = models.ForeignKey(User)
-#    completedFirstLogin = models.BooleanField(default=False)
-#
-#    def __str__(self):
-#        return "user:%s, completed first login:%s" % (self.user, self.completedFirstLogin)
 
 
 # server should push number of total notifications to each user

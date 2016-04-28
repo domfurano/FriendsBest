@@ -4,13 +4,13 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +48,7 @@ public class QueryHistoryFragment extends Fragment implements
         _listener.showSupportActionBar();
         _listener.onFragmentTitleChange("Search History");
         _listener.onFragmentToolbarColorChange(R.color.blue_gray200);
+        _listener.onFragmentStatusBarChange(R.color.colorPrimaryDark);
         _listener.showBottomNavigationBar();
 
         if (_queries.size() > 0) {
@@ -60,20 +61,19 @@ public class QueryHistoryFragment extends Fragment implements
         View contentView = inflater.inflate(R.layout.list_query_history, container, false);
         _progressBar = (ProgressBar) contentView.findViewById(R.id.history_fragment_progressbar);
         _recyclerView = (RecyclerView) contentView.findViewById(R.id.recycler_view);
-        Transition fade = new Fade();
-        Transition slide = new Slide();
-        slide.setDuration(2000);
-        fade.setDuration(2000);
-
-        setEnterTransition(fade);
-        setReturnTransition(slide);
         return contentView;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        _presenter.closeRepository();
+        _presenter.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        _presenter.onResume();
     }
 
     @Override

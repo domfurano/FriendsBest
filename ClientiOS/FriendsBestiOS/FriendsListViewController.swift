@@ -81,7 +81,7 @@ class FriendsListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return USER.myFriends.count
+        return User.instance.myFriends.count
     }
     
     static let cellSize: CGFloat = 32.0
@@ -89,20 +89,22 @@ class FriendsListViewController: UITableViewController {
     let mutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeOffIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let friend: Friend = USER.myFriends[indexPath.row]
-        let cell: FriendCell = FriendCell()
-        cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: unmutedImageView.image!)
-        if let muted = friend.muted {
-            if muted {
-                cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: mutedImageView.image!)
-            }
-            cell.muteButtonSelectedDelegate = { [weak self] in
-                FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: { [weak self] in
-                    self?.tableView.reloadData()
-                    })
-            }
-        }
-        
+        let friend: Friend = User.instance.myFriends[indexPath.row]
+        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
+        cell.textLabel?.text = friend.name
+        cell.imageView?.image = CommonUI.defaultProfileImage
+        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(
+            friend.facebookID,
+            facebookSize: CommonUI.FacbookImageSize.square,
+            closure: { (indexPath: AnyObject?) in
+                self.tableView.reloadRowsAtIndexPaths([indexPath as! NSIndexPath], withRowAnimation: .Fade)
+            },
+            payload: indexPath
+        ).image
+//        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(friend.facebookID, size: .square, closure: { (indexPath: AnyObject?)
+//            cell.setNeedsDisplay()
+//        }, payload: indexPath).image
+        cell.userInteractionEnabled = false
         return cell
     }
     

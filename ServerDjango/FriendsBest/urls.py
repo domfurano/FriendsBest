@@ -22,25 +22,33 @@ from friends_best.views import FacebookLogin
 from friends_best.views import deploy
 from friends_best.views import queryLink
 from django.views.decorators.csrf import csrf_exempt
-from friends_best.views import error, django_error, db
+from friends_best.views import error, django_error, db, fblogout
 
 if settings.DEBUG:
     urlpatterns = [
+        
+        # LOCAL
+        
+        # Redirect / to /app/index.html
+        url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
+        
         url(r'^fb/admin/', include(admin.site.urls)),
         url(r'^fb/api/', include(router.urls)),
-        # url(r'^$', RedirectView.as_view(url='app/index.html', permanent=False), name='index'),
         url(r'^fb/api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
         url(r'^fb/deploy/$', csrf_exempt(deploy)),
         url(r'^fb/error/', error),
         url(r'^fb/django_error/', django_error),
         url(r'^fb/db/', csrf_exempt(db)),
-#         url(r'^fb/api/me/$', CurrentUserView.as_view())
-        # Facebook Postback
+        url(r'^fb/logout/', fblogout),
+
         # Facebook Postback
         url(r'^fb/link/(?P<query_id>[0-9]+)/', queryLink)
     ]
 else:
     urlpatterns = [
+        
+        # SERVER
+        
         url(r'^admin/', include(admin.site.urls)),
         url(r'^api/', include(router.urls)),
         url(r'^api/facebook/$', FacebookLogin.as_view(), name='fb_login'),
@@ -48,8 +56,8 @@ else:
         url(r'^error/$', error),
         url(r'^django_error/', django_error),
         url(r'^db/', csrf_exempt(db)),
-#         url(r'^api/me/$', CurrentUserView.as_view()
-
+        url(r'^logout/', fblogout),
+        
         # Facebook Postback
         url(r'^link/(?P<query_id>[0-9]+)/$', queryLink)
     ]

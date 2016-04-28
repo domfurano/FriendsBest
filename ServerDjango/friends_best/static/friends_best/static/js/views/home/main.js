@@ -8,29 +8,40 @@ define([
   'collections/prompts',
   'text!templates/home/search.html',
   'text!templates/home/prompt.html',
+  'text!templates/home/tutorial.html',
   'text!templates/home/menu.html',
   'text!templates/home/deck.html',
   'text!templates/home/info.html',
-], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, menuHTML, deckHTML, infoHTML){
+  'lity'
+], function($, _, Backbone, App, Recommend, QueryModel, PromptsCollection, searchHTML, promptHTML, tutorialHTML, menuHTML, deckHTML, infoHTML, lity){
 
   var HomeView = Backbone.View.extend({
     el: $(".view"),
     visible: true,
+    tutorial: false,
+
+    initialize: function(options) {
+        if(options.tutorial) {
+            this.tutorial = true;
+        }
+    },
 
     render: function(){
       
         that = this;
 		
+		this.$el.removeClass("login");
+		
 		var deckTemplate = _.template( deckHTML, {} );
 		this.$el.append(deckTemplate());
         
-        this.loadPrompts();        
+        if(!this.tutorial) {
+            this.loadPrompts();        
+        } else {
+            this.loadTutorial();
+        }
         
-        // Check for empty prompt collection and go get more...
         this.refresh = setInterval(function() {
-            if (that.collection.length < 1) {
-                that.loadPrompts();
-            }
             $.get( "/fb/api/notification/", function( data ) {
               if(data.notifications == 0) {
                   $("#notification").hide();
@@ -42,12 +53,9 @@ define([
 
 		var searchTemplate = _.template( searchHTML, {} );
 		this.$el.append(searchTemplate);
-      
-		//$('#search-field').tokenfield({delimiter : ' ', inputType: 'search', createTokensOnBlur: true});
 		
 		$('#search-field').keypress(function (e) {
 		  if (e.which == 13) {
-            $('#search-field').attr("disabled", "disabled");
 		    $('#search-field').submit();
 		    return false;
 		  }
@@ -59,6 +67,10 @@ define([
 		});
 		
 		$('form#query').submit(function() {
+			
+			$('#search-field').attr("disabled", "disabled");
+			
+			$(".submit i").toggleClass("fa-search fa-refresh fa-spin");
 			
 			var tags = $('#search-field').val().trim().toLowerCase().split(' ');
 			
@@ -85,21 +97,6 @@ define([
 				}});
 			return false;
 		});
-		
-		// Logout (TEMP)
-		$("#facebookCircleIcon").click(function() {
-
-/*
-			FB.logout(function(response) {
- 				document.cookie = 'fblo_1519942364964737=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
- 				location.reload();
-			});
-*/
-
-            // Load profile menu instead via profile route
-            
-			
-		});
  
     },
     
@@ -107,6 +104,30 @@ define([
 	    this.$el.html("");
 	    this.visible = false;
 	    clearInterval(this.refresh);
+    },
+    
+    loadTutorial: function() {
+        
+        that = this;
+        
+        tutorialTemplate = _.template(tutorialHTML);
+        $el = this.$el;
+        $el.append(tutorialTemplate());
+        
+        $("#skip").click(function() {
+           $(".tutorialsection").remove();
+           window.location = "/";
+           that.loadPrompts();
+        });
+
+        $("#play").click(function() {
+            
+            $("#skip").html("start using FriendsBest");
+            
+            lightbox = lity();
+            lightbox('//vimeo.com/163816408');
+        });
+
     },
     
     loadPrompts: function() {
@@ -141,20 +162,37 @@ define([
     		distance = 30;
     		$('.swipable').draggable({
     			revert: function(ui, ui2) {
-    				if($(this).position().left < -distance || $(this).position().left > distance) return false;
+    				if($(this).position().left < -distance || $(this).position().left > distance || $(this).position().top < -distance) return false;
     				else return true;
     			},
-    			axis: "x",
+    			//axis: "x",
     			scroll: false,
     			stop: function(event, ui) {	
-        			// Left: delete prompt
     				if(ui.position.left < -distance) {
+        				// Left: delete prompt
     					ui.helper.animate({left: "-=600"}, 200, function() {
     						ui.helper.parent().remove();
-    						prompts.get(ui.helper.attr("id")).destroy();
+    						prompts.get(ui.helper.attr("id")).destroy({
+        						success: function() {
+            						if (prompts.length < 1) {
+                						setTimeout(function() {
+                    						console.log("prompts!");
+                    						that.loadPrompts();
+                						}, 1000);
+                                    }
+        						}
+    						});
     					});
-    				// Right: recommend
-    				} else if(ui.position.left > distance) {
+    				} else if(ui.position.top < -distance) {
+        			    // Up: search
+        			    ui.helper.animate({top: "-=600"}, 200, function() {
+            			    prompt = prompts.get(ui.helper.attr("id"));
+            			    tags = prompt.get("tagstring");
+            			    $('#search-field').val(tags);
+            			    $('#search-field').submit();
+        			    });
+                    } else if(ui.position.left > distance) {
+                        // Right: recommend
     					ui.helper.animate({left: "+=600"}, 200, function() {
         					//prompts.get(ui.helper.attr("id")).destroy();
     						require(['app'],function(App){

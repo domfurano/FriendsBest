@@ -2,9 +2,12 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_main_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="@dimen/margin_small"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -21,7 +24,8 @@
             android:layout_marginRight="5dp"
             android:layout_marginLeft="@dimen/margin_smaller"
             android:layout_centerVertical="true"
-            android:background="@drawable/ic_history_vector"/>
+            android:background="@drawable/selectable_dark_gray"
+            android:src="@drawable/ic_history_vector"/>
 
         <TextView
             android:id="@+id/fragment_main_query_results_update"
@@ -64,7 +68,8 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/margin_smaller"
             android:layout_centerVertical="true"
-            android:background="@drawable/ic_search_dark_vector"
+            android:background="@drawable/selectable_dark_gray"
+            android:src="@drawable/ic_search_dark_vector"
             />
     </RelativeLayout>
 
@@ -86,7 +91,7 @@
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:background="@drawable/rounded_corner"
-                android:layout_marginBottom="@dimen/margin_medium"
+                android:layout_marginBottom="@dimen/margin_large"
                 android:layout_marginLeft="@dimen/side_margin"
                 android:layout_marginRight="@dimen/side_margin"
                 android:gravity="center">
@@ -94,7 +99,7 @@
                 <TextView
                     android:layout_width="180dp"
                     android:layout_height="180dp"
-                    android:background="@drawable/ic_logo_vector"/>
+                    android:background="@drawable/logo_login_vector"/>
 
             </RelativeLayout>
 
