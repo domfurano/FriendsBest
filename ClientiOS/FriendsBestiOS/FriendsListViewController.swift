@@ -68,7 +68,7 @@ class FriendsListViewController: UITableViewController {
         navigationController?.navigationBar.barTintColor = CommonUI.navbarBlueColor
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
         
-//        setToolbarItems()
+        //        setToolbarItems()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -81,7 +81,7 @@ class FriendsListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.myFriends.count
+        return USER.myFriends.count
     }
     
     static let cellSize: CGFloat = 32.0
@@ -89,22 +89,20 @@ class FriendsListViewController: UITableViewController {
     let mutedImageView: UIImageView = UIImageView(image: FAKFontAwesome.volumeOffIconWithSize(cellSize).imageWithSize(CGSize(width: cellSize, height: cellSize)))
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let friend: Friend = User.instance.myFriends[indexPath.row]
-        let cell: UITableViewCell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "friendCell")
-        cell.textLabel?.text = friend.name
-        cell.imageView?.image = CommonUI.defaultProfileImage
-        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(
-            friend.facebookID,
-            facebookSize: CommonUI.FacbookImageSize.square,
-            closure: { (indexPath: AnyObject?) in
-                self.tableView.reloadRowsAtIndexPaths([indexPath as! NSIndexPath], withRowAnimation: .Fade)
-            },
-            payload: indexPath
-        ).image
-//        cell.imageView?.image = CommonUI.instance.getFacebookProfileUIImageView(friend.facebookID, size: .square, closure: { (indexPath: AnyObject?)
-//            cell.setNeedsDisplay()
-//        }, payload: indexPath).image
-        cell.userInteractionEnabled = false
+        let friend: Friend = USER.myFriends[indexPath.row]
+        let cell: FriendCell = FriendCell()
+        cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: unmutedImageView.image!)
+        if let muted = friend.muted {
+            if muted {
+                cell.setupCellForDisplay(friend.smallRoundedPicture.image!, name: friend.name, muteIcon: mutedImageView.image!)
+            }
+            cell.muteButtonSelectedDelegate = { [weak self] in
+                FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: { [weak self] in
+                    self?.tableView.reloadData()
+                    })
+            }
+        }
+        
         return cell
     }
     
@@ -116,48 +114,48 @@ class FriendsListViewController: UITableViewController {
         }
     }
     
-//    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        let friend: Friend = USER.myFriends[indexPath.row]
-//        if let muted = friend.muted {
-//            let friend: Friend = USER.myFriends[indexPath.row]
-//            FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: nil)
-//        }
-//    }
+    //    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    //        let friend: Friend = USER.myFriends[indexPath.row]
+    //        if let muted = friend.muted {
+    //            let friend: Friend = USER.myFriends[indexPath.row]
+    //            FBNetworkDAO.instance.setMutingForFriend(friend, mute: !muted, callback: nil)
+    //        }
+    //    }
     
     /* Toolbar */
     
-//    func setToolbarItems() {
-//        let homeButton: UIBarButtonItem = UIBarButtonItem(
-//            image: CommonUI.home_image,
-//            style: .Plain,
-//            target: self,
-//            action: #selector(ProfileViewController.homeButtonPressed)
-//        )
-//        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
-//        
-//        let profileButton: UIButton = UIButton(type: .Custom)
-//        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-//        profileButton.layer.masksToBounds = true
-//        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-//        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
-//        profileButton.addTarget(
-//            self,
-//            action: #selector(ProfileViewController.profileButtonPressed),
-//            forControlEvents: UIControlEvents.TouchUpInside
-//        )
-//        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-//        
-//        
-//        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-//            image: CommonUI.fa_plus_square_image,
-//            style: .Plain,
-//            target: self,
-//            action: #selector(ProfileViewController.newRecommendationButtonPressed)
-//        )
-//        newRecommendationButton.tintColor = CommonUI.fbGreen
-//        
-//        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
-//    }
+    //    func setToolbarItems() {
+    //        let homeButton: UIBarButtonItem = UIBarButtonItem(
+    //            image: CommonUI.home_image,
+    //            style: .Plain,
+    //            target: self,
+    //            action: #selector(ProfileViewController.homeButtonPressed)
+    //        )
+    //        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
+    //
+    //        let profileButton: UIButton = UIButton(type: .Custom)
+    //        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
+    //        profileButton.layer.masksToBounds = true
+    //        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
+    //        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
+    //        profileButton.addTarget(
+    //            self,
+    //            action: #selector(ProfileViewController.profileButtonPressed),
+    //            forControlEvents: UIControlEvents.TouchUpInside
+    //        )
+    //        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
+    //
+    //
+    //        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
+    //            image: CommonUI.fa_plus_square_image,
+    //            style: .Plain,
+    //            target: self,
+    //            action: #selector(ProfileViewController.newRecommendationButtonPressed)
+    //        )
+    //        newRecommendationButton.tintColor = CommonUI.fbGreen
+    //
+    //        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
+    //    }
     
     func homeButtonPressed() {
         for viewController: UIViewController in navigationController!.viewControllers {
