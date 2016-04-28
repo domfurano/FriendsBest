@@ -19,7 +19,7 @@ class PromptCardView: UIView {
     
     //    var userPicture: UIView?
     
-    var prompt: Prompt?
+    var prompt: Prompt!
     
     
     override init(frame: CGRect) {
@@ -64,7 +64,7 @@ class PromptCardView: UIView {
         }
         
         if prompt.friend != nil {
-            friendPicture = CommonUI.instance.getFacebookProfileUIImageView(prompt.friend!.facebookID, facebookSize: CommonUI.FacbookImageSize.square, closure: nil, payload: nil)
+            friendPicture = prompt.friend!.smallRoundedPicture
         }
         
         titleLabel.text = "Do you have a recommendation for"

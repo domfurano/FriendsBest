@@ -1,0 +1,268 @@
+//
+//  SolutionDetailViewController.swift
+//  FriendsBestiOS
+//
+//  Created by Dominic Furano on 1/18/16.
+//  Copyright © 2016 Dominic Furano. All rights reserved.
+//
+
+import UIKit
+
+class SolutionDetailView: UITableView {
+    override func drawRect(rect: CGRect) {
+        let context: CGContext = UIGraphicsGetCurrentContext()!
+        CGContextClearRect(context, bounds)
+        
+        CommonUI.drawGradientForContext(
+            [
+                CommonUI.topGradientColor,
+                CommonUI.bottomGradientColor
+            ],
+            frame: self.bounds,
+            context: context
+        )
+    }
+}
+
+class SolutionDetailViewController: UITableViewController {
+    
+    var SOLUTION: Solution!
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }    
+    
+    convenience init(solution: Solution) {
+        self.init()
+        
+        self.SOLUTION = solution
+    }
+    
+    override func loadView() {
+        view = SolutionDetailView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+        
+        /* Tableview datasource and delegate */
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    override func viewDidLoad() {
+        tableView.estimatedRowHeight =  128.0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
+        title = "Details"
+//        tableView.separatorStyle = .None
+        
+//        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
+        
+        let button: UIButton = UIButton(type: .Custom)
+        button.setImage(CommonUI.nbBackChevron, forState: .Normal)
+        button.addTarget(
+            self,
+            action: #selector(SolutionDetailViewController.back),
+            forControlEvents: .TouchUpInside
+        )
+        button.sizeToFit()
+        button.tintColor = UIColor.whiteColor()
+        let leftBBItem: UIBarButtonItem = UIBarButtonItem(customView: button)
+        
+        leftBBItem.tintColor = UIColor.whiteColor()
+        leftBBItem.title = SOLUTION.detail
+        navigationItem.leftBarButtonItem = leftBBItem
+        
+        /* Refresh Control */
+        refreshControl = UIRefreshControl()
+<<<<<<< HEAD
+        refreshControl?.backgroundColor = UIColor.colorFromHex(0x949494)
+        refreshControl?.tintColor = UIColor.whiteColor()
+        refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(SolutionDetailViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
+        
+=======
+        refreshControl!.backgroundColor = UIColor.colorFromHex(0x949494)
+        refreshControl!.tintColor = UIColor.whiteColor()
+        refreshControl!.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+>>>>>>> master
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = true
+        
+        navigationController?.navigationBar.barTintColor = CommonUI.sdNavbarBgColor
+    }
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SolutionDetailViewController.contentSizeCategoryChanged(_:)), name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(animated: Bool)
+    {
+        super.viewDidDisappear(animated)
+        
+        for recommendation: FriendRecommendation in SOLUTION.recommendations {
+            if recommendation.isNew {
+                FBNetworkDAO.instance.deleteNotification(recommendation, callback: nil)
+            }
+        }
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
+    }
+    
+//    func showAlert(notification: NSNotification) {
+//        for query: Query in USER.myQueries {
+//            for solution: Solution in query.solutions {
+//                if solution.ID == SOLUTION.ID {
+//                    SOLUTION = solution
+//                }
+//            }
+//        }
+//        tableView.reloadData()
+//    }
+    
+    func refreshData() {
+        refreshControl?.beginRefreshing()
+        FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query!) {
+<<<<<<< HEAD
+=======
+            self.tableView.reloadData()
+>>>>>>> master
+            self.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
+        }
+    }
+    
+    // This function will be called when the Dynamic Type user setting changes (from the system Settings app)
+    func contentSizeCategoryChanged(notification: NSNotification)
+    {
+        tableView.reloadData()
+    }
+    
+    func back() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        } else {
+            return SOLUTION.recommendations.count
+        }
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let recommendation: FriendRecommendation = SOLUTION.recommendations[indexPath.row]
+<<<<<<< HEAD
+        recommendation.solution!.closureSolutionUpdated = { [weak self] in
+            self?.tableView.reloadData()
+        }
+=======
+>>>>>>> master
+        if indexPath.section == 0 {
+            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(style: .Default, reuseIdentifier: .None)
+            switch recommendation.solution!.type {
+            case .text:
+                cell.setupForCellDisplay(recommendation.solution!.detail, subtitle: "")
+                break
+            case .place:
+                cell.setupForCellDisplay(recommendation.solution!.placeName, subtitle: recommendation.solution!.placeAddress)
+                break
+            case .url:
+                cell.setupForCellDisplay(recommendation.solution!.urlTitle, subtitle: recommendation.solution!.urlSubtitle)
+                break
+            }
+            return cell
+        } else {
+<<<<<<< HEAD
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Default, reuseIdentifier: .None)
+            if let friend: Friend = recommendation.friend {
+                cell.setupCellForDisplay(
+                    friend.smallRoundedPicture.image!,
+                    name: friend.name,
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
+                )
+            } else {
+                cell.setupCellForDisplay(
+                    CommonUI.instance.defaultProfileImage,
+                    name: "Anonymous FriendsBest User",
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
+                )
+            }
+=======
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)
+            switch recommendation.solution!.type {
+            case .text:
+                break
+            case .place:
+                GooglePlace.loadPlace(recommendation.solution!.detail, callback: { (place) in
+                    cell.setupForViewing(place.name)
+                })
+                break
+            case .url:
+                if let url: NSURL = NSURL(string: recommendation.solution!.detail) {
+                    if let host: String = url.host {
+                        cell.setupForViewing(host)
+                    }
+                }
+                break
+            }
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
+>>>>>>> master
+            return cell
+        }
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            switch SOLUTION.type {
+            case .text:
+                break
+            case .place:
+                let URLString: String?
+                if SOLUTION.placeName.containsString("°") {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                } else {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                }
+                if URLString != nil {
+                    if let URL: NSURL = NSURL(string: URLString!) {
+                        UIApplication.sharedApplication().openURL(URL)
+                    }
+                }
+                break
+            case .url:
+                if let URL: NSURL = NSURL(string: SOLUTION.detail) {
+                    UIApplication.sharedApplication().openURL(URL)
+                }
+                break
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

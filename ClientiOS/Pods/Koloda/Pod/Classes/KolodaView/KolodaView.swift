@@ -383,7 +383,7 @@ public class KolodaView: UIView, DraggableCardDelegate {
         }
     }
     
-    public func revertAction() {
+    public func revertAction(completion: (Bool -> Void)?) {
         if currentCardIndex > 0 && !animating {
             
             if countOfCards - currentCardIndex >= countOfVisibleCards {
@@ -428,7 +428,7 @@ public class KolodaView: UIView, DraggableCardDelegate {
                     scale: cardParameters.scale,
                     frame: cardParameters.frame,
                     duration: backgroundCardFrameAnimationDuration,
-                    completion: nil
+                    completion: completion
                 )
             }
         }

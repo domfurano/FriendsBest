@@ -15,10 +15,6 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     let loginButton: FBSDKLoginButton = FBSDKLoginButton()
     
-//    NetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
-//    
-//    }
-    
     override func loadView() {
 
         view = FacebookLoginView(loginButton: loginButton)
@@ -31,8 +27,8 @@ class FacebookLoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         loginButton.readPermissions = ["public_profile", "email", "user_friends"]
         loginButton.delegate = self
         
-        FBNetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = {
-            self.navigationController?.popViewControllerAnimated(true)
+        FBNetworkDAO.instance.authenticatedWithFriendsBestServerDelegate = { [weak self] in
+            self?.navigationController?.popViewControllerAnimated(true)
         }
     }
     

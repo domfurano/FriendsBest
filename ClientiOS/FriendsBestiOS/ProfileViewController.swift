@@ -27,7 +27,7 @@ class ProfileView: UIView {
 
 class ProfileViewController: UIViewController {
     
-    let largeProfilePicture: UIImageView = CommonUI.instance.largePicture
+    let largeProfilePicture: UIImageView = USER.myLargeRoundedImage
     
     var nameLabel: UILabel = UILabel()
     var recommendationsButton: UIButton = UIButton()
@@ -40,7 +40,7 @@ class ProfileViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        nameLabel.text = User.instance.myName!
+        nameLabel.text = USER.myName!
         recommendationsButton.setTitle("Recommendations", forState: .Normal)
         friendsButton.setTitle("Friends using FriendsBest", forState: .Normal)
         logoutButton.setTitle("Logout", forState: .Normal)
@@ -118,17 +118,28 @@ class ProfileViewController: UIViewController {
 //            forControlEvents: .TouchUpInside
 //        )
         
+        let chevronLeftIcon: FAKFontAwesome = FAKFontAwesome.chevronLeftIconWithSize(32.0)
+        let chevronLeftImage: UIImage = chevronLeftIcon.imageWithSize(CGSize(width: 32.0, height: 32.0))
+        let leftBBItem: UIBarButtonItem = UIBarButtonItem(
+            image: chevronLeftImage,
+            style: .Plain,
+            target: self,
+            action: #selector(ProfileViewController.back)
+        )
+        leftBBItem.tintColor = UIColor.colorFromHex(0xABB4BA)
+        navigationItem.leftBarButtonItem = leftBBItem
+        
         addConstraints()
     }
     
     override func viewWillAppear(animated: Bool) {
-        navigationController?.navigationBarHidden = true
-        navigationController?.toolbarHidden = false
+        navigationController?.navigationBarHidden = false
+        navigationController?.toolbarHidden = true
         
         navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
         
-        setToolbarItems()
+//        setToolbarItems()
     }
     
     func recommendationsButtonPushed() {
@@ -145,60 +156,43 @@ class ProfileViewController: UIViewController {
         navigationController?.popToRootViewControllerAnimated(true)
     }
     
-    func removeButtonPressed() {
-        
+//    func removeButtonPressed() {
+//        
+//    }
+    
+    func back() {
+        navigationController?.popViewControllerAnimated(true)
     }
     
-    /* Toolbar */
-    
-    func setToolbarItems() {
-        let homeButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.home_image,
-            style: .Plain,
-            target: self,
-            action: #selector(ProfileViewController.homeButtonPressed)
-        )
-        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
-        
-        let profileButton: UIButton = UIButton(type: .Custom)
-        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-        profileButton.layer.masksToBounds = true
-        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
-        profileButton.addTarget(
-            self,
-            action: #selector(ProfileViewController.profileButtonPressed),
-            forControlEvents: UIControlEvents.TouchUpInside
-        )
-        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-        
-        
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image,
-            style: .Plain,
-            target: self,
-            action: #selector(ProfileViewController.newRecommendationButtonPressed)
-        )
-        newRecommendationButton.tintColor = CommonUI.fbGreen
-        
-        toolbarItems = [homeButton, CommonUI.flexibleSpace]//CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
-    }
-    
-    func homeButtonPressed() {
-        for viewController: UIViewController in navigationController!.viewControllers {
-            if viewController.isKindOfClass(MainScreenViewController) {
-                navigationController?.popToViewController(viewController, animated: true)
-            }
-        }
-    }
-    
-    func profileButtonPressed() {
-        return
-    }
-    
-    func newRecommendationButtonPressed() {
-        return
-    }
+//    /* Toolbar */
+//    
+//    func setToolbarItems() {
+//        let homeButton: UIBarButtonItem = UIBarButtonItem(
+//            image: CommonUI.home_image,
+//            style: .Plain,
+//            target: self,
+//            action: #selector(ProfileViewController.homeButtonPressed)
+//        )
+//        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
+//        
+//        toolbarItems = [CommonUI.flexibleSpace, homeButton, CommonUI.flexibleSpace]
+//    }
+//    
+//    func homeButtonPressed() {
+//        for viewController: UIViewController in navigationController!.viewControllers {
+//            if viewController.isKindOfClass(MainScreenViewController) {
+//                navigationController?.popToViewController(viewController, animated: true)
+//            }
+//        }
+//    }
+//    
+//    func profileButtonPressed() {
+//        return
+//    }
+//    
+//    func newRecommendationButtonPressed() {
+//        return
+//    }
     
     func addConstraints() {
         view.addConstraint(

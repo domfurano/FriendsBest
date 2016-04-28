@@ -22,9 +22,10 @@ class NetworkQueue {
 //            NSLog("Timer firing!")
             if !self.executing && self.queue.count > 0 {
                 self.executing = true;
-                let task = self.queue.first!
-                task.item.task()
-                NSLog("Executing network request: " + task.item.description)
+                if let task = self.queue.first {
+                    task.item.task()
+                    NSLog("Executing network request: " + task.item.description)
+                }
             }
         })
     }
@@ -38,7 +39,7 @@ class NetworkQueue {
     
     func enqueue(task: NetworkTask) {
         self.queue.enqueue(task)
-//        NSLog("Enqueueing network request: " + task.description)
+        NSLog("Enqueueing network request: " + task.description)
         if self.timer!.stopped {
             self.timer!.startTimer()
         }
@@ -46,9 +47,9 @@ class NetworkQueue {
     
     func dequeue() {
         assert(self.queue.count > 0)
-        self.queue.dequeue()
-//        let task: NetworkTask = self.queue.dequeue()!
-//        NSLog("Dequeueing network request: " + task.description)
+//        self.queue.dequeue() // MARK: Worst bug yet found!
+        let task: NetworkTask = self.queue.dequeue()!
+        NSLog("Dequeueing network request: " + task.description)
         if self.queue.count == 0 {
             self.timer!.cancelTimer()
         }

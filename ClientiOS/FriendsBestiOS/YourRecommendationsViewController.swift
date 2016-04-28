@@ -11,28 +11,19 @@ import FBSDKCoreKit
 import GoogleMaps
 import PINCache
 
-class YourRecommendationsView: UITableView {
-    override func drawRect(rect: CGRect) {
-        let context: CGContext = UIGraphicsGetCurrentContext()!
-        CGContextClearRect(context, bounds)
-        
-        CommonUI.drawGradientForContext(
-            [
-                CommonUI.topGradientColor,
-                CommonUI.bottomGradientColor
-            ],
-            frame: self.bounds,
-            context: context
-        )
-    }
-}
 
-class YourRecommendationsViewController: UITableViewController {
+class YourRecommendationsViewController: UITableViewController, UISearchControllerDelegate, UISearchResultsUpdating {
+    let searchController = UISearchController(searchResultsController: nil)
+    var filteredRecommendations: [UserRecommendation] = []
+    var searching: Bool {
+        return searchController.active && searchController.searchBar.text != ""
+    }
     
     var placePicker: GMSPlacePicker?
-    
-    override func loadView() {
-        view = YourRecommendationsView()
+    let cellID: String = "yourRecommendation"
+
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func viewDidLoad() {
@@ -44,12 +35,30 @@ class YourRecommendationsViewController: UITableViewController {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
         
-        User.instance.closureNewUserRecommendation = { (index: Int) in
-            self.refreshControl?.endRefreshing()
-            self.tableView.beginUpdates()
-            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
-            self.tableView.endUpdates()
+        
+        definesPresentationContext = true
+        
+        searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        
+        searchController.searchBar.barTintColor = CommonUI.fbGreen
+        searchController.searchBar.translucent = false
+        searchController.searchBar.autocapitalizationType = .None
+        tableView.tableHeaderView = searchController.searchBar
+        
+        
+        tableView.registerClass(YourRecommendationTableViewCell.self, forCellReuseIdentifier: cellID)
+        
+        USER.closureUserRecommendationNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        USER.closureUserRecommendationsNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        USER.closureUserRecommendationDeleted = { [weak self] in
+            self?.tableView.reloadData()
         }
         
         let leftBBitem: UIBarButtonItem = UIBarButtonItem(
@@ -69,6 +78,18 @@ class YourRecommendationsViewController: UITableViewController {
         refreshControl!.backgroundColor = UIColor.colorFromHex(0x9BE887)
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(YourRecommendationsViewController.refreshData), forControlEvents: .ValueChanged)
+        
+//        FBNetworkDAO.instance.getRecommendationsForUser({
+//            [weak self] in
+//            self?.tableView.reloadData()
+//        })
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(YourRecommendationsViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -77,14 +98,41 @@ class YourRecommendationsViewController: UITableViewController {
         
         navigationController?.navigationBar.barTintColor = CommonUI.fbGreen
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchController.active = false
+    }
+    
+    
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        filteredRecommendations.removeAll(keepCapacity: true)
+        for myRecommendation: UserRecommendation in USER.myRecommendations {
+            if myRecommendation.tagString.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString)
+            || myRecommendation.placeName.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString)
+            || myRecommendation.comments.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString)
+            || myRecommendation.urlTitle.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString) {
+                filteredRecommendations.append(myRecommendation)
+            }
+        }
         
-//        setToolbarItems()
+        tableView.reloadData()
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(true, animated: false)
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(false, animated: false)
     }
     
     func refreshData() {
         refreshControl?.beginRefreshing()
-        FBNetworkDAO.instance.getRecommendationsForUser({
-            self.refreshControl?.endRefreshing()
+        FBNetworkDAO.instance.getRecommendationsForUser({ [weak self] in
+            self?.refreshControl?.endRefreshing()
         })
     }
     
@@ -92,69 +140,30 @@ class YourRecommendationsViewController: UITableViewController {
         navigationController?.popViewControllerAnimated(true)
     }
     
-    /* Toolbar */
-    
-    func setToolbarItems() {
-        let homeButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.home_image,
-            style: .Plain,
-            target: self,
-            action: #selector(YourRecommendationsViewController.homeButtonPressed)
-        )
-        homeButton.tintColor = UIColor.colorFromHex(0x646d77)
-        
-        let profileButton: UIButton = UIButton(type: .Custom)
-        profileButton.frame = CGRect(x: 0, y: 0, width: 32.0, height: 32.0)
-        profileButton.layer.masksToBounds = true
-        profileButton.layer.cornerRadius = profileButton.bounds.width / 2
-        CommonUI.instance.setUIButtonWithFacebookProfileImage(profileButton)
-        profileButton.addTarget(
-            self,
-            action: #selector(YourRecommendationsViewController.profileButtonPressed),
-            forControlEvents: UIControlEvents.TouchUpInside
-        )
-        let profileBBItem: UIBarButtonItem = UIBarButtonItem(customView: profileButton)
-        
-        
-        let newRecommendationButton: UIBarButtonItem = UIBarButtonItem(
-            image: CommonUI.fa_plus_square_image,
-            style: .Plain,
-            target: self,
-            action: #selector(YourRecommendationsViewController.newRecommendationButtonPressed)
-        )
-        newRecommendationButton.tintColor = CommonUI.fbGreen
-        
-        toolbarItems = [homeButton, CommonUI.flexibleSpace, profileBBItem, CommonUI.flexibleSpace, newRecommendationButton]
-    }
-    
-    func homeButtonPressed() {
-        for viewController: UIViewController in navigationController!.viewControllers {
-            if viewController.isKindOfClass(MainScreenViewController) {
-                navigationController?.popToViewController(viewController, animated: true)
-            }
-        }
-    }
-    
-    func profileButtonPressed() {
-        navigationController?.popViewControllerAnimated(true)
-//        FBSDKAccessToken.setCurrentAccessToken(nil)
-    }
-    
-    func newRecommendationButtonPressed() {
-        return
-    }
-    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.myRecommendations.count
+        if searching {
+            return filteredRecommendations.count
+        }
+        return USER.myRecommendations.count
     }
     
+    var didCallBack: Bool = false
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
-        let cell: YourRecommendationTableViewCell = YourRecommendationTableViewCell()//tableView.dequeueReusableCellWithIdentifier("reusableIdentifier") as! YourRecommendationTableViewCell
+        let recommendation: UserRecommendation
+        if searching {
+            recommendation = filteredRecommendations[indexPath.row]
+        } else {
+            recommendation = USER.myRecommendations[indexPath.row]
+        }
+        recommendation.closureUserRecommendationUpdated = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        let cell: YourRecommendationTableViewCell = tableView.dequeueReusableCellWithIdentifier(cellID) as! YourRecommendationTableViewCell
+        cell.updateFonts()
         cell.setupForViewing(
             recommendation.tagString,
             title: recommendation.detail,
@@ -165,32 +174,24 @@ class YourRecommendationsViewController: UITableViewController {
         case .text:
             break
         case .place:
-            GooglePlace.loadPlace(recommendation.detail, callback: { (place: GooglePlace) in
-                cell.setupForViewing(
-                    recommendation.tagString,
-                    title: place.name,
-                    subtitle: place.formattedAddress != nil ? place.formattedAddress! : "",
-                    comments: recommendation.comments
-                )
-            })
-            break
-        case .url:
-            var different: Bool = false
-            var urlTitle: String = recommendation.detail
-            if let url: NSURL = NSURL(string: urlTitle) {
-                if let host: String = url.host {
-                    urlTitle = host
-                    different = true
-                }
-            }
             cell.setupForViewing(
                 recommendation.tagString,
-                title: urlTitle,
-                subtitle: different ? recommendation.detail : "",
+                title: recommendation.placeName,
+                subtitle: recommendation.placeAddress,
+                comments: recommendation.comments
+            )
+            break
+        case .url:
+            cell.setupForViewing(
+                recommendation.tagString,
+                title: recommendation.urlTitle,
+                subtitle: recommendation.urlSubtitle,
                 comments: recommendation.comments
             )
             break
         }
+        cell.setNeedsUpdateConstraints()
+        cell.updateConstraintsIfNeeded()
         return cell
     }
     
@@ -198,49 +199,63 @@ class YourRecommendationsViewController: UITableViewController {
         return true
     }
     
+    
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let button1 = UITableViewRowAction(style: .Default, title: "Delete", handler: { (action, indexPath) in
-            let deletedRecommendation: UserRecommendation = User.instance.myRecommendations.removeAtIndex(indexPath.row)
+            let deletedRecommendation: UserRecommendation = USER.myRecommendations.removeAtIndex(indexPath.row)
             FBNetworkDAO.instance.deleteUserRecommendation(deletedRecommendation, callback: nil)
             tableView.beginUpdates()
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
             tableView.endUpdates()
         })
-        button1.backgroundColor = UIColor.colorFromHex(0xE54154)
+        //89.8, 25.5, 32.9
+        button1.backgroundColor = UIColor(red: 0.898, green: 0.255, blue: 0.329, alpha: 0.5)//(.colorFromHex(0xE54154)
         let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
-            let recommendation: UserRecommendation = User.instance.myRecommendations[indexPath.row]
+            let recommendation: UserRecommendation = USER.myRecommendations[indexPath.row]
             self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: recommendation.newRecommendation(), type: .EDIT), animated: true)
         })
-        button2.backgroundColor = UIColor.colorFromHex(0xEF8944)
+        //93.7, 53.7, 26.7
+        button2.backgroundColor = UIColor(red: 0.937, green: 0.537, blue: 0.267, alpha: 0.5)//.colorFromHex(0xEF8944)
         return [button1, button2]
     }
     
+//    var editingRow: Bool = false
+//    override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = true
+//    }
+//    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = false
+//    }
+//    func showAlert(notification: NSNotification) {
+//        if !editingRow {
+//            tableView.reloadData()
+//        }
+//    }
+    
+    
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let recommendation = User.instance.myRecommendations[indexPath.row]
+        let recommendation = USER.myRecommendations[indexPath.row]
         switch recommendation.type {
         case .text:
             break
         case .place:
-            GMSPlacesClient.sharedClient().lookUpPlaceID(recommendation.detail, callback: { (place: GMSPlace?, error: NSError?) in
-                if error == nil {
-                    if let place = place {
-                        let offset = 0.001
-                        let center: CLLocationCoordinate2D = place.coordinate
-                        let northEast = CLLocationCoordinate2DMake(center.latitude + offset, center.longitude + offset)
-                        let southWest = CLLocationCoordinate2DMake(center.latitude - offset, center.longitude - offset)
-                        let viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
-                        
-                        let config = GMSPlacePickerConfig(viewport: viewport)
-                        self.placePicker = GMSPlacePicker(config: config)
-                        self.placePicker?.pickPlaceWithCallback({ (place: GMSPlace?, error: NSError?) in
-                            
-                        })
-                    }
+            let URLString: String?
+            if recommendation.placeName.containsString("°") {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(recommendation.latitude),\(recommendation.longitude),17z"
+            } else {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(recommendation.latitude),\(recommendation.longitude),17z"
+            }
+            if URLString != nil {
+                if let URL: NSURL = NSURL(string: URLString!) {
+                    UIApplication.sharedApplication().openURL(URL)
                 }
-            })
+            }
             break
         case .url:
-            self.navigationController?.pushViewController(WebViewController(newRecommendation: recommendation.newRecommendation()), animated: true)
+            if let URL: NSURL = NSURL(string: recommendation.detail) {
+                UIApplication.sharedApplication().openURL(URL)
+            }
             break
         }
     }

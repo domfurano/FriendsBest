@@ -13,6 +13,7 @@ class QueryHistoryTableViewCell: UITableViewCell {
     var QUERY: Query!
     var contentContainer: UIView!
     var tagsLabel: UILabel!
+    var notification: UIImageView!
     
     convenience init(query: Query) {
         self.init()
@@ -25,7 +26,6 @@ class QueryHistoryTableViewCell: UITableViewCell {
         contentContainer.layer.borderColor = UIColor.colorFromHex(0xE4E6E7).CGColor
         contentContainer.layer.borderWidth = 1.0
         contentContainer.backgroundColor = UIColor.whiteColor()
-//        contentContainer.alpha = 1.0
         
         contentContainer.layer.shadowColor = UIColor.colorFromHex(0xE4E6E7).CGColor
         contentContainer.layer.shadowRadius = 1.0
@@ -36,9 +36,15 @@ class QueryHistoryTableViewCell: UITableViewCell {
         tagsLabel.attributedText = attributedStringForTags(QUERY.tagString.componentsSeparatedByString(" "))
         tagsLabel.lineBreakMode = .ByTruncatingTail
         tagsLabel.numberOfLines = 0
+        
+        let alertIcon: FAKFontAwesome = FAKFontAwesome.circleIconWithSize(18)
+        alertIcon.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor())
+        let alertImage: UIImage = alertIcon.imageWithSize(CGSize(width: 18.0, height: 18.0))
+        notification = UIImageView(image: alertImage)
 
         contentView.addSubview(contentContainer)
         contentContainer.addSubview(tagsLabel)
+        contentContainer.addSubview(notification)
     }
     
     private var didUpdateConstraints: Bool = false
@@ -59,8 +65,17 @@ class QueryHistoryTableViewCell: UITableViewCell {
             let tlInset: CGFloat = 12.0
             tagsLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: tlInset)
             tagsLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: tlInset)
-            tagsLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: tlInset)
             tagsLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: tlInset)
+            
+
+            notification.autoPinEdgeToSuperviewEdge(.Trailing, withInset: 16.0)
+            notification.autoAlignAxisToSuperviewAxis(.Horizontal)
+            tagsLabel.autoPinEdge(.Trailing, toEdge: .Leading, ofView: notification, withOffset: 16.0, relation: .LessThanOrEqual)
+
+            if QUERY!.notificationCount == 0 {
+                notification.alpha = 0.0
+            }
+
             
             didUpdateConstraints = true
         }

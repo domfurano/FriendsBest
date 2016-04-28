@@ -33,8 +33,6 @@ class MainView: UIView {
 
 class MainScreenViewController: UIViewController, UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate, KolodaViewDataSource, KolodaViewDelegate {
     
-    //    static let instance: MainScreenViewController = MainScreenViewController() // ?????
-    
     /* Google */
     var placePicker: GMSPlacePicker?
     var currentPlace: GMSPlace? = nil // TODO: Move this to possible the User class
@@ -65,8 +63,16 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     /* Location manager */
     var locationManager: CLLocationManager = CLLocationManager()
     
+    /* Sad timer */
+    var setAnimationTimer: Timer = Timer(timesPerSecond: 1.0) { 
+        dispatch_async(dispatch_get_main_queue(), {
+            UIView.setAnimationsEnabled(true)
+        })
+    }
+    
     deinit {
         NSLog("MainScreenViewController - deinit")
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func loadView() {
@@ -74,6 +80,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     override func viewDidLoad() {
+        setAnimationTimer.startTimer()
         
         /* Search controller */
         
@@ -119,7 +126,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         
         /* Closure implementations */
         
-        User.instance.closureNewPrompts = {
+        USER.closurePromptsNew = {
             self.showPromptCards()
         }
         
@@ -158,6 +165,13 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         locationManager.startUpdatingLocation()
         
         addConstraints()
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(MainScreenViewController.showAlert),
+            name: "notifications",
+            object: nil
+        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -179,14 +193,22 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     
     override func viewWillDisappear(animated: Bool) {
         Updater.instance.STAHP()
-        User.instance.myPrompts.removeAll()
+        USER.myPrompts.removeAll()
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(true, animated: false)
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(false, animated: false)
     }
     
     /*** Delegate implementation ***/
     
     func showPromptCards() {
         var changed: Bool = false
-        outerloop: for prompt in User.instance.myPrompts {
+        outerloop: for prompt in USER.myPrompts {
             for cardView in self.cardViews {
                 if prompt.ID == cardView.prompt!.ID {
                     continue outerloop
@@ -206,11 +228,17 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         }
     }
     
-    // TODO: Show alert if total of new notifications is > 0
-//    func showAlert() {
-//        let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
-//        navigationItem.leftBarButtonItem = historyIconBarButtonAlert
-//    }
+    func showAlert(notification: NSNotification) {
+        if notification.name == "notifications" {
+            if USER.notificationsTotal() > 0 {
+                let historyIconBarButtonAlert: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonAlert)
+                navigationItem.leftBarButtonItem = historyIconBarButtonAlert
+            } else {
+                let historyIconBarButtonPlain: UIBarButtonItem = UIBarButtonItem(customView: historyIconButtonPlain)
+                navigationItem.leftBarButtonItem = historyIconBarButtonPlain
+            }
+        }
+    }
     
     
     /*** Koloda ***/
@@ -223,7 +251,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
         if direction == SwipeResultDirection.Left {
             let cardView: PromptCardView = cardViews[Int(index)]
-            FBNetworkDAO.instance.deletePrompt(cardView.prompt!, callback: nil)
+            FBNetworkDAO.instance.deletePromptAsync(cardView.prompt!, callback: nil)
         } else {
             didSwipeRight = true
             let prompt: Prompt = cardViews[Int(index)].prompt!
@@ -237,13 +265,16 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         if didSwipeRight {
             return
         }
-        User.instance.myPrompts.removeAll()
+        USER.myPrompts.removeAll()
         cardViews.removeAll()
-        FBNetworkDAO.instance.getPrompts(nil)
     }
     
     func kolodaShouldApplyAppearAnimation(koloda: KolodaView) -> Bool {
         return true
+    }
+    
+    func kolodaShouldTransparentizeNextCard(koloda: KolodaView) -> Bool {
+        return false
     }
     
     // datasource
@@ -335,20 +366,25 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
         recommendationPickerShown = false
         if didSwipeRight {
             didSwipeRight = false
-            kolodaView.revertAction()
+            kolodaView.revertAction({ _ in
+                
+            })
         }
     }
     
     
     /*** Recommendation Picker ***/
+    var picked: Bool = false
     
     func pickCustom() {
+        picked = true
         newRecommendation.type = .text
         newRecommendation.detail = ""
         navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendation, type: .NEW), animated: true)
     }
     
     func pickLink() {
+        picked = true
         newRecommendation.type = .url
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
@@ -356,6 +392,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     }
     
     func pickPlace() {
+        picked = true
         navigationController?.navigationBarHidden = false
         navigationController?.toolbarHidden = false
         
@@ -395,8 +432,7 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
                 
                 newRecommendationRef.type = .place
                 newRecommendationRef.detail = place.placeID
-//                userRecommendation.placeName = place.name
-//                userRecommendation.placeWebsite = place.website
+                newRecommendationRef.placeName = place.name
                 
                 self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: newRecommendationRef, type: .NEW), animated: true)
                 
@@ -416,9 +452,8 @@ class MainScreenViewController: UIViewController, UISearchControllerDelegate, UI
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
             let tags: [String] = searchBarText.componentsSeparatedByString(" ").filter({$0 != ""})
-            FBNetworkDAO.instance.postNewQuery(tags, callback: {
-                self.navigationController?.pushViewController(SolutionsViewController(query: nil, tags: tags), animated: true)
-            })
+            FBNetworkDAO.instance.postNewQuery(tags, callback: nil)
+            self.navigationController?.pushViewController(SolutionsViewController(query: nil , tags: tags), animated: true)
         }
         self.searchController.active = false
     }

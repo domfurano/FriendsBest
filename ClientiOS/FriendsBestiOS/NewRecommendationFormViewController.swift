@@ -25,10 +25,6 @@ class NewRecommendationFormViewController: FormViewController {
         self.type = type
     }
     
-    override func loadView() {
-        view = NewRecommendationFormView()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -50,16 +46,10 @@ class NewRecommendationFormViewController: FormViewController {
         rightBB.tintColor = UIColor.whiteColor()
         navigationItem.rightBarButtonItem = rightBB
         
-        form = Section() {
-            $0.tag = "placeImageSection"
-            $0.hidden = true
-            }
-            <<< PlaceImageRow() {
-                $0.tag = "placeImageRow"
-            }
-            +++ Section("Recommendation")
-            <<< TextRow() {
+        form = Section("Recommendation")
+            <<< TextFloatLabelRow() {
                 $0.tag = "detail"
+                $0.title = "What are you recommending?"
                 switch self.newRecommendation.type! {
                 case .text:
                     $0.value = self.newRecommendation.detail!
@@ -69,63 +59,32 @@ class NewRecommendationFormViewController: FormViewController {
                     $0.disabled = false
                     break
                 case .place:
-//                    if self.userRecommendation.placeName != nil {
-//                        $0.value = self.userRecommendation.placeName!
-//                    } else {
-//                    }
+                    $0.value = self.newRecommendation.placeName
                     $0.disabled = true
                     break
                 }
+                if type == .EDIT {
+                    $0.disabled = true
+                }
                 }.cellSetup({ (cell, row) in
-                    cell.textField.autocorrectionType = .No
+                    cell.textField.autocorrectionType = .Yes
                     cell.textField.autocapitalizationType = .None
                 })
-            +++ Section("Keywords")
+            +++ Section("Search Keywords")
             <<< TextRow() {
-                $0.tag = "keywords"
-                
+                $0.tag = "keywords"                
+                $0.value = self.newRecommendation.tagString
                 }.cellUpdate({ (cell, row) in
-//                    cell.textField.autocorrectionType = .No
                     cell.textField.autocapitalizationType = .None
-//                    if self.userRecommendation.tagString != nil && !self.userRecommendation.tagString!.isEmpty {
-//                        cell.textField.attributedText = self.attributedStringForTags(self.userRecommendation!.tagString!)
-//                    } else if self.userRecommendation.tags != nil && self.userRecommendation.tags!.count > 0 {
-//                        cell.textField.attributedText = self.attributedStringForTags(self.userRecommendation!.tags!)
-////                        $0.value = self.userRecommendation!.tags!.joinWithSeparator(" ")
-//                    }
                 }).onChange({ (row: TextRow) in
-//                    if self.lastString == nil {
-//                        self.lastString = row.cell.textField.text
-//                        return
-//                    }
-//                    if let text = row.cell.textField.text {
-//                        if let last = text.characters.last {
-//                            if last == " " {
-//                                row.cell.textField.attributedText = self.attributedStringForTags(text)
-//                            }
-//                        }
-//                    }
                 })
             +++ Section("Comments")
             <<< TextAreaRow() {
-                $0.tag = "comment"
+                $0.tag = "comments"
+                $0.placeholder = "Why are you making this recommendation?"
                 if self.newRecommendation.comments != nil {
                     $0.value = self.newRecommendation.comments
                 }
-        }
-        
-        if newRecommendation.type! == .place {
-            //            let row: PlaceImageRow = self.form.rowByTag("placeImageRow")!
-            GMSPlacesClient.sharedClient().lookUpPlaceID(newRecommendation.detail!, callback: { (place: GMSPlace?, error: NSError?) in
-                if error != nil {
-                    return
-                }
-                if let place = place {
-                    self.form.rowByTag("detail")!.value = place.name
-                    self.tableView!.reloadData()
-                }
-            })
-            //            loadFirstPhotoForPlace(userRecommendation.detail!, row: row)
         }
     }
     
@@ -135,7 +94,11 @@ class NewRecommendationFormViewController: FormViewController {
         navigationController?.navigationBarHidden = false
         navigationController?.navigationBar.barTintColor = CommonUI.fbGreen
         navigationController?.toolbarHidden = true
-        title = "New Recommendation"
+        if type == .NEW {
+            title = "New Recommendation"
+        } else {
+            title = "Edit Recommendation"
+        }
     }
     
     func dismiss() {
@@ -154,77 +117,25 @@ class NewRecommendationFormViewController: FormViewController {
             newRecommendation.detail = (values["detail"]!! as! String)
         }
         newRecommendation.tags = (values["keywords"]!! as! String).componentsSeparatedByString(" ")
-        newRecommendation.comments = values["comments"] == nil ? "" : (values["comments"]!! as! String)
+        newRecommendation.comments = values["comments"]! == nil ? "" : (values["comments"]!! as! String)
         
-        FBNetworkDAO.instance.postNewRecommendtaion(newRecommendation, callback: nil)
-        
-        for vc in (navigationController?.viewControllers)! {
-            if vc.isKindOfClass(MainScreenViewController) {
-                navigationController?.popToViewController(vc, animated: true)
-                break
-            }
+        if self.type == .NEW {
+            FBNetworkDAO.instance.postNewRecommendtaion(newRecommendation, callback: nil)
+        } else {
+            FBNetworkDAO.instance.putRecommendation(newRecommendation, callback: nil)
         }
-    }
-    
-    func loadFirstPhotoForPlace(placeID: String, row: PlaceImageRow) {
-        GMSPlacesClient.sharedClient()
-            .lookUpPhotosForPlaceID(placeID) { (photos, error) -> Void in
-                if let error = error {
-                    NSLog("Error: \(error.description)")
-                } else {
-                    if let firstPhoto = photos?.results.first {
-                        self.loadImageForMetadata(firstPhoto, row: row)
-                    }
+        
+        if type == .NEW {
+            for vc in (navigationController?.viewControllers)! {
+                if vc.isKindOfClass(MainScreenViewController) {
+                    navigationController?.popToViewController(vc, animated: true)
+                    break
                 }
-        }
-    }
-    
-    func loadImageForMetadata(photoMetadata: GMSPlacePhotoMetadata, row: PlaceImageRow) {
-        GMSPlacesClient.sharedClient()
-            .loadPlacePhoto(photoMetadata,
-                            constrainedToSize: row.cell.bounds.size,
-                            scale: 1.0) {
-                                (photo, error) -> Void in
-                                if let error = error {
-                                    NSLog("Error: \(error.description)")
-                                } else {
-                                    row.cell.placeImage.image = photo;
-                                    let placeImageSection: Section = self.form.sectionByTag("placeImageSection")!
-                                    placeImageSection.hidden = false
-                                    self.tableView!.reloadData()
-                                    NSLog("Picture found!")
-                                    //                                    self.attributionTextView.attributedText = photoMetadata.attributions;
-                                }
-        }
-    }
-    
-    private func attributedStringForTags(tagString: String) -> NSAttributedString {
-        return attributedStringForTags(tagString.componentsSeparatedByString(" "))
-    }
-    
-    private func attributedStringForTags(tagArray: [String]) -> NSAttributedString {
-        let returnString: NSMutableAttributedString = NSMutableAttributedString()
-        
-        let attributes: [String : AnyObject] = [
-            NSForegroundColorAttributeName: UIColor.blackColor(),
-            NSBackgroundColorAttributeName: UIColor.colorFromHex(0xEDEDED),
-            NSFontAttributeName: UIFont(name: "Proxima Nova Cond", size: 16.0)!
-        ]
-        
-        let space = NSAttributedString(string: "  ")
-        
-        for tag in tagArray {
-            let strippedTag = tag.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: " \n\t"))
-            if !strippedTag.isEmpty {
-                returnString.appendAttributedString(NSAttributedString(string: "  \(tag)  ", attributes: attributes))
-                returnString.appendAttributedString(space)
             }
+        } else {
+            navigationController?.popViewControllerAnimated(true)
         }
-        
-        return returnString
     }
-    
-    
 }
 
 final class PlaceImageRow: Row<Bool, PlaceImageCell>, RowType {
@@ -255,28 +166,7 @@ class PlaceImageCell : Cell<Bool>, CellType {
         
         addSubview(_placeImage)
         _placeImage.translatesAutoresizingMaskIntoConstraints = false
-        
-        //        addConstraint(
-        //            NSLayoutConstraint(
-        //                item: _placeImage,
-        //                attribute: .Width,
-        //                relatedBy: .Equal,
-        //                toItem: self,
-        //                attribute: .Width,
-        //                multiplier: 1.0,
-        //                constant: 0.0))
-        //
-        //        addConstraint(
-        //            NSLayoutConstraint(
-        //                item: _placeImage,
-        //                attribute: .Height,
-        //                relatedBy: .Equal,
-        //                toItem: self,
-        //                attribute: .Height,
-        //                multiplier: 1.0,
-        //                constant: 0.0))
-        
-        
+
         addConstraint(
             NSLayoutConstraint(
                 item: _placeImage,
@@ -297,7 +187,6 @@ class PlaceImageCell : Cell<Bool>, CellType {
                 attribute: .CenterY,
                 multiplier: 1.0,
                 constant: 0.0))
-        
     }
     
     override func setup() {
@@ -310,21 +199,5 @@ class PlaceImageCell : Cell<Bool>, CellType {
     }
     
     func valueChanged() {
-    }
-}
-
-class NewRecommendationFormView: UITableView {
-    override func drawRect(rect: CGRect) {
-        let context: CGContext = UIGraphicsGetCurrentContext()!
-        CGContextClearRect(context, bounds)
-        
-        CommonUI.drawGradientForContext(
-            [
-                CommonUI.topGradientColor,
-                CommonUI.bottomGradientColor
-            ],
-            frame: self.bounds,
-            context: context
-        )
     }
 }

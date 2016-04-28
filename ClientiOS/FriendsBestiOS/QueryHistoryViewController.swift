@@ -9,32 +9,33 @@
 import UIKit
 import FBSDKCoreKit
 
-class QueryHistoryView: UITableView {
-    override func drawRect(rect: CGRect) {
-        let context: CGContext = UIGraphicsGetCurrentContext()!
-        CGContextClearRect(context, bounds)
-        
-        CommonUI.drawGradientForContext(
-            [
-                CommonUI.topGradientColor,
-                CommonUI.bottomGradientColor
-            ],
-            frame: self.bounds,
-            context: context
-        )
+class QueryHistoryViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
+    let searchController = UISearchController(searchResultsController: nil)
+    var filteredQueries: [Query] = []
+    var searching: Bool {
+        return searchController.active && searchController.searchBar.text != ""
     }
-}
-
-class QueryHistoryViewController: UITableViewController {
     
-    override func loadView() {
-        view = QueryHistoryView(frame: CGRectZero, style: UITableViewStyle.Grouped)
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func viewDidLoad() {
         /* NECESSARY FOR DYNAMIC CELL HEIGHT */
         tableView.estimatedRowHeight =  60.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        definesPresentationContext = true
+        
+        searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        
+        searchController.searchBar.barTintColor = CommonUI.navbarGrayColor
+        searchController.searchBar.translucent = false
+        searchController.searchBar.autocapitalizationType = .None
+        tableView.tableHeaderView = searchController.searchBar
         
         /* Navigation bar */
         
@@ -69,18 +70,27 @@ class QueryHistoryViewController: UITableViewController {
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(QueryHistoryViewController.refreshData), forControlEvents: .ValueChanged)
         
-        User.instance.closureNewQuery = { (index: Int) in
-            self.tableView.beginUpdates()
-            let indexPath: NSIndexPath = NSIndexPath(forRow: index, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
-            self.tableView.endUpdates()
-            self.refreshControl?.endRefreshing()
+        USER.closureQueryNew = { [weak self] (query) in
+            self?.tableView.reloadData()
         }
-//        User.instance.queryHistoryUpdatedClosure = {
+        USER.closureQueryDeleted = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        USER.closureQueriesNew = { [weak self] in
+            self?.tableView.reloadData()
+        }
+        
+//        FBNetworkDAO.instance.getQueries({
 //            [weak self] in
 //            self?.tableView.reloadData()
-//            self?.refreshControl?.endRefreshing()
-//        }
+//        })
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(QueryHistoryViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -89,14 +99,44 @@ class QueryHistoryViewController: UITableViewController {
         
         navigationController?.navigationBar.barTintColor = CommonUI.navbarGrayColor
         navigationController?.toolbar.barTintColor = CommonUI.toolbarLightColor
-
-//        setToolbarItems()
+        
+        
+        navigationController?.navigationBar.translucent = false
+        searchController.searchBar.translucent = false
+    }
+    
+    override func viewDidLayoutSubviews() {
+        self.view.sendSubviewToBack(self.tableView)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchController.active = false
+    }
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        filteredQueries.removeAll(keepCapacity: true)
+        for query: Query in USER.myQueries {
+            if query.tagString.lowercaseString.containsString(searchController.searchBar.text!.lowercaseString) {
+                filteredQueries.append(query)
+            }
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func didPresentSearchController(searchController: UISearchController) {
+        searchController.searchBar.setShowsCancelButton(true, animated: false)
+    }
+    
+    func didDismissSearchController(searchController: UISearchController) {        
+        searchController.searchBar.setShowsCancelButton(false, animated: false)
     }
     
     func refreshData() {
         refreshControl?.beginRefreshing()
-        FBNetworkDAO.instance.getQueries({
-            self.refreshControl?.endRefreshing()
+        FBNetworkDAO.instance.getQueries({ [weak self] in
+            self?.refreshControl?.endRefreshing()
         })
     }
     
@@ -152,19 +192,33 @@ class QueryHistoryViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return User.instance.myQueries.count;
+        if searching {
+            return filteredQueries.count
+        }
+        return USER.myQueries.count;
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // TODO: learn about reuseIdentifier
-        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(query: User.instance.myQueries[indexPath.row])
+        let query: Query
+        if searching {
+            query = filteredQueries[indexPath.row]
+        } else {
+            query = USER.myQueries[indexPath.row]
+        }
+        let cell: QueryHistoryTableViewCell = QueryHistoryTableViewCell(query: query)
         cell.setNeedsUpdateConstraints()
         cell.updateConstraintsIfNeeded()
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let query: Query = User.instance.myQueries[indexPath.row]
+        let query: Query
+        if searching {
+            query = filteredQueries[indexPath.row]
+        } else {
+            query = USER.myQueries[indexPath.row]
+        }
         navigationController?.pushViewController(SolutionsViewController(query: query, tags: query.tags), animated: true)
     }
     
@@ -174,15 +228,34 @@ class QueryHistoryViewController: UITableViewController {
 
     // TODO: Implement deletion and possibly custom delete control
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true;
+        return true
     }
     
+//    var editingRow: Bool = false
+//    override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = true
+//    }
+//    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = false
+//    }
+//    func showAlert(notification: NSNotification) {
+//        if !editingRow {
+//            tableView.reloadData()
+//        }
+//    }
+    
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let query: Query = User.instance.myQueries.removeAtIndex(indexPath.row)
+        let query: Query
+        if searching {
+            query = filteredQueries.removeAtIndex(indexPath.row)
+            tableView.reloadData()
+        } else {
+            query = USER.myQueries.removeAtIndex(indexPath.row)
+            tableView.beginUpdates()
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
+            tableView.endUpdates()
+        }
         FBNetworkDAO.instance.deleteQuery(query, callback: nil)
-        tableView.beginUpdates()
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
-        tableView.endUpdates()
     }
 }
 

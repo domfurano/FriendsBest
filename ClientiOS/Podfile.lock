@@ -5,11 +5,11 @@ PODS:
   - Koloda (3.0.0):
     - pop (~> 1.0)
   - PINCache (2.2.2)
-  - PINRemoteImage (2.1.2):
-    - PINRemoteImage/FLAnimatedImage (= 2.1.2)
-  - PINRemoteImage/Core (2.1.2):
+  - PINRemoteImage (2.1.4):
+    - PINRemoteImage/FLAnimatedImage (= 2.1.4)
+  - PINRemoteImage/Core (2.1.4):
     - PINCache (>= 2.1)
-  - PINRemoteImage/FLAnimatedImage (2.1.2):
+  - PINRemoteImage/FLAnimatedImage (2.1.4):
     - FLAnimatedImage (>= 1.0)
     - PINRemoteImage/Core
   - pop (1.0.9)
@@ -29,7 +29,7 @@ SPEC CHECKSUMS:
   GoogleMaps: 7a6caeb8336d7cb42982e969fc9b1b20a889fe79
   Koloda: 315aa5d2ef4138df90c42ee77c18af0727528e6a
   PINCache: 078426d356ab95ef875e9e62e5c35a2ea3333c28
-  PINRemoteImage: 2ce3f1fcc52f0360a3821f91f1a1bc653c5d2338
+  PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
   pop: f667631a5108a2e60d9e8797c9b32ddaf2080bce
   PureLayout: f35f5384c9c4e4479df041dbe33ad7577b71ddfb
 

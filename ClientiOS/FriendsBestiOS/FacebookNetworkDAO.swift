@@ -27,7 +27,7 @@ class FacebookNetworkDAO {
             if(error == nil)
             {
                 let dict: NSDictionary = result as! NSDictionary
-                User.instance.myName = dict["name"] as? String
+                USER.myName = dict["name"] as? String
                 callback?(successful: true)
             }
             else

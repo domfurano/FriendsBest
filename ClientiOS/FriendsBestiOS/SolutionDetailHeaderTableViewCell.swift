@@ -12,105 +12,65 @@ import PureLayout
 import GoogleMaps
 
 class SolutionDetailHeaderTableViewCell: UITableViewCell {
-    var RECOMMENDATION: FriendRecommendation!
+    var titleLabel: UILabel = UILabel.newAutoLayoutView()
+    var subtitleLabel: UILabel = UILabel.newAutoLayoutView()
     
-    /* text type */
-    var textTitle: UILabel?
-    
-    /* place type */
-    var placeTitle: UILabel?
-    var placeAddress: UILabel?
-    //    ...
-    
-    /* url type */
-    var urlTitle: UILabel?
-    
-    convenience init(recommendation: FriendRecommendation) {
-        self.init()
-        RECOMMENDATION = recommendation
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.clearColor()
-        userInteractionEnabled = false
+
+        selectionStyle = .None
         
         contentView.backgroundColor = CommonUI.sdNavbarBgColor
         
-        switch RECOMMENDATION.solution!.type {
-        case .text:
-            textTitle = UILabel.newAutoLayoutView()
-            textTitle?.numberOfLines = 0
-            textTitle?.text = RECOMMENDATION.solution!.detail
-            textTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
-            textTitle?.textColor = UIColor.whiteColor()
-            contentView.addSubview(textTitle!)
-            break
-        case .place:
-            placeTitle = UILabel.newAutoLayoutView()
-//            placeTitle?.text = RECOMMENDATION.placeName
-            placeTitle?.numberOfLines = 0
-            placeTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
-            placeTitle?.textColor = UIColor.whiteColor()
-            placeAddress = UILabel.newAutoLayoutView()
-//            placeAddress?.text = RECOMMENDATION.placeAddress
-            placeAddress?.font = UIFont(name: "Proxima Nova Cond", size: 18.0)
-            placeAddress?.numberOfLines = 0
-            placeAddress?.textColor = UIColor.whiteColor()
-            contentView.addSubview(placeTitle!)
-            contentView.addSubview(placeAddress!)
-            break
-        case .url:
-            urlTitle = UILabel.newAutoLayoutView()
-            urlTitle?.numberOfLines = 0
-            urlTitle?.text = RECOMMENDATION.solution!.detail
-            urlTitle?.font = UIFont(name: "ProximaNovaCond-Bold", size: 20.0)
-            urlTitle?.textColor = UIColor.whiteColor()
-            contentView.addSubview(urlTitle!)
-            break
-        }
+        titleLabel = UILabel.newAutoLayoutView()
+        titleLabel.numberOfLines = 0
+        titleLabel.font = UIFont(name: "ProximaNovaCond-Bold", size: 18.0)
+        titleLabel.textColor = UIColor.whiteColor()
         
+        subtitleLabel = UILabel.newAutoLayoutView()
+        subtitleLabel.font = UIFont(name: "Proxima Nova Cond", size: 14.0)
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.textColor = UIColor.whiteColor()
+        
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(subtitleLabel)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupForCellDisplay(title: String, subtitle: String) {
+        titleLabel.text = title.isEmpty ? " " : title
+        subtitleLabel.text = subtitle.isEmpty ? " " : subtitle
+        
+        setNeedsUpdateConstraints()
+        updateConstraintsIfNeeded()
     }
     
     var didUpdateConstraints: Bool = false
     override func updateConstraints() {
         if !didUpdateConstraints {
+            NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: {
+                self.titleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+                self.subtitleLabel.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
+            })
+        
             let horizontalInsets: CGFloat = 15.0
             let verticalInsets: CGFloat = 10.0
             
-            switch RECOMMENDATION.solution!.type {
-            case .text:
-                NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: {
-                    self.textTitle?.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                })
-                textTitle?.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
-                textTitle?.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-                textTitle?.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
-                textTitle?.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
-                break
-            case .place:
-                NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: {
-                    self.placeTitle?.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                    self.placeAddress?.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                })
-                placeTitle?.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
-                placeTitle?.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-                placeTitle?.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
-                placeAddress?.autoPinEdge(.Top, toEdge: .Bottom, ofView: placeTitle!, withOffset: verticalInsets, relation: .GreaterThanOrEqual)
-                placeAddress?.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-                placeAddress?.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
-                placeAddress?.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
-                break
-            case .url:
-                NSLayoutConstraint.autoSetPriority(UILayoutPriorityRequired, forConstraints: {
-                    self.urlTitle?.autoSetContentCompressionResistancePriorityForAxis(.Vertical)
-                })
-                urlTitle?.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
-                urlTitle?.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
-                urlTitle?.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
-                urlTitle?.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
-                break
-            }
+            titleLabel.autoPinEdgeToSuperviewEdge(.Top, withInset: verticalInsets)
+            titleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+            titleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+            
+            subtitleLabel.autoPinEdge(.Top, toEdge: .Bottom, ofView: titleLabel, withOffset: verticalInsets, relation: .GreaterThanOrEqual)
+            subtitleLabel.autoPinEdgeToSuperviewEdge(.Leading, withInset: horizontalInsets)
+            subtitleLabel.autoPinEdgeToSuperviewEdge(.Trailing, withInset: horizontalInsets)
+            subtitleLabel.autoPinEdgeToSuperviewEdge(.Bottom, withInset: verticalInsets)
             
             didUpdateConstraints = true
         }
-        
         super.updateConstraints() // required
     }
 }

@@ -28,6 +28,9 @@ class SolutionDetailViewController: UITableViewController {
     
     var SOLUTION: Solution!
     
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }    
     
     convenience init(solution: Solution) {
         self.init()
@@ -46,9 +49,11 @@ class SolutionDetailViewController: UITableViewController {
     override func viewDidLoad() {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        title = "Details"
 //        tableView.separatorStyle = .None
         
-        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
+//        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
         
         let button: UIButton = UIButton(type: .Custom)
         button.setImage(CommonUI.nbBackChevron, forState: .Normal)
@@ -67,9 +72,17 @@ class SolutionDetailViewController: UITableViewController {
         
         /* Refresh Control */
         refreshControl = UIRefreshControl()
-        refreshControl!.backgroundColor = UIColor.colorFromHex(0x949494)
-        refreshControl!.tintColor = UIColor.whiteColor()
-        refreshControl!.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+        refreshControl?.backgroundColor = UIColor.colorFromHex(0x949494)
+        refreshControl?.tintColor = UIColor.whiteColor()
+        refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(SolutionDetailViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -90,14 +103,31 @@ class SolutionDetailViewController: UITableViewController {
     {
         super.viewDidDisappear(animated)
         
+        for recommendation: FriendRecommendation in SOLUTION.recommendations {
+            if recommendation.isNew {
+                FBNetworkDAO.instance.deleteNotification(recommendation, callback: nil)
+            }
+        }
+        
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
     }
+    
+//    func showAlert(notification: NSNotification) {
+//        for query: Query in USER.myQueries {
+//            for solution: Solution in query.solutions {
+//                if solution.ID == SOLUTION.ID {
+//                    SOLUTION = solution
+//                }
+//            }
+//        }
+//        tableView.reloadData()
+//    }
     
     func refreshData() {
         refreshControl?.beginRefreshing()
         FBNetworkDAO.instance.getQuerySolutions(SOLUTION.query!) {
-            self.tableView.reloadData()
             self.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
         }
     }
     
@@ -125,38 +155,68 @@ class SolutionDetailViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let recommendation: FriendRecommendation = SOLUTION.recommendations[indexPath.row]
+        recommendation.solution!.closureSolutionUpdated = { [weak self] in
+            self?.tableView.reloadData()
+        }
         if indexPath.section == 0 {
-            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(recommendation: recommendation)
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
-            return cell
-        } else {
-            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(recommendation: recommendation)
+            let cell: SolutionDetailHeaderTableViewCell = SolutionDetailHeaderTableViewCell(style: .Default, reuseIdentifier: .None)
             switch recommendation.solution!.type {
             case .text:
+                cell.setupForCellDisplay(recommendation.solution!.detail, subtitle: "")
                 break
             case .place:
-                GooglePlace.loadPlace(recommendation.solution!.detail, callback: { (place) in
-                    cell.setupForViewing(place.name)
-                })
+                cell.setupForCellDisplay(recommendation.solution!.placeName, subtitle: recommendation.solution!.placeAddress)
                 break
             case .url:
-                if let url: NSURL = NSURL(string: recommendation.solution!.detail) {
-                    if let host: String = url.host {
-                        cell.setupForViewing(host)
-                    }
-                }
+                cell.setupForCellDisplay(recommendation.solution!.urlTitle, subtitle: recommendation.solution!.urlSubtitle)
                 break
             }
-            cell.setNeedsUpdateConstraints()
-            cell.updateConstraintsIfNeeded()
+            return cell
+        } else {
+            let cell: SolutionDetailTableViewCell = SolutionDetailTableViewCell(style: .Default, reuseIdentifier: .None)
+            if let friend: Friend = recommendation.friend {
+                cell.setupCellForDisplay(
+                    friend.smallRoundedPicture.image!,
+                    name: friend.name,
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
+                )
+            } else {
+                cell.setupCellForDisplay(
+                    CommonUI.instance.defaultProfileImage,
+                    name: "Anonymous FriendsBest User",
+                    comment: recommendation.comment,
+                    showAlert: recommendation.isNew
+                )
+            }
             return cell
         }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
-            
+            switch SOLUTION.type {
+            case .text:
+                break
+            case .place:
+                let URLString: String?
+                if SOLUTION.placeName.containsString("°") {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                } else {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                }
+                if URLString != nil {
+                    if let URL: NSURL = NSURL(string: URLString!) {
+                        UIApplication.sharedApplication().openURL(URL)
+                    }
+                }
+                break
+            case .url:
+                if let URL: NSURL = NSURL(string: SOLUTION.detail) {
+                    UIApplication.sharedApplication().openURL(URL)
+                }
+                break
+            }
         }
     }
 }

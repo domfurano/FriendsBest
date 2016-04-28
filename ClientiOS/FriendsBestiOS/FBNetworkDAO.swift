@@ -13,16 +13,17 @@ import FBSDKCoreKit
 
 
 protocol NetworkDAODelegate: class {
-    func queriesFetched(queries: [Query])
-    func queryFetched(query: Query)
-    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution])
-    func queryDeleted(query: Query)
     func promptsFetched(prompts: [Prompt])
     func promptDeleted(prompt: Prompt)
-    func userRecommendationsFetched(userRecommendations: [UserRecommendation])
+    func queryFetched(query: Query)
+    func queriesFetched(queries: [Query])
+    func queryDeleted(query: Query)
+    func querySolutionsFetched(forYourQuery query: Query, solutions: [Solution])
     func userRecommendationFetched(userRecommendation: UserRecommendation)
+    func userRecommendationsFetched(userRecommendations: [UserRecommendation])
     func userRecommendationDeleted(userRecommendation: UserRecommendation)
     func friendsFetched(friends: [Friend])
+    func friendMutingSet(friend: Friend, muted: Bool)
 }
 
 
@@ -50,14 +51,16 @@ class FBNetworkDAO {
     func getQueries(callback: (() -> Void)?) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._getQueries(callback)
+            self?._getQueries(false, callback: callback)
             }, description: "getQueries()"))
     }
     
-    private func _getQueries(callback: (() -> Void)?) {
+    func _getQueries(async: Bool, callback: (() -> Void)?) {
         guard let token = self.friendsBestToken else {
             postFacebookTokenAndAuthenticate(nil)
-            NetworkQueue.instance.tryAgain()
+            if !async {
+                NetworkQueue.instance.tryAgain()
+            }
             NSLog("User has not authenticated")
             return
         }
@@ -78,13 +81,17 @@ class FBNetworkDAO {
             (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
             
             if let error = error {
-                NetworkQueue.instance.tryAgain()
+                if !async {
+                    NetworkQueue.instance.tryAgain()
+                }
                 NSLog("Error - FriendsBest API - getQueries() - \(error.description)")
                 return
             }
             
             if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [200], funcName: "getQueries") {
-                NetworkQueue.instance.tryAgain()
+                if !async {
+                    NetworkQueue.instance.tryAgain()
+                }
                 return
             }
             
@@ -100,7 +107,9 @@ class FBNetworkDAO {
                 self.networkDAODelegate?.queriesFetched(queries)
                 callback?()
             })
-            NetworkQueue.instance.dequeue()
+            if !async {
+                NetworkQueue.instance.dequeue()
+            }
         }).resume()
     }
     
@@ -306,6 +315,65 @@ class FBNetworkDAO {
         }).resume()
     }
     
+    func setMutingForFriend(friend: Friend, mute: Bool, callback: (() -> Void)?) {
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._setMutingForFriend(friend, mute: mute, callback: callback)
+            }, description: "setMutingForFriend()"))
+    }
+    
+    private func _setMutingForFriend(friend: Friend, mute: Bool, callback: (() -> Void)?) {
+        guard let token = self.friendsBestToken else {
+            postFacebookTokenAndAuthenticate(nil)
+            NetworkQueue.instance.tryAgain()
+            NSLog("User has not authenticated")
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        let queryString: String = "friend/\(friend.facebookID)/"
+        let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        
+        let json = ["muted": mute]
+        let jsonData: NSData
+        do {
+            jsonData = try NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions())
+        } catch {
+            NSLog("Error - FriendsBest API - setMutingForFriend() - Couldn't convert tags to JSON")
+            return
+        }
+        request.HTTPMethod = "PUT"
+        request.HTTPBody = jsonData
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        session.dataTaskWithRequest(request, completionHandler: {
+            (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            
+            if let error = error {
+                NSLog("Error - FriendsBest API - setMutingForFriend() - \(error.localizedDescription)")
+                NetworkQueue.instance.tryAgain()
+                return
+            }
+            
+            if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [200], funcName: "setMutingForFriend") {
+                NetworkQueue.instance.tryAgain()
+                return
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                self.networkDAODelegate?.friendMutingSet(friend, muted: mute)
+                callback?()
+            })
+            NetworkQueue.instance.dequeue()
+        }).resume()
+    }
+    
     
     // Mark: Solutions
     func getQuerySolutions(query: Query, callback: (() -> Void)?) {
@@ -349,6 +417,10 @@ class FBNetworkDAO {
             let solutionsDictArray: [NSDictionary] = queryDict["solutions"] as! [NSDictionary]
             
             let solutions: [Solution] = self.parseSolutions(solutionsDictArray)
+            
+            for solution: Solution in solutions {
+                solution.query = query
+            }
             
             dispatch_async(dispatch_get_main_queue(), {
                 self.networkDAODelegate?.querySolutionsFetched(forYourQuery: query, solutions: solutions)
@@ -534,9 +606,9 @@ class FBNetworkDAO {
     }
     
     
-    func putRecommendation(userRecommendation: UserRecommendation, callback: (() -> Void)?) {
-        deleteUserRecommendation(userRecommendation) {
-            self.postNewRecommendtaion(userRecommendation.newRecommendation(), callback: {
+    func putRecommendation(newRecommendation: NewRecommendation, callback: (() -> Void)?) {
+        deleteUserRecommendation(newRecommendation.userRecommendation()) {
+            self.postNewRecommendtaion(newRecommendation, callback: {
                 callback?()
             })
         }
@@ -622,15 +694,21 @@ class FBNetworkDAO {
     func deletePrompt(prompt: Prompt, callback: (() -> Void)?) {
         NetworkQueue.instance.enqueue(NetworkTask(task: {
             [weak self] () -> Void in
-            self?._deletePrompt(prompt, callback: callback)
+            self?._deletePrompt(false, prompt: prompt, callback: callback)
             }, description: "deletePrompt()"))
     }
     
-    private func _deletePrompt(prompt: Prompt, callback: (() -> Void)?) {
+    func deletePromptAsync(prompt: Prompt, callback: (() -> Void)?) {
+        _deletePrompt(true, prompt: prompt, callback: callback)
+    }
+    
+    private func _deletePrompt(async: Bool, prompt: Prompt, callback: (() -> Void)?) {
         guard let token = self.friendsBestToken else {
-            postFacebookTokenAndAuthenticate(nil)
-            NetworkQueue.instance.tryAgain()
             NSLog("User has not authenticated")
+            postFacebookTokenAndAuthenticate(nil)
+            if !async {
+                NetworkQueue.instance.tryAgain()
+            }
             return
         }
         
@@ -642,21 +720,23 @@ class FBNetworkDAO {
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         
         let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
-        
         request.HTTPMethod = "DELETE"
-        //        request.addValue("application/json", forHTTPHeaderField: "Accept")
         
         session.dataTaskWithRequest(request, completionHandler: {
             (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
             
             if let error = error {
                 NSLog("Error - FriendsBest API - deletePrompt() - \(error.localizedDescription)")
-                NetworkQueue.instance.tryAgain()
+                if !async {
+                    NetworkQueue.instance.tryAgain()
+                }
                 return
             }
             
             if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [204, 404], funcName: "deletePrompt") {
-                NetworkQueue.instance.dequeue()
+                if !async {
+                    NetworkQueue.instance.dequeue()
+                }
                 return
             }
             
@@ -664,7 +744,10 @@ class FBNetworkDAO {
                 self.networkDAODelegate?.promptDeleted(prompt)
                 callback?()
             })
-            NetworkQueue.instance.dequeue()
+            
+            if !async {
+                NetworkQueue.instance.dequeue()
+            }
         }).resume()
     }
     
@@ -696,6 +779,55 @@ class FBNetworkDAO {
     }
     
     
+    // MARK: Notification
+    func deleteNotification(recommedation: FriendRecommendation, callback: (() -> Void)?) {
+        NetworkQueue.instance.enqueue(NetworkTask(task: {
+            [weak self] () -> Void in
+            self?._deleteNotification(recommedation, callback: callback)
+            }, description: "deletePrompt()"))
+    }
+    
+    private func _deleteNotification(recommedation: FriendRecommendation, callback: (() -> Void)?) {
+        guard let token = self.friendsBestToken else {
+            NSLog("User has not authenticated")
+            postFacebookTokenAndAuthenticate(nil)
+            NetworkQueue.instance.tryAgain()
+            return
+        }
+        
+        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = ["Authorization": token]
+        let session: NSURLSession = NSURLSession(configuration: configuration)
+        
+        let queryString: String = "notification/\(recommedation.ID)/"
+        let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
+        
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: queryURL)
+        request.HTTPMethod = "DELETE"
+        
+        session.dataTaskWithRequest(request, completionHandler: {
+            (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
+            
+            if let error = error {
+                NSLog("Error - FriendsBest API - deleteNotification() - \(error.localizedDescription)")
+                NetworkQueue.instance.tryAgain()
+                return
+            }
+            
+            if !self.responseHasExpectedStatusCodes(response, expectedStatusCodes: [204], funcName: "deleteNotification") {
+                NetworkQueue.instance.dequeue()
+                return
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                callback?()
+            })
+            NetworkQueue.instance.dequeue()
+            
+        }).resume()
+    }
+    
+    
     // MARK: Authentication
     func postFacebookTokenAndAuthenticate(callback: (() -> Void)?) {
         NetworkQueue.instance.push(NetworkTask(task: { () -> Void in
@@ -704,7 +836,7 @@ class FBNetworkDAO {
     }
     
     private func _postFacebookTokenAndAuthenticate(callback: (() -> Void)?) {
-        assert(FBSDKAccessToken.currentAccessToken() != nil);
+        assert(FBSDKAccessToken.currentAccessToken() != nil)
         let queryString: String = "facebook/"
         let queryURL: NSURL! = NSURL(string: queryString, relativeToURL: friendsBestAPIurl)
         let session: NSURLSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())

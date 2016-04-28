@@ -790,6 +790,11 @@ static dispatch_once_t sharedDispatchToken;
                  outImage:(PINImage **)outImage
          outAnimatedImage:(FLAnimatedImage **)outAnimatedImage
 {
+    NSAssert(object != nil, @"Object should not be nil.");
+    if (object == nil) {
+        return NO;
+    }
+  
     BOOL ignoreGIF = (PINRemoteImageManagerDownloadOptionsIgnoreGIFs & options) != 0;
     FLAnimatedImage *animatedImage = nil;
     PINImage *image = nil;
@@ -1119,7 +1124,10 @@ static dispatch_once_t sharedDispatchToken;
         PINImage *image;
         FLAnimatedImage *animatedImage;
         NSError *error = nil;
-        if ([strongSelf handleCacheObject:strongSelf.cache object:object key:cacheKey options:options outImage:&image outAnimatedImage:&animatedImage] == NO) {
+        if (object == nil) {
+            image = nil;
+            animatedImage = nil;
+        } else if ([strongSelf handleCacheObject:strongSelf.cache object:object key:cacheKey options:options outImage:&image outAnimatedImage:&animatedImage] == NO) {
             error = [NSError errorWithDomain:PINRemoteImageManagerErrorDomain
                                         code:PINRemoteImageManagerErrorInvalidItemInCache
                                     userInfo:nil];
@@ -1144,7 +1152,10 @@ static dispatch_once_t sharedDispatchToken;
     PINImage *image;
     FLAnimatedImage *animatedImage;
     NSError *error = nil;
-    if ([self handleCacheObject:self.cache object:object key:cacheKey options:options outImage:&image outAnimatedImage:&animatedImage] == NO) {
+    if (object == nil) {
+        image = nil;
+        animatedImage = nil;
+    } else if ([self handleCacheObject:self.cache object:object key:cacheKey options:options outImage:&image outAnimatedImage:&animatedImage] == NO) {
         error = [NSError errorWithDomain:PINRemoteImageManagerErrorDomain
                                     code:PINRemoteImageManagerErrorInvalidItemInCache
                                 userInfo:nil];
@@ -1200,12 +1211,13 @@ static dispatch_once_t sharedDispatchToken;
         __weak typeof(self) weakSelf = self;
         [_concurrentOperationQueue pin_addOperationWithQueuePriority:PINRemoteImageManagerPriorityLow block:^{
             typeof(self) strongSelf = weakSelf;
-            PINImage *progressImage = [progressiveImage currentImageBlurred:shouldBlur maxProgressiveRenderSize:maxProgressiveRenderSize];
+            CGFloat renderedImageQuality = 1.0;
+            PINImage *progressImage = [progressiveImage currentImageBlurred:shouldBlur maxProgressiveRenderSize:maxProgressiveRenderSize renderedImageQuality:&renderedImageQuality];
             if (progressImage) {
                 [strongSelf lock];
                     NSString *cacheKey = [strongSelf cacheKeyForURL:[[dataTask originalRequest] URL] processorKey:nil];
                     PINRemoteImageDownloadTask *task = strongSelf.tasks[cacheKey];
-                    [task callProgressImageWithQueue:strongSelf.callbackQueue withImage:progressImage];
+                    [task callProgressImageWithQueue:strongSelf.callbackQueue withImage:progressImage renderedImageQuality:renderedImageQuality];
                 [strongSelf unlock];
             }
         }];
