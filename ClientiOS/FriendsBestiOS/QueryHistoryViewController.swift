@@ -80,12 +80,17 @@ class QueryHistoryViewController: UITableViewController, UISearchResultsUpdating
             self?.tableView.reloadData()
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: #selector(QueryHistoryViewController.showAlert),
-            name: "notifications",
-            object: nil
-        )
+//        FBNetworkDAO.instance.getQueries({
+//            [weak self] in
+//            self?.tableView.reloadData()
+//        })
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(QueryHistoryViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -107,10 +112,6 @@ class QueryHistoryViewController: UITableViewController, UISearchResultsUpdating
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         searchController.active = false
-    }
-    
-    func showAlert(notification: NSNotification) {
-        tableView.reloadData()
     }
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
@@ -229,6 +230,19 @@ class QueryHistoryViewController: UITableViewController, UISearchResultsUpdating
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
     }
+    
+//    var editingRow: Bool = false
+//    override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = true
+//    }
+//    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = false
+//    }
+//    func showAlert(notification: NSNotification) {
+//        if !editingRow {
+//            tableView.reloadData()
+//        }
+//    }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         let query: Query

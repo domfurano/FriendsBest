@@ -47,8 +47,9 @@ class NewRecommendationFormViewController: FormViewController {
         navigationItem.rightBarButtonItem = rightBB
         
         form = Section("Recommendation")
-            <<< TextRow() {
+            <<< TextFloatLabelRow() {
                 $0.tag = "detail"
+                $0.title = "What are you recommending?"
                 switch self.newRecommendation.type! {
                 case .text:
                     $0.value = self.newRecommendation.detail!
@@ -66,13 +67,13 @@ class NewRecommendationFormViewController: FormViewController {
                     $0.disabled = true
                 }
                 }.cellSetup({ (cell, row) in
-                    cell.textField.autocorrectionType = .No
+                    cell.textField.autocorrectionType = .Yes
                     cell.textField.autocapitalizationType = .None
                 })
-            +++ Section("Keywords")
+            +++ Section("Search Keywords")
             <<< TextRow() {
-                $0.tag = "keywords"
-                    $0.value = self.newRecommendation.tagString
+                $0.tag = "keywords"                
+                $0.value = self.newRecommendation.tagString
                 }.cellUpdate({ (cell, row) in
                     cell.textField.autocapitalizationType = .None
                 }).onChange({ (row: TextRow) in
@@ -80,6 +81,7 @@ class NewRecommendationFormViewController: FormViewController {
             +++ Section("Comments")
             <<< TextAreaRow() {
                 $0.tag = "comments"
+                $0.placeholder = "Why are you making this recommendation?"
                 if self.newRecommendation.comments != nil {
                     $0.value = self.newRecommendation.comments
                 }

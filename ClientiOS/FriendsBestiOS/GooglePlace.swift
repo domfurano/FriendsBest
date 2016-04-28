@@ -14,6 +14,9 @@ class GooglePlace: NSObject, NSCoding {
     //"AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8"
 //    static let APIKey: String = "AIzaSyAhLJ06sDGt8x9mPFETmuwTXSG4Sx1E-p8"//"AIzaSyAYaNO8DDk-1s_IFnQgBA3QGqce21JwIZg"
     
+    
+    static let GOOGLE_API_KEY: String = "AIzaSyCiW8jCl6JfJd5kx7js7cb-e32GTXNopyE"// FB:"AIzaSyC7VG-bEW5bKaNA6DjEK58NH3YpzNE9gEI"
+    
     // MARK: Properties
     var placeID: String
     var name: String
@@ -84,7 +87,7 @@ class GooglePlace: NSObject, NSCoding {
     }
     
 //    static func loadCid(placeID: String) {
-//        let URLString: String = "https://maps.googleapis.com/maps/api/place/details/json?key=\(APIKey)&placeid=\(placeID)"
+//        let URLString: String = "https://maps.googleapis.com/maps/api/place/details/json?key=\(GOOGLE_API_KEY)&placeid=\(placeID)"
 //        
 //        let configuration: NSURLSessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
 //        //        configuration.HTTPAdditionalHeaders = ["Authorization": token]
@@ -156,8 +159,8 @@ class GooglePlace: NSObject, NSCoding {
     @objc required convenience init?(coder aDecoder: NSCoder) {
         let placeID: String = aDecoder.decodeObjectForKey(PropertyKey.placeIDKey) as! String
         let name: String = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
-        let formattedAddress: String = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as! String
-        let cid: String = aDecoder.decodeObjectForKey(PropertyKey.cidKey) as! String
+        let formattedAddress: String? = aDecoder.decodeObjectForKey(PropertyKey.formattedAddressKey) as? String
+        let cid: String? = aDecoder.decodeObjectForKey(PropertyKey.cidKey) as? String
         let latitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.latitudeKey)
         let longitude: Double = aDecoder.decodeDoubleForKey(PropertyKey.longitudeKey)
         self.init(placeID: placeID, name: name, formattedAddress: formattedAddress, latitude: latitude, longitude: longitude, cid: cid)

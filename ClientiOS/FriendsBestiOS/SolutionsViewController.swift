@@ -113,12 +113,19 @@ class SolutionsViewController: UITableViewController, UISearchResultsUpdating, U
             }
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: #selector(SolutionsViewController.showAlert),
-            name: "notifications",
-            object: nil
-        )
+//        if QUERY != nil {
+//            FBNetworkDAO.instance.getQuerySolutions(QUERY!, callback: {
+//                [weak self] in
+//                self?.tableView.reloadData()
+//            })
+//        }
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(SolutionsViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
     }
     
     func addRefreshControl() {
@@ -161,16 +168,16 @@ class SolutionsViewController: UITableViewController, UISearchResultsUpdating, U
         searchController.active = false
     }
     
-    func showAlert(notification: NSNotification) {
-        if !loading {
-            for query: Query in USER.myQueries {
-                if query.ID == QUERY!.ID {
-                    QUERY = query
-                }
-            }
-        }
-        tableView.reloadData()
-    }
+//    func showAlert(notification: NSNotification) {
+//        if !loading {
+//            for query: Query in USER.myQueries {
+//                if query.ID == QUERY!.ID {
+//                    QUERY = query
+//                }
+//            }
+//        }
+//        tableView.reloadData()
+//    }
     
     func didPresentSearchController(searchController: UISearchController) {
         searchController.searchBar.setShowsCancelButton(true, animated: false)

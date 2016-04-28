@@ -79,12 +79,17 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
         refreshControl!.tintColor = UIColor.whiteColor()
         refreshControl!.addTarget(self, action: #selector(YourRecommendationsViewController.refreshData), forControlEvents: .ValueChanged)
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: #selector(YourRecommendationsViewController.showAlert),
-            name: "notifications",
-            object: nil
-        )
+//        FBNetworkDAO.instance.getRecommendationsForUser({
+//            [weak self] in
+//            self?.tableView.reloadData()
+//        })
+        
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(YourRecommendationsViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -100,9 +105,7 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
         searchController.active = false
     }
     
-    func showAlert(notification: NSNotification) {
-        tableView.reloadData()
-    }
+    
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         filteredRecommendations.removeAll(keepCapacity: true)
@@ -196,6 +199,7 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
         return true
     }
     
+    
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let button1 = UITableViewRowAction(style: .Default, title: "Delete", handler: { (action, indexPath) in
             let deletedRecommendation: UserRecommendation = USER.myRecommendations.removeAtIndex(indexPath.row)
@@ -204,14 +208,31 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
             tableView.endUpdates()
         })
-        button1.backgroundColor = UIColor.colorFromHex(0xE54154)
+        //89.8, 25.5, 32.9
+        button1.backgroundColor = UIColor(red: 0.898, green: 0.255, blue: 0.329, alpha: 0.5)//(.colorFromHex(0xE54154)
         let button2 = UITableViewRowAction(style: .Default, title: "Edit", handler: { (action, indexPath) in
             let recommendation: UserRecommendation = USER.myRecommendations[indexPath.row]
             self.navigationController?.pushViewController(NewRecommendationFormViewController(newRecommendation: recommendation.newRecommendation(), type: .EDIT), animated: true)
         })
-        button2.backgroundColor = UIColor.colorFromHex(0xEF8944)
+        //93.7, 53.7, 26.7
+        button2.backgroundColor = UIColor(red: 0.937, green: 0.537, blue: 0.267, alpha: 0.5)//.colorFromHex(0xEF8944)
         return [button1, button2]
     }
+    
+//    var editingRow: Bool = false
+//    override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = true
+//    }
+//    override func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        editingRow = false
+//    }
+//    func showAlert(notification: NSNotification) {
+//        if !editingRow {
+//            tableView.reloadData()
+//        }
+//    }
+    
+    
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let recommendation = USER.myRecommendations[indexPath.row]
@@ -219,17 +240,17 @@ class YourRecommendationsViewController: UITableViewController, UISearchControll
         case .text:
             break
         case .place:
-            let alphaNumericName: String = recommendation.placeName.stringByTrimmingCharactersInSet(NSCharacterSet.alphanumericCharacterSet().invertedSet)
-            let plusJoinedName: String = alphaNumericName.stringByReplacingOccurrencesOfString(" ", withString: "+")
-            //            if let strippedName: String = recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
-//            let URLString: String = "https://www.google.com/maps/place/\(plusJoinedName)/@\(recommendation.latitude),\(recommendation.longitude)/"//,[zoom]z
-            //                let URLString: String = "http://maps.google.com/?cid=\(recommendation.detail)"
-//            let URLString: String = "http://maps.apple.com/?q=\(plusJoinedName)&sll=\(recommendation.latitude),\(recommendation.longitude)&t=m"
-            let URLString: String = "https://maps.google.com/?q=\(plusJoinedName)&center=\(recommendation.latitude),\(recommendation.longitude)"
-            if let URL: NSURL = NSURL(string: URLString) {
-                UIApplication.sharedApplication().openURL(URL)
+            let URLString: String?
+            if recommendation.placeName.containsString("°") {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(recommendation.latitude),\(recommendation.longitude),17z"
+            } else {
+                URLString = "https://www.google.com/maps/place/\(recommendation.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(recommendation.latitude),\(recommendation.longitude),17z"
             }
-            //            }
+            if URLString != nil {
+                if let URL: NSURL = NSURL(string: URLString!) {
+                    UIApplication.sharedApplication().openURL(URL)
+                }
+            }
             break
         case .url:
             if let URL: NSURL = NSURL(string: recommendation.detail) {

@@ -124,7 +124,7 @@ class User: NetworkDAODelegate {
     }
     var closureUserRecommendationsNew: () -> Void = { }
     func userRecommendationsFetched(userRecommendations: [UserRecommendation]) {
-        self.myRecommendations = userRecommendations
+        self.myRecommendations = userRecommendations.reverse()
         sortQueries()
         closureUserRecommendationsNew()
     }

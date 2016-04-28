@@ -28,20 +28,22 @@ class Updater {
     
     private init() {
         self.promptTimer = Timer(timesPerSecond: 1.0, closure: { () -> Void in
-            if USER.myPrompts.count < 1 {
-                if !self.gettingPrompts {
-                    self.gettingPrompts = true
-                    FBNetworkDAO.instance.getPrompts({
-                        self.gettingPrompts = false
-                    })
+            dispatch_async(dispatch_get_main_queue(), {
+                if USER.myPrompts.count < 1 {
+                    if !self.gettingPrompts {
+                        self.gettingPrompts = true
+                        FBNetworkDAO.instance.getPrompts({
+                            self.gettingPrompts = false
+                        })
+                    }
                 }
-            }
+            })
         })
         promptTimer.startTimer()
         
         self.queryTimer = Timer(timesPerSecond: 1.0 / 3.0, closure: { () -> Void in
-            FBNetworkDAO.instance._getQueries(true, callback: {
-
+            dispatch_async(dispatch_get_main_queue(), {
+                FBNetworkDAO.instance.getQueries(nil)
             })
         })
         queryTimer.startTimer()

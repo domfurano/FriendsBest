@@ -49,6 +49,8 @@ class SolutionDetailViewController: UITableViewController {
     override func viewDidLoad() {
         tableView.estimatedRowHeight =  128.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        
+        title = "Details"
 //        tableView.separatorStyle = .None
         
 //        tableView.registerClass(SolutionDetailTableViewCell.self, forCellReuseIdentifier: "SolutionDetailCell")
@@ -74,12 +76,12 @@ class SolutionDetailViewController: UITableViewController {
         refreshControl?.tintColor = UIColor.whiteColor()
         refreshControl?.addTarget(self, action: #selector(SolutionDetailViewController.refreshData), forControlEvents: .ValueChanged)
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: #selector(SolutionDetailViewController.showAlert),
-            name: "notifications",
-            object: nil
-        )
+//        NSNotificationCenter.defaultCenter().addObserver(
+//            self,
+//            selector: #selector(SolutionDetailViewController.showAlert),
+//            name: "notifications",
+//            object: nil
+//        )
         
     }
     
@@ -110,16 +112,16 @@ class SolutionDetailViewController: UITableViewController {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIContentSizeCategoryDidChangeNotification, object: nil)
     }
     
-    func showAlert(notification: NSNotification) {
-        for query: Query in USER.myQueries {
-            for solution: Solution in query.solutions {
-                if solution.ID == SOLUTION.ID {
-                    SOLUTION = solution
-                }
-            }
-        }
-        tableView.reloadData()
-    }
+//    func showAlert(notification: NSNotification) {
+//        for query: Query in USER.myQueries {
+//            for solution: Solution in query.solutions {
+//                if solution.ID == SOLUTION.ID {
+//                    SOLUTION = solution
+//                }
+//            }
+//        }
+//        tableView.reloadData()
+//    }
     
     func refreshData() {
         refreshControl?.beginRefreshing()
@@ -197,9 +199,14 @@ class SolutionDetailViewController: UITableViewController {
             case .text:
                 break
             case .place:
-                if let strippedName: String = SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
-                    let URLString: String = "http://maps.apple.com/?q=\(strippedName)&sll=\(SOLUTION.latitude),\(SOLUTION.longitude)&t=m"
-                    if let URL: NSURL = NSURL(string: URLString) {
+                let URLString: String?
+                if SOLUTION.placeName.containsString("°") {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                } else {
+                    URLString = "https://www.google.com/maps/place/\(SOLUTION.placeName.stringByReplacingOccurrencesOfString(" ", withString: "+"))/@\(SOLUTION.latitude),\(SOLUTION.longitude),17z"
+                }
+                if URLString != nil {
+                    if let URL: NSURL = NSURL(string: URLString!) {
                         UIApplication.sharedApplication().openURL(URL)
                     }
                 }

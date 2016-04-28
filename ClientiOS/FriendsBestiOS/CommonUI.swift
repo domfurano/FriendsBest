@@ -72,6 +72,8 @@ class CommonUI {
     /* Default profile picture */
     let defaultProfileImage: UIImage = FAKFontAwesome.userIconWithSize(CGFloat(50.0)).imageWithSize(CGSize(width: 50.0, height: 50.0)).roundedImage()
     
+    let deleteColor: UIColor = UIColor(red: 0.898, green: 0.255, blue: 0.329, alpha: 0.5)
+    
     /* Facebook profile pictures */
     enum FacbookImageSize: String {
         case small = "small"

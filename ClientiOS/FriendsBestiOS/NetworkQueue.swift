@@ -22,9 +22,10 @@ class NetworkQueue {
 //            NSLog("Timer firing!")
             if !self.executing && self.queue.count > 0 {
                 self.executing = true;
-                let task = self.queue.first!
-                task.item.task()
-                NSLog("Executing network request: " + task.item.description)
+                if let task = self.queue.first {
+                    task.item.task()
+                    NSLog("Executing network request: " + task.item.description)
+                }
             }
         })
     }
